@@ -15,8 +15,6 @@ sub buildReactData {
     my $VARS = $REQUEST->user->VARS;
     my $query = $REQUEST->cgi;
 
-    my $is_guest = $APP->isGuest($USER);
-
     # Handle clear vandalism (custom style reset)
     if (defined($query->param('clearVandalism'))) {
         delete($VARS->{customstyle});
@@ -96,8 +94,7 @@ sub buildReactData {
         type => 'theme_nirvana',
         stylesheets => \@stylesheets,
         current_style => $current_style,
-        has_custom_style => $has_custom_style ? 1 : 0,
-        is_guest => $is_guest ? 1 : 0
+        has_custom_style => $has_custom_style ? 1 : 0
     };
 }
 

@@ -6,16 +6,17 @@ import React from 'react'
  * Allows CE members to mark CE debates as read,
  * and admins to mark admin debates as read.
  */
-const MarkAllDiscussionsAsRead = ({ data }) => {
+const MarkAllDiscussionsAsRead = ({ data, user }) => {
   const {
-    is_admin,
-    is_editor,
     ce_marked,
     admin_marked,
     messages = [],
     error,
     node_id
   } = data
+
+  // Viewer role flags come from the global e2.user prop (#4390 dedup)
+  const isAdmin = !!user?.admin
 
   // Build base URL with node_id to ensure form posts back to this page
   const baseUrl = node_id ? `?node_id=${node_id}` : '?'
@@ -53,7 +54,7 @@ const MarkAllDiscussionsAsRead = ({ data }) => {
         </p>
       )}
 
-      {Boolean(is_admin) && !Boolean(admin_marked) && (
+      {isAdmin && !Boolean(admin_marked) && (
         <div className="mark-discussions__admin-section">
           <p>
             It appears you are like a god amongst men. You may do the same
@@ -65,7 +66,7 @@ const MarkAllDiscussionsAsRead = ({ data }) => {
         </div>
       )}
 
-      {Boolean(is_admin) && Boolean(admin_marked) && (
+      {isAdmin && Boolean(admin_marked) && (
         <p className="mark-discussions__done">
           It is done. All of your admin debates have been marked as read.
           Hopefully there's never a reason to do this again.

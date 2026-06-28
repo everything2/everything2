@@ -26,10 +26,6 @@ sub buildReactData {
     my ($self, $REQUEST) = @_;
 
     my $DB = $self->DB;
-    my $APP = $self->APP;
-    my $USER = $REQUEST->user->NODEDATA;
-
-    my $is_chanop = $APP->isChanop($USER) ? 1 : 0;
 
     # Get borguser parameter to pre-fill the username field
     my $borguser = $REQUEST->param('borguser') || '';
@@ -65,7 +61,6 @@ sub buildReactData {
 
     return {
         type => 'e2_bouncer',
-        is_chanop => $is_chanop,
         rooms => \@rooms,
         quip => $quips[int(rand(@quips))],
         prefill_user => $borguser

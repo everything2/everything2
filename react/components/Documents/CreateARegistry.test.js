@@ -21,6 +21,24 @@ describe('CreateARegistry (real pagestate fixture)', () => {
   })
 })
 
+// Viewer guest flag now sourced from the global e2.user prop (#4390 contentData dedup).
+describe('CreateARegistry guest gating via user prop', () => {
+  it('shows the guest message when user.guest is true', () => {
+    const { container } = render(<CreateARegistry data={{}} user={{ guest: true }} />)
+    expect(container.textContent).toContain('You must be logged in to create a registry.')
+  })
+
+  it('does not show the guest message when user.guest is false', () => {
+    const { container } = render(<CreateARegistry data={{ can_create: 1 }} user={{ guest: false }} />)
+    expect(container.textContent).not.toContain('You must be logged in to create a registry.')
+  })
+
+  it('does not crash when user prop is undefined', () => {
+    const { container } = render(<CreateARegistry data={{ can_create: 1 }} user={undefined} />)
+    expect(container.textContent).not.toContain('You must be logged in to create a registry.')
+  })
+})
+
 // Generic create API migration (was op=new). #4340 Phase 2.
 describe('CreateARegistry submit -> /api/node/create', () => {
   const origLocation = window.location

@@ -208,7 +208,6 @@ sub buildReactData {
         search_was_node_id => $query->param('not_found_by_id') ? 1 : 0,
         findings => \@findings,
         lastnode_id => $lastnode_id,
-        is_guest => $is_guest,
         has_excerpts => $excerpt_count > 0
     };
 }

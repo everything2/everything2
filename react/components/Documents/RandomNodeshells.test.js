@@ -20,3 +20,23 @@ describe('RandomNodeshells (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+describe('RandomNodeshells guest gating (#4390, e2.user-driven)', () => {
+  const guestData = { type: 'random_nodeshells', message: 'If you logged in, you could see random nodeshells.' }
+  const memberData = { type: 'random_nodeshells', num_searched: 1200, num_found: 0, nodeshells: [] }
+
+  it('guest viewer (user.guest===true) shows the login-gated message', () => {
+    const { container } = render(<RandomNodeshells data={guestData} user={{ guest: true }} />)
+    expect(container.textContent).toContain('If you logged in')
+    expect(container.textContent).not.toContain('How this works')
+  })
+  it('member viewer (user.guest===false) shows the nodeshell generator, not the gate', () => {
+    const { container } = render(<RandomNodeshells data={memberData} user={{ guest: false }} />)
+    expect(container.textContent).toContain('How this works')
+    expect(container.textContent).not.toContain('If you logged in')
+  })
+  it('missing user prop does not crash and renders as non-guest', () => {
+    const { container } = render(<RandomNodeshells data={memberData} user={undefined} />)
+    expect(container.textContent).toContain('How this works')
+  })
+})

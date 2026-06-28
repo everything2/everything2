@@ -5,7 +5,7 @@ import { formatShortDate } from '../../utils/dateFormat';
  * EverythingDocumentDirectory - Document listing and filtering
  * Styles in CSS: .doc-directory__*
  */
-const EverythingDocumentDirectory = ({ data, e2 }) => {
+const EverythingDocumentDirectory = ({ data, e2, user }) => {
   const {
     documents = [],
     total_count,
@@ -60,8 +60,13 @@ const EverythingDocumentDirectory = ({ data, e2 }) => {
   // Format timestamp to readable date
   const formatDate = (timestamp) => formatShortDate(timestamp) ?? '';
 
-  const showNodeId = permissions.is_developer || permissions.is_admin;
-  const showListNodesLink = permissions.is_developer || permissions.is_editor;
+  // is_admin / is_editor read from the global e2.user prop (#4390);
+  // is_developer stays on contentData (PageState user.developer is always-true).
+  const isAdmin = !!user?.admin;
+  const isEditor = !!user?.editor;
+
+  const showNodeId = permissions.is_developer || isAdmin;
+  const showListNodesLink = permissions.is_developer || isEditor;
 
   return (
     <div className="doc-directory">

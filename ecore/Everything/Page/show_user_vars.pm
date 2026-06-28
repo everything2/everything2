@@ -113,7 +113,6 @@ sub buildReactData
 
     return {
         type         => 'show_user_vars',
-        is_admin     => $is_admin ? 1 : 0,
         is_developer => $is_edev ? 1 : 0,
         inspect_user => {
             node_id => $inspect_user->{node_id},

@@ -25,14 +25,8 @@ betweenthecracks API to allow dynamic filtering without page reload.
 sub buildReactData {
     my ($self, $REQUEST) = @_;
 
-    my $APP = $self->APP;
-    my $USER = $REQUEST->user;
-
-    my $is_guest = $APP->isGuest($USER->NODEDATA);
-
     return {
-        type => 'between_the_cracks',
-        is_guest => $is_guest ? 1 : 0
+        type => 'between_the_cracks'
     };
 }
 

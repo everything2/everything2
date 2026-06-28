@@ -13,7 +13,6 @@ describe('Findings', () => {
       search_term: 'test search',
       findings: [],
       lastnode_id: 12345,
-      is_guest: false,
       has_excerpts: false
     },
     user: { node_id: 123 }
@@ -91,7 +90,7 @@ describe('Findings', () => {
         title: `Result ${i + 1}`,
         type: 'e2node'
       }))
-      render(<Findings data={{ ...defaultProps.data, findings, is_guest: true }} user={defaultProps.user} />)
+      render(<Findings data={{ ...defaultProps.data, findings }} user={{ guest: true }} />)
       // Ads should appear after items 4 and 8 (not after last item)
       const ads = screen.getAllByTestId('in-content-ad')
       expect(ads).toHaveLength(2)
@@ -103,7 +102,7 @@ describe('Findings', () => {
         title: `Result ${i + 1}`,
         type: 'e2node'
       }))
-      render(<Findings data={{ ...defaultProps.data, findings, is_guest: false }} user={defaultProps.user} />)
+      render(<Findings data={{ ...defaultProps.data, findings }} user={{ guest: false }} />)
       expect(screen.queryByTestId('in-content-ad')).not.toBeInTheDocument()
     })
 
@@ -113,7 +112,7 @@ describe('Findings', () => {
         title: `Result ${i + 1}`,
         type: 'e2node'
       }))
-      render(<Findings data={{ ...defaultProps.data, findings, is_guest: true }} user={defaultProps.user} />)
+      render(<Findings data={{ ...defaultProps.data, findings }} user={{ guest: true }} />)
       // With exactly 4 items, no ad should show (would be at the end)
       expect(screen.queryByTestId('in-content-ad')).not.toBeInTheDocument()
     })
@@ -124,7 +123,7 @@ describe('Findings', () => {
         title: `Result ${i + 1}`,
         type: 'e2node'
       }))
-      render(<Findings data={{ ...defaultProps.data, findings, is_guest: true }} user={defaultProps.user} />)
+      render(<Findings data={{ ...defaultProps.data, findings }} user={{ guest: true }} />)
       expect(screen.getAllByTestId('in-content-ad')).toHaveLength(1)
     })
   })
@@ -143,20 +142,41 @@ describe('Findings', () => {
 
   describe('create new section', () => {
     it('shows guest message for guests', () => {
-      render(<Findings data={{ ...defaultProps.data, is_guest: true }} user={defaultProps.user} />)
+      render(<Findings data={{ ...defaultProps.data }} user={{ guest: true }} />)
       expect(screen.getByText(/Since we didn't find what you were looking for, you can search again:/)).toBeInTheDocument()
     })
 
     it('shows create options for logged-in users', () => {
-      render(<Findings data={{ ...defaultProps.data, is_guest: false }} user={defaultProps.user} />)
+      render(<Findings data={{ ...defaultProps.data }} user={{ guest: false }} />)
       expect(screen.getByRole('button', { name: 'New draft' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'New node' })).toBeInTheDocument()
     })
 
     it('hides create options for guests', () => {
-      render(<Findings data={{ ...defaultProps.data, is_guest: true }} user={defaultProps.user} />)
+      render(<Findings data={{ ...defaultProps.data }} user={{ guest: true }} />)
       expect(screen.queryByRole('button', { name: 'New draft' })).not.toBeInTheDocument()
       expect(screen.queryByRole('button', { name: 'New node' })).not.toBeInTheDocument()
+    })
+  })
+
+  // #4390 contentData global dedup: guest gating now reads e2.user.guest (the global
+  // user prop), not a duplicated data.is_guest key. A guest viewer still receives the
+  // user prop with guest===true.
+  describe('guest gating via user prop (#4390)', () => {
+    it('hides the create-new-node form for guest viewers', () => {
+      const { container } = render(<Findings data={{ ...defaultProps.data }} user={{ guest: true }} />)
+      expect(container.textContent).not.toContain('Create new...')
+    })
+
+    it('shows the create-new-node form for logged-in viewers', () => {
+      const { container } = render(<Findings data={{ ...defaultProps.data }} user={{ guest: false }} />)
+      expect(container.textContent).toContain('Create new...')
+    })
+
+    it('does not crash when the user prop is undefined', () => {
+      const { container } = render(<Findings data={{ ...defaultProps.data }} user={undefined} />)
+      // Undefined user is treated as non-guest (!!user?.guest === false): form shown, no crash.
+      expect(container.textContent).toContain('Create new...')
     })
   })
 

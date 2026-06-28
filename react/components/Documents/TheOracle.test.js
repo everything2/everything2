@@ -20,3 +20,32 @@ describe('TheOracle (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+// Role flags now come from the global e2.user prop, not contentData (#4390)
+describe('TheOracle role gating via user prop', () => {
+  const searchData = {
+    type: 'the_oracle',
+    classic_mode: 0,
+    search_result: {
+      username: 'someuser',
+      user_id: 123,
+      vars: [{ key: 'easter_eggs', value: '5' }]
+    }
+  }
+
+  it('admin viewer (user.admin) sees the per-var edit link', () => {
+    const { container } = render(<TheOracle data={searchData} user={{ admin: true }} />)
+    expect(container.textContent).toContain('edit')
+  })
+
+  it('non-admin viewer (user.admin false) does not see the edit link', () => {
+    const { container } = render(<TheOracle data={searchData} user={{ admin: false }} />)
+    expect(container.textContent).not.toContain('edit')
+  })
+
+  it('missing user prop does not crash and hides admin controls', () => {
+    const { container } = render(<TheOracle data={searchData} user={undefined} />)
+    expect(container.textContent).toContain('someuser')
+    expect(container.textContent).not.toContain('edit')
+  })
+})

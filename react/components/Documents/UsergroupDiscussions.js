@@ -14,9 +14,8 @@ import '../Editor/E2Editor.css'
  * UsergroupDiscussions - View and manage usergroup discussions.
  * Allows users to browse and create threaded discussions within their usergroups.
  */
-const UsergroupDiscussions = ({ data }) => {
+const UsergroupDiscussions = ({ data, user }) => {
   const {
-    is_guest,
     no_usergroups,
     access_denied,
     message,
@@ -29,7 +28,9 @@ const UsergroupDiscussions = ({ data }) => {
     node_id
   } = data
 
-  if (is_guest) {
+  const isGuest = !!user?.guest
+
+  if (isGuest) {
     return (
       <div className="ug-discussions">
         <p className="ug-discussions__see-also">

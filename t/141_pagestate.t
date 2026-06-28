@@ -382,7 +382,10 @@ is(Everything::PageState->_build_currentPoll( T141::PollNoVoteDB->new, { node_id
     is($u->{node_id}, 42, '_build_user node_id');
     is(${ $u->{editor} },    1, 'user editor flag');
     is(${ $u->{admin} },     0, 'user admin flag');
-    is(${ $u->{developer} }, 1, 'user developer flag = always \1 (pre-existing quirk)');
+    is(${ $u->{developer} }, 0, 'user developer flag = false for a non-developer (#4390: was always \1)');
+    # #4390: the true branch -- an actual developer (isDeveloper=1) now gets \1, not the old always-\1
+    my $du = Everything::PageState->_build_user( T141::UserApp->new(0,0,0,1,0,1,0), { node_id=>43, title=>'dev' }, {} );
+    is(${ $du->{developer} }, 1, 'user developer flag = true for an actual developer (#4390)');
     is($u->{gp},        100, 'user gp (logged-in)');
     is($u->{level},     5,   'user level = getLevel');
     is($u->{coolsleft}, 4,   'user coolsleft = int(VARS cools)');

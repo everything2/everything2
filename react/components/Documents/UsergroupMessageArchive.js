@@ -7,10 +7,8 @@ import LinkNode from '../LinkNode'
  *
  * Allows copying messages to personal inbox.
  */
-const UsergroupMessageArchive = ({ data }) => {
+const UsergroupMessageArchive = ({ data, user }) => {
   const {
-    is_guest,
-    is_admin,
     archive_groups,
     node_id,
     selected_group,
@@ -24,7 +22,10 @@ const UsergroupMessageArchive = ({ data }) => {
     error
   } = data
 
-  if (is_guest) {
+  const isAdmin = !!user?.admin
+  const isGuest = !!user?.guest
+
+  if (isGuest) {
     return (
       <div className="usergroup-archive">
         <p className="usergroup-archive__see-also">
@@ -44,7 +45,7 @@ const UsergroupMessageArchive = ({ data }) => {
 
       <p>If you are a member of one of these groups, you can view messages sent to the group.</p>
 
-      {!!is_admin && (
+      {isAdmin && (
         <p>
           You can edit the usergroups that have messages archived at{' '}
           <a

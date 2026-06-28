@@ -27,11 +27,12 @@ sub buildReactData {
     my $APP = $self->APP;
     my $USER = $REQUEST->user;
 
-    # Guest users can't access this
-    if ($APP->isGuest($USER)) {
+    # Guest users can't access this. NB: $USER is the BLESSED user object here, so use its
+    # ->is_guest method -- $APP->isGuest() is an Application.pm method that expects a raw
+    # NODEDATA hashref and silently mis-detects a blessed object as non-guest (#4390).
+    if ($USER->is_guest) {
         return {
             type => 'random_nodeshells',
-            is_guest => 1,
             message => 'If you logged in, you could see random nodeshells.'
         };
     }
@@ -68,7 +69,6 @@ sub buildReactData {
 
     return {
         type => 'random_nodeshells',
-        is_guest => 0,
         num_searched => $num_nodes,
         num_found => scalar(@nodeshells),
         nodeshells => \@nodeshells

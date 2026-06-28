@@ -40,11 +40,11 @@ sub buildReactData {
     }
 
     # Build response data
+    # Viewer role flags (is_admin/is_editor) intentionally NOT emitted here:
+    # React reads them from the global e2.user prop (user.admin / user.editor). (#4390)
     my $data = {
         type         => 'the_oracle',
-        classic_mode => $classic_mode,
-        is_admin     => $is_admin,
-        is_editor    => $is_editor
+        classic_mode => $classic_mode
     };
 
     # Handle variable update (admin only)

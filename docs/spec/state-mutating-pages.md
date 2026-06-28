@@ -33,8 +33,42 @@ Status legend: ✅ already API-driven · 🟡 mutates via API but React still do
 | my_big_writeup_list | — | (read-only; `<form method=get>` re-query) | — n/a |
 | magical_writeup_reparenter | yes | (admin/editor) reparent writeups to a new e2node | ✅ `POST /api/writeup_reparent/reparent` |
 
+| between_the_cracks | — | (read-only; `GET /api/betweenthecracks/search`) | — n/a |
+| create_a_registry | yes | create a registry node (logged-in only) | ✅ `POST /api/node/create` |
+| display_categories | — | (read-only; GET re-render for paging/filter) | — n/a |
+| findings | yes | create a draft/e2node from a failed search (logged-in only, `!user.guest`-gated) | ✅ `POST /api/node/create` |
+| random_nodeshells | — | (read-only) | — n/a |
+| the_catwalk | yes | clear the viewer's `customstyle` ("clearVandalism") | ❌ **legacy `?clearVandalism` GET → `setVars`, no API** |
+| theme_nirvana | yes | clear the viewer's `customstyle` ("clearVandalism") | ❌ **legacy `?clearVandalism` GET → `setVars`, no API** (same pattern as the_catwalk) |
+| usergroup_discussions | yes | create a usergroup discussion; save the editor-mode pref | ✅ `POST /api/debatecomments/action/create`, `POST /api/preferences/set` |
+| macro_faq | — | (read-only documentation page) | — n/a |
+
+| everything_document_directory | yes | save the viewer's sort pref (`EDD_Sort`) | ❌ **side-effect in buildReactData** (POST param → `setVars`), no API (mild) |
+| mark_all_discussions_as_read | yes | mark CE/admin debates read (`lastreaddebate`) | ❌ **side-effect in buildReactData** (GET `?mark_*_read` → `sqlUpdate`/`sqlInsert`), no API |
+| settings | yes | save all user settings / prefs / profile | ✅ `/api/preferences/*`, `/api/user/edit`, `/api/nodelets` |
+| show_user_vars | — | (read-only inspection; admin GET lookup) | — n/a |
+| simple_usergroup_editor | yes | add/remove usergroup members | ❌ **side-effect in buildReactData** (self-POST → `group_add`/`group_remove`), no API |
+| the_oracle | yes | (admin) set a **target** user's var | ❌ **side-effect in buildReactData** (GET params → `setVars` on another user), no API |
+| usergroup_message_archive | yes | copy group msgs to self; toggle resettime pref | ❌ **side-effect in buildReactData** (params → `sqlInsert` message / `setVars`), no API |
+| e2_bouncer | yes | (chanop) move users out of a room | ✅ `POST /api/bouncer` |
+| e2_gift_shop | yes | buy/give votes/ching/tokens/eggs; set topic; star | ✅ `/api/giftshop/*` (9 endpoints) |
+| drafts_for_review | — | (read-only editor review queue) | — n/a |
+
 <!-- append one row per Document as the #4390 sweep reaches it -->
 
 ## API-candidate backlog (mutating, not yet API)
 
-- **feed_edb** — the admin "simulate being borged by EDB" tool mutates via the legacy `?numborgings=N` query param processed *inside* `buildReactData` (`setVars` numborged/borged + raw `sqlUpdate room.borgd`). **Decision 2026-06-27: build the API, keep the feature** — it's a fun/legacy admin toy with negligible cost, and E2 keeps that functionality when it's performance-free (not a delete candidate). Target: `POST /api/feed_edb/borg` driven by the React component, with `buildReactData` becoming pure-render — the the_costume_shop pattern. *(in progress)*
+- **feed_edb** — the admin "simulate being borged by EDB" tool mutates via the legacy `?numborgings=N` query param processed *inside* `buildReactData` (`setVars` numborged/borged + raw `sqlUpdate room.borgd`). **Decision 2026-06-27: build the API, keep the feature** — it's a fun/legacy admin toy with negligible cost, and E2 keeps that functionality when it's performance-free (not a delete candidate). Target: `POST /api/feed_edb/borg` driven by the React component, with `buildReactData` becoming pure-render — the the_costume_shop pattern. **✅ DONE this session** — `POST /api/feed_edb/borg` + pure-render page + tests (`t/171`, FeedEdb interaction).
+- **the_catwalk** + **theme_nirvana** — both clear the viewer's `customstyle` via a legacy `?clearVandalism=true` GET that `setVars`-deletes the style inside `buildReactData`. **Shared pattern → one small API** (a customstyle/clear endpoint) could serve both, then both pages go pure-render. Low priority; a clean 2-for-1.
+
+### Side-effect-in-buildReactData cluster (found #4390 batch 4) — the core step-2 target
+
+These mutate server state **inside the page controller on render**, driven by GET/POST params, with **no API**. A page can't be cleanly React-routed while *rendering it writes to the DB*. Each wants a small `POST /api/…` so `buildReactData` becomes pure-render:
+- **simple_usergroup_editor** — self-POST → `group_add`/`group_remove` (usergroup membership)
+- **the_oracle** — admin GET params → `setVars` on **another** user's vars (highest-stakes: writes a different user)
+- **mark_all_discussions_as_read** — GET `?mark_*_read` → `sqlUpdate`/`sqlInsert` on `lastreaddebate`
+- **usergroup_message_archive** — params → `sqlInsert` message (copy-to-self) + `setVars` (resettime pref)
+- **everything_document_directory** — POST `EDD_Sort` → `setVars` (sort pref; mildest)
+
+### Related latent bug (not a mutation, but found in the same sweep)
+`$APP->isGuest($USER)` is mis-called with the **blessed** `$USER` object (instead of `$USER->NODEDATA` / `$USER->is_guest`) in several pages — it silently returns false for guests. Fixed in `random_nodeshells` (#4390); a wider audit (`e2_penny_jar`, `clientdev_home`, `welcome_to_everything`, some xml_tickers — verify each's `$USER` definition first) is worth a follow-up issue.

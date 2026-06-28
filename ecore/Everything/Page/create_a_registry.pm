@@ -27,11 +27,11 @@ sub buildReactData {
     my $DB = $self->DB;
     my $USER = $REQUEST->user;
 
-    # Check if guest
+    # Check if guest. The viewer guest flag lives in the global e2.user prop
+    # (#4390 contentData dedup); React reads user.guest, so no contentData key.
     if ($APP->isGuest($USER->NODEDATA)) {
         return {
-            type => 'create_a_registry',
-            is_guest => 1
+            type => 'create_a_registry'
         };
     }
 

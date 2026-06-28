@@ -14,8 +14,6 @@ const SimpleUsergroupEditor = ({ data }) => {
     selected_usergroup,
     members,
     ignoring_users,
-    is_admin,
-    is_editor,
     message
   } = data
 

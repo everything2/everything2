@@ -8,17 +8,18 @@ import LinkNode from '../LinkNode'
  * - Regular mode: Enhanced UI with CE-restricted vars
  * - Classic mode: Raw display, admin only
  */
-const TheOracle = ({ data }) => {
+const TheOracle = ({ data, user }) => {
   const {
     error,
     classic_mode,
-    is_admin,
-    is_editor,
     update_result,
     edit_mode,
     search_result,
     ce_help
   } = data
+
+  // Viewer role flag comes from the global e2.user prop (#4390)
+  const isAdmin = !!user?.admin
 
   const [searchUser, setSearchUser] = useState('')
   const [newValue, setNewValue] = useState(edit_mode?.old_value || '')
@@ -163,7 +164,7 @@ const TheOracle = ({ data }) => {
                     )}
 
                     {/* Edit link (admin only) */}
-                    {Boolean(is_admin) && (
+                    {isAdmin && (
                       <>
                         {' '}
                         <a

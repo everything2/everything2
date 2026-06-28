@@ -2,8 +2,9 @@ import React, { useState, useCallback } from 'react'
 import LinkNode from '../LinkNode'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 
-const DisplayCategories = ({ data }) => {
+const DisplayCategories = ({ data, user }) => {
   const isMobile = useIsMobile()
+  const isGuest = !!user?.guest
   const initialData = data.displayCategories || {}
   const {
     categories: initialCategories,
@@ -12,7 +13,6 @@ const DisplayCategories = ({ data }) => {
     hasMore: initialHasMore,
     maintainerName: initialMaintainer,
     sortOrder: initialOrder,
-    isGuest,
   } = initialData
 
   const [categories, setCategories] = useState(initialCategories || [])

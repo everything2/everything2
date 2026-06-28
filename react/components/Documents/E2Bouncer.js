@@ -7,13 +7,14 @@ import React, { useState } from 'react';
  * Also known as "Nerf Borg" - a softer way to manage user locations
  * by moving them to different chat rooms instead of borging them.
  */
-const E2Bouncer = ({ data, e2 }) => {
+const E2Bouncer = ({ data, e2, user }) => {
   const {
-    is_chanop = false,
     rooms = [],
     quip = '',
     prefill_user = ''
   } = data;
+
+  const isChanop = !!user?.chanop;
 
   const [usernames, setUsernames] = useState(prefill_user);
   const [selectedRoom, setSelectedRoom] = useState('outside');
@@ -78,7 +79,7 @@ const E2Bouncer = ({ data, e2 }) => {
   };
 
   // Permission denied
-  if (!is_chanop) {
+  if (!isChanop) {
     return (
       <div className="e2-bouncer">
         <div className="e2-bouncer__error">

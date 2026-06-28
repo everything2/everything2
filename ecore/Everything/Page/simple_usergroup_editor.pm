@@ -143,8 +143,6 @@ sub buildReactData
         selected_usergroup => $selected_usergroup,
         members           => \@members,
         ignoring_users    => \@ignoring_users,
-        is_admin          => $is_admin ? 1 : 0,
-        is_editor         => $is_editor ? 1 : 0,
         message           => $message
     };
 }

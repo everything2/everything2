@@ -5,8 +5,9 @@ import React, { useState, useEffect, useCallback } from 'react';
  * Styles in CSS: .between-cracks__*
  * Shows writeups the user hasn't voted on that have low vote counts
  */
-const BetweenTheCracks = ({ data }) => {
-  const { is_guest, error: serverError } = data;
+const BetweenTheCracks = ({ data, user }) => {
+  const { error: serverError } = data;
+  const isGuest = !!user?.guest;
 
   const [maxVotes, setMaxVotes] = useState(5);
   const [minRep, setMinRep] = useState('');
@@ -44,10 +45,10 @@ const BetweenTheCracks = ({ data }) => {
 
   // Initial fetch on mount
   useEffect(() => {
-    if (!is_guest) {
+    if (!isGuest) {
       fetchWriteups();
     }
-  }, [is_guest, fetchWriteups]);
+  }, [isGuest, fetchWriteups]);
 
   // Handle form submission
   const handleSubmit = (e) => {
@@ -56,7 +57,7 @@ const BetweenTheCracks = ({ data }) => {
   };
 
   // Guest message
-  if (is_guest) {
+  if (isGuest) {
     return (
       <div className="between-cracks">
         <p className="between-cracks__guest-message">

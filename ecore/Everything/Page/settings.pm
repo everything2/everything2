@@ -357,7 +357,6 @@ sub buildReactData
     availableStylesheets => \@available_stylesheets,
     currentStylesheet => $current_stylesheet_title,
     defaultStylesheetId => $default_style_id,
-    isEditor => $is_editor,
     currentUser => {
       node_id => int($user->node_id),
       title => $user->title

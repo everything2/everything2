@@ -66,8 +66,6 @@ sub buildReactData {
     return {
         type => 'mark_all_discussions_as_read',
         node_id => $node_id,
-        is_admin => $is_admin ? 1 : 0,
-        is_editor => $is_editor ? 1 : 0,
         ce_marked => $ce_marked,
         admin_marked => $admin_marked,
         messages => \@messages

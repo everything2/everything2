@@ -178,8 +178,9 @@ sub buildReactData {
         filter_nodetype => $filtered_type,
         available_nodetypes => \@available_nodetypes,
         permissions => {
-            is_admin => $is_admin ? 1 : 0,
-            is_editor => $is_editor ? 1 : 0,
+            # is_admin / is_editor deduped to the global e2.user prop (#4390):
+            # read user.admin / user.editor in React. is_developer is KEPT here
+            # because PageState's user.developer is always-true (known quirk).
             is_developer => $is_developer ? 1 : 0
         }
     };

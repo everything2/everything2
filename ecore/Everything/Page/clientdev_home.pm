@@ -64,8 +64,8 @@ sub buildReactData {
 
         # Check if user can remove entries (admin or usergroup owner)
         my $can_remove = 0;
-        unless ($APP->isGuest($USER)) {
-            $can_remove = 1 if $APP->isAdmin($USER);
+        unless ($USER->is_guest) {   # $USER is blessed; $APP->isGuest/isAdmin want NODEDATA (#4390)
+            $can_remove = 1 if $USER->is_admin;
             # Also check if user is usergroup owner
             my $owner_id = $APP->getParameter($log_id, 'usergroup_owner');
             $can_remove = 1 if $owner_id && $USER->node_id == $owner_id;

@@ -20,3 +20,26 @@ describe('E2GiftShop (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+// Editor gating via the global `user` prop (#4390 contentData dedup):
+// `isEditor` is no longer carried in contentData; it is read from user.editor.
+describe('E2GiftShop editor gating (user prop)', () => {
+  it('shows the editor-only "free for editors" topic note when user.editor is true', () => {
+    const { container } = render(
+      <E2GiftShop data={fixture.contentData} user={{ editor: true }} />
+    )
+    expect(container.textContent).toContain('free for editors')
+  })
+  it('hides the editor-only topic note when user.editor is false', () => {
+    const { container } = render(
+      <E2GiftShop data={fixture.contentData} user={{ editor: false }} />
+    )
+    expect(container.textContent).not.toContain('free for editors')
+  })
+  it('does not crash when user is undefined', () => {
+    const { container } = render(
+      <E2GiftShop data={fixture.contentData} user={undefined} />
+    )
+    expect(container).toBeTruthy()
+  })
+})

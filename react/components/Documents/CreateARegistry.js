@@ -6,14 +6,16 @@ import RegistryFooter from '../shared/RegistryFooter'
  * Styles in CSS: .create-registry__*
  * Requires level 8+ to create registries
  */
-const CreateARegistry = ({ data }) => {
+const CreateARegistry = ({ data, user }) => {
   const {
     can_create,
-    is_guest,
     level_required,
     current_level,
     input_styles = ['text', 'yes/no', 'date']
   } = data
+
+  // Viewer guest flag comes from the global e2.user prop (#4390 contentData dedup).
+  const isGuest = !!user?.guest
 
   const [title, setTitle] = React.useState('')
   const [description, setDescription] = React.useState('')
@@ -43,7 +45,7 @@ const CreateARegistry = ({ data }) => {
   }
 
   // Guest message
-  if (is_guest) {
+  if (isGuest) {
     return (
       <div className="create-registry">
         <p className="create-registry__guest-message">
