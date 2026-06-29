@@ -31,8 +31,10 @@ sub buildReactData
     };
     my $editor_only = $is_editor && !$is_admin;
 
-    # Process form submission if this is a POST
-    my $message = $self->_process_form( $REQUEST, $forbidden_for_editors, $editor_only );
+    # Membership add/remove moved to the usergroups API
+    # (POST /api/usergroups/:id/action/{adduser,removeuser}) so rendering this
+    # page no longer mutates group membership (#4412). buildReactData is now
+    # pure-render -- the editable-group list + the selected group below are reads.
 
     # Get list of usergroups the user can edit
     my @usergroups;
@@ -142,95 +144,8 @@ sub buildReactData
         usergroups        => \@usergroups,
         selected_usergroup => $selected_usergroup,
         members           => \@members,
-        ignoring_users    => \@ignoring_users,
-        message           => $message
+        ignoring_users    => \@ignoring_users
     };
-}
-
-sub _process_form
-{
-    my ( $self, $REQUEST, $forbidden_for_editors, $editor_only ) = @_;
-
-    my $DB    = $self->DB;
-    my $APP   = $self->APP;
-    my $USER  = $REQUEST->user;
-    my $query = $REQUEST->cgi;
-
-    # Only process POST requests with submit button
-    return unless $query->request_method eq 'POST';
-    return unless $query->param('submit');
-
-    my $for_usergroup_id = $query->param('for_usergroup');
-    return unless $for_usergroup_id;
-
-    # Get the usergroup as a blessed node object
-    my $usergroup = $APP->node_by_id($for_usergroup_id);
-    return "Usergroup not found." unless $usergroup;
-
-    # Check forbidden groups for editors
-    if ( $editor_only && exists $forbidden_for_editors->{ lc( $usergroup->title ) } ) {
-        return "You don't have permission to edit this usergroup.";
-    }
-
-    my @added;
-    my @removed;
-    my @not_found;
-
-    # Process removals - look for rem_* checkboxes
-    my @to_remove;
-    foreach my $param ( $query->param ) {
-        if ( $param =~ /^rem_(\d+)$/ ) {
-            push @to_remove, $1;
-        }
-    }
-
-    if (@to_remove) {
-        foreach my $member_id (@to_remove) {
-            my $member = $DB->getNodeById($member_id);
-            if ($member) {
-                push @removed, $member->{title};
-            }
-        }
-        $usergroup->group_remove( \@to_remove, $USER );
-    }
-
-    # Process additions
-    my $addperson = $query->param('addperson') || '';
-    if ($addperson) {
-        my @names = split /[\r\n]+/, $addperson;
-        my @to_add;
-
-        foreach my $name (@names) {
-            $name =~ s/^\s+|\s+$//g;    # trim whitespace
-            next unless $name;
-
-            my $person = $DB->getNode( $name, 'user' );
-            if ($person) {
-                push @to_add,  $person->{node_id};
-                push @added, $person->{title};
-            } else {
-                push @not_found, $name;
-            }
-        }
-
-        if (@to_add) {
-            $usergroup->group_add( \@to_add, $USER );
-        }
-    }
-
-    # Build message
-    my @msg_parts;
-    if (@added) {
-        push @msg_parts, "Added: " . join( ", ", @added );
-    }
-    if (@removed) {
-        push @msg_parts, "Removed: " . join( ", ", @removed );
-    }
-    if (@not_found) {
-        push @msg_parts, "Not found: " . join( ", ", @not_found );
-    }
-
-    return @msg_parts ? join( ". ", @msg_parts ) . "." : "No changes made.";
 }
 
 __PACKAGE__->meta->make_immutable;
