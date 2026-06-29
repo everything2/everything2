@@ -26,10 +26,11 @@ const MessageModal = ({
   currentUser = null,
   onSendAsChange = null,
   // Writeup-feedback props. When showFeedbackOption is true, the modal
-  // renders a checkbox (default-on per the spec) that the caller reads off
-  // the onSend payload to also drop a nodenote on the writeup.
+  // renders a checkbox (default-OFF) that the caller reads off the onSend
+  // payload to also drop a nodenote on the writeup. The label spells out the
+  // nodenote side effect so the editor knows checking it posts public feedback.
   showFeedbackOption = false,
-  feedbackLabel = 'This is writeup feedback'
+  feedbackLabel = 'Also post this feedback as a node note on the writeup'
 }) => {
   const [message, setMessage] = useState('')
   const [recipient, setRecipient] = useState('')
@@ -37,7 +38,7 @@ const MessageModal = ({
   const [sending, setSending] = useState(false)
   const [error, setError] = useState(null)
   const [warning, setWarning] = useState(null)
-  const [isFeedback, setIsFeedback] = useState(true)
+  const [isFeedback, setIsFeedback] = useState(false)
   const textareaRef = useRef(null)
 
   // Autocomplete state — fetch lifecycle (debounce / abort / stale-guard)
@@ -84,10 +85,11 @@ const MessageModal = ({
       setError(null)
       setWarning(null)
       setSending(false)
-      // Reset the feedback checkbox to its default (on) every time the modal
-      // opens so an editor doesn't carry over an unchecked state from a
-      // previous message into a fresh one.
-      setIsFeedback(true)
+      // Reset the feedback checkbox to its default (off) every time the modal
+      // opens so an editor doesn't carry over a checked state from a previous
+      // message into a fresh one — recording feedback as a public nodenote is
+      // an explicit opt-in, not the default.
+      setIsFeedback(false)
       clearSuggestions()
       setShowSuggestions(false)
       setSelectedSuggestionIndex(-1)
@@ -412,9 +414,9 @@ const MessageModal = ({
           </div>
 
           {/* Writeup-feedback checkbox. Shown only when the caller opted in
-              (editors messaging a writeup author). Checked by default so the
-              common case — an editor's review note — automatically lands as a
-              nodenote on the writeup without an extra click. */}
+              (editors messaging a writeup author). Unchecked by default — the
+              message stays private unless the editor opts in to also record it
+              as a public nodenote on the writeup. */}
           {showFeedbackOption && (
             <div className="message-modal-field message-modal-field--feedback">
               <label className="message-modal-feedback-label">

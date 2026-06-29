@@ -35875,6 +35875,27 @@ a.node-toolset__btn {
   border-radius: 3px;
 }
 
+/* Author attribution prefix on the note (#4389) */
+.recent-node-notes__noter {
+  font-weight: bold;
+}
+
+/* "auto" badge marking an auto-generated lifecycle breadcrumb (#4389) so
+   genuine editorial feedback stands out when automated notes are shown. */
+.recent-node-notes__badge {
+  display: inline-block;
+  margin-left: 0.5em;
+  padding: 0 0.4em;
+  font-size: 0.75em;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #507898;
+  background-color: #e8f4f8;
+  border: 1px solid #cfe3ec;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
 .recent-node-notes__pagination {
   margin-top: 2em;
   text-align: center;

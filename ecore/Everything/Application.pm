@@ -1370,6 +1370,51 @@ sub seclog_entries
   return { entries => \@entries, total => int($total) };
 }
 
+# -------------------------------------------------------------------------
+# nodenote_is_lifecycle($notetext) -- true when a node note is an
+# auto-generated lifecycle breadcrumb (publish / unpublish / remove / insure /
+# create / review-request) rather than a human-written editorial note. These
+# are attributed to the acting user, so the "noter_user != 0" system filter
+# does not catch them. Keep @NODENOTE_LIFECYCLE_RE in sync with the
+# addNodeNote/add_nodenote call sites in API::drafts, API::admin, this module
+# ("Removed by"), and Delegation::maintenance. nodenote_editorial_sql() is the
+# SQL companion for paged queries where count()/LIMIT must agree.
+# -------------------------------------------------------------------------
+our @NODENOTE_LIFECYCLE_RE = (
+  qr/^Published from draft$/,
+  qr/^Republished writeup by /,
+  qr/^Returned to drafts\b/,
+  qr/^Removed(?::| by)/,
+  qr/^(?:Un)?[Ii]nsured$/,
+  qr/^Created by /,
+  qr/requested review\b/,
+);
+
+sub nodenote_is_lifecycle
+{
+  my ($this, $notetext) = @_;
+  return 0 unless defined $notetext;
+  for my $re (@NODENOTE_LIFECYCLE_RE) {
+    return 1 if $notetext =~ $re;
+  }
+  return 0;
+}
+
+# SQL WHERE fragment keeping ONLY editorial notes (excludes the lifecycle
+# breadcrumbs above). Mirror @NODENOTE_LIFECYCLE_RE when either changes.
+sub nodenote_editorial_sql
+{
+  my ($this) = @_;
+  my $re = '^Published from draft$'
+    . '|^Republished writeup by '
+    . '|^Returned to drafts'
+    . '|^Removed(:| by)'
+    . '|^(Un)?[Ii]nsured$'
+    . '|^Created by '
+    . '|requested review';
+  return "notetext NOT REGEXP " . $this->{db}->quote($re);
+}
+
 sub addNodeNote
 {
   my ($this, $node, $notetext, $user) = @_;
