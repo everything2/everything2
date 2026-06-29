@@ -16,37 +16,12 @@ sub buildReactData
 {
     my ( $self, $REQUEST ) = @_;
 
-    my $DB    = $self->DB;
-    my $APP   = $self->APP;
-    my $USER  = $REQUEST->user;
-    my $query = $REQUEST->cgi;
-    my $NODE  = $REQUEST->node;
+    my $DB = $self->DB;
 
-    my $message = '';
-
-    # Handle unforbid action
-    my $unforbid = $query->param("unforbid");
-    if ( $unforbid ) {
-        my $ufusr = getNodeById( $unforbid );
-        if ( $ufusr ) {
-            $DB->sqlDelete( "nodelock", "nodelock_node=" . $ufusr->{user_id} );
-            $message = "It is done...they are free";
-        }
-    }
-
-    # Handle forbid action
-    my $forbid = $query->param("forbid");
-    if ( $forbid ) {
-        my $fusr = getNode( $forbid, 'user' );
-        if ( $fusr ) {
-            $DB->sqlInsert( "nodelock", {
-                nodelock_node   => $fusr->{user_id},
-                nodelock_user   => $USER->node_id,
-                nodelock_reason => $query->param("reason") || ''
-            });
-            $message = "It is done...they have been forbidden";
-        }
-    }
+    # Forbid/unforbid moved to POST /api/nodeforbiddance/{forbid,unforbid}
+    # (Everything::API::nodeforbiddance) so rendering this page no longer writes
+    # to nodelock off request params (#4408). buildReactData is pure-render: just
+    # the current forbidden-users list below.
 
     # Get list of currently forbidden users
     my $user_type_id = getId( getType('user') );
@@ -76,7 +51,6 @@ sub buildReactData
 
     return {
         type            => 'node_forbiddance',
-        message         => $message,
         forbidden_users => \@forbidden_users
     };
 }

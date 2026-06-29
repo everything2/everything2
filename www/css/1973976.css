@@ -21648,6 +21648,26 @@ a.node-toolset__btn {
   text-decoration: none;
 }
 
+/* unforbid: a button that posts to the API (#4408). Matches the Kernel Blue
+   primary button (.node-forbiddance__button), inline-sized for the list. */
+.node-forbiddance__unforbid-btn {
+  padding: 4px 12px;
+  background-color: var(--e2-color-primary, #38495e);
+  color: var(--e2-btn-primary-text, #fff);
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.node-forbiddance__unforbid-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.node-forbiddance__error {
+  color: #b00020;
+  font-weight: bold;
+}
+
 @media (max-width: 600px) {
   .node-forbiddance {
     padding: 5px;
