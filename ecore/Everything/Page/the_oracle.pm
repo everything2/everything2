@@ -47,26 +47,10 @@ sub buildReactData {
         classic_mode => $classic_mode
     };
 
-    # Handle variable update (admin only)
-    my $new_value = $query->param('new_value');
-    my $new_user  = $query->param('new_user');
-    my $new_var   = $query->param('new_var');
-
-    if (defined $new_value && $new_user && $new_var && $is_admin) {
-        my $target = $DB->getNode($new_user, 'user');
-        if ($target) {
-            my $vars = $APP->getVars($target);
-            $vars->{$new_var} = $new_value;
-            Everything::setVars($target, $vars);
-
-            $data->{update_result} = {
-                user    => $new_user,
-                var     => $new_var,
-                value   => $new_value,
-                success => 1
-            };
-        }
-    }
+    # The variable WRITE moved to POST /api/oracle/setvar (Everything::API::oracle)
+    # so rendering this page no longer mutates another user's vars off query
+    # params (#4405). buildReactData is now pure-render -- the edit-form display
+    # and the search below are reads only.
 
     # Handle edit mode (show edit form for a specific variable)
     my $var_edit  = $query->param('varEdit');
