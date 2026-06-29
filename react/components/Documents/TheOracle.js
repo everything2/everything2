@@ -23,6 +23,8 @@ const TheOracle = ({ data, user }) => {
 
   const [searchUser, setSearchUser] = useState('')
   const [newValue, setNewValue] = useState(edit_mode?.old_value || '')
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState(null)
 
   const nodeId = window.e2?.node_id || ''
 
@@ -30,15 +32,42 @@ const TheOracle = ({ data, user }) => {
     return <div className="error-message">{error}</div>
   }
 
-  // Edit mode - show form to edit a specific variable
+  // Edit mode - show form to edit a specific variable. Save POSTs to the
+  // admin-only API (#4405) rather than GET-submitting a render-time mutation;
+  // on success we reload into the user's var listing so the new value shows.
   if (edit_mode) {
+    const handleSave = async (e) => {
+      e.preventDefault()
+      setSaving(true)
+      setSaveError(null)
+      try {
+        const res = await fetch('/api/oracle/setvar', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            user: edit_mode.username,
+            var: edit_mode.var_name,
+            value: newValue,
+          }),
+        })
+        const result = res.ok ? await res.json() : null
+        if (result && result.success) {
+          window.location.href =
+            `?node_id=${nodeId}&the_oracle_subject=${encodeURIComponent(edit_mode.username)}`
+        } else {
+          setSaveError((result && result.error) || 'Failed to save')
+          setSaving(false)
+        }
+      } catch (err) {
+        setSaveError(err.message || 'Failed to save')
+        setSaving(false)
+      }
+    }
+
     return (
       <div className="the-oracle">
-        <form method="GET">
-          <input type="hidden" name="node_id" value={nodeId} />
-          <input type="hidden" name="new_user" value={edit_mode.username} />
-          <input type="hidden" name="new_var" value={edit_mode.var_name} />
-
+        <form onSubmit={handleSave}>
           <p>
             Editing <strong>{edit_mode.username}</strong> - var{' '}
             <strong>{edit_mode.var_name}</strong>
@@ -52,15 +81,17 @@ const TheOracle = ({ data, user }) => {
             <strong>New Value:</strong>{' '}
             <input
               type="text"
-              name="new_value"
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
               size={50}
+              disabled={saving}
             />
           </p>
 
-          <button type="submit" className="oracle__btn">
-            Save
+          {saveError && <div className="oracle__error">{saveError}</div>}
+
+          <button type="submit" className="oracle__btn" disabled={saving}>
+            {saving ? 'Saving…' : 'Save'}
           </button>
         </form>
       </div>

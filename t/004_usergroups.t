@@ -1016,6 +1016,17 @@ $DB->nukeNode($reorder_group_node, $root_user) if $reorder_group_node;
 my $usergroup_node = $DB->getNodeById($usergroup_id);
 $DB->nukeNode($usergroup_node, $root_user) if $usergroup_node;
 
+# weblogify() grants each group member a can_weblog var (#4406). The groups are
+# nuked above, so those ids are dangling -- strip can_weblog from the seed users
+# this test touched so the suite leaves no junk VARS on them (visible in The Oracle).
+for my $uname (qw(normaluser1 normaluser2 normaluser3)) {
+  my $u = $DB->getNode($uname, 'user') or next;
+  my $uvars = $APP->getVars($u);
+  next unless $uvars && exists $uvars->{can_weblog};
+  delete $uvars->{can_weblog};
+  Everything::setVars($u, $uvars);
+}
+
 done_testing();
 
 =head1 NAME
