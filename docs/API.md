@@ -4062,6 +4062,209 @@ Or if not found:
 * **401 Unauthorized** - User is not logged in
 * **403 Forbidden** - Only editors can lookup owners
 
+## Custom Style
+
+### POST /api/customstyle/clear
+
+**Test Coverage: ✅** (t/173_customstyle_api.t)
+
+Clears the calling user's custom CSS (the `customstyle` VAR set via the Style Defacer). Replaces the legacy `?clearVandalism` GET that mutated VARS during render on The Catwalk / Theme Nirvana (#4401). Login required; acts on the authenticated user (no request body needed).
+
+**Response (200 OK):**
+
+Success:
+```json
+{ "success": 1, "message": "Your custom theme has been cleared." }
+```
+
+Error - guest:
+```json
+{ "success": 0, "error": "Login required" }
+```
+
+## Feed EDB
+
+### POST /api/feed_edb/borg
+
+**Test Coverage: ✅** (t/171_feed_edb_api.t)
+
+**Admin-only.** The "simulate being borged by EDB" toy — sets the calling admin's `numborged`/`borged` VARS and flips their `room.borgd`. Replaces the legacy `?numborgings=` GET that mutated state during render (#4390).
+
+**Request body (JSON):**
+```json
+{ "numborgings": 3 }
+```
+
+**Response (200 OK):**
+
+Success (`current_count` is the resulting borg count):
+```json
+{ "success": 1, "current_count": 3, "message": "..." }
+```
+
+Errors: `{ "success": 0, "error": "Login required" }` (guest), `"Admins only"` (non-admin), `"numborgings must be an integer"` (bad input).
+
+## Oracle (Admin)
+
+### POST /api/oracle/setvar
+
+**Test Coverage: ✅** (t/174_oracle_api.t)
+
+**Admin-only.** Sets a single VAR on an arbitrary user — the Oracle's raw var editor. Replaces the render-time `setVars`-on-another-user that ran off query params in `Everything::Page::the_oracle` (#4405). Read-modify-write (only the named key changes); the write is `devLog`-audited.
+
+**Request body (JSON):**
+```json
+{ "user": "SomeUser", "var": "easter_eggs", "value": "9" }
+```
+
+**Response (200 OK):**
+
+Success:
+```json
+{ "success": 1, "user": "SomeUser", "var": "easter_eggs", "value": "9" }
+```
+
+Errors: `{ "success": 0, "error": "Admin access required" }`, `"A user and a variable name are required"`, `"User not found: <user>"`.
+
+## Node Forbiddance (Admin)
+
+Forbids / unforbids a user from creating nodes (the `nodelock` table). Replaces the render-time mutations in `Everything::Page::node_forbiddance` — a POST `forbid` form and a GET `?unforbid=` link that wrote `nodelock` on load (#4408). Both endpoints are **admin-only**.
+
+### POST /api/nodeforbiddance/forbid
+
+**Test Coverage: ✅** (t/175_nodeforbiddance_api.t)
+
+Locks a user out of node creation. Idempotent (won't stack duplicate `nodelock` rows). `devLog`-audited.
+
+**Request body (JSON):**
+```json
+{ "user": "BadUser", "reason": "spamming" }
+```
+
+**Response (200 OK):**
+
+Success:
+```json
+{ "success": 1, "message": "It is done...they have been forbidden", "user": "BadUser" }
+```
+
+Errors: `{ "success": 0, "error": "Admin access required" }`, `"A username is required"`, `"User not found: <user>"`.
+
+### POST /api/nodeforbiddance/unforbid
+
+**Test Coverage: ✅** (t/175_nodeforbiddance_api.t)
+
+Releases a node-creation lock.
+
+**Request body (JSON):**
+```json
+{ "user_id": 12345 }
+```
+
+**Response (200 OK):**
+
+Success:
+```json
+{ "success": 1, "message": "It is done...they are free" }
+```
+
+Errors: `{ "success": 0, "error": "Admin access required" }`, `"A numeric user_id is required"`.
+
+## Mark Discussions Read
+
+Marks all CE / admin debates as read for the calling user (advances `lastreaddebate`). Replaces the render-time `lastreaddebate` writes in `Everything::Page::mark_all_discussions_as_read` (the GET `?mark_ce_read` / `?mark_admin_read` links) (#4410). Both endpoints take no request body.
+
+### POST /api/markdiscussionsread/ce
+
+**Test Coverage: ✅** (t/176_markdiscussions_api.t)
+
+Marks all **Content Editors** debates read. **Editor or admin** only.
+
+**Response (200 OK):**
+```json
+{ "success": 1, "count": 12, "message": "All CE debates have been marked as read (12 debates updated)." }
+```
+
+Error - not editor/admin: `{ "success": 0, "error": "Editor or admin access required" }`.
+
+### POST /api/markdiscussionsread/admin
+
+**Test Coverage: ✅** (t/176_markdiscussions_api.t)
+
+Marks all **admin (gods)** debates read. **Admin** only. Same response shape as `/ce` (the `message` references admin debates).
+
+Error - not admin: `{ "success": 0, "error": "Admin access required" }`.
+
+## Random Node
+
+### GET /api/randomnode
+
+Returns a random content node from the `randomnodes` DataStash (the same set the Random Nodes nodelet uses — ~12 nodes refreshed roughly every 60s, so no live query). Falls back to a fresh live pick when the stash is empty. Replaces the legacy `op=randomnode` redirect (#4335).
+
+**Response (200 OK):**
+```json
+{ "success": 1, "node_id": 1234567, "title": "Some Node" }
+```
+
+Error: `{ "success": 0, "error": "No random node available" }`.
+
+## Bounties
+
+The "Everything's Most Wanted" bounty board — a user stakes GP on getting a node/nodeshell filled, and sheriffs/admins moderate. Posting requires user level ≥ a minimum, **or** sheriff/admin. Most actions operate on the *caller's own* bounty; `yank` is sheriff/admin-only.
+
+### GET /api/bounties
+
+Read model for the bounty board.
+
+**Response (200 OK):**
+```json
+{
+  "success": 1,
+  "user_level": 5, "min_level": 3,
+  "is_sheriff": 0, "is_admin": 0,
+  "user_gp": 800, "bounty_limit": 80,
+  "has_bounty": 0, "current_bounty": null,
+  "gp_optout": 0,
+  "bounties": [],
+  "justice_served": [],
+  "can_post": 1
+}
+```
+
+### POST /api/bounties
+
+Post a new bounty (the caller becomes the "sheriff"). Requires posting rights. The reward is staked from the caller's GP up front and cannot exceed 10% of their total GP.
+
+**Request body (JSON):**
+```json
+{ "outlaw": "Node To Be Filled", "reward": 50, "comment": "optional note" }
+```
+
+**Response (200 OK):** `{ "success": 1, "message": "Your bounty has been posted!" }`.
+Errors (`{ "success": 0, "error": "..." }`): missing/invalid outlaw node, reward exceeds 10% of GP, etc.
+
+### POST /api/bounties/remove
+
+Remove the caller's own bounty; any staked GP is refunded. Requires posting rights.
+
+### POST /api/bounties/reward
+
+Pay out the bounty's staked GP to a winner and close it. Requires posting rights.
+
+**Request body (JSON):** `{ "winner": "Username" }` (cannot be yourself).
+
+### POST /api/bounties/award
+
+Like `reward`, but also grants a custom (non-GP) prize and records it in the "justice served" log.
+
+**Request body (JSON):** `{ "winner": "Username", "prize": "a custom prize" }`.
+
+### POST /api/bounties/yank
+
+Remove **another** user's bounty (refunding their staked GP). **Sheriffs or admins only.**
+
+**Request body (JSON):** `{ "removee": "Username" }`.
+
 ## Searches
 
 ## Tests

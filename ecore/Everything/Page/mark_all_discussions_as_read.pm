@@ -17,22 +17,12 @@ admin debates as read as well.
 sub buildReactData {
     my ($self, $REQUEST) = @_;
 
-    my $DB    = $self->DB;
-    my $APP   = $self->APP;
-    my $USER  = $REQUEST->user;
-    my $query = $REQUEST->cgi;
+    my $APP  = $self->APP;
+    my $USER = $REQUEST->user;
 
-    my $uid = $USER->node_id;
-    my $is_admin = $APP->isAdmin($USER->NODEDATA);
+    my $is_admin  = $APP->isAdmin($USER->NODEDATA);
     my $is_editor = $APP->isEditor($USER->NODEDATA);
 
-    # Look up usergroup IDs by name (never hardcode node IDs)
-    my $ce_node = $DB->getNode('Content Editors', 'usergroup');
-    my $gods_node = $DB->getNode('gods', 'usergroup');
-    my $ce_id = $ce_node ? $ce_node->{node_id} : 0;
-    my $gods_id = $gods_node ? $gods_node->{node_id} : 0;
-
-    # Check if user has any relevant access
     unless ($is_editor || $is_admin) {
         return {
             type => 'mark_all_discussions_as_read',
@@ -40,80 +30,14 @@ sub buildReactData {
         };
     }
 
-    my @messages;
-    my $ce_marked = 0;
-    my $admin_marked = 0;
-
-    # Handle CE debates marking
-    my $mark_ce = $query->param('mark_ce_read');
-    if ($mark_ce && $ce_id) {
-        my $count = $self->_mark_debates_as_read($DB, $uid, $ce_id);
-        $ce_marked = 1;
-        push @messages, "All CE debates have been marked as read ($count debates updated).";
-    }
-
-    # Handle admin debates marking (only if admin)
-    my $mark_admin = $query->param('mark_admin_read');
-    if ($mark_admin && $is_admin && $gods_id) {
-        my $count = $self->_mark_debates_as_read($DB, $uid, $gods_id);
-        $admin_marked = 1;
-        push @messages, "All admin debates have been marked as read ($count debates updated).";
-    }
-
-    # Get the node_id for the document so links can include it
-    my $node_id = $REQUEST->node ? $REQUEST->node->node_id : 0;
-
+    # The mark-read actions moved to POST /api/markdiscussionsread/{ce,admin}
+    # (Everything::API::markdiscussionsread) so rendering this page no longer
+    # writes lastreaddebate off GET params (#4410). buildReactData is pure-render
+    # -- the React component drives the two buttons via the API, and reads
+    # admin-ness from the global e2.user prop.
     return {
-        type => 'mark_all_discussions_as_read',
-        node_id => $node_id,
-        ce_marked => $ce_marked,
-        admin_marked => $admin_marked,
-        messages => \@messages
+        type => 'mark_all_discussions_as_read'
     };
-}
-
-sub _mark_debates_as_read {
-    my ($self, $DB, $uid, $group_id) = @_;
-
-    my $count = 0;
-
-    # Get all debates for this usergroup
-    my $csr = $DB->sqlSelectMany(
-        "root_debatecomment",
-        "debatecomment",
-        "restricted = $group_id",
-        "GROUP BY root_debatecomment"
-    );
-
-    while (my $row = $csr->fetchrow_hashref) {
-        my $debate = $row->{root_debatecomment};
-
-        # Check if user already has a lastreaddebate record
-        my $lastread = $DB->sqlSelect(
-            "dateread",
-            "lastreaddebate",
-            "user_id = $uid AND debateroot_id = $debate"
-        );
-
-        if ($lastread) {
-            # Update existing record
-            $DB->sqlUpdate(
-                "lastreaddebate",
-                { -dateread => "NOW()" },
-                "user_id = $uid AND debateroot_id = $debate"
-            );
-        } else {
-            # Insert new record
-            $DB->sqlInsert("lastreaddebate", {
-                user_id => $uid,
-                debateroot_id => $debate,
-                -dateread => "NOW()"
-            });
-        }
-        $count++;
-    }
-
-    return $count;
 }
 
 __PACKAGE__->meta->make_immutable;

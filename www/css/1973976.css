@@ -38141,7 +38141,13 @@ a.node-toolset__btn {
   border-radius: 3px;
   text-decoration: none;
   font-size: 13px;
+  font-family: inherit;
   cursor: pointer;
+}
+
+.mark-discussions__error {
+  color: #b00020;
+  font-weight: bold;
 }
 
 .mark-discussions__button:hover,

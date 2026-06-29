@@ -1,25 +1,47 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 /**
  * MarkAllDiscussionsAsRead - Mark all debates/discussions as read
  *
- * Allows CE members to mark CE debates as read,
- * and admins to mark admin debates as read.
+ * CE members mark CE debates read; admins can also mark admin debates read.
+ * Each button POSTs to /api/markdiscussionsread/{ce,admin} (#4410) instead of a
+ * GET link that marked debates read inside the page controller on render.
  */
 const MarkAllDiscussionsAsRead = ({ data, user }) => {
-  const {
-    ce_marked,
-    admin_marked,
-    messages = [],
-    error,
-    node_id
-  } = data
+  const { error } = data
 
-  // Viewer role flags come from the global e2.user prop (#4390 dedup)
+  // Viewer role flag comes from the global e2.user prop (#4390 dedup)
   const isAdmin = !!user?.admin
 
-  // Build base URL with node_id to ensure form posts back to this page
-  const baseUrl = node_id ? `?node_id=${node_id}` : '?'
+  const [ceDone, setCeDone] = useState(false)
+  const [ceCount, setCeCount] = useState(0)
+  const [adminDone, setAdminDone] = useState(false)
+  const [adminCount, setAdminCount] = useState(0)
+  const [busy, setBusy] = useState(null) // 'ce' | 'admin' | null
+  const [apiError, setApiError] = useState(null)
+
+  const mark = async (which, onDone) => {
+    setBusy(which)
+    setApiError(null)
+    try {
+      const res = await fetch(`/api/markdiscussionsread/${which}`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: '{}',
+      })
+      const result = res.ok ? await res.json() : null
+      if (result && result.success) {
+        onDone(result.count || 0)
+      } else {
+        setApiError((result && result.error) || 'Action failed')
+      }
+    } catch (err) {
+      setApiError(err.message || 'Action failed')
+    } finally {
+      setBusy(null)
+    }
+  }
 
   if (error) {
     return <div className="error-message">{error}</div>
@@ -27,51 +49,55 @@ const MarkAllDiscussionsAsRead = ({ data, user }) => {
 
   return (
     <div className="mark-discussions-read">
-      {messages.length > 0 && (
-        <div className="mark-discussions__messages">
-          {messages.map((msg, i) => (
-            <p key={i} className="mark-discussions__success">{msg}</p>
-          ))}
-        </div>
-      )}
+      {apiError && <p className="mark-discussions__error">{apiError}</p>}
 
-      {!Boolean(ce_marked) && (
+      {!ceDone ? (
         <div className="mark-discussions__section">
           <p>
-            Apply pressure to the hypertext if you want to mark all of
-            your old CE debates as read (and the new ones too, everything!).
+            Apply pressure to the hypertext if you want to mark all of your old
+            CE debates as read (and the new ones too, everything!).
           </p>
           <p className="mark-discussions__link">
-            <a href={`${baseUrl}&mark_ce_read=1`} className="mark-discussions__button">Mark CE Debates as Read</a>
+            <button
+              type="button"
+              className="mark-discussions__button"
+              onClick={() => mark('ce', (count) => { setCeDone(true); setCeCount(count) })}
+              disabled={busy === 'ce'}
+            >
+              {busy === 'ce' ? 'Marking…' : 'Mark CE Debates as Read'}
+            </button>
           </p>
         </div>
-      )}
-
-      {Boolean(ce_marked) && (
+      ) : (
         <p>
-          It is done. All of your CE debates have been marked as read.
-          Hopefully there's never a reason to do this again.
+          It is done. All of your CE debates have been marked as read
+          ({ceCount} updated). Hopefully there's never a reason to do this again.
         </p>
       )}
 
-      {isAdmin && !Boolean(admin_marked) && (
+      {isAdmin && (!adminDone ? (
         <div className="mark-discussions__admin-section">
           <p>
-            It appears you are like a god amongst men. You may do the same
-            but to your admin debates.
+            It appears you are like a god amongst men. You may do the same but to
+            your admin debates.
           </p>
           <p className="mark-discussions__link">
-            <a href={`${baseUrl}&mark_admin_read=1`} className="mark-discussions__button">Mark Admin Debates as Read</a>
+            <button
+              type="button"
+              className="mark-discussions__button"
+              onClick={() => mark('admin', (count) => { setAdminDone(true); setAdminCount(count) })}
+              disabled={busy === 'admin'}
+            >
+              {busy === 'admin' ? 'Marking…' : 'Mark Admin Debates as Read'}
+            </button>
           </p>
         </div>
-      )}
-
-      {isAdmin && Boolean(admin_marked) && (
+      ) : (
         <p className="mark-discussions__done">
-          It is done. All of your admin debates have been marked as read.
-          Hopefully there's never a reason to do this again.
+          It is done. All of your admin debates have been marked as read
+          ({adminCount} updated). Hopefully there's never a reason to do this again.
         </p>
-      )}
+      ))}
     </div>
   )
 }
