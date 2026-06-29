@@ -32204,6 +32204,15 @@ a.node-toolset__btn {
   color: #155724;
 }
 
+.simple-usergroup-editor__error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  color: #721c24;
+}
+
 /* ==========================================================================
    MassIpBlacklister - Bulk IP blocking tool
    ========================================================================== */
