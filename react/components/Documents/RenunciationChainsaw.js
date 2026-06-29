@@ -1,38 +1,82 @@
-import React from 'react'
+import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
 
 /**
- * RenunciationChainsaw - Bulk transfer writeup ownership
+ * RenunciationChainsaw - Bulk transfer writeup ownership (admin).
  *
- * Admin tool for transferring ownership of multiple writeups from one
- * user to another.
+ * The transfer and the "generate nodelist" read drive the renunciation API
+ * (#4414) instead of a POST form that reparented writeups inside the page
+ * controller:
+ *   - transfer: POST /api/renunciation/transfer { user_from, user_to, namelist }
+ *   - nodelist: POST /api/renunciation/nodes    { user }
+ * The result buckets are held in client state; the ?wu_id prefill still arrives
+ * as initial pagestate data.
  */
 const RenunciationChainsaw = ({ data, e2 }) => {
   const node_id = e2?.node?.node_id ?? window.e2?.node?.node_id
-  const {
-    error,
-    prefill_user = '',
-    prefill_node = '',
-    processed,
-    from_user,
-    to_user,
-    reparented = [],
-    nonexistent = [],
-    no_writeup = [],
-    bad_owner = [],
-    bad_type = [],
-    generated_list,
-    list_error
-  } = data
+  const { error, prefill_user = '', prefill_node = '' } = data
+
+  const [userFrom, setUserFrom] = useState(prefill_user)
+  const [userTo, setUserTo] = useState('')
+  const [namelist, setNamelist] = useState(prefill_node)
+  const [result, setResult] = useState(null)
+  const [listError, setListError] = useState(null)
+  const [apiError, setApiError] = useState(null)
+  const [busy, setBusy] = useState(false)
 
   if (error) {
     return <div className="error-message">{error}</div>
   }
 
-  return (
-    <div className="renunciation-chainsaw">
-      {/* Results from processing */}
-      {processed && (
+  const post = async (route, body) => {
+    const res = await fetch(`/api/renunciation/${route}`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(body),
+    })
+    return res.ok ? res.json() : null
+  }
+
+  const handleGenerate = async (e) => {
+    e.preventDefault()
+    const u = userFrom.trim()
+    if (!u) { setListError('Please enter a username first'); return }
+    setBusy(true); setListError(null); setApiError(null)
+    try {
+      const body = await post('nodes', { user: u })
+      if (body && body.success && body.generated_list) {
+        setNamelist(body.generated_list.nodes.map((n) => n.title).join('\n'))
+      } else {
+        setListError((body && body.error) || `No such user: "${u}"`)
+      }
+    } catch (err) {
+      setListError(err.message || 'Failed to generate list')
+    } finally { setBusy(false) }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setBusy(true); setApiError(null)
+    try {
+      const body = await post('transfer', {
+        user_from: userFrom.trim(), user_to: userTo.trim(), namelist,
+      })
+      if (body && body.success) setResult(body)
+      else setApiError((body && body.error) || 'Transfer failed')
+    } catch (err) {
+      setApiError(err.message || 'Transfer failed')
+    } finally { setBusy(false) }
+  }
+
+  // Results view (after a transfer)
+  if (result && result.processed) {
+    const {
+      from_user, to_user,
+      reparented = [], nonexistent = [], no_writeup = [], bad_owner = [], bad_type = [],
+    } = result
+    return (
+      <div className="renunciation-chainsaw">
         <dl>
           {reparented.length > 0 && (
             <>
@@ -44,9 +88,7 @@ const RenunciationChainsaw = ({ data, e2 }) => {
                 </strong>
               </dt>
               {reparented.map((node, idx) => (
-                <dd key={idx}>
-                  <LinkNode id={node.node_id} display={node.title} />
-                </dd>
+                <dd key={idx}><LinkNode id={node.node_id} display={node.title} /></dd>
               ))}
             </>
           )}
@@ -59,22 +101,16 @@ const RenunciationChainsaw = ({ data, e2 }) => {
                 they may differ from their parent node titles due to the parent nodes
                 having been renamed)
               </dt>
-              {nonexistent.map((node, idx) => (
-                <dd key={idx}>{node.title}</dd>
-              ))}
+              {nonexistent.map((node, idx) => (<dd key={idx}>{node.title}</dd>))}
             </span>
           )}
 
           {bad_owner.length > 0 && (
             <span className="renunciation-chainsaw__error">
               <dt>&nbsp;</dt>
-              <dt>
-                <strong>Wrong <code>author_user</code> (SQL problem; talk to nate):</strong>
-              </dt>
+              <dt><strong>Wrong <code>author_user</code> (SQL problem; talk to nate):</strong></dt>
               {bad_owner.map((node, idx) => (
-                <dd key={idx}>
-                  <LinkNode id={node.node_id} display={node.title} />
-                </dd>
+                <dd key={idx}><LinkNode id={node.node_id} display={node.title} /></dd>
               ))}
             </span>
           )}
@@ -82,13 +118,9 @@ const RenunciationChainsaw = ({ data, e2 }) => {
           {bad_type.length > 0 && (
             <span className="renunciation-chainsaw__error">
               <dt>&nbsp;</dt>
-              <dt>
-                <strong>Wrong <code>type_nodetype</code> (SQL problem; talk to nate):</strong>
-              </dt>
+              <dt><strong>Wrong <code>type_nodetype</code> (SQL problem; talk to nate):</strong></dt>
               {bad_type.map((node, idx) => (
-                <dd key={idx}>
-                  <LinkNode id={node.node_id} display={node.title} />
-                </dd>
+                <dd key={idx}><LinkNode id={node.node_id} display={node.title} /></dd>
               ))}
             </span>
           )}
@@ -102,78 +134,70 @@ const RenunciationChainsaw = ({ data, e2 }) => {
                 </strong>
               </dt>
               {no_writeup.map((node, idx) => (
-                <dd key={idx}>
-                  <LinkNode id={node.node_id} display={node.title} />
-                </dd>
+                <dd key={idx}><LinkNode id={node.node_id} display={node.title} /></dd>
               ))}
             </span>
           )}
 
           <p className="renunciation-chainsaw__back-link">
-            [ <LinkNode id={node_id} display="back" /> ]
+            [ <button type="button" className="renunciation-chainsaw__back-btn" onClick={() => setResult(null)}>back</button> ]
           </p>
         </dl>
-      )}
+      </div>
+    )
+  }
 
-      {/* Main form */}
-      {!processed && (
-        <form method="POST" action={`/?node_id=${node_id}`}>
-          <input type="hidden" name="node_id" value={node_id} />
-
-          <p>
-            Change ownership of writeups from user<br />
-            <input
-              type="text"
-              name="user_name_from"
-              id="user_name_from"
-              defaultValue={prefill_user || (generated_list ? generated_list.user_title : '')}
-              className="renunciation-chainsaw__input"
-            />
-            {' '}
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                const username = document.getElementById('user_name_from')?.value?.trim()
-                if (!username) {
-                  alert('Please enter a username first')
-                  return
-                }
-                window.location.href = `/?node_id=${node_id}&nodes_for=${encodeURIComponent(username)}`
-              }}
-              className="renunciation-chainsaw__generate-btn"
-            >
-              Generate nodelist
-            </a>
-          </p>
-
-          {list_error && (
-            <p className="renunciation-chainsaw__list-error">{list_error}</p>
-          )}
-
-          <p>
-            to user<br />
-            <input type="text" name="user_name_to" className="renunciation-chainsaw__input" />
-          </p>
-
-          <p>The writeups in question:</p>
-          <textarea
-            name="namelist"
-            rows={20}
-            cols={50}
-            defaultValue={
-              prefill_node ||
-              (generated_list && generated_list.nodes.length > 0
-                ? generated_list.nodes.map(n => n.title).join('\n')
-                : '')
-            }
+  // Form view
+  return (
+    <div className="renunciation-chainsaw">
+      {apiError && <p className="renunciation-chainsaw__error">{apiError}</p>}
+      <form onSubmit={handleSubmit}>
+        <p>
+          Change ownership of writeups from user<br />
+          <input
+            type="text"
+            value={userFrom}
+            onChange={(e) => setUserFrom(e.target.value)}
+            className="renunciation-chainsaw__input"
+            disabled={busy}
           />
+          {' '}
+          <button
+            type="button"
+            onClick={handleGenerate}
+            className="renunciation-chainsaw__generate-btn"
+            disabled={busy}
+          >
+            Generate nodelist
+          </button>
+        </p>
 
-          <p>
-            <input type="submit" value="Do It" />
-          </p>
-        </form>
-      )}
+        {listError && <p className="renunciation-chainsaw__list-error">{listError}</p>}
+
+        <p>
+          to user<br />
+          <input
+            type="text"
+            value={userTo}
+            onChange={(e) => setUserTo(e.target.value)}
+            className="renunciation-chainsaw__input"
+            disabled={busy}
+          />
+        </p>
+
+        <p>The writeups in question:</p>
+        <textarea
+          value={namelist}
+          onChange={(e) => setNamelist(e.target.value)}
+          rows={20}
+          cols={50}
+          disabled={busy}
+        />
+
+        <p>
+          <button type="submit" disabled={busy}>{busy ? 'Working…' : 'Do It'}</button>
+        </p>
+      </form>
     </div>
   )
 }

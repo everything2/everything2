@@ -37394,9 +37394,22 @@ a.node-toolset__btn {
   background-color: #38495e;
   color: #fff;
   text-decoration: none;
+  border: none;
   border-radius: 3px;
   font-size: 12px;
+  font-family: inherit;
   cursor: pointer;
+}
+
+/* "back" is a button that resets the result view (#4414); styled like a link */
+.renunciation-chainsaw__back-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--e2-link-color, #4060b0);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
 }
 
 .renunciation-chainsaw__list-error {
