@@ -1,5 +1,6 @@
 import React from 'react'
 import LinkNode from '../LinkNode'
+import { formatDateTime } from '../../utils/dateFormat'
 
 /**
  * Recent Node Notes - Shows recent editor/admin notes on writeups
@@ -8,27 +9,25 @@ import LinkNode from '../LinkNode'
  * Staff only - supports filtering and pagination
  */
 const RecentNodeNotes = ({ data }) => {
-  const { notes = [], total, page, perpage, onlymynotes, hidesystemnotes, node } = data
+  const { notes = [], total, page, perpage, onlymynotes, hidesystemnotes } = data
 
   const totalPages = Math.ceil(total / perpage)
   const hasPrev = page > 0
   const hasNext = page < totalPages - 1
 
   const buildUrl = (params) => {
-    const query = new URLSearchParams()
-    if (params.onlymynotes) query.set('onlymynotes', '1')
-    if (params.hidesystemnotes) query.set('hidesystemnotes', '1')
-    if (params.page !== undefined) query.set('page', params.page)
-
-    // If we have a specific node, link to that node's page
-    if (node) {
-      return `/node/${node.node_id}?${query.toString()}`
-    }
-
-    // Otherwise, stay on current page (Recent Node Notes page)
-    // Use window.location.pathname to keep the current path
-    const currentPath = window.location.pathname
-    return `${currentPath}?${query.toString()}`
+    // Reload the CURRENT page with updated filter/pagination params. Preserve the
+    // full current URL -- path AND existing query string -- because a superdoc's
+    // node identity lives in the query (e.g. /index.pl?node=...&type=superdoc);
+    // rebuilding from pathname alone dropped it and bounced to the homepage (#4389).
+    const url = new URL(window.location.href)
+    if (params.onlymynotes) url.searchParams.set('onlymynotes', '1')
+    else url.searchParams.delete('onlymynotes')
+    // Always emit hidesystemnotes (0 or 1): the page defaults it ON when the
+    // param is absent, so an unchecked toggle must say so explicitly.
+    url.searchParams.set('hidesystemnotes', params.hidesystemnotes ? '1' : '0')
+    if (params.page !== undefined) url.searchParams.set('page', String(params.page))
+    return url.pathname + url.search
   }
 
   return (
@@ -63,7 +62,7 @@ const RecentNodeNotes = ({ data }) => {
               })
             }}
           />{' '}
-          Hide system notes
+          Hide automated notes
         </label>
       </div>
 
@@ -78,12 +77,18 @@ const RecentNodeNotes = ({ data }) => {
           {notes.map((note, idx) => (
             <li key={idx} className="recent-node-notes__list-item">
               {note.node && <LinkNode nodeId={note.node.node_id} title={note.node.title} />}
+              {note.kind === 'auto' && <span className="recent-node-notes__badge">auto</span>}
               <br />
               <small className="recent-node-notes__timestamp">
-                {note.timestamp && new Date(note.timestamp * 1000).toLocaleString()}
+                {note.timestamp && formatDateTime(note.timestamp)}
               </small>
               <br />
               <span className="recent-node-notes__note-text">
+                {note.noter && (
+                  <span className="recent-node-notes__noter">
+                    <LinkNode type="user" title={note.noter} />:{' '}
+                  </span>
+                )}
                 {note.note}
               </span>
             </li>

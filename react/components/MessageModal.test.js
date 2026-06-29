@@ -241,43 +241,43 @@ describe('MessageModal', () => {
   describe('writeup feedback checkbox', () => {
     it('does not render the feedback checkbox by default', () => {
       render(<MessageModal {...defaultProps} />)
-      expect(screen.queryByText(/this is writeup feedback/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/node note/i)).not.toBeInTheDocument()
     })
 
-    it('renders the feedback checkbox when showFeedbackOption is true', () => {
+    it('renders the feedback checkbox (labelled as a node note) when showFeedbackOption is true', () => {
       render(<MessageModal {...defaultProps} showFeedbackOption />)
-      expect(screen.getByLabelText(/this is writeup feedback/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/node note/i)).toBeInTheDocument()
     })
 
-    it('defaults the feedback checkbox to checked', () => {
+    it('defaults the feedback checkbox to unchecked (recording a nodenote is opt-in)', () => {
       render(<MessageModal {...defaultProps} showFeedbackOption />)
-      expect(screen.getByLabelText(/this is writeup feedback/i)).toBeChecked()
+      expect(screen.getByLabelText(/node note/i)).not.toBeChecked()
     })
 
-    it('passes isFeedback=true to onSend when checkbox is checked (default)', async () => {
+    it('passes isFeedback=false to onSend by default (box left unchecked)', async () => {
       const onSend = jest.fn().mockResolvedValue(true)
       render(<MessageModal {...defaultProps} onSend={onSend} showFeedbackOption />)
 
-      fireEvent.change(screen.getByPlaceholderText('Username or usergroup name'), { target: { value: 'author' } })
-      fireEvent.change(screen.getByPlaceholderText('Type your message here...'), { target: { value: 'Try a stronger lede.' } })
-      fireEvent.click(screen.getByRole('button', { name: 'Send Message' }))
-
-      await waitFor(() => {
-        expect(onSend).toHaveBeenCalledWith('author', 'Try a stronger lede.', { isFeedback: true })
-      })
-    })
-
-    it('passes isFeedback=false to onSend when the editor unchecks the box', async () => {
-      const onSend = jest.fn().mockResolvedValue(true)
-      render(<MessageModal {...defaultProps} onSend={onSend} showFeedbackOption />)
-
-      fireEvent.click(screen.getByLabelText(/this is writeup feedback/i))
       fireEvent.change(screen.getByPlaceholderText('Username or usergroup name'), { target: { value: 'author' } })
       fireEvent.change(screen.getByPlaceholderText('Type your message here...'), { target: { value: 'casual note' } })
       fireEvent.click(screen.getByRole('button', { name: 'Send Message' }))
 
       await waitFor(() => {
         expect(onSend).toHaveBeenCalledWith('author', 'casual note', { isFeedback: false })
+      })
+    })
+
+    it('passes isFeedback=true to onSend when the editor checks the box', async () => {
+      const onSend = jest.fn().mockResolvedValue(true)
+      render(<MessageModal {...defaultProps} onSend={onSend} showFeedbackOption />)
+
+      fireEvent.click(screen.getByLabelText(/node note/i))
+      fireEvent.change(screen.getByPlaceholderText('Username or usergroup name'), { target: { value: 'author' } })
+      fireEvent.change(screen.getByPlaceholderText('Type your message here...'), { target: { value: 'Try a stronger lede.' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Send Message' }))
+
+      await waitFor(() => {
+        expect(onSend).toHaveBeenCalledWith('author', 'Try a stronger lede.', { isFeedback: true })
       })
     })
   })

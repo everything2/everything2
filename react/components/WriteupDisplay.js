@@ -423,9 +423,9 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                       {/* Message-draft-author button. Surfaces the same
                           feedback flow editors get on published writeups so
                           a draft in review can be commented on without
-                          jumping out to the messaging UI. Always shows the
-                          feedback checkbox (default-on) so the message
-                          doubles as a nodenote on the draft. */}
+                          jumping out to the messaging UI. Shows the feedback
+                          checkbox (default-off) so the editor can opt in to
+                          also record the message as a nodenote on the draft. */}
                       {canMessage && (
                         <button
                           onClick={() => setMessageModalOpen(true)}
@@ -646,11 +646,12 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
           onClose={() => setMessageModalOpen(false)}
           replyTo={{ author_user: { title: author.title, type: 'user' } }}
           initialMessage={parent?.title ? `re: ${parent.title}\n\n` : (isDraft && title ? `re: ${title}\n\n` : '')}
-          // Editors get a "This is writeup feedback" checkbox (default on).
-          // When checked, the same text is also persisted as a nodenote on
-          // the writeup/draft so the review thread survives past the message
-          // inbox (which the author may purge). Non-editor messagers don't
-          // see the checkbox — the nodenote API rejects non-editors anyway.
+          // Editors get a "post this feedback as a node note" checkbox
+          // (default off). When checked, the same text is also persisted as a
+          // nodenote on the writeup/draft so the review thread survives past
+          // the message inbox (which the author may purge). Non-editor
+          // messagers don't see the checkbox — the nodenote API rejects
+          // non-editors anyway.
           showFeedbackOption={Boolean(user?.is_editor || user?.editor)}
           onSend={async (recipient, message, meta = {}) => {
             const response = await fetch('/api/messages/create', {
