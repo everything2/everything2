@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import MarkAllDiscussionsAsRead from './MarkAllDiscussionsAsRead'
 import fixture from '../../__fixtures__/pagestate/mark_all_discussions_as_read.json'
 // Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
@@ -41,5 +41,44 @@ describe('MarkAllDiscussionsAsRead (admin gating via user prop)', () => {
     const { container } = render(<MarkAllDiscussionsAsRead data={baseData} user={undefined} />)
     expect(container.textContent).toMatch(/Mark CE Debates as Read/)
     expect(container.textContent).not.toMatch(/Mark Admin Debates as Read/)
+  })
+})
+
+// #4410: the buttons POST to /api/markdiscussionsread/{ce,admin} (were GET links
+// that marked debates read during render) and show the done message client-side.
+describe('MarkAllDiscussionsAsRead — mark via API (#4410)', () => {
+  it('CE button POSTs to /api/markdiscussionsread/ce and shows the done message', async () => {
+    const fetchMock = (global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: 1, count: 5 }) }))
+    try {
+      const { getByRole, getByText } = render(<MarkAllDiscussionsAsRead data={{}} user={{ editor: true }} />)
+      fireEvent.click(getByRole('button', { name: /mark ce debates as read/i }))
+      await waitFor(() =>
+        expect(fetchMock).toHaveBeenCalledWith('/api/markdiscussionsread/ce', expect.objectContaining({ method: 'POST' }))
+      )
+      await waitFor(() => expect(getByText(/CE debates have been marked as read \(5 updated\)/i)).toBeInTheDocument())
+    } finally { delete global.fetch }
+  })
+
+  it('admin button POSTs to /api/markdiscussionsread/admin and shows the done message', async () => {
+    const fetchMock = (global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: 1, count: 2 }) }))
+    try {
+      const { getByRole, getByText } = render(<MarkAllDiscussionsAsRead data={{}} user={{ admin: true }} />)
+      fireEvent.click(getByRole('button', { name: /mark admin debates as read/i }))
+      await waitFor(() =>
+        expect(fetchMock).toHaveBeenCalledWith('/api/markdiscussionsread/admin', expect.objectContaining({ method: 'POST' }))
+      )
+      await waitFor(() => expect(getByText(/admin debates have been marked as read \(2 updated\)/i)).toBeInTheDocument())
+    } finally { delete global.fetch }
+  })
+
+  it('shows an error and stays on the button when the API rejects', async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: 0, error: 'Editor or admin access required' }) })
+    try {
+      const { getByRole, getByText } = render(<MarkAllDiscussionsAsRead data={{}} user={{ editor: true }} />)
+      fireEvent.click(getByRole('button', { name: /mark ce debates as read/i }))
+      await waitFor(() => expect(getByText(/editor or admin access required/i)).toBeInTheDocument())
+      // still shows the button (not the done message)
+      expect(getByRole('button', { name: /mark ce debates as read/i })).toBeInTheDocument()
+    } finally { delete global.fetch }
   })
 })
