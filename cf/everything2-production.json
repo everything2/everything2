@@ -6,31 +6,10 @@
       "Type": "String",
       "Description": "CloudFront distribution domain name (e.g., d3hgg69yh1kthz.cloudfront.net)",
       "Default": ""
-    },
-    "EnableCronAlarm": {
-      "Type": "String",
-      "Description": "Set to 'true' at the in-webhead cron live-cutover to create the cron wedge alarm. Kept off until then so it cannot fire on missing data while cron is still dark/shadow.",
-      "Default": "true",
-      "AllowedValues": ["true", "false"]
-    },
-    "EnableCron": {
-      "Type": "String",
-      "Description": "In-webhead cron cutover step 1: 'true' spawns the cron sidecar on the webheads (shadow/dry-run unless CronLive is also true); 'false' = dark, not spawned. Drives the E2_CRON_ENABLED env var.",
-      "Default": "true",
-      "AllowedValues": ["true", "false"]
-    },
-    "CronLive": {
-      "Type": "String",
-      "Description": "In-webhead cron cutover step 2: 'true' makes the sidecar actually RUN jobs (vs shadow dry-run); requires EnableCron=true. Drives E2_CRON_LIVE, and ties the 8 EventBridge cron-* rules to State:DISABLED via CronLiveCond so they stop atomically (no double-execution).",
-      "Default": "true",
-      "AllowedValues": ["true", "false"]
     }
   },
   "Conditions": {
-    "UseCloudFront": {"Fn::Not": [{"Fn::Equals": [{"Ref": "CloudFrontDomainName"}, ""]}]},
-    "CronAlarmEnabled": {"Fn::Equals": [{"Ref": "EnableCronAlarm"}, "true"]},
-    "CronEnabledCond": {"Fn::Equals": [{"Ref": "EnableCron"}, "true"]},
-    "CronLiveCond": {"Fn::Equals": [{"Ref": "CronLive"}, "true"]}
+    "UseCloudFront": {"Fn::Not": [{"Fn::Equals": [{"Ref": "CloudFrontDomainName"}, ""]}]}
   },
   "Mappings" : {
     "RegionMap" : {
@@ -1589,11 +1568,11 @@
             },
             {
               "Name": "E2_CRON_ENABLED",
-              "Value": {"Fn::If": ["CronEnabledCond", "1", "0"]}
+              "Value": "1"
             },
             {
               "Name": "E2_CRON_LIVE",
-              "Value": {"Fn::If": ["CronLiveCond", "1", "0"]}
+              "Value": "1"
             }
           ],
           "LogConfiguration": {
@@ -1885,7 +1864,7 @@
         }],
         "Conditions": [{
           "Field": "host-header",
-          "Values": ["www.everything2.com","m.everything2.com"]
+          "Values": ["www.everything2.com","m.everything2.com","images.everything2.com"]
         }]
       }
     },
@@ -2218,10 +2197,9 @@
     },
     "CronWedgedJobsAlarm": {
       "Type": "AWS::CloudWatch::Alarm",
-      "Condition": "CronAlarmEnabled",
       "Properties": {
         "AlarmName": "e2-cron-wedged-jobs",
-        "AlarmDescription": "In-webhead cron has wedged/failing jobs (E2/Cron UnhealthyJobs > 0) for 3 min, OR no leader is publishing the metric at all -- missing data is treated as breaching, so this also catches total cron death (no webhead winning the GET_LOCK and ticking). The runner emits UnhealthyJobs (wedged + failing count from Everything::Cron::Health) each run and during long jobs. Check the [cron] lines in /aws/fargate/fargate-app-awslogs and the cron_state table. Gated behind the EnableCronAlarm parameter -- only set 'true' once cron is live and emitting.",
+        "AlarmDescription": "In-webhead cron has wedged/failing jobs (E2/Cron UnhealthyJobs > 0) for 3 min, OR no leader is publishing the metric at all -- missing data is treated as breaching, so this also catches total cron death (no webhead winning the GET_LOCK and ticking). The runner emits UnhealthyJobs (wedged + failing count from Everything::Cron::Health) each run and during long jobs. Check the [cron] lines in /aws/fargate/fargate-app-awslogs and the cron_state table.",
         "Namespace": "E2/Cron",
         "MetricName": "UnhealthyJobs",
         "Statistic": "Maximum",
@@ -2270,208 +2248,16 @@
         }]
       }
     },
-    "CronChatterboxCleanupRule": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "Description": "Cron rule to call chatterbox-cleanup",
-        "Name": "cron-chatterbox-cleanup",
-        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
-        "ScheduleExpression": "cron(50 * * * ? *)",
-        "Targets": [{
-          "Id": "chatterbox-cleanup-task-arn",
-          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_clean_cbox.pl\"]}]}",
-          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
-          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
-          "EcsParameters": {
-            "TaskCount": 1,
-            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
-            "NetworkConfiguration": {
-              "AwsVpcConfiguration": {
-                "AssignPublicIp": "ENABLED",
-                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
-                "Subnets": [{"Ref": "AppVPCSubnet1"}]
-              }
-            },
-            "CapacityProviderStrategy": [
-              {
-                "CapacityProvider": "FARGATE",
-                "Weight": 1
-              }
-            ]
-          }
-        }]
-      }
-    },
     "CronGenerateSitemapRule": {
       "Type": "AWS::Events::Rule",
       "Properties": {
-        "Description": "Cron rule to call generate-sitemap",
+        "Description": "Cron rule to call generate-sitemap. This heavy ~50min/~1M-node daily batch silently no-ops on the resource-shared in-webhead cron sidecar (it needs a dedicated task's CPU+memory), so it runs as a dedicated Fargate task here. Deliberately kept out of the in-webhead cron registry (Cron/Schedule.pm) so it does not run in both places.",
         "Name": "cron-generate-sitemap",
-        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
+        "State": "ENABLED",
         "ScheduleExpression": "cron(0 0 * * ? *)",
         "Targets": [{
           "Id": "cron-sitemap-task-arn",
           "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_generate_sitemap.pl\"]}]}",
-          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
-          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
-          "EcsParameters": {
-            "TaskCount": 1,
-            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
-            "NetworkConfiguration": {
-              "AwsVpcConfiguration": {
-                "AssignPublicIp": "ENABLED",
-                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
-                "Subnets": [{"Ref": "AppVPCSubnet1"}]
-              }
-            },
-            "CapacityProviderStrategy": [
-              {
-                "CapacityProvider": "FARGATE",
-                "Weight": 1
-              }
-            ]
-          }
-        }]
-      }
-    },
-    "CronDatastashRule": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "Description": "Cron rule to call datastash",
-        "Name": "cron-datastash",
-        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
-        "ScheduleExpression": "rate(2 minutes)",
-        "Targets": [{
-          "Id": "datastash-task-arn",
-          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_datastash.pl\"]}]}",
-          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
-          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
-          "EcsParameters": {
-            "TaskCount": 1,
-            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
-            "NetworkConfiguration": {
-              "AwsVpcConfiguration": {
-                "AssignPublicIp": "ENABLED",
-                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
-                "Subnets": [{"Ref": "AppVPCSubnet1"}]
-              }
-            },
-            "CapacityProviderStrategy": [
-              {
-                "CapacityProvider": "FARGATE",
-                "Weight": 1
-              }
-            ]
-          }
-        }]
-      }
-    },
-    "CronDatastashLengthyRule": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "Description": "Cron rule to call datastash lengthy",
-        "Name": "cron-datastash-lengthy",
-        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
-        "ScheduleExpression": "rate(6 hours)",
-        "Targets": [{
-          "Id": "datastash-lengthy-task-arn",
-          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_datastash.pl\",\"--lengthy\"]}]}",
-          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
-          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
-          "EcsParameters": {
-            "TaskCount": 1,
-            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
-            "NetworkConfiguration": {
-              "AwsVpcConfiguration": {
-                "AssignPublicIp": "ENABLED",
-                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
-                "Subnets": [{"Ref": "AppVPCSubnet1"}]
-              }
-            },
-            "CapacityProviderStrategy": [
-              {
-                "CapacityProvider": "FARGATE",
-                "Weight": 1
-              }
-            ]
-          }
-        }]
-      }
-    },
-    "CronIQMRecalcRule": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "Description": "Cron rule to call IQM Recalculate",
-        "Name": "cron-iqm-recalc",
-        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
-        "ScheduleExpression": "rate(1 day)",
-        "Targets": [{
-          "Id": "iqm-recalc-task-arn",
-          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_iqm_recalculate.pl\"]}]}",
-          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
-          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
-          "EcsParameters": {
-            "TaskCount": 1,
-            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
-            "NetworkConfiguration": {
-              "AwsVpcConfiguration": {
-                "AssignPublicIp": "ENABLED",
-                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
-                "Subnets": [{"Ref": "AppVPCSubnet1"}]
-              }
-            },
-            "CapacityProviderStrategy": [
-              {
-                "CapacityProvider": "FARGATE",
-                "Weight": 1
-              }
-            ]
-          }
-        }]
-      }
-    },
-    "CronRefreshRoomsRule": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "Description": "Cron rule to call refresh rooms",
-        "Name": "cron-refresh-rooms",
-        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
-        "ScheduleExpression": "rate(5 minutes)",
-        "Targets": [{
-          "Id": "refresh-rooms-task-arn",
-          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_refresh_rooms.pl\"]}]}",
-          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
-          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
-          "EcsParameters": {
-            "TaskCount": 1,
-            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
-            "NetworkConfiguration": {
-              "AwsVpcConfiguration": {
-                "AssignPublicIp": "ENABLED",
-                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
-                "Subnets": [{"Ref": "AppVPCSubnet1"}]
-              }
-            },
-            "CapacityProviderStrategy": [
-              {
-                "CapacityProvider": "FARGATE",
-                "Weight": 1
-              }
-            ]
-          }
-        }]
-      }
-    },
-    "CronCleanOldRoomsRule": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "Description": "Cron rule to call clean old rooms",
-        "Name": "cron-clean-old-rooms",
-        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
-        "ScheduleExpression": "rate(1 day)",
-        "Targets": [{
-          "Id": "clean-old-rooms-task-arn",
-          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_clean_old_rooms.pl\"]}]}",
           "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
           "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
           "EcsParameters": {
