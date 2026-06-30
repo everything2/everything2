@@ -3,6 +3,7 @@
 require 'aws-sdk-ec2'
 require 'aws-sdk-s3'
 require 'aws-sdk-ecs'
+require 'fileutils'
 
 @s3client = Aws::S3::Client.new(region: 'us-west-2')
 @ecsclient = Aws::ECS::Client.new(region: 'us-west-2')
@@ -110,11 +111,18 @@ end
 puts "Downloading results"
 results = @s3client.list_objects_v2(bucket: @bucket)
 
+# Most keys land under nodepack/; the hydration cache bundle (#4423) is routed to a
+# top-level 'hydration/' dir (the repo root) so the canonical core-node artifact
+# stays visible rather than buried in the nodepack tree.
+repo_root = File.dirname(nodepack_dir)
+
 done = nil
 while(done.nil?)
   results.contents.each do |content|
-    puts "Downloading #{content.key}"
-    @s3client.get_object(bucket: @bucket, key: content.key, response_target: "#{nodepack_dir}/#{content.key}")
+    target = content.key.start_with?('hydration/') ? "#{repo_root}/#{content.key}" : "#{nodepack_dir}/#{content.key}"
+    FileUtils.mkdir_p(File.dirname(target))
+    puts "Downloading #{content.key} -> #{target}"
+    @s3client.get_object(bucket: @bucket, key: content.key, response_target: target)
   end
 
   if !results.next_continuation_token.nil?
