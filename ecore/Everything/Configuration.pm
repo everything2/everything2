@@ -92,6 +92,11 @@ has 'static_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
   "nodelet" => 1,
   "container" => 1,
   "theme" => 1,
+  # Stylesheets are deploy-managed: CSS is file-backed (www/css/<id>.css, served
+  # via /css/), the node's doctext is empty, and there's no runtime edit path
+  # except gods-only BasicEdit (which can't change the served CSS). So they only
+  # change on a code push -> never need a per-request version check (#4419).
+  "stylesheet" => 1,
 
   # Code-backed types (delegation modules)
   "htmlcode" => 1,
