@@ -15,6 +15,9 @@ here; the ❌ rows become the work-list for the next API round.
 Status legend: ✅ already API-driven · 🟡 mutates via API but React still does a full reload ·
 ❌ mutates via legacy form/submit, needs an API · — read-only (no mutation).
 
+> ⚠️ **The table below is an incremental log; its ❌/✅ statuses are partially stale.** For the current,
+> complete picture see **[Full GET-mutator audit (2026-06-29, #4416)](#full-get-mutator-audit-2026-06-29-4416)** further down.
+
 | Page | Mutates? | What it changes | API status |
 |---|---|---|---|
 | the_costume_shop | yes | buy / change the viewer's Halloween costume (VARS->{costume}, GP) | ✅ `POST /api/costumes/buy` — already API-driven; React owns state |
@@ -70,16 +73,67 @@ Status legend: ✅ already API-driven · 🟡 mutates via API but React still do
 - **feed_edb** — the admin "simulate being borged by EDB" tool mutates via the legacy `?numborgings=N` query param processed *inside* `buildReactData` (`setVars` numborged/borged + raw `sqlUpdate room.borgd`). **Decision 2026-06-27: build the API, keep the feature** — it's a fun/legacy admin toy with negligible cost, and E2 keeps that functionality when it's performance-free (not a delete candidate). Target: `POST /api/feed_edb/borg` driven by the React component, with `buildReactData` becoming pure-render — the the_costume_shop pattern. **✅ DONE this session** — `POST /api/feed_edb/borg` + pure-render page + tests (`t/171`, FeedEdb interaction).
 - **the_catwalk** + **theme_nirvana** — both clear the viewer's `customstyle` via a legacy `?clearVandalism=true` GET that `setVars`-deletes the style inside `buildReactData`. **Shared pattern → one small API** (a customstyle/clear endpoint) could serve both, then both pages go pure-render. Low priority; a clean 2-for-1.
 
-### Side-effect-in-buildReactData cluster (found #4390 batch 4) — the core step-2 target
+### Side-effect-in-buildReactData cluster — the core step-2 target
 
-These mutate server state **inside the page controller on render**, driven by GET/POST params, with **no API**. A page can't be cleanly React-routed while *rendering it writes to the DB*. Each wants a small `POST /api/…` so `buildReactData` becomes pure-render:
-- **simple_usergroup_editor** — self-POST → `group_add`/`group_remove` (usergroup membership)
-- **the_oracle** — admin GET params → `setVars` on **another** user's vars (highest-stakes: writes a different user)
-- **mark_all_discussions_as_read** — GET `?mark_*_read` → `sqlUpdate`/`sqlInsert` on `lastreaddebate`
-- **usergroup_message_archive** — params → `sqlInsert` message (copy-to-self) + `setVars` (resettime pref)
-- **everything_document_directory** — POST `EDD_Sort` → `setVars` (sort pref; mildest)
-- **node_forbiddance** (#4399) — GET `?forbid`/`?unforbid` → `sqlInsert`/`sqlDelete` on `nodelock` (admin)
-- **renunciation_chainsaw** (#4399) — self-POST → `updateNode` (writeup author) + `setVars` (numwriteups), admin reparent
+> ⚠️ The status column in the table above is an incremental log and is partially stale.
+> **The "Full GET-mutator audit" below (2026-06-29, #4416) is the current source of truth.**
+
+These mutate server state **inside the page controller on render**, driven by GET/POST params. A
+page can't be cleanly React-routed while *rendering it writes to the DB*. Each wants a small
+`POST /api/…` so `buildReactData` becomes pure-render. The original 7-page cluster is **done**:
+
+- ✅ **the_catwalk** + **theme_nirvana** — `?clearVandalism` → `POST /api/customstyle/clear` (#4401)
+- ✅ **feed_edb** — `?numborgings` → `POST /api/feed_edb/borg`
+- ✅ **simple_usergroup_editor** — self-POST → `/api/usergroups/:id/action/{adduser,removeuser}` (#4412)
+- ✅ **the_oracle** — admin GET → `POST /api/oracle/setvar` (#4405)
+- ✅ **mark_all_discussions_as_read** — `?mark_*_read` → `POST /api/markdiscussionsread` (#4410)
+- ✅ **node_forbiddance** — `?forbid`/`?unforbid` → `POST /api/nodeforbiddance/{forbid,unforbid}` (#4408)
+- ✅ **renunciation_chainsaw** — reparent → `POST /api/renunciation/{transfer,nodes}` (#4414)
+
+## Full GET-mutator audit (2026-06-29, #4416)
+
+Grep + per-page read of **every** `Everything::Page::*` reading request params (`$REQUEST->param`/`->cgi`):
+**109 read params · 17 write on a plain GET (unguarded — no POST gate, crawler-reachable) · 0 POST-gated · 92 read-only.**
+Migration pattern: write → POST `Everything::API::*`; page → pure-render; React owns the param + drives the API.
+
+**❌ No in-code role gate** (access may still be limited by superdoc *type* — verify per page; larger blast radius, prioritize):
+
+| Page | Writes on GET |
+|---|---|
+| **usergroup_message_archive** | `sqlInsert` (copy msg to inbox) + `setVars` (ugma_resettime) — *#4416, in progress* |
+| confirm_password | `nukeNode` (unactivated acct on expired link) |
+| e2_penny_jar | `adjustGP` / `setVars` / `updateNode` (GP transfer) |
+| faq_editor | `sqlInsert`/`sqlUpdate` FAQ |
+| node_tracker | `sqlInsert`/`sqlUpdate` tracking stats |
+| notelet_editor | `setVars` (notelet HTML widget) |
+
+**❌ Admin-gated** (lower blast radius, still mutate on render):
+`ip_blacklist`, `mass_ip_blacklister`, `nodetype_changer`, `sql_prompt`, `style_defacer`, `the_borg_clinic`,
+`the_oracle_classic`, `the_tokenator`, `websterbless`,
+`list_nodes_of_type` ⚠️(*already has `/api/preferences/update`, but the audit still finds a render-time `setvars_*`→`setVars` — verify/remove the residual GET path*),
+**`everything_document_directory`** (*#4416, in progress*).
+
+> `everything_document_directory` persists `EDD_Sort` via an **in-memory `$VARS->{EDD_Sort}=`** (framework
+> write-back, **not** `setVars()`) — evades a `setVars` grep + a quick read; verified by inspection. Grep for
+> `$VARS->{x}=` too, not just `setVars`. (Only this one page used the pattern among the 109.)
+
+**UI-pref-persist-on-GET sub-pattern (6):** `list_nodes_of_type`, `sql_prompt`, `style_defacer`,
+`the_borg_clinic`, `the_oracle_classic`, `everything_document_directory` persist a user VARS pref from a GET
+param. **Decision needed:** a generic `POST /api/userpref/:key` setvar vs per-page endpoints
+(`the_oracle` chose a *dedicated* endpoint).
+
+**Read-only view params (92) — NOT this thread (React-routing epoch, step 3):** XML/Atom tickers (14),
+pagination/sort/filter views (42), single-record/user views (36). Read params purely to shape the view (no
+write). The strict end-state ("page reads no params; the React router owns them") is the React-routing
+migration, surfaced here but tracked there.
+
+**Non-Page query-param readers:**
+- *Legit / framework* (params belong here): `Request.pm` (request abstraction), `HTML.pm` (URL→route
+  dispatcher, 47), `PageState.pm`, `Controller/*` (displaytype/unlock), `Form/*` (CSRF field-hashing).
+- *Surface:* `Application.pm` — `op eq 'login'/'vote'/'cool'` **legacy opcode strings** in the model layer,
+  should be dead post-#4335 (cleanup). `Delegation/maintenance.pm` — **16** form-param reads
+  (`writeup_doctext`, `debatecomment_*`, `draft_publication_status`…) = the **maintenance-restructure
+  blocker** (htmlcode nodetype can't retire until maintenance moves).
 
 ### Related latent bug (not a mutation, but found in the same sweep)
 `$APP->isGuest($USER)` (and `isAdmin`/`isEditor`) mis-called with the **blessed** `$USER` object instead of `$USER->NODEDATA` / the `$USER->is_guest` method — silently returns false for guests/admins. **Fixed: `random_nodeshells` (#4397), `clientdev_home` (isGuest+isAdmin) + `noding_speedometer` (#4397).** Audited the rest: `welcome_to_everything`, `e2_penny_jar`, and all the xml_tickers correctly pass `->NODEDATA` (not buggy). So the latent class is now closed for known cases; the blessed-arg call is the anti-pattern to watch in new code.

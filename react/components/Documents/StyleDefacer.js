@@ -10,22 +10,41 @@ import React, { useState } from 'react'
 const StyleDefacer = ({ data }) => {
   const {
     error,
-    node_id,
     customstyle = '',
-    shredder_id,
     nirvana_id
   } = data
 
   const [styleValue, setStyleValue] = useState(customstyle)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState(null)
 
   if (error) {
     return <div className="error-message">{error}</div>
   }
 
-  const handleSubmit = (e) => {
-    setSaved(true)
-    // Form will submit normally
+  // The custom CSS now persists via the preferences API (was a render-time
+  // setVars from a ?vandalism POST param, #4416). The length cap lives server-side
+  // in the allowlist; submitting an empty textarea clears the style.
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setSaveError(null)
+    try {
+      const res = await fetch('/api/preferences/set', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ customstyle: styleValue })
+      })
+      if (res.ok) {
+        setSaved(true)
+      } else {
+        setSaved(false)
+        setSaveError('Your custom styles could not be saved — the CSS may be too long (50,000 character max).')
+      }
+    } catch (err) {
+      setSaved(false)
+      setSaveError('Network error saving your custom styles.')
+    }
   }
 
   return (
@@ -43,36 +62,18 @@ const StyleDefacer = ({ data }) => {
         you want, which will then override those in the theme.
       </p>
 
-      <p>
-        If you used to use ekw theme and fear change, then perhaps you'd like
-        to start by using the{' '}
-        {shredder_id ? (
-          <a href={`/?node_id=${shredder_id}`}>ekw shredder</a>
-        ) : (
-          'ekw shredder'
-        )}
-        , which will attempt to create a custom style based on your old EKW settings.
-      </p>
-
-      <p>
-        You need at least a small amount of knowledge of CSS to edit these, but
-        if you start with a Shredded ekw style you should be able to simply edit
-        the colours in that, or otherwise use it as a starting point. One day we
-        may have an easier way to edit this. Perhaps after ascorbic retires.
-      </p>
-
       {saved && (
         <div className="style-defacer__success">
           Your custom styles have been saved! Refresh the page to see changes.
         </div>
       )}
+      {saveError && (
+        <div className="style-defacer__error">{saveError}</div>
+      )}
 
-      <form method="POST" action={`/?node_id=${node_id}`} onSubmit={handleSubmit}>
-        <input type="hidden" name="node_id" value={node_id} />
-
+      <form onSubmit={handleSubmit}>
         <textarea
           id="vandalism"
-          name="vandalism"
           rows={40}
           value={styleValue}
           onChange={(e) => setStyleValue(e.target.value)}

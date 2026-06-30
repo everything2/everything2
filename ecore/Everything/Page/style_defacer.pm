@@ -23,7 +23,6 @@ sub buildReactData {
     my $APP  = $self->APP;
     my $DB   = $self->DB;
     my $USER = $REQUEST->user;
-    my $q    = $REQUEST->cgi;
 
     # Must be logged in
     if ($APP->isGuest($USER->NODEDATA)) {
@@ -36,23 +35,10 @@ sub buildReactData {
     my $node_id = $REQUEST->node->node_id;
     my $VARS = $USER->VARS;
 
-    # Handle form submission
-    if (defined $q->param('vandalism')) {
-        my $new_style = $q->param('vandalism') || '';
-
-        if (length($new_style)) {
-            $VARS->{customstyle} = $new_style;
-        } else {
-            delete $VARS->{customstyle};
-        }
-
-        # Save the updated vars
-        $USER->set_vars($VARS);
-    }
-
-    # Get ekw_shredder node for link
-    my $shredder = $DB->getNode('ekw shredder', 'superdoc');
-    my $shredder_id = $shredder ? int($shredder->{node_id}) : undef;
+    # The customstyle write is no longer a render-time side-effect (#4416) -- the
+    # React editor POSTs it to /api/preferences/set (allowlisted, length-capped at
+    # 50000 chars). This controller just reads the stored value below. The real fix
+    # for the large-value-in-VARS-blob bloat is post-ORM (#4417).
 
     # Get Theme Nirvana for link
     my $nirvana = $DB->getNode('Theme Nirvana', 'superdoc');
@@ -62,7 +48,6 @@ sub buildReactData {
         type         => 'style_defacer',
         node_id      => $node_id,
         customstyle  => $VARS->{customstyle} || '',
-        shredder_id  => $shredder_id,
         nirvana_id   => $nirvana_id
     };
 }

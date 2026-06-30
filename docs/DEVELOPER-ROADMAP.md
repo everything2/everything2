@@ -96,10 +96,25 @@ maintenance hooks and the form-processing Pages — that's what's left to sweep.
 6. **React-based routing** — the client router/resolver + `useDocumentMeta` + routing-parity harness +
    the progressive flip (SSR first paint, client-route subsequent nav).
 
-**Then the next major epoch — ORM / `Everything::Node` object cleanup.** Includes the configuration objects,
-schema versioning (sqitch, Phase 9), and the **deferred htmlcode/maintenance teardown**: maintenance gets
-restructured out of the htmlcode table, which finally frees the htmlcode nodetype + table + display shell.
-Deferred until now on purpose — the API layer built above is the seam that de-risks it.
+**Then the next major epoch — object-model modernization (`Everything::Node` cleanup).** **Direction decided
+2026-06-29 (see [docs/orm-migration-plan.md](orm-migration-plan.md)): DBIC is dead.** E2's domain is *nodes*
+(multi-table inheritance + VARS + nodegroups), not tables — DBIC is the wrong *shape*, since it can't model
+the node system without rebuilding a node layer on top of it anyway. We already have that layer
+(`Everything::Node::*`); the move is to **finish it, not replace it**, and to **ditch Moose for Object::Pad**
+(the on-ramp to core `class` — we're on perl 5.40), buying real field encapsulation (kills the
+blessed-vs-hashref footgun, our #1 recurring bug class), lower per-object cost, and a non-bespoke future.
+NodeBase stays as the storage engine (its MTI loader is an asset). Cutover sequence, all **post-mutation-thread**
+so we convert settled surfaces:
+1. **`Everything::Globals` / Configuration (#4178)** — scoped to *"the controller bases no longer consume a
+   Moose role"*; dissolves the one non-mechanical part (Moose roles → Pad) before it bites.
+2. **Controllers (`Everything::API` + `Everything::Page`)** — mechanical once the role's gone, all test-guarded.
+3. **`Everything::Node::*`** — last, gated on killing hashref access; long pole is `Application.pm` (raw
+   `$USER->{title}` by design), not the mostly-clean 63 subclasses.
+4. **PluginFactory teardown** — the payoff once controllers are plain classes.
+Plus the **deferred htmlcode/maintenance teardown** (maintenance restructured out of the htmlcode table,
+freeing the htmlcode nodetype + table + display shell) and **schema versioning (sqitch, Phase 9 — an
+independent parallel track)**. Deferred until now on purpose — the API layer built above is the seam that
+de-risks it.
 
 ---
 
@@ -151,13 +166,13 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 
 ### Phase 4 — Social login integration
 - **Window:** September-November 2026 (4-6 weeks)
-- **Why here:** user acquisition is real revenue; prerequisite "DB sanity" is satisfied by Phase 1 completion. (See [docs/orm-migration-plan.md](orm-migration-plan.md) Path 2 for the "introduce DBIC for the new `user_oauth` table" carve-out option.)
+- **Why here:** user acquisition is real revenue; prerequisite "DB sanity" is satisfied by Phase 1 completion. (The new `user_oauth` table is a plain node-model addition built behind sqitch — **no DBIC**; that carve-out was retired 2026-06-29, see [docs/orm-migration-plan.md](orm-migration-plan.md).)
 - **Scope:**
   - OAuth providers: Google, Facebook, Apple (TBD on Apple — adds complexity)
   - New `user_oauth` table linking external provider IDs to E2 user IDs
   - Account-linking flow for existing users (match by email)
   - Updated login UI (likely uses LoginForm + auth-modal patterns already in place)
-- **Open question:** whether to introduce sqitch + DBIC at the same time for the new table (Path 2 in orm-migration-plan.md). Decision deferred until work begins.
+- **Open question:** whether sqitch (Phase 9) has landed by the time this table is needed; if not, it's a natural forcing function to pull sqitch forward. (DBIC is no longer on the table — decided 2026-06-29.)
 - **No deliverable doc yet** — write a plan doc before starting
 
 ### Phase 5 — Cron-to-Lambda
@@ -191,7 +206,7 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 - **Window:** Q2 2027 (2-3 weeks) — can be done earlier opportunistically if Phase 4 social login pushes it forward
 - **Why here:** the genuinely missing piece. Production has no migrations pipeline today; every schema change is hand-applied SQL by the maintainer. Sqitch fixes that.
 - **Detailed plan:** [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) (alternatives analysis + why sqitch)
-- **Scope:** sqitch baseline captures current schema, every schema change after baseline becomes a sqitch change file. Begins retirement of `nodepack/dbtable/` (the XML CREATE TABLE statements).
+- **Scope:** sqitch baseline captures the current schema — **dumped from prod, not from the `nodepack/dbtable/` XML.** (Correction 2026-06-29: that XML is a jank dev-bootstrap *reference snapshot*, not a managed applier — prod schema changes are hand-applied SQL today — so there's **no coexistence problem**; sqitch becomes the *first* real migration mechanism.) Every change after baseline is a sqitch change file. An **independent parallel track** to the object-model epoch (schema, not objects); can be pulled forward anytime. The dev-pipeline wiring is an afternoon; the care is in the **prod-migration discipline** (expand/contract, online DDL on big tables, `sqitch revert`).
 
 ### Phase 10 — Bot defense modernization (Cloudflare or AWS WAF)
 - **Window:** anytime independent — opportunistic
@@ -219,7 +234,7 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 - **"Mobile Display Modernization" (old Phase 6.5)** — done. Mobile redesign shipped Jan 2026.
 - **"SEO Optimization" (old Phase 8)** — folded into Phase 11 traffic-driving round.
 - **"Settings/Preferences Modernization" (old Phase 9.5)** — deferred indefinitely. Would be a 6-8 week refactor with diffuse benefit; doesn't fit any growth window cleanly. Revisit if there's a specific reason (e.g., user-prefs storage hits a limit).
-- **"DBIx::Class ORM Migration" (old Phase 9, "Database Optimization")** — rescoped to Path 1 of [docs/orm-migration-plan.md](orm-migration-plan.md): modernize NodeBase in place during PSGI work (Phase 6). Full DBIC adoption stays deferred indefinitely.
+- **"DBIx::Class ORM Migration" (old Phase 9, "Database Optimization")** — **dead as of 2026-06-29.** DBIC is the wrong shape for a node-model domain; the object-model epoch instead finishes the `Node::*` layer in place and moves it off Moose to Object::Pad (the on-ramp to core `class`). See [docs/orm-migration-plan.md](orm-migration-plan.md).
 - **"FastCGI/PSGI Migration" (old Phase 7)** — same as new Phase 6, just renumbered.
 
 ---

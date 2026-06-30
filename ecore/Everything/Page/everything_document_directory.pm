@@ -94,13 +94,10 @@ sub buildReactData {
         }
     }
 
-    # Handle sort order - update VARS if posted
-    if (defined $query->param('EDD_Sort')) {
-        my $new_sort = $query->param('EDD_Sort');
-        if ($new_sort =~ /^(0|idA|idD|nameA|nameD|authorA|authorD|createA|createD)$/) {
-            $VARS->{EDD_Sort} = $new_sort;
-        }
-    }
+    # Sort order is the viewer's stored EDD_Sort pref. It is NO LONGER persisted
+    # here on render -- that was a side-effect in buildReactData (an in-memory
+    # `$VARS->{EDD_Sort}=` write-back, #4416). The React sort selector POSTs the
+    # change to /api/preferences/set, then reloads; this controller just reads it.
 
     # Determine sort order from VARS
     my %sort_map = (

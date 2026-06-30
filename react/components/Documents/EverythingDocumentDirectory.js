@@ -45,9 +45,22 @@ const EverythingDocumentDirectory = ({ data, e2, user }) => {
     { value: 'createD', label: 'create time, descending (newest first)' }
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
+    // Persist the sort pref via the API first (it used to be a render-time
+    // $VARS->{EDD_Sort}= side-effect in the controller, #4416), then submit the
+    // filter form. The server re-renders sorted by the now-stored pref.
+    try {
+      await fetch('/api/preferences/set', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ EDD_Sort: sortOrder })
+      });
+    } catch (err) {
+      // best-effort: still show the requested view even if the pref didn't save
+    }
     form.submit();
   };
 
@@ -85,8 +98,10 @@ const EverythingDocumentDirectory = ({ data, e2, user }) => {
         <div className="doc-directory__form-group">
           <label className="doc-directory__label">
             sort order:{' '}
+            {/* No form `name`: the sort is persisted via /api/preferences/set on
+                submit (handleSubmit), not POSTed as a page param (#4416). The
+                controller reads it from the viewer's stored VARS pref. */}
             <select
-              name="EDD_Sort"
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
               className="doc-directory__select"
