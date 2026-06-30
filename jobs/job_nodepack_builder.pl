@@ -28,6 +28,28 @@ if($? != 0)
   exit 1;
 }
 
+# Generate the permanent hydration cache bundle (#4423) and upload it under a
+# top-level 'hydration/' S3 key. ops/nodepack-refresh.rb routes that prefix to the
+# repo top level (not nodepack/), so the bundle stays visible at the root rather
+# than buried among the nodepack XML. Same partial-refusal discipline as the export.
+print `cd $tmpdir && /usr/bin/perl -I/var/everything/ecore -I/var/libraries/lib/perl5 /var/everything/ecoretool/ecoretool.pl hydrate --database everything --output $tmpdir/hydration/hydration_cache.json 2>&1`;
+if($? != 0)
+{
+  print "ERROR: ecoretool hydrate exited non-zero (".($? >> 8)."); refusing to upload a partial nodepack.\n";
+  exit 1;
+}
+if(open(my $hfh, "<", "$tmpdir/hydration/hydration_cache.json"))
+{
+  local $/ = undef;
+  my $hdata = <$hfh>;
+  close($hfh);
+  $s3->PutObject("Bucket" => $nodepack_bucket, "Key" => "hydration/hydration_cache.json", "Body" => $hdata);
+  print "Uploaded hydration/hydration_cache.json\n";
+}else{
+  print "ERROR: could not read generated hydration bundle: $!\n";
+  exit 1;
+}
+
 my $files = [];
 File::Find::find({wanted => sub {push @$files,$File::Find::name if -e && /\.xml$/}}, $tmpdir);
 
