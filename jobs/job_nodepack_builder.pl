@@ -53,12 +53,22 @@ foreach my $file(@$files)
 # (ops/nodepack-refresh.rb routes that prefix to the repo root). Wrapped so ANY
 # failure (generation or upload) logs and continues -- it must never leave the
 # nodepack unpublished (an earlier ordering bug did exactly that). Read :raw so the
-# UTF-8 JSON ships as bytes; a wide-char body breaks PutObject's Content-Length.
+# bundle ships as bytes (:raw). CRITICAL: scope `local $/ = undef` to JUST the slurp
+# so $/ is restored to "\n" BEFORE PutObject. Paws auto-fills the Content-MD5 header
+# and chomps the base64 (RestXmlCaller _to_header_params), but chomp honors $/ -- a
+# leaked $/=undef makes it a no-op, leaving a trailing newline S3 rejects ("Invalid
+# HTTP header field value (Content-MD5): ...==\n"). The XML loop above is fine
+# because its local $/ is scoped to the read, not the upload.
 eval {
   print `cd $tmpdir && /usr/bin/perl -I/var/everything/ecore -I/var/libraries/lib/perl5 /var/everything/ecoretool/ecoretool.pl hydrate --database everything --output $tmpdir/hydration/hydration_cache.json 2>&1`;
   die "hydrate exited non-zero (".($? >> 8).")\n" if $? != 0;
-  open(my $hfh, "<:raw", "$tmpdir/hydration/hydration_cache.json") or die "could not read bundle: $!\n";
-  local $/ = undef; my $hdata = <$hfh>; close($hfh);
+  my $hdata;
+  {
+    open(my $hfh, "<:raw", "$tmpdir/hydration/hydration_cache.json") or die "could not read bundle: $!\n";
+    local $/ = undef;
+    $hdata = <$hfh>;
+    close($hfh);
+  }
   $s3->PutObject("Bucket" => $nodepack_bucket, "Key" => "hydration/hydration_cache.json", "Body" => $hdata);
   print "Uploaded hydration/hydration_cache.json\n";
   1;
