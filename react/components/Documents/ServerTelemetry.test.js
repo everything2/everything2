@@ -19,4 +19,15 @@ describe('ServerTelemetry (real pagestate fixture)', () => {
     spy.mockRestore()
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
+  it('renders the cron subsystem status block', () => {
+    const cron = 'Cron subsystem: DEGRADED  --  1 failing\nLeader: host-x (ok, heartbeat 5s ago)'
+    const { getByText, container } = render(<ServerTelemetry data={{ cron_status: cron }} />)
+    expect(getByText('Cron Subsystem')).toBeTruthy()
+    expect(container.textContent).toContain('Cron subsystem: DEGRADED')
+  })
+  it('renders the Starman app-workers panel', () => {
+    const { container } = render(<ServerTelemetry data={{ worker_count: 14, apache_count: 2, app_workers: 'starman master --workers 14' }} />)
+    expect(container.textContent).toContain('App Workers')
+    expect(container.textContent).toContain('14 Starman')
+  })
 })

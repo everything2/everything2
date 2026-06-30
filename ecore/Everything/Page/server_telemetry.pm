@@ -23,40 +23,116 @@ Returns server telemetry data from shell commands.
 sub buildReactData {
     my ($self, $REQUEST) = @_;
 
-    # Run diagnostic commands
-    my $apache_processes = `ps aux | grep apache2 | grep -v grep`;
-    my $apache_count = `ps aux | grep apache2 | grep -v grep | wc -l`;
+    # The app runs under Starman (PSGI, app.psgi) -- the worker processes are where the
+    # app and its memory actually live. apache2 is just the mpm_event reverse proxy out
+    # front (a couple of tiny procs), so we report the Starman workers as the app view
+    # and the apache front only as a count.
+    my $app_workers = `ps -eo pid,rss,etimes,args 2>/dev/null | grep -E 'starman (master|worker)' | grep -v grep`;
+    my $worker_count = `pgrep -fc 'starman worker' 2>/dev/null`;
+    chomp($worker_count);
+    my $apache_count = `pgrep -fc '/usr/sbin/apache2' 2>/dev/null`;
     chomp($apache_count);
 
-    my $vmstat = `vmstat`;
-    my $uptime = `uptime`;
     my $health_check = `/var/everything/tools/container-health-check.pl --debug-cloudwatch 2>&1`;
-    my $apache_config = `cat /etc/apache2/apache2.conf`;
 
     # Memory analysis from /proc + the task cgroup. Per-process RSS overcounts
-    # COW-shared pages (interpreter + preloaded modules counted once per worker),
-    # so the authoritative figure is the cgroup total -- the only number that
-    # reflects the task's real memory budget (and matches CloudWatch).
-    my $memory_analysis = _get_apache_memory();
+    # COW-shared pages (Starman --preload-app forks workers, so the interpreter +
+    # preloaded app are counted once per worker), so the authoritative figure is the
+    # cgroup total -- the only number that reflects the task's real memory budget
+    # (and matches CloudWatch).
+    my $memory_analysis = _get_app_memory();
+
+    # In-webhead cron subsystem health: leader liveness + per-job state from the
+    # cron_state/cron_leader tables, scored by Everything::Cron::Health. NB: the daily
+    # generate-sitemap batch is NOT shown here -- it runs as a dedicated EventBridge
+    # Fargate task (see CloudWatch /aws/fargate/fargate-cron-awslogs), not the sidecar.
+    my $cron_status = _get_cron_status();
 
     return {
         type => 'server_telemetry',
-        apache_processes => $apache_processes,
+        app_workers => $app_workers,
+        worker_count => $worker_count,
         apache_count => $apache_count,
-        vmstat => $vmstat,
-        uptime => $uptime,
         health_check => $health_check,
-        apache_config => $apache_config,
-        memory_analysis => $memory_analysis
+        memory_analysis => $memory_analysis,
+        cron_status => $cron_status
     };
 }
 
-sub _get_apache_memory {
+# In-webhead cron health, formatted as a fixed-width status block. Reads the
+# cron_state/cron_leader tables (Everything::Cron::State) and scores them with
+# Everything::Cron::Health. eval-wrapped so a transient DB hiccup or a dev box
+# without the cron tables degrades to a message instead of breaking the page.
+sub _get_cron_status {
+    my $out = eval {
+        require Everything::Cron::State;
+        require Everything::Cron::Health;
+        require Everything::Cron::Schedule;
+
+        my $schedule = Everything::Cron::Schedule->new;
+        my $snapshot = Everything::Cron::State->new->snapshot;
+        my $now      = time;
+        my $verdict  = Everything::Cron::Health->new( schedule => $schedule )
+            ->evaluate( $snapshot, $now );
+
+        my @lines;
+        push @lines, "Cron subsystem: " . uc( $verdict->{overall} // 'unknown' )
+            . "  --  " . ( $verdict->{summary} // '' );
+
+        my $ld = $verdict->{leader} || {};
+        push @lines, sprintf( "Leader: %s  (%s, heartbeat %s)",
+            $ld->{host} // '(none)',
+            $ld->{state} // 'unknown',
+            defined $ld->{age} ? _ago( $ld->{age} ) . " ago" : 'never' );
+        push @lines, "";
+
+        push @lines, sprintf( "%-22s %-9s %-12s %6s  %s",
+            "JOB", "HEALTH", "LAST OK", "FAILS", "LAST RUN" );
+        push @lines, "-" x 68;
+
+        for my $entry ( @{ $schedule->entries } ) {
+            my $name = $entry->{name};
+            my $jv   = $verdict->{jobs}{$name} || {};
+            my $js   = $snapshot->{jobs}{$name} || {};
+            push @lines, sprintf( "%-22s %-9s %-12s %6d  %s",
+                $name,
+                uc( $jv->{state} // 'unknown' ),
+                $js->{last_success} ? _ago( $now - $js->{last_success} ) . " ago" : 'never',
+                $js->{consecutive_failures} || 0,
+                defined $js->{duration_ms} ? sprintf( "%.1fs", $js->{duration_ms} / 1000 ) : '-' );
+        }
+
+        # Surface the captured output tail for anything wedged or failing.
+        for my $name ( @{ $verdict->{wedged} || [] }, @{ $verdict->{failing} || [] } ) {
+            my $tail = ( $snapshot->{jobs}{$name} || {} )->{last_output_tail};
+            next unless defined $tail && length $tail;
+            push @lines, "", "--- $name last output ---", $tail;
+        }
+
+        join( "\n", @lines );
+    };
+    return $out if defined $out && length $out;
+    return "Cron status unavailable: " . ( $@ || 'unknown error' );
+}
+
+# Compact humanized age: 45s / 12m / 3h / 2d.
+sub _ago {
+    my ($secs) = @_;
+    return 'now' if !defined $secs || $secs < 0;
+    return "${secs}s" if $secs < 90;
+    my $m = int( $secs / 60 );
+    return "${m}m" if $m < 90;
+    my $h = int( $m / 60 );
+    return "${h}h" if $h < 48;
+    return int( $h / 24 ) . "d";
+}
+
+sub _get_app_memory {
     my @results;
     my $total_rss = 0;
 
-    # Get apache2 PIDs
-    my @pids = split /\n/, `pgrep -f '/usr/sbin/apache2'`;
+    # Get Starman master/worker PIDs (the PSGI app server -- where the app memory lives).
+    my @pids = split /\n/, `pgrep -f 'starman'`;
 
     push @results, sprintf("%-8s %12s %12s  %s",
         "PID", "RSS (KB)", "VmSize (KB)", "Command");
@@ -89,8 +165,10 @@ sub _get_apache_memory {
             close $cmd_fh;
         }
 
-        # Only include actual apache2 processes
-        next unless $cmdline =~ m{^/usr/sbin/apache2}smx;
+        # Only include actual Starman processes (master + workers) -- the cmdline
+        # begins with "starman master"/"starman worker" (Starman rewrites $0); this
+        # also excludes the bash supervisor loop whose args merely mention starman.
+        next unless $cmdline =~ m{^starman}smx;
         next unless $mem{VmRSS};
 
         $cmdline = substr($cmdline, 0, 40) . '...' if length($cmdline) > 40;
@@ -109,17 +187,13 @@ sub _get_apache_memory {
         "Sum of RSS:  %.1f MB (%d procs) -- OVERCOUNTS: shared pages counted once per worker",
         $total_rss / 1024, $count);
 
-    # Per-process PSS is intentionally not shown: the mod_perl workers drop from
-    # root to www-data and become non-dumpable, so the kernel makes their
-    # /proc/<pid>/smaps_rollup root-owned 0400 -- unreadable from this worker even
-    # for itself. The cgroup total below is the authoritative real-RAM figure
-    # (shared pages counted once), so per-process PSS would add nothing anyway.
-    push @results, "(per-process PSS omitted -- workers non-dumpable post-setuid; use the cgroup total below)";
+    # Per-process PSS is intentionally not shown: the cgroup total below is the
+    # authoritative real-RAM figure (COW-shared pages counted once), so a per-worker
+    # PSS breakdown would add little over the RSS sum plus the cgroup truth.
+    push @results, "(per-process PSS omitted -- the cgroup total below is the authoritative figure)";
 
     # Authoritative task memory from the cgroup. This is what the Fargate task
     # budget is measured against and what CloudWatch MemoryUtilization reports.
-    # NOTE: vmstat/free elsewhere on this page report the underlying HOST, not
-    # this task -- ignore them for task-memory questions.
     my $cg = _get_cgroup_memory();
     if (defined $cg) {
         push @results, "";
