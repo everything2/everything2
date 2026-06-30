@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import EverythingDocumentDirectory from './EverythingDocumentDirectory'
 import fixture from '../../__fixtures__/pagestate/everything_document_directory.json'
 // Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
@@ -65,5 +65,53 @@ describe('EverythingDocumentDirectory role gating via user prop (#4390)', () => 
     expect(container).toBeTruthy()
     expect(nodeIdHeaderCount(container.textContent)).toBe(0)
     expect(container.textContent).not.toMatch(/List Nodes of Type/)
+  })
+})
+
+// The sort pref no longer POSTs as a page param (was a render-time
+// $VARS->{EDD_Sort}= side-effect, #4416). On submit the component persists it
+// via /api/preferences/set, then submits the filter form.
+describe('EverythingDocumentDirectory sort pref -> /api/preferences/set (#4416)', () => {
+  const baseData = {
+    type: 'everything_document_directory',
+    documents: [],
+    total_count: 0,
+    shown_count: 0,
+    limit: 60,
+    current_sort: '0',
+    filter_user: '',
+    filter_nodetype: '',
+    available_nodetypes: ['superdoc', 'document', 'superdocnolinks'],
+    permissions: { is_developer: 0 }
+  }
+
+  it('the sort <select> carries no form name (not POSTed as a page param)', () => {
+    const { container } = render(
+      <EverythingDocumentDirectory data={baseData} e2={{ node: { node_id: 7 } }} user={{ admin: true }} />
+    )
+    expect(container.querySelector('select[name="EDD_Sort"]')).toBeNull()
+  })
+
+  it('submitting persists EDD_Sort to the preferences API, then submits the form', async () => {
+    const submitSpy = jest.spyOn(HTMLFormElement.prototype, 'submit').mockImplementation(() => {})
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({}) })
+    try {
+      const { container } = render(
+        <EverythingDocumentDirectory data={baseData} e2={{ node: { node_id: 7 } }} user={{ admin: true }} />
+      )
+      const sortSelect = container.querySelectorAll('.doc-directory__select')[0] // sort is first
+      fireEvent.change(sortSelect, { target: { value: 'nameA' } })
+      fireEvent.submit(container.querySelector('form'))
+
+      await waitFor(() =>
+        expect(global.fetch).toHaveBeenCalledWith('/api/preferences/set', expect.objectContaining({ method: 'POST' }))
+      )
+      const body = JSON.parse(global.fetch.mock.calls[0][1].body)
+      expect(body).toEqual({ EDD_Sort: 'nameA' })
+      await waitFor(() => expect(submitSpy).toHaveBeenCalled()) // form still submitted for the filtered view
+    } finally {
+      global.fetch && delete global.fetch
+      submitSpy.mockRestore()
+    }
   })
 })

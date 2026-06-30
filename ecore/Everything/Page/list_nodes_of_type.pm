@@ -25,7 +25,6 @@ sub buildReactData {
 
     my $DB = $self->DB;
     my $USER = $REQUEST->user;
-    my $CGI = $REQUEST->cgi;
 
     # Security check - editors (includes admins) or developers
     unless ($USER->is_editor || $USER->is_developer) {
@@ -39,13 +38,11 @@ sub buildReactData {
     my $is_admin = $USER->is_admin;
     my $is_editor = $USER->is_editor;
 
-    # Handle setvars_ListNodesOfType_Type parameter (from nodetype display page links)
-    my $setvars_type = $CGI->param('setvars_ListNodesOfType_Type');
-    if (defined $setvars_type && $setvars_type ne '') {
-        my $VARS = $USER->VARS;
-        $VARS->{ListNodesOfType_Type} = $setvars_type;
-        $USER->set_vars($VARS);
-    }
+    # The selected-type pref is no longer persisted here on render -- that was a
+    # side-effect in buildReactData driven by ?setvars_ListNodesOfType_Type
+    # (#4416). The React component owns that deep-link param now: it reads it on
+    # mount and POSTs to /api/preferences/set. This controller only reads the
+    # stored pref below.
 
     # Get all node types
     my $sth = $DB->{dbh}->prepare(

@@ -2,7 +2,7 @@
 
 **Created**: 2025-12-06 (original)
 **Rewritten**: 2026-05-24 (this revision)
-**Status**: Evaluation / planning — no work committed
+**Status**: ✅ **Direction decided 2026-06-29 — see the DECISION section below.** (The evaluation that follows is the reasoning that led there; kept as the record.)
 **Prior version**: The Dec 2025 draft made architectural recommendations based on an incomplete reading of the codebase. This rewrite is grounded in a fresh survey of NodeBase, Node, and SQL call patterns done 2026-05-24.
 
 ---
@@ -13,7 +13,37 @@ Is it worth migrating Everything2's data access layer to **DBIx::Class** — and
 
 The TL;DR up front, so you don't have to read the whole thing:
 
+> **Superseded by the DECISION section immediately below (2026-06-29).** The "consider DBIC for new
+> tables" carve-out is also retired — DBIC is dead. The paragraph is kept because its blast-radius
+> reasoning is exactly what drove the decision.
+
 **Mostly no, with one carve-out.** A full DBIC adoption is more expensive and less rewarding than the prior plan suggested, because most SQL in this codebase bypasses the Node domain layer and goes straight to NodeBase wrappers — so a "DBIC under NodeBase, Node preserved on top" architecture doesn't actually shrink the migration scope. The recommended path is more modest: **parameterize the existing SQL surface (security + reliability win), adopt sqitch for schema migrations (the genuinely missing piece), and consider DBIC only for genuinely new tables introduced post-MySQL**. Full DBIC adoption stays as a "if there's ever a real ORM reason" deferred option, not a 6-12 month commitment.
+
+---
+
+## DECISION (2026-06-29): DBIC is dead. Finish `Node::*` as our ORM, on Object::Pad.
+
+The question this doc opened with is answered: **no DBIC — not full adoption, not the Path-2 "new tables" carve-out.** The reframe that settles it: **E2's domain is *nodes*, not tables.** Every entity is a `node` row + type-specific table rows joined by `sqltablelist` (multi-table inheritance), plus a VARS blob, plus nodegroup membership. DBIC models tables; it has no native concept of that. You'd have to rebuild a node abstraction *on top of* DBIC — at which point DBIC is just a connection-manager/query-builder under your node layer, and you pay its 30–50% latency tax + DSL surface for the slice you don't use. **Wrong shape, not just wrong size.**
+
+And we needn't build a node abstraction, because **we already have one: `Everything::Node::*`** (63 subclasses with relationship methods, JSON serialization, permission checks). It's a domain/ORM layer that happens to call NodeBase for persistence. **The move is to finish it, not replace it.**
+
+### The direction
+- **NodeBase stays as the storage engine.** Modernize in place (parameterized SQL, a txn helper). *Keep the MTI loader* — it's the thing DBIC can't do and the thing that makes nodes work. Asset, not debt.
+- **Ditch Moose for Object::Pad** across the codebase. Object::Pad is the prototype for core `class`, and we're on **perl 5.40** (which ships `feature 'class'`) — so this is adopting the idiom Perl OO is *becoming*, not a bespoke bet. Wins: real `field` encapsulation (kills the blessed-vs-hashref footgun — our #1 recurring bug class, the `$USER->{title}` vs `$user->title` split), lower per-object cost (matters at NodeCache scale), a non-dead-end OO system. Object::Pad and Moose **coexist in-process**, so it's incremental, suite-green between each class.
+- **The ergonomics DBIC was wanted for** (relationship navigation, query builder) are a few hundred lines on `Node::*` shaped like *our* model — add the 3–4 patterns we use, skip the DSL.
+
+### The cutover sequence (all post-mutation-thread #4416)
+Convert settled surfaces, not moving ones — the mutation grind is still minting new API endpoints, so it goes first.
+1. **`Everything::Globals` / Configuration (#4178)** — *first, and load-bearing.* Scope its "done" to the milestone **"the controller bases no longer consume a Moose role."** Moose-roles → Pad is the one genuinely non-mechanical part of this migration; doing Globals first dissolves it before it reaches the API base.
+2. **Controllers (`Everything::API` + `Everything::Page`)** — mechanical once the role's gone (`class … :isa(...)` + `method`), every one `t/`-guarded; the mutation thread is already thinning the Pages.
+3. **`Everything::Node::*`** — last. Object::Pad fields aren't hash-accessible, so converting a Node class breaks every `$obj->{slot}` poker; the earlier phases pull most call sites into clean blessed-method style first, concentrating the remaining pokes into the real long pole — **`Application.pm`** (raw hashref access by design), *not* the mostly-clean 63 subclasses.
+4. **PluginFactory teardown** — the payoff: once controllers are plain classes, the Moose-flavored factory loses its reason to exist; swap it for a plain dispatch table.
+
+### Schema (sqitch) is a parallel track, not part of this
+Independent of the OO work (schema, not objects). The `nodepack/dbtable/` XML is a jank **dev-bootstrap reference snapshot, not a managed schema applier** — so sqitch has *no* coexistence problem; it becomes the **first** real migration mechanism. Baseline from **prod's actual schema** (dumped — the XML has drifted). Dev-pipeline wiring is an afternoon; the care goes into prod-migration discipline (expand/contract, online DDL on big tables, `sqitch revert`). See Phase 9 + [docs/sqitch-migration-plan.md](sqitch-migration-plan.md).
+
+### What still holds from the evaluation below
+The blast-radius math is exactly why this is the answer. Re-counted **2026-06-29: ~680 wrapper calls + 66 raw `$dbh->prepare` ≈ 746** SQL sites bypassing Node (the May "~750" holds), with the **API layer now the largest single bucket (~203)** — concentrated by the API-ification but still *raw* SQL, not thin-over-model. That's why a full DBIC callsite migration (Paths 3/4) never penciled out for a solo maintainer, and why Path 1 ("modernize in place") was right. **This decision *is* Path 1, made concrete: the in-place modernization is Object::Pad, and the domain layer we're finishing is the ORM.**
 
 ---
 

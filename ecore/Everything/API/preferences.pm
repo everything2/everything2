@@ -100,6 +100,25 @@ has 'allowed_preferences' => (isa => 'HashRef', is => 'ro', default => sub { {
   ## Other preferences
   'tiptap_editor_raw' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
 
+  # everything_document_directory sort order (#4416). Was persisted by a
+  # render-time `$VARS->{EDD_Sort}=` side-effect in the page controller; the
+  # React sort selector now POSTs it here. \z (not $) so a trailing newline
+  # can't sneak past the enum.
+  'EDD_Sort' => Everything::Preference::String->new(default_value => '0', allowed_values => qr/^(0|idA|idD|nameA|nameD|authorA|authorD|createA|createD)\z/),
+
+  # list_nodes_of_type selected-type pref (#4416). A type node_id, or empty. Was
+  # persisted by a render-time setVars from ?setvars_ListNodesOfType_Type in the
+  # controller AND the React was POSTing to a dead /api/preferences/update route
+  # -- both replaced by this allowlisted /set key.
+  'ListNodesOfType_Type' => Everything::Preference::String->new(default_value => '', allowed_values => qr/^\d*\z/),
+
+  # style_defacer custom CSS (#4416). Was a render-time setVars from a ?vandalism
+  # POST param. Length-capped at 50000 chars -- clears every existing prod value
+  # (199 users, max ~32KB encoded; the decoded value the API validates is <=
+  # encoded) with headroom while bounding abuse. /s so `.` spans newlines (CSS is
+  # multi-line). The large-value-in-VARS-blob bloat gets real storage post-ORM (#4417).
+  'customstyle' => Everything::Preference::String->new(default_value => '', allowed_values => qr/^.{0,50000}\z/s),
+
   ## Editor-specific preferences (Admin Settings)
   'killfloor_showlinks' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'hidenodenotes' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1])

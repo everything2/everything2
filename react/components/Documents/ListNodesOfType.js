@@ -35,21 +35,40 @@ const ListNodesOfType = ({ data, user = {} }) => {
   const [filterUser, setFilterUser] = useState('');
   const [filterUserNot, setFilterUserNot] = useState(false);
 
+  // Persist the selected type to the viewer's VARS via the preferences API.
+  // Was POSTing to a dead /api/preferences/update route (the real persistence
+  // had been the render-time ?setvars side-effect in the controller, #4416);
+  // now uses the working allowlisted /set route.
   const saveTypePreference = async (typeId) => {
     if (!typeId) return;
 
     try {
-      await fetch('/api/preferences/update', {
+      await fetch('/api/preferences/set', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          updates: [{ key: 'ListNodesOfType_Type', value: typeId }]
-        })
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ ListNodesOfType_Type: String(typeId) })
       });
     } catch (err) {
       console.error('Failed to save type preference:', err);
     }
   };
+
+  // Deep-link support: nodetype/htmlcode/etc. pages link here with
+  // ?setvars_ListNodesOfType_Type=<node_id>. The controller no longer reads
+  // that param (#4416) -- the React owns it: on mount, if it names a type in
+  // our list, pre-select it and persist it through the preferences API.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const deepLink = new URLSearchParams(window.location.search).get('setvars_ListNodesOfType_Type');
+    if (deepLink && /^\d+$/.test(deepLink) && node_types.some((t) => String(t.node_id) === deepLink)) {
+      setSelectedType(deepLink);
+      setOffset(0);
+      saveTypePreference(deepLink);
+    }
+    // mount only
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchNodes = async () => {
     if (!selectedType) return;

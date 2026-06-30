@@ -216,4 +216,91 @@ subtest 'nodeletusergroup is a whitelisted, bounded String preference' => sub {
     is($api->set_preferences($newline)->[0], $api->HTTP_UNAUTHORIZED, "Newline-bearing title rejected (401)");
 };
 
+#############################################################################
+# EDD_Sort (everything_document_directory sort pref; replaced the render-time
+# $VARS->{EDD_Sort}= side-effect in the page controller, #4416)
+#############################################################################
+
+subtest 'EDD_Sort is a whitelisted, enum-validated String preference' => sub {
+    plan tests => 6;
+
+    my $set = auth_request(postdata => { EDD_Sort => 'nameA' });
+    my $r = $api->set_preferences($set);
+    is($r->[0], $api->HTTP_OK, "Valid sort accepted (200)");
+    is($r->[1]{EDD_Sort}, 'nameA', "Returned value matches");
+    is($set->user->VARS->{EDD_Sort}, 'nameA', "Written to VARS");
+
+    # Out-of-enum value rejected
+    is($api->set_preferences(auth_request(postdata => { EDD_Sort => 'bogus' }))->[0],
+        $api->HTTP_UNAUTHORIZED, "Out-of-enum sort rejected (401)");
+
+    # Trailing-newline injection rejected (\z anchor, not $)
+    is($api->set_preferences(auth_request(postdata => { EDD_Sort => "nameA\ninjected" }))->[0],
+        $api->HTTP_UNAUTHORIZED, "Newline-injected sort rejected (401)");
+
+    # Guest blocked
+    is($api->set_preferences(guest_request(postdata => { EDD_Sort => 'nameA' }))->[0],
+        $api->HTTP_UNAUTHORIZED, "Guest cannot set EDD_Sort (401)");
+};
+
+#############################################################################
+# ListNodesOfType_Type (list_nodes_of_type selected-type pref; replaced the
+# render-time ?setvars_ListNodesOfType_Type side-effect AND the React's dead
+# POST to /api/preferences/update, #4416)
+#############################################################################
+
+subtest 'ListNodesOfType_Type is a whitelisted node_id String preference' => sub {
+    plan tests => 5;
+
+    my $set = auth_request(postdata => { ListNodesOfType_Type => '14' });
+    my $r = $api->set_preferences($set);
+    is($r->[0], $api->HTTP_OK, "Valid type node_id accepted (200)");
+    is($set->user->VARS->{ListNodesOfType_Type}, '14', "Written to VARS");
+
+    # A type NAME (the old achievement/notification deep-links) is non-numeric -> rejected
+    is($api->set_preferences(auth_request(postdata => { ListNodesOfType_Type => 'achievement' }))->[0],
+        $api->HTTP_UNAUTHORIZED, "Non-numeric type value rejected (401)");
+
+    # Trailing-newline injection rejected (\z anchor)
+    is($api->set_preferences(auth_request(postdata => { ListNodesOfType_Type => "14\ninjected" }))->[0],
+        $api->HTTP_UNAUTHORIZED, "Newline-injected value rejected (401)");
+
+    # Guest blocked
+    is($api->set_preferences(guest_request(postdata => { ListNodesOfType_Type => '14' }))->[0],
+        $api->HTTP_UNAUTHORIZED, "Guest cannot set ListNodesOfType_Type (401)");
+};
+
+#############################################################################
+# customstyle (style_defacer custom CSS; replaced the render-time ?vandalism
+# side-effect, #4416). Length-capped at 50000 (real storage fix is #4417).
+#############################################################################
+
+subtest 'customstyle is a whitelisted, length-capped (50000) String preference' => sub {
+    plan tests => 6;
+
+    my $css = 'a { color: #ff6600; }';
+    my $set = auth_request(postdata => { customstyle => $css });
+    my $r = $api->set_preferences($set);
+    is($r->[0], $api->HTTP_OK, "Valid CSS accepted (200)");
+    is($set->user->VARS->{customstyle}, $css, "Written to VARS");
+
+    # Multi-line CSS accepted (the /s flag lets `.` span newlines)
+    my $multi = "a { color: red; }\nbody { background: #111; }";
+    is($api->set_preferences(auth_request(postdata => { customstyle => $multi }))->[0],
+        $api->HTTP_OK, "Multi-line CSS accepted (200)");
+
+    # Over the 50000-char cap -> rejected
+    is($api->set_preferences(auth_request(postdata => { customstyle => ('x' x 50001) }))->[0],
+        $api->HTTP_UNAUTHORIZED, "Over-cap CSS rejected (401)");
+
+    # Empty clears it (matches the old "clear the field to remove styles")
+    my $clear = auth_request(vars => { customstyle => $css }, postdata => { customstyle => '' });
+    $api->set_preferences($clear);
+    ok(!exists($clear->user->VARS->{customstyle}), "Empty value clears the pref");
+
+    # Guest blocked
+    is($api->set_preferences(guest_request(postdata => { customstyle => $css }))->[0],
+        $api->HTTP_UNAUTHORIZED, "Guest cannot set customstyle (401)");
+};
+
 done_testing();
