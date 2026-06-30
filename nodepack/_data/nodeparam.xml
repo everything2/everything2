@@ -175,26 +175,6 @@
     <paramvalue>1</paramvalue>
   </nodeparam>
   <nodeparam>
-    <node_id>668164</node_id>
-    <paramkey>disable_bookmark</paramkey>
-    <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>668164</node_id>
-    <paramkey>disable_category</paramkey>
-    <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>668164</node_id>
-    <paramkey>disable_cool</paramkey>
-    <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>668164</node_id>
-    <paramkey>disable_weblog</paramkey>
-    <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
     <node_id>779713</node_id>
     <paramkey>prevent_nuke</paramkey>
     <paramvalue>1</paramvalue>

@@ -74,13 +74,6 @@
     <from_node>779713</from_node>
     <hits>0</hits>
     <linktype>1920136</linktype>
-    <to_node>5</to_node>
-  </link>
-  <link>
-    <food>0</food>
-    <from_node>779713</from_node>
-    <hits>0</hits>
-    <linktype>1920136</linktype>
     <to_node>7</to_node>
   </link>
   <link>
