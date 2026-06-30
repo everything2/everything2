@@ -7773,7 +7773,12 @@ sub buildNodeInfoStructure
   # hides the input. Only active borgs reach here (expired ones cleared above).
   $e2->{chatterbox}->{borged}    = $VARS->{borged} ? int($VARS->{borged}) : 0;
   $e2->{chatterbox}->{numborged} = int($VARS->{numborged} || 1);
-  if (defined $USER->{in_room}) {
+  # Skip the chatterbox room build for guests (#4419). A guest has no chatterbox
+  # nodelet and can't chat, yet the Guest User node has in_room=0 (defined), which
+  # used to drag every guest render through Room Topics + a getRecentChatter query
+  # + mini-message loads. The catbox-archive bot reads chatter via the universal
+  # message ticker, not this chrome key, so guests lose nothing.
+  if (!$this->isGuest($USER) && defined $USER->{in_room}) {
     # Get room name
     if ($USER->{in_room} == 0) {
       $e2->{chatterbox}->{roomName} = 'outside';

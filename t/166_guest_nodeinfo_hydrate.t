@@ -73,6 +73,25 @@ if ($sd) {
     ok( defined $blob->{contentData}, 'React-type (superdoc) renders contentData fresh -- fast-path skipped' );
 }
 
+# Chatterbox room build is skipped for guests (#4419). The Guest User node has
+# in_room=0 (defined), which used to drag every guest render through Room Topics +
+# a getRecentChatter query + mini-message loads. Guests have no chatterbox nodelet
+# and can't chat; the catbox-archive bot reads chatter via the universal message
+# ticker, not this chrome key. Guests keep only the minimal borged/numborged.
+{
+    my $NODE = $DB->getNode( 'tomato', 'e2node' ) || $DB->getNode( 'Guest User', 'user' );
+    my $req = Everything::Request->new(
+        user => $APP->node_by_id( $guest->{node_id} ),
+        node => $APP->node_by_id( $NODE->{node_id} ) );
+    my $blob = $APP->buildNodeInfoStructure( $NODE, $guest, $gvars, $req->cgi, $req, { skip_guest_cache => 1 } );
+
+    ok( defined $blob->{chatterbox}, 'guest still gets a (minimal) chatterbox chrome key' );
+    ok( !exists $blob->{chatterbox}{messages},
+        'guest chatterbox carries NO messages (getRecentChatter skipped)' );
+    ok( !exists $blob->{chatterbox}{roomTopic},
+        'guest chatterbox carries NO roomTopic (Room Topics setting not loaded)' );
+}
+
 done_testing();
 
 =head1 NAME
