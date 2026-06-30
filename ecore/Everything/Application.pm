@@ -6638,6 +6638,11 @@ sub sitemap_batches
     }
   }
 
+  # Flush the final partial batch -- otherwise the last <50000 node_ids (the most
+  # recently created content, exactly what crawlers most want) are dropped from the
+  # sitemap entirely. Also means a corpus smaller than one batch still produces output.
+  push @$batches, $batch if $batch and scalar(@$batch) > 0;
+
   return $batches;
 }
 
