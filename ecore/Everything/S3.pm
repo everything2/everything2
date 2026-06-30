@@ -44,7 +44,15 @@ sub upload_data
 	}
 	# Suppress DIE handler for Paws calls
 	local $SIG{__DIE__} = sub { };
-	return eval { $this->{s3}->PutObject(Bucket => $this->{bucket}, Key => $name, Body => $data, @ct) };
+	my $result = eval { $this->{s3}->PutObject(Bucket => $this->{bucket}, Key => $name, Body => $data, @ct) };
+	if(not $result)
+	{
+		# Surface the failure instead of swallowing it silently -- a swallowed PutObject
+		# error is exactly how a broken sitemap/export job reports success while writing
+		# nothing. The caller still receives undef and decides whether to fail.
+		Everything::printLog("Everything::S3::upload_data failed: bucket=".($this->{bucket}//'?')." key=".($name//'?').": ".($@||'unknown error'));
+	}
+	return $result;
 }
 
 sub upload_file

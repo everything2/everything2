@@ -98,13 +98,10 @@ sub main
 	# Deterministic ordering -> a stable, diffable committed artifact.
 	@nodes = sort { $a->{node_id} <=> $b->{node_id} } @nodes;
 
-	my $payload = {
-		generated_from => $this->{options}->{database},
-		node_count     => scalar(@nodes),
-		nodes          => \@nodes,
-	};
-
-	my $json = JSON->new->canonical(1)->pretty(1)->utf8(1)->encode($payload);
+	# The bundle IS a flat array of nodes (sorted by node_id): the count is
+	# observable as the array length, and we deliberately don't pin the source
+	# database name into the committed artifact.
+	my $json = JSON->new->canonical(1)->pretty(1)->utf8(1)->encode(\@nodes);
 
 	my $out = $this->{options}->{output};
 	make_path(dirname($out));   # be self-sufficient: create the output dir for standalone runs
@@ -142,6 +139,16 @@ sub _hydrate
 	foreach my $k (keys %flat)
 	{
 		delete $flat{$k} if ref $flat{$k};
+	}
+
+	# Sanitize: never source-control auth secrets. Guest User carries a password
+	# hash, password salt, and a session validation token; blank any such field
+	# (on every node, defensively) so the committed bundle stays structurally
+	# faithful without shipping credentials. These are never needed for the cached
+	# core nodes (a guest never authenticates).
+	foreach my $secret (qw(passwd salt user_salt validationkey))
+	{
+		$flat{$secret} = '' if exists $flat{$secret};
 	}
 
 	# Int-ify the identity fields so the committed artifact is clean + canonical
