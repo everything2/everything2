@@ -1567,14 +1567,6 @@
               "Value": "1000"
             },
             {
-              "Name": "E2_CRON_ENABLED",
-              "Value": "1"
-            },
-            {
-              "Name": "E2_CRON_LIVE",
-              "Value": "1"
-            },
-            {
               "Name": "E2_HYDRATION_CACHE",
               "Value": "1"
             }

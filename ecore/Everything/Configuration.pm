@@ -40,11 +40,6 @@ has 'mail_from' => (isa => 'Str', is => 'ro', default => 'accounthelp@everything
 
 has 'nodecache_size' => (isa => 'Int', is => 'ro', default => 1300);
 
-# Load the committed core-node hydration bundle (#4423) into each worker's NodeCache
-# at startup (permanent, version-exempt). Off by default while it is an experiment;
-# the E2_HYDRATION_CACHE env var flips it on (per-process) so it can be A/B'd.
-has 'hydration_cache' => (isa => 'Bool', is => 'ro', default => sub { $ENV{E2_HYDRATION_CACHE} ? 1 : 0 });
-
 has 'environment' => (isa => 'Str', is => 'ro', default => 'development');
 
 has 's3' => (isa => 'HashRef', is => 'ro', default => sub { {

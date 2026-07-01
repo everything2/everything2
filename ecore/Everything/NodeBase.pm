@@ -121,11 +121,10 @@ sub new
 
 	$this->{cache}->clearSessionCache;
 
-	# Warm this worker's cache from the committed core-node bundle (#4423): the
-	# static_cache/permanent core nodes + Guest User become resident, version-exempt,
-	# never-evicted -- served from disk instead of the DB. Opt-in via config while
-	# it is an experiment; best-effort (a missing bundle just leaves the DB path).
-	$this->{cache}->loadHydrationCache if($Everything::CONF->hydration_cache);
+	# NB: hydration (loading the committed core-node bundle into the worker cache)
+	# is NOT done here. It is a web-request optimization loaded from the web boot
+	# path (app.psgi) per worker, so the cron/batch scripts and the test suite --
+	# which boot through here too -- keep their lean caches. See #4423/#4439.
 
 	return $this;
 }
