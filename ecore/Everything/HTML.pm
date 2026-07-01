@@ -389,9 +389,12 @@ sub gotoNode
 
 	my $NODE = {};
 	unless (ref ($node_id) eq 'ARRAY') {
-		# Is there a reason why we are "force"ing this node?
-		# A 'force' causes us not to use the cache.
-		$NODE = getNodeById($node_id, 'force');
+		# Serve the displayed node through the version-checked cache. The old
+		# 'force' unconditionally re-fetched from the DB on every render; that
+		# is redundant now that mutations are separate API requests and the
+		# cache re-fetches on a version bump (isSameVersion), and it defeated
+		# the hydration cache for the main displayed node. (#4436, closes #4434)
+		$NODE = getNodeById($node_id);
 	}
 	else {
 		$NODE = getNodeById($Everything::CONF->search_results);

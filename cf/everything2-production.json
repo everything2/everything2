@@ -1573,6 +1573,10 @@
             {
               "Name": "E2_CRON_LIVE",
               "Value": "1"
+            },
+            {
+              "Name": "E2_HYDRATION_CACHE",
+              "Value": "1"
             }
           ],
           "LogConfiguration": {
