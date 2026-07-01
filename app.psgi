@@ -29,6 +29,14 @@ my $APIr = Everything::APIRouter->new;
 # per worker. Answers /health + /health.pl below, before any request setup.
 my $health_app = Everything::HealthCheck->to_app;
 
+# Per-worker flag: has this worker loaded the core-node hydration bundle yet? The
+# lexical is COW-copied at fork, so each worker gets its own (undef) and hydrates
+# exactly once, on its first real request. This is the ONLY place hydration is
+# triggered -- it is a web-request optimization, so scoping it to the web boot path
+# keeps cron/batch scripts and the test suite (which never run app.psgi) on their
+# lean caches, with no env flag or config knob to misconfigure. See #4423/#4439.
+my $hydrated;
+
 my $app = sub {
     my $env = shift;
 
@@ -120,6 +128,15 @@ my $app = sub {
         # this request's $capture) makes each request immune. See issue #4237.
         select STDOUT;
         my $ok = eval {
+            # First real request on this worker: ensure $DB exists, then eagerly load
+            # the core-node hydration bundle into this worker's cache (once). Inside
+            # the request eval so a load failure degrades gracefully rather than
+            # poisoning the worker; loadHydrationCache is itself best-effort.
+            unless ($hydrated) {
+                Everything::initEverything();
+                $Everything::DB->{cache}->loadHydrationCache;
+                $hydrated = 1;
+            }
             if ($is_api) {
                 Everything::initEverything();
                 $returned = $APIr->dispatcher;
