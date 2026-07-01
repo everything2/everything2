@@ -38,7 +38,12 @@ has 'homenode_image_host' => (isa => 'Str', is => 'ro', default => 'hnimagew.eve
 # SMTP options
 has 'mail_from' => (isa => 'Str', is => 'ro', default => 'accounthelp@everything2.com');
 
-has 'nodecache_size' => (isa => 'Int', is => 'ro', default => 1000);
+has 'nodecache_size' => (isa => 'Int', is => 'ro', default => 1500);
+
+# Load the committed core-node hydration bundle (#4423) into each worker's NodeCache
+# at startup (permanent, version-exempt). Off by default while it is an experiment;
+# the E2_HYDRATION_CACHE env var flips it on (per-process) so it can be A/B'd.
+has 'hydration_cache' => (isa => 'Bool', is => 'ro', default => sub { $ENV{E2_HYDRATION_CACHE} ? 1 : 0 });
 
 has 'environment' => (isa => 'Str', is => 'ro', default => 'development');
 
