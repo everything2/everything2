@@ -121,6 +121,12 @@ sub new
 
 	$this->{cache}->clearSessionCache;
 
+	# Warm this worker's cache from the committed core-node bundle (#4423): the
+	# static_cache/permanent core nodes + Guest User become resident, version-exempt,
+	# never-evicted -- served from disk instead of the DB. Opt-in via config while
+	# it is an experiment; best-effort (a missing bundle just leaves the DB path).
+	$this->{cache}->loadHydrationCache if($Everything::CONF->hydration_cache);
+
 	return $this;
 }
 

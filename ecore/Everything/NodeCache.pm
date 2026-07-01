@@ -105,6 +105,10 @@ sub new
 	$this->{typeVersion} = {};
         $this->{groupCache} = {};
 
+	# node_ids loaded from the committed hydration bundle (#4423): permanent +
+	# version-exempt (isSameVersion short-circuits, so they never hit the version table).
+	$this->{hydrationExempt} = {};
+
 	$this->{paramcache} = {};
 
 	# Cache statistics tracking (per-process)
@@ -317,6 +321,128 @@ sub cacheNode
 	$this->purgeCache();
 
 	return 1;
+}
+
+#############################################################################
+#	Sub		hydrateNode
+#
+#	Insert a fully-reconstructed core node from the committed hydration bundle
+#	(#4423) as a PERMANENT, VERSION-EXEMPT cache resident: never evicted, never
+#	version-checked. Unlike cacheNode this does NOT call getGlobalVersion -- the
+#	point is to serve these without touching the DB. {type} must already be attached.
+#
+sub hydrateNode
+{
+	my ($this, $NODE) = @_;
+	return unless(ref $NODE && $$NODE{node_id} && $$NODE{type} && defined $$NODE{title});
+
+	my ($type, $title) = ($$NODE{type}{title}, $$NODE{title});
+
+	$this->removeNode($NODE) if(defined $this->{idCache}{$$NODE{node_id}});
+
+	my $data = $this->{nodeQueue}->queueItem($NODE, 1);   # permanent
+	$this->{typeCache}{$type}{$title} = $data;
+	$this->{idCache}{$$NODE{node_id}}  = $data;
+	$this->{version}{$$NODE{node_id}}  = 0;   # never compared (exempt)
+	$this->{hydrationExempt}{$$NODE{node_id}} = 1;
+
+	return 1;
+}
+
+#############################################################################
+#	Sub		loadHydrationCache
+#
+#	Load the committed core-node bundle (#4423) into this worker's cache as
+#	permanent, version-exempt residents. Read the flat JSON array, re-inflate each
+#	node's {type} from the bundled nodetypes (all nodetypes are static_cache -> in the
+#	bundle), and hydrateNode() them. Best-effort: a missing/malformed bundle logs a
+#	warning and leaves the normal DB path in place. Returns the count loaded.
+#
+# printLog delegates to $APP, which is not wired up yet when the loader runs from
+# NodeBase::new (before initEverything sets $APP); fall back to warn so a startup
+# log line never crashes the worker.
+sub _hydrationLog
+{
+	my ($msg) = @_;
+	eval { Everything::printLog($msg); 1 } or warn "$msg\n";
+	return;
+}
+
+sub loadHydrationCache
+{
+	my ($this, $path) = @_;
+	$path ||= $ENV{E2_HYDRATION_CACHE_PATH} || '/var/everything/hydration/hydration_cache.json';
+
+	require JSON;
+	my $nodes = eval {
+		open(my $fh, '<:raw', $path) or die "cannot read $path: $!\n";
+		local $/ = undef;
+		my $json = <$fh>;
+		close($fh);
+		JSON::decode_json($json);
+	};
+	if($@ || ref $nodes ne 'ARRAY')
+	{
+		_hydrationLog("hydration cache NOT loaded ($path): ".($@ || 'bundle is not a JSON array'));
+		return 0;
+	}
+
+	# Pass 1: index the bundle by node_id so we can resolve each node's type.
+	my %by_id = map { $$_{node_id} => $_ } @$nodes;
+
+	# Pass 2: re-attach {type} (the nodetype node, keyed by type_nodetype) + insert.
+	my $count = 0;
+	foreach my $NODE (@$nodes)
+	{
+		my $type = $by_id{ $$NODE{type_nodetype} };
+		next unless($type);
+		$$NODE{type} = $type;
+		$count++ if($this->hydrateNode($NODE));
+	}
+
+	# Dev guard: verify the just-loaded bundle against the live DB (opt-in, dev-only --
+	# it does an uncached fetch per node). Catches a committed bundle that has drifted.
+	$this->_hydrationDriftCheck($nodes)
+		if($count && $Everything::CONF->environment eq 'development' && $ENV{E2_HYDRATION_VERIFY});
+
+	_hydrationLog("hydration cache loaded: $count core nodes from $path");
+	return $count;
+}
+
+#############################################################################
+#	Sub		_hydrationDriftCheck
+#
+#	Dev guard: compare each just-loaded bundle node against a fresh, UNCACHED DB
+#	fetch and warn on drift, so a stale committed bundle is caught. Fetches with
+#	'nocache' so it never evicts/replaces the hydration residents. Compares only the
+#	identity + code-content fields (title, type, doctext); volatile fields (counters,
+#	timestamps) and the sanitized secrets are intentionally ignored. Opt-in + dev-only.
+#
+sub _hydrationDriftCheck
+{
+	my ($this, $nodes) = @_;
+	my @drift;
+	foreach my $B (@$nodes)
+	{
+		my $D = $this->{nodeBase}->getNodeById($$B{node_id}, 'nocache');
+		if(not $D) { push @drift, "$$B{node_id} ($$B{title}): not in DB"; next; }
+		foreach my $f (qw(title type_nodetype doctext))
+		{
+			my $bv = defined $$B{$f} ? $$B{$f} : '';
+			my $dv = defined $$D{$f} ? $$D{$f} : '';
+			if($bv ne $dv) { push @drift, "$$B{node_id} ($$B{title}): $f differs"; last; }
+		}
+	}
+	if(@drift)
+	{
+		my @show = @drift[0 .. ($#drift > 9 ? 9 : $#drift)];
+		_hydrationLog("hydration DRIFT vs DB: ".scalar(@drift)." node(s) -- ".join("; ", @show).($#drift > 9 ? " ..." : ""));
+	}
+	else
+	{
+		_hydrationLog("hydration cache verified against DB: ".scalar(@$nodes)." nodes match");
+	}
+	return \@drift;
 }
 
 #############################################################################
@@ -654,6 +780,11 @@ sub isSameVersion
 	# Skip version check entirely for static_cache types.
 	# These are "code nodes" that only change via deployment.
 	return 1 if($type_title && exists $Everything::CONF->static_cache->{$type_title});
+
+	# Hydration-bundle residents (#4423) are loaded from disk at startup and only
+	# change at deploy -- treat like static_cache regardless of type (covers the one
+	# non-static member, Guest User).
+	return 1 if(exists $$this{hydrationExempt}{$$NODE{node_id}});
 
 	return 1 if($type_id && exists $$this{typeVerified}{$type_id});
 	return 1 if(exists $$this{verified}{$$NODE{node_id}});
