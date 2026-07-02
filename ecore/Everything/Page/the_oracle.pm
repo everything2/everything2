@@ -17,6 +17,12 @@ The Oracle Classic reuses this same Page class with classic_mode=1.
 
 =cut
 
+# classic_mode: 0 for The Oracle (friendly view, editors + admins); overridden to 1 by
+# Everything::Page::the_oracle_classic (raw all-vars view, admins only). Both documents
+# share this one implementation + the TheOracle React component -- they differ only by
+# this flag and their title. (#4298)
+sub classic_mode { return 0 }
+
 sub buildReactData {
     my ($self, $REQUEST) = @_;
 
@@ -25,17 +31,18 @@ sub buildReactData {
     my $USER  = $REQUEST->user;
     my $query = $REQUEST->cgi;
 
+    my $classic   = $self->classic_mode;
     my $is_admin  = $APP->isAdmin($USER->NODEDATA) ? 1 : 0;
     my $is_editor = $APP->isEditor($USER->NODEDATA) ? 1 : 0;
 
-    # Classic mode is set by the_oracle_classic.pm
-    my $classic_mode = 0;
-
-    # Access control - editors and admins for regular, admins only for classic
-    unless ($is_editor || $is_admin) {
+    # Access control: classic is admin-only; the friendly Oracle allows editors + admins.
+    my $allowed = $classic ? $is_admin : ( $is_editor || $is_admin );
+    unless ($allowed) {
         return {
             type  => 'the_oracle',
-            error => 'Access denied. This tool is restricted to Content Editors and administrators.'
+            error => $classic
+                ? 'Access denied. The Oracle Classic is restricted to administrators.'
+                : 'Access denied. This tool is restricted to Content Editors and administrators.'
         };
     }
 
@@ -44,7 +51,7 @@ sub buildReactData {
     # React reads them from the global e2.user prop (user.admin / user.editor). (#4390)
     my $data = {
         type         => 'the_oracle',
-        classic_mode => $classic_mode
+        classic_mode => $classic
     };
 
     # The variable WRITE moved to POST /api/oracle/setvar (Everything::API::oracle)
@@ -107,8 +114,8 @@ sub buildReactData {
                 value => $value
             };
 
-            # Resolve node_id references to titles
-            if ($key =~ /^(userstyle|lastnoded|current_nodelet|group)$/ && $value =~ /^\d+$/) {
+            # Friendly view only (classic shows raw values): resolve node_id refs to titles
+            if (!$classic && $key =~ /^(userstyle|lastnoded|current_nodelet|group)$/ && $value =~ /^\d+$/) {
                 my $ref_node = $DB->getNodeById($value, 'light');
                 if ($ref_node) {
                     $var_entry->{resolved_title} = $ref_node->{title};
@@ -116,8 +123,8 @@ sub buildReactData {
                 }
             }
 
-            # Resolve CSV lists of node_ids
-            if ($key =~ /^(nodelets|bookbucket|favorite_noders|emailSubscribedusers|nodetrail|nodebucket|can_weblog)$/) {
+            # Resolve CSV lists of node_ids (friendly view only)
+            if (!$classic && $key =~ /^(nodelets|bookbucket|favorite_noders|emailSubscribedusers|nodetrail|nodebucket|can_weblog)$/) {
                 my @ids = split(/,/, $value);
                 my @resolved = ();
                 for my $id (@ids) {
@@ -145,9 +152,11 @@ sub buildReactData {
                 $var_entry->{ip_hunter_id} = $ip_hunter->{node_id} if $ip_hunter;
             }
 
-            # Special formatting hints
-            $var_entry->{is_code}         = 1 if $key eq 'customstyle';
-            $var_entry->{is_nodelet_list} = 1 if $key eq 'personal_nodelet';
+            # Special formatting hints (friendly view only)
+            unless ($classic) {
+                $var_entry->{is_code}         = 1 if $key eq 'customstyle';
+                $var_entry->{is_nodelet_list} = 1 if $key eq 'personal_nodelet';
+            }
 
             push @var_list, $var_entry;
         }
