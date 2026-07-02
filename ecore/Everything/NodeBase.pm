@@ -2967,8 +2967,20 @@ sub stashData
     delete $this->{_stash_cache}{$stash_name};
     return $stash_values;
   }else{
-    # read operation
-    return $json->decode($stashnode->{vars});
+    # read operation. Guard an empty/missing/malformed vars column: a bare decode
+    # of undef or '' dies with "malformed JSON" and 500s the page (e.g. a stash the
+    # cron never populated, or -- pre-#4444 -- a nodetype-construction bug that
+    # dropped the vars column). A stash with no usable data reads as undef, the same
+    # contract as the missing-node case above. (#4446)
+    my $raw = $stashnode->{vars};
+    return unless (defined $raw && length $raw);
+    my $decoded = eval { $json->decode($raw) };
+    if($@)
+    {
+      Everything::printLog("stashData: malformed JSON in datastash '$stash_name' -- treating as empty: $@");
+      return;
+    }
+    return $decoded;
   }
 }
 
