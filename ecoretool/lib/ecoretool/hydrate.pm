@@ -58,6 +58,12 @@ sub main
 
 	my $static_types = $Everything::CONF->static_cache;   # { typename => 1, ... }
 
+	# Mutable-content types are NEVER hydrated, even if a static_cache entry ever names
+	# one: datastash (cron-refreshed every ~2 min) and room churn at runtime, so a
+	# version-exempt resident copy would serve stale data forever. Belt-and-suspenders
+	# on top of the static_cache-only membership. (#4446)
+	my %never_hydrate = map { $_ => 1 } qw(datastash room);
+
 	my %seen;
 	my @nodes;
 	my %per_type;       # typename => count, for the composition summary
@@ -65,6 +71,7 @@ sub main
 	# 1) Every node of each static_cache type.
 	foreach my $typename (sort keys %$static_types)
 	{
+		next if $never_hydrate{$typename};
 		my $type = getNode($typename, "nodetype");
 		unless ($type)
 		{
@@ -131,6 +138,20 @@ sub _hydrate
 
 	my $node = getNodeById($node_id);
 	return unless $node;
+
+	# For nodetypes, serialize the FULLY-DERIVED form. getNodeById can hand back a
+	# nodetype whose inheritance is not resolved yet (resolvedInheritance unset, or set
+	# with an empty sqltablelist); committing that half-derived state fooled getType's
+	# "already resolved" guard at load and left constructNode building nodes without
+	# their type-table columns (#4443/#4444). getType() forces full derivation, so the
+	# committed sqltablelist/resolvedInheritance are consistent. (The derived tableArray
+	# is an arrayref and is dropped below with the other refs; the loader rebuilds it
+	# from sqltablelist.) #4446.
+	if (($node->{type_nodetype} // 0) == 1)
+	{
+		my $derived = $DB->getType($node_id);
+		$node = $derived if $derived;
+	}
 
 	my %flat = %$node;
 	my $type = delete $flat{type};

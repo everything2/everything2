@@ -415,6 +415,20 @@ sub loadHydrationCache
 		delete @{$NODE}{qw(resolvedInheritance sqltablelist tableArray)};
 	}
 
+	# Re-point each hydrated CONTENT node's {type} at the now-resolvable nodetype
+	# (#4446). updateNode reads $NODE->{type}{tableArray} DIRECTLY to decide which
+	# type tables to write, and the strip above left the pass-2 {type} pointing at
+	# the stripped nodetype object -- so an update of a hydrated node (e.g. a setting)
+	# would skip its type-table columns. getType() re-derives + returns the resolved
+	# nodetype. Nodetype nodes are skipped: their pass-2 {type} is the 'nodetype'
+	# nodetype (node_id 1) and is already correct; re-pointing them would clobber
+	# node_id 1's self-reference.
+	foreach my $NODE (@$nodes)
+	{
+		next if(($$NODE{type_nodetype} // 0) == 1);
+		$$NODE{type} = $this->{nodeBase}->getType($$NODE{type_nodetype});
+	}
+
 	# Dev guard: verify the just-loaded bundle against the live DB (opt-in, dev-only --
 	# it does an uncached fetch per node). Catches a committed bundle that has drifted.
 	$this->_hydrationDriftCheck($nodes)

@@ -48,6 +48,8 @@ E2 is a 1999-vintage Perl/mod_perl/MySQL community writing site mid-modernizatio
 
 **LinkNode single-encodes; the server-side helper decodes once. Don't break the pair.** `react/components/LinkNode.js` percent-encodes title characters (`& @ + / ; ?`) exactly once via `encodeURIComponent`, and `Everything::HTML::_recover_route_params_from_request_uri` reads `$ENV{REQUEST_URI}` and decodes exactly once. The two are a matched set — change one and you must update the other, or every link with a special character in its title silently 404s (well, falls through to the `Findings:` page). The historical double-encoding workaround in `LinkNode.js` was the only thing keeping title-bearing URLs alive while the Apache rewrite block was the dispatcher; the helper replaced that workaround in #4060. Issue #4129 will eventually remove both pieces together when PSGI lands.
 
+**A CFN env var is only "dead" if `docker/` doesn't read it either.** Config flags are read in more places than the Perl app: the container entrypoint `docker/e2app/apache2_wrapper.rb` reads env directly (e.g. `E2_CRON_ENABLED`/`E2_CRON_LIVE` gate whether the leader-elected cron sidecar even starts; `STARMAN_WORKERS`/`STARMAN_MAX_REQUESTS` launch Starman). Before removing a `E2_*` var from `cf/*.json` as cruft, grep **`docker/`** in addition to `ecore/ tools/ *.psgi`. Removing `E2_CRON_ENABLED` on the strength of an `ecore`-only grep silently killed the cron sidecar in prod (#4444) — datastashes froze until the flags were restored.
+
 ---
 
 ## Visual / styling
