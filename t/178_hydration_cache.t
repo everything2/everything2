@@ -50,4 +50,29 @@ is( ( $nt->{type} ? $nt->{type}{node_id} : undef ),
 is( ( $node->{passwd} // '' ),        '', 'Guest User passwd blanked in the resident node' );
 is( ( $node->{validationkey} // '' ), '', 'Guest User validationkey blanked in the resident node' );
 
+# --- #4444 regression: hydrated nodetypes must be fully resolved -----------------
+# The bundle captured some nodetypes mid-construction (resolvedInheritance set but
+# sqltablelist/tableArray empty). getType's guard then skipped re-derivation, so
+# constructNode built nodes of those types MISSING their type-table columns: a
+# datastash came back without vars (stashData 500), a user without experience (write
+# NULLs it), and getNodeWhere-by-type dropped its join (1054). The loader now strips
+# the stale derived fields so getType re-derives cleanly.
+for my $tn (qw(user datastash setting e2node achievement)) {
+    my $ty = $DB->getType($tn);
+    ok( $ty && ref($ty->{tableArray}) && scalar(@{$ty->{tableArray}}),
+        "hydrated '$tn' nodetype resolves to a non-empty tableArray (#4444)" );
+}
+SKIP: {
+    my $ds = eval { $DB->getNode('newwriteups', 'datastash') };
+    skip 'no newwriteups datastash present', 1 unless $ds;
+    ok( defined $ds->{vars},
+        'a datastash node builds with its vars column present, not UNDEF (#4444)' );
+}
+SKIP: {
+    my $u = eval { $DB->getNode('normaluser1', 'user') };
+    skip 'no normaluser1 present', 1 unless $u;
+    ok( defined $u->{experience},
+        'a user node builds with its experience column present, not UNDEF (#4444)' );
+}
+
 done_testing();
