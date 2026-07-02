@@ -400,6 +400,21 @@ sub loadHydrationCache
 		$count++ if($this->hydrateNode($NODE));
 	}
 
+	# Pass 3: repair hydrated nodetypes (#4444). The bundle captured some nodetypes
+	# mid-construction -- resolvedInheritance is set but the DERIVED fields
+	# (sqltablelist / tableArray) are empty. getType()'s guard,
+	# "if(not exists resolvedInheritance)", then treats them as fully resolved and
+	# never re-derives, so getNodeCursor/constructNode omit the type-table join and
+	# build every node of that type MISSING its type-table columns (datastash.vars,
+	# user.experience -> written back NULL, achievement queries -> 1054). Strip the
+	# stale derived fields off each hydrated nodetype so getType re-derives them, on
+	# demand, from the reliable raw fields (sqltable, extends_nodetype).
+	foreach my $NODE (@$nodes)
+	{
+		next unless(($$NODE{type_nodetype} // 0) == 1);
+		delete @{$NODE}{qw(resolvedInheritance sqltablelist tableArray)};
+	}
+
 	# Dev guard: verify the just-loaded bundle against the live DB (opt-in, dev-only --
 	# it does an uncached fetch per node). Catches a committed bundle that has drifted.
 	$this->_hydrationDriftCheck($nodes)
