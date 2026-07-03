@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 
 export default function E2PennyJar({ data }) {
-  const { user_gp, pennies_in_jar, can_interact, error, message: initialMessage } = data;
+  const { error, message: initialMessage } = data;
   const [message, setMessage] = useState(initialMessage || '');
+  const [gp, setGp] = useState(data.user_gp || 0);
+  const [pennies, setPennies] = useState(data.pennies_in_jar || 0);
+  const [loading, setLoading] = useState(false);
+  const canInteract = !!data.can_interact;
 
   if (error) {
     return (
@@ -12,37 +16,40 @@ export default function E2PennyJar({ data }) {
     );
   }
 
-  const handleAction = (action) => {
-    // Create a form and submit it
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = window.location.href;
-
-    // Add node_id hidden field (required for routing)
-    const nodeIdInput = document.createElement('input');
-    nodeIdInput.type = 'hidden';
-    nodeIdInput.name = 'node_id';
-    nodeIdInput.value = window.e2.node.node_id;
-    form.appendChild(nodeIdInput);
-
-    // Add action parameter
-    const actionInput = document.createElement('input');
-    actionInput.type = 'hidden';
-    actionInput.name = action;
-    actionInput.value = '1';
-    form.appendChild(actionInput);
-
-    document.body.appendChild(form);
-    form.submit();
+  // The give/take WRITE moved to POST /api/e2_penny_jar/give|take (#4453, Refs #4298);
+  // update the jar count / GP / message from the response in place -- no full-page
+  // POST + reload the way the old throwaway-form submit did.
+  const handleAction = async (action) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/e2_penny_jar/${action}`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: '{}',
+      });
+      const json = res.ok ? await res.json() : null;
+      if (json) {
+        setMessage(json.message || json.error || '');
+        if (typeof json.pennies_in_jar === 'number') setPennies(json.pennies_in_jar);
+        if (typeof json.user_gp === 'number') setGp(json.user_gp);
+      } else {
+        setMessage('Something went wrong reaching the penny jar.');
+      }
+    } catch (err) {
+      setMessage(err.message || 'Something went wrong reaching the penny jar.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getPennyMessage = () => {
-    if (pennies_in_jar === 0) {
+    if (pennies === 0) {
       return 'There are no more pennies in the penny jar!';
-    } else if (pennies_in_jar === 1) {
+    } else if (pennies === 1) {
       return 'There is currently 1 penny in the penny jar.';
     } else {
-      return `There are currently ${pennies_in_jar} pennies in the penny jar.`;
+      return `There are currently ${pennies} pennies in the penny jar.`;
     }
   };
 
@@ -54,7 +61,7 @@ export default function E2PennyJar({ data }) {
         </p>
       )}
 
-      {pennies_in_jar < 1 ? (
+      {pennies < 1 ? (
         <div>
           <p>
             Sorry, there are no more pennies in the jar! Would you like to{' '}
@@ -66,20 +73,20 @@ export default function E2PennyJar({ data }) {
           <p>Oh look! It's a jar of pennies!</p>
           <p>Would you like to give a penny or take a penny?</p>
 
-          {can_interact && (
+          {canInteract && (
             <div className="penny-jar__buttons">
               <button
                 onClick={() => handleAction('give')}
-                disabled={user_gp < 1}
+                disabled={gp < 1 || loading}
                 className="penny-jar__btn penny-jar__btn--give"
-                title={user_gp < 1 ? 'You need at least 1 GP to give' : ''}
+                title={gp < 1 ? 'You need at least 1 GP to give' : ''}
               >
                 The more you give the more you get. Give!
               </button>
 
               <button
                 onClick={() => handleAction('take')}
-                disabled={pennies_in_jar < 1}
+                disabled={pennies < 1 || loading}
                 className="penny-jar__btn penny-jar__btn--take"
               >
                 No! Giving is for the weak. Take!
@@ -94,7 +101,7 @@ export default function E2PennyJar({ data }) {
       </p>
 
       <p className="penny-jar__gp-status">
-        You currently have <strong>{user_gp} GP</strong>.
+        You currently have <strong>{gp} GP</strong>.
       </p>
     </div>
   );
