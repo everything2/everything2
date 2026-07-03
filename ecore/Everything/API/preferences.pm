@@ -88,6 +88,9 @@ has 'allowed_preferences' => (isa => 'HashRef', is => 'ro', default => sub { {
   'HideNewWriteups' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'nullvote' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
 
+  ## SQL Prompt console (root-only) display format: 0=table, 1=variable-width, 2=textarea (#4442)
+  'sqlprompt_wrap' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1,2]),
+
   ## Nodelet-specific preferences
   'nw_nojunk' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'num_newwus' => Everything::Preference::List->new(default_value => 15, allowed_values => [1,5,10,15,20,25,30,40]),

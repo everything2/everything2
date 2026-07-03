@@ -1,9 +1,14 @@
 import React, { useState } from 'react'
 
 export default function SQLPrompt({ data }) {
-  const [query, setQuery] = useState(data.query || '')
-  const [formatStyle, setFormatStyle] = useState(data.formatStyle || '0')
-  const [hideResults, setHideResults] = useState(data.hideResults || false)
+  const [query, setQuery] = useState('')
+  const [formatStyle, setFormatStyle] = useState(
+    data.formatStyle != null ? String(data.formatStyle) : '0'
+  )
+  const [hideResults, setHideResults] = useState(false)
+  const [results, setResults] = useState(null)
+  const [running, setRunning] = useState(false)
+  const [runError, setRunError] = useState(null)
 
   // Handle unauthorized access
   if (data.error === 'unauthorized') {
@@ -15,31 +20,66 @@ export default function SQLPrompt({ data }) {
     )
   }
 
-  const results = data.results
+  // Persist the display-format preference via the allowlisted preferences API
+  // (#4442). Non-fatal on failure -- the choice still applies locally this session.
+  const handleFormatChange = async (e) => {
+    const value = e.target.value
+    setFormatStyle(value)
+    try {
+      await fetch('/api/preferences', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ sqlprompt_wrap: value }),
+      })
+    } catch (err) {
+      /* non-fatal */
+    }
+  }
+
+  // Run the query through the root-gated API and render results client-side (#4442).
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!query.trim()) return
+    setRunning(true)
+    setRunError(null)
+    try {
+      const res = await fetch('/api/sqlprompt/query', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ query, hide_results: hideResults ? 1 : 0 }),
+      })
+      const json = res.ok ? await res.json() : null
+      if (json && json.success) {
+        setResults(json.results)
+      } else {
+        setRunError((json && json.error) || 'Query failed')
+        setResults(null)
+      }
+    } catch (err) {
+      setRunError(err.message || 'Query failed')
+      setResults(null)
+    } finally {
+      setRunning(false)
+    }
+  }
 
   // Helper to render cell value based on format style
   const renderCellValue = (cell) => {
-    const value = cell?.value
-    const isNull = cell?.is_null
-
-    if (isNull) return 'NULL'
-    if (value === '') return ''
-    return value
+    if (cell?.is_null) return 'NULL'
+    if (cell?.value === '') return ''
+    return cell?.value
   }
 
   // Render results in textarea format (format style 2)
   const renderTextareaFormat = () => {
-    if (!results.rows || results.rows.length === 0) return ''
+    if (!results || !results.rows || results.rows.length === 0) return ''
 
-    let text = ''
-    // Header row
-    text += results.columns.join('\t') + '\n'
-
-    // Data rows
+    let text = results.columns.join('\t') + '\n'
     results.rows.forEach((row) => {
-      text += results.columns.map(col => renderCellValue(row[col])).join('\t') + '\n'
+      text += results.columns.map((col) => renderCellValue(row[col])).join('\t') + '\n'
     })
-
     return text
   }
 
@@ -54,17 +94,12 @@ export default function SQLPrompt({ data }) {
         Restricted administrative interface - Use with extreme caution
       </p>
 
-      <form method="POST" action="">
-        <input type="hidden" name="node" value="SQL Prompt" />
-        <input type="hidden" name="displaytype" value="" />
-        <input type="hidden" name="sexisgood" value="1" />
-
+      <form onSubmit={handleSubmit}>
         <div className="sql-prompt__form-group">
           <label className="sql-prompt__label">
             SQL Query:
           </label>
           <textarea
-            name="sqlquery"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             rows={5}
@@ -78,9 +113,8 @@ export default function SQLPrompt({ data }) {
           <div>
             <label>Display format: </label>
             <select
-              name="sqlprompt_wrap"
               value={formatStyle}
-              onChange={(e) => setFormatStyle(e.target.value)}
+              onChange={handleFormatChange}
               className="sql-prompt__select"
             >
               <option value="0">Table view</option>
@@ -92,8 +126,6 @@ export default function SQLPrompt({ data }) {
           <label>
             <input
               type="checkbox"
-              name="hideresults"
-              value="1"
               checked={hideResults}
               onChange={(e) => setHideResults(e.target.checked)}
             />
@@ -102,13 +134,19 @@ export default function SQLPrompt({ data }) {
 
           <button
             type="submit"
-            disabled={!query.trim()}
+            disabled={running || !query.trim()}
             className="sql-prompt__submit"
           >
-            Execute
+            {running ? 'Running…' : 'Execute'}
           </button>
         </div>
       </form>
+
+      {runError && (
+        <div className="sql-prompt__error">
+          <pre>{runError}</pre>
+        </div>
+      )}
 
       {/* Display Results */}
       {results && (
