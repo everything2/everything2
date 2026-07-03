@@ -36,8 +36,33 @@ const Websterbless = ({ data }) => {
     setRows(newRows)
   }
 
-  const handleSubmit = (e) => {
-    // Let form submit naturally - page will reload with results
+  // Submit the blessings to the admin API (#4451) and render the per-user results
+  // from the response -- no more server-rendered POST-back.
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const blessings = rows
+      .filter((r) => r.username.trim())
+      .map((r) => ({ user: r.username.trim(), writeup: r.writeup.trim() }))
+    if (!blessings.length) return
+    setLoading(true)
+    try {
+      const res = await fetch('/api/websterbless/bless', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ blessings }),
+      })
+      const json = res.ok ? await res.json() : null
+      if (json && json.success) {
+        setResults(json.results || [])
+      } else {
+        setResults([{ success: 0, error: (json && json.error) || 'Blessing failed' }])
+      }
+    } catch (err) {
+      setResults([{ success: 0, error: err.message || 'Blessing failed' }])
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -72,9 +97,7 @@ const Websterbless = ({ data }) => {
         )}
       </div>
 
-      <form method="post" onSubmit={handleSubmit}>
-        <input type="hidden" name="node_id" value={window.e2?.node_id || ''} />
-
+      <form onSubmit={handleSubmit}>
         <table className="websterbless__table">
           <thead>
             <tr>
@@ -108,8 +131,8 @@ const Websterbless = ({ data }) => {
           </tbody>
         </table>
 
-        <button type="submit" className="websterbless__button">
-          Websterbless
+        <button type="submit" className="websterbless__button" disabled={loading}>
+          {loading ? 'Blessing…' : 'Websterbless'}
         </button>
       </form>
 
