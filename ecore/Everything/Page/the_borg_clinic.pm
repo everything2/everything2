@@ -49,24 +49,10 @@ sub buildReactData {
     my $borged_vars = $APP->getVars($borged_user);
     my $num = $borged_vars->{numborged} // 0;
 
-    # Handle borg count update
-    if (defined $q->param('clinic_borgcount')) {
-        my $new_count = $q->param('clinic_borgcount');
-
-        if ($USER->title eq $borged_user->{title}) {
-            # Updating own borg count - get vars for the blessed user object
-            my $user_vars = $APP->getVars($USER->NODEDATA);
-            $user_vars->{numborged} = $new_count;
-            Everything::setVars($USER->NODEDATA, $user_vars);
-            $num = $new_count;
-        } else {
-            # Updating another user's borg count
-            $borged_vars->{numborged} = $new_count;
-            Everything::setVars($borged_user, $borged_vars);
-            $num = $new_count;
-        }
-        $result->{updated} = 1;
-    }
+    # The borg-count WRITE moved to POST /api/borgclinic/setborg
+    # (Everything::API::borgclinic, #4449), so rendering this page no longer mutates a
+    # user's vars off query params. buildReactData is now pure-render -- the user
+    # lookup and the current count below are reads only.
 
     $result->{user_found}  = 1;
     $result->{user_id}     = int($borged_user->{node_id});
