@@ -9,12 +9,12 @@ const TheTokenator = ({ data }) => {
   const { access_denied, results: initialResults } = data
 
   const [users, setUsers] = useState(['', '', '', '', ''])
-  const [results] = useState(initialResults || [])
+  const [results, setResults] = useState(initialResults || [])
+  const [loading, setLoading] = useState(false)
 
   if (access_denied) {
     return (
       <div className="tokenator">
-        <h2 className="tokenator__title">The Tokenator</h2>
         <div className="tokenator__error-box">
           <p>Access denied. Admins only.</p>
         </div>
@@ -28,32 +28,37 @@ const TheTokenator = ({ data }) => {
     setUsers(newUsers)
   }
 
-  const handleSubmit = (e) => {
+  // The give-tokens WRITE moved to POST /api/the_tokenator/tokenate (#4455, Refs #4298);
+  // post the usernames and render the per-user results from the response -- no more
+  // throwaway full-page form POST.
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Submit form via regular POST (let the server handle it)
-    const form = e.target
-    form.submit()
+    const names = users.map((u) => u.trim()).filter((u) => u.length)
+    if (!names.length) return
+    setLoading(true)
+    try {
+      const res = await fetch('/api/the_tokenator/tokenate', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ users: names }),
+      })
+      const json = res.ok ? await res.json() : null
+      if (json && json.success) {
+        setResults(json.results || [])
+      } else {
+        setResults([{ success: 0, message: (json && json.error) || 'Tokenation failed' }])
+      }
+    } catch (err) {
+      setResults([{ success: 0, message: err.message || 'Tokenation failed' }])
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div className="tokenator">
-      <h2 className="tokenator__title">The Tokenator</h2>
-
-      {results.length > 0 && (
-        <div className="tokenator__results-box">
-          {results.map((result, idx) => (
-            <p
-              key={idx}
-              className={result.success ? 'tokenator__result--success' : 'tokenator__result--error'}
-            >
-              {result.message}
-            </p>
-          ))}
-        </div>
-      )}
-
-      <form method="POST" onSubmit={handleSubmit}>
-        <input type="hidden" name="node_id" value={window.e2?.node_id || ''} />
+      <form onSubmit={handleSubmit}>
         <table className="tokenator__table">
           <tbody>
             <tr>
@@ -75,14 +80,27 @@ const TheTokenator = ({ data }) => {
             ))}
             <tr>
               <td className="tokenator__td tokenator__td--center">
-                <button type="submit" className="tokenator__button">
-                  Give Tokens
+                <button type="submit" className="tokenator__button" disabled={loading}>
+                  {loading ? 'Giving…' : 'Give Tokens'}
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
       </form>
+
+      {results.length > 0 && (
+        <div className="tokenator__results-box">
+          {results.map((result, idx) => (
+            <p
+              key={idx}
+              className={result.success ? 'tokenator__result--success' : 'tokenator__result--error'}
+            >
+              {result.message}
+            </p>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
