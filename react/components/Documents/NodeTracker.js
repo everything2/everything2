@@ -1,14 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
+import LinkNode from '../LinkNode'
 
 /**
  * Node Tracker - Track writing statistics and changes
  *
  * Displays user's writing stats, reputation changes, and node activity.
  * Shows XP, node count, cools, reputation metrics, and tracks changes over time.
+ *
+ * The "Update" snapshot-save moved to POST /api/node_tracker/update (#4458); the button
+ * fetches the refreshed payload and re-renders in place instead of a full-page GET reload.
  */
 const NodeTracker = ({ data }) => {
+  const [payload, setPayload] = useState(data || {})
+  const [loading, setLoading] = useState(false)
+
   const {
-    intro_text,
     last_update,
     stats = {},
     type_breakdown = [],
@@ -18,7 +24,24 @@ const NodeTracker = ({ data }) => {
     renamed_nodes = [],
     changed_nodes = [],
     has_changes
-  } = data || {}
+  } = payload
+
+  const handleUpdate = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/node_tracker/update', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: '{}',
+      })
+      const json = res.ok ? await res.json() : null
+      // Merge over the current payload (the static intro is JSX below, not in payload).
+      if (json && json.success) setPayload((prev) => ({ ...prev, ...json }))
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const formatStat = (stat) => {
     if (!stat) return '0'
@@ -123,7 +146,31 @@ const NodeTracker = ({ data }) => {
         `
       }} />
       <div className="node-tracker-container">
-        <div dangerouslySetInnerHTML={{ __html: intro_text }} />
+        <div className="node-tracker__intro">
+          <p><em>Finally, its time had come.</em></p>
+
+          <p>
+            This is essentially a port of <LinkNode title="cow of doom" />&apos;s node tracker.
+            Obviously there&apos;s been some interface modification since we&apos;ve got a direct
+            line to the e2 database, but he did most of the heavy lifting, and should be lauded
+            for his hard work, <LinkNode title="pbuh" />.
+          </p>
+
+          <p>
+            This is in beta, and things may change at any moment. To that end, I haven&apos;t
+            really messed with any of the data being collected (or much of anything else), so if
+            there&apos;s a feature you would like here or something seems off (especially if
+            things are broken!), please let <LinkNode title="kthejoker" display="me" /> know. Thanks.
+          </p>
+
+          <p>
+            P.S.: Do <strong>not</strong> sit here and refresh this page constantly. It&apos;s not
+            the heaviest page on the site, but it&apos;s not exactly the lightest either, okay? I
+            will hunt you down. So just visit it every once in a while, marvel at your greatness,
+            hit &quot;update&quot; to save the new data, and then head back out into the nodegel.
+            Cool? - k
+          </p>
+        </div>
 
         <pre>
 {`        E2 USER INFO: last update ${last_update}
@@ -195,10 +242,9 @@ Change      Title
           <pre>No nodes changed.</pre>
         )}
 
-        <form method="get" action="/">
-          <input type="hidden" name="node" value="Node Tracker" />
-          <button type="submit" name="update" value="1">Update</button>
-        </form>
+        <button type="button" onClick={handleUpdate} disabled={loading}>
+          {loading ? 'Updating…' : 'Update'}
+        </button>
       </div>
     </div>
   )
