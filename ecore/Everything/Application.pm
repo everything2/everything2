@@ -6497,10 +6497,27 @@ sub is_username_taken
 sub is_ip_blacklisted
 {
   my ($this, $ip) = @_;
+  my $db  = $this->{db};
+  my $qip = $db->quote($ip);
 
-  return $this->{db}->sqlSelect('ipblacklist_ipaddress', 'ipblacklist',
-    "ipblacklist_ipaddress = " . $this->{db}->quote($ip) .
+  # Single-IP bans expire after blacklist_interval (this path also holds the auto-added
+  # smite-spammer entries). An exact, unexpired match wins.
+  my $single = $db->sqlSelect('ipblacklist_ipaddress', 'ipblacklist',
+    "ipblacklist_ipaddress = $qip" .
     " AND ipblacklist_timestamp > DATE_SUB(NOW(), INTERVAL " . $this->{conf}->blacklist_interval . ")");
+  return $single if $single;
+
+  # CIDR-range bans (#4465). Restored from the old `check_blacklist` htmlcode that was the
+  # original [Sign up] gate but got dropped when signup moved to Everything::API::signup +
+  # this single-IP-only function -- so range blocks added via the IP Blacklist tool have
+  # not actually blocked anything since. Range bans are deliberate netblock blocks, so
+  # (like the old code) they do NOT expire. INET_ATON returns NULL for non-IPv4 input, so a
+  # malformed $ip simply matches nothing -- keeping this safe for arbitrary input.
+  my $range = $db->sqlSelect("CONCAT(INET_NTOA(min_ip), ' - ', INET_NTOA(max_ip))", 'ipblacklistrange',
+    "INET_ATON($qip) BETWEEN min_ip AND max_ip");
+  return $range if $range;
+
+  return;
 }
 
 # Originally in [Sign up]
