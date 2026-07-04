@@ -2,34 +2,107 @@ import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
 
 /**
- * IP Blacklist - Admin tool for managing blocked IP addresses
+ * IP Blacklist - Admin tool for managing blocked IP addresses (#4464).
  * Styles in CSS: .ip-blacklist__*
  *
- * Manages IP addresses that are barred from creating new accounts.
- * Supports individual IPs and CIDR ranges (e.g., 192.168.1.0/24).
+ * One unified interface for both the ip_blacklist and mass_ip_blacklister Document pages:
+ * the add box takes one entry per line (a single IP OR a CIDR range like 192.168.1.0/24),
+ * so a single IP is just a one-line list. add/remove/list are driven by
+ * POST /api/ip_blacklist/*; `data.source` selects the audit-log event server-side.
  */
-const IpBlacklist = ({ data, e2 }) => {
+const IpBlacklist = ({ data }) => {
   const {
-    error_message,
-    success_message,
-    entries = [],
-    total_count,
-    offset,
-    page_size,
+    error,
+    source,
     guest_user_id,
-    posted_ip = '',
-    posted_reason = ''
+    page_size = 200,
   } = data
 
-  const [badIp, setBadIp] = useState(posted_ip)
-  const [blockReason, setBlockReason] = useState(posted_reason)
+  const [entries, setEntries] = useState(data.entries || [])
+  const [totalCount, setTotalCount] = useState(data.total_count || 0)
+  const [offset, setOffset] = useState(data.offset || 0)
+  const [badIps, setBadIps] = useState('')
+  const [reason, setReason] = useState('')
+  const [results, setResults] = useState([])
+  const [banner, setBanner] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  // Pagination helpers
-  const hasMore = total_count > offset + entries.length
+  if (error) {
+    return (
+      <div className="ip-blacklist">
+        <div className="ip-blacklist__error">{error}</div>
+      </div>
+    )
+  }
+
+  const post = async (route, body) => {
+    const res = await fetch(`/api/ip_blacklist/${route}`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ source, offset, ...body }),
+    })
+    return res.ok ? res.json() : null
+  }
+
+  // Every response folds in the refreshed list page, so update it in one shot.
+  const applyList = (json) => {
+    if (!json) return
+    if (Array.isArray(json.entries)) setEntries(json.entries)
+    if (typeof json.total_count === 'number') setTotalCount(json.total_count)
+    if (typeof json.offset === 'number') setOffset(json.offset)
+  }
+
+  const handleAdd = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setBanner('')
+    setResults([])
+    try {
+      const json = await post('add', { ips: badIps, reason })
+      if (json && json.success) {
+        setResults(json.results || [])
+        // Clear the entry box if every line succeeded.
+        if ((json.results || []).every((r) => r.success)) setBadIps('')
+      } else {
+        setBanner((json && json.error) || 'Add failed.')
+      }
+      applyList(json)
+    } catch (err) {
+      setBanner(err.message || 'Add failed.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleRemove = async (id) => {
+    setLoading(true)
+    setBanner('')
+    setResults([])
+    try {
+      const json = await post('remove', { id })
+      if (json && json.message) setResults([{ ip: '', success: json.success ? 1 : 0, message: json.message }])
+      else if (json && json.error) setBanner(json.error)
+      applyList(json)
+    } catch (err) {
+      setBanner(err.message || 'Remove failed.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const gotoOffset = async (newOffset) => {
+    setLoading(true)
+    try {
+      const json = await post('list', { offset: newOffset })
+      applyList(json)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const hasMore = totalCount > offset + entries.length
   const hasPrev = offset > 0
-
-  const nextOffset = offset + page_size
-  const prevOffset = Math.max(0, offset - page_size)
 
   return (
     <div className="ip-blacklist">
@@ -47,33 +120,36 @@ const IpBlacklist = ({ data, e2 }) => {
         {' '}Usually the 'Smite Spammer' tool will do the job automatically for you when it needs to be done.
       </p>
 
-      {success_message && (
-        <div className="ip-blacklist__success">{success_message}</div>
+      {banner && <div className="ip-blacklist__error">{banner}</div>}
+
+      {results.length > 0 && (
+        <div className="ip-blacklist__results">
+          <ol className="ip-blacklist__results-list">
+            {results.map((r, idx) => (
+              <li key={idx} className={r.success ? 'ip-blacklist__success' : 'ip-blacklist__error'}>
+                {r.message}
+              </li>
+            ))}
+          </ol>
+        </div>
       )}
 
-      {error_message && (
-        <div className="ip-blacklist__error">{error_message}</div>
-      )}
+      <h3 className="ip-blacklist__heading">Blacklist an IP (one entry per line)</h3>
 
-      <h3 className="ip-blacklist__heading">Blacklist an IP</h3>
-
-      <form method="post" className="ip-blacklist__form">
-        <input type="hidden" name="node_id" value={e2?.node_id || ''} />
-
+      <form onSubmit={handleAdd} className="ip-blacklist__form">
         <div className="ip-blacklist__form-group">
-          <strong>IP Address</strong>
+          <strong>IP Address(es)</strong>
           <br />
-          <input
-            type="text"
-            name="bad_ip"
-            value={badIp}
-            onChange={(e) => setBadIp(e.target.value)}
-            className="ip-blacklist__input"
-            placeholder="192.168.1.1 or 192.168.1.0/24"
+          <textarea
+            value={badIps}
+            onChange={(e) => setBadIps(e.target.value)}
+            rows={6}
+            className="ip-blacklist__textarea"
+            placeholder="192.168.1.1&#10;192.168.1.0/24 (CIDR range)&#10;one per line"
           />
           <br />
           <small className="ip-blacklist__help-text">
-            Enter a single IP address or CIDR range (e.g., 192.168.1.0/24)
+            One entry per line. Each entry is a single IP address or a CIDR range (e.g. 192.168.1.0/24).
           </small>
         </div>
 
@@ -82,20 +158,16 @@ const IpBlacklist = ({ data, e2 }) => {
           <br />
           <input
             type="text"
-            name="block_reason"
-            value={blockReason}
-            onChange={(e) => setBlockReason(e.target.value)}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
             className="ip-blacklist__input"
-            placeholder="Reason for blocking this IP"
+            placeholder="Reason for blocking"
           />
         </div>
 
-        <input
-          type="submit"
-          name="add_ip_block"
-          value="Please blacklist this IP"
-          className="ip-blacklist__submit-button"
-        />
+        <button type="submit" className="ip-blacklist__submit-button" disabled={loading}>
+          {loading ? 'Working…' : 'Please blacklist'}
+        </button>
       </form>
 
       <h3 className="ip-blacklist__heading">Blacklisted IPs</h3>
@@ -105,7 +177,7 @@ const IpBlacklist = ({ data, e2 }) => {
       ) : (
         <>
           <p className="ip-blacklist__pagination">
-            Showing {offset + 1} - {offset + entries.length} of {total_count}
+            Showing {offset + 1} - {offset + entries.length} of {totalCount}
           </p>
 
           <table className="ip-blacklist__table">
@@ -126,15 +198,14 @@ const IpBlacklist = ({ data, e2 }) => {
                   </td>
                   <td className="ip-blacklist__td">{entry.timestamp}</td>
                   <td className="ip-blacklist__td">
-                    <form method="post" className="ip-blacklist__remove-form">
-                      <input type="hidden" name="node_id" value={e2?.node_id || ''} />
-                      <input type="hidden" name="remove_ip_block_ref" value={entry.id} />
-                      <input
-                        type="submit"
-                        value="Remove"
-                        className="ip-blacklist__remove-button"
-                      />
-                    </form>
+                    <button
+                      type="button"
+                      onClick={() => handleRemove(entry.id)}
+                      disabled={loading}
+                      className="ip-blacklist__remove-button"
+                    >
+                      Remove
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -144,15 +215,25 @@ const IpBlacklist = ({ data, e2 }) => {
           {(hasPrev || hasMore) && (
             <div className="ip-blacklist__pagination-links">
               {hasPrev && (
-                <a href={`?offset=${prevOffset}`} className="ip-blacklist__link">
+                <button
+                  type="button"
+                  onClick={() => gotoOffset(Math.max(0, offset - page_size))}
+                  disabled={loading}
+                  className="ip-blacklist__link"
+                >
                   ← Previous {page_size}
-                </a>
+                </button>
               )}
               {hasPrev && hasMore && <span className="ip-blacklist__separator">|</span>}
               {hasMore && (
-                <a href={`?offset=${nextOffset}`} className="ip-blacklist__link">
+                <button
+                  type="button"
+                  onClick={() => gotoOffset(offset + page_size)}
+                  disabled={loading}
+                  className="ip-blacklist__link"
+                >
                   Next {page_size} →
-                </a>
+                </button>
               )}
             </div>
           )}

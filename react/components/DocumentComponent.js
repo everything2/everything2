@@ -350,7 +350,8 @@ const COMPONENT_MAP = {
   gp_optouts: lazy(() => import('./Documents/GpOptouts')),
   ip_hunter: lazy(() => import('./Documents/IpHunter')),
   ip_blacklist: lazy(() => import('./Documents/IpBlacklist')),
-  mass_ip_blacklister: lazy(() => import('./Documents/MassIpBlacklister')),
+  // Unified with ip_blacklist (#4464) -- same component + /api/ip_blacklist interface.
+  mass_ip_blacklister: lazy(() => import('./Documents/IpBlacklist')),
   node_heaven_title_search: lazy(() => import('./Documents/NodeHeavenTitleSearch')),
 
   // User statistics & tools
