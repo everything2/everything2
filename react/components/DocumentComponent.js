@@ -346,7 +346,6 @@ const COMPONENT_MAP = {
   e2client_edit: lazy(() => import('./Documents/E2clientEdit')),
 
   // Admin tools
-  faq_editor: lazy(() => import('./Documents/FAQEditor')),
   gp_optouts: lazy(() => import('./Documents/GpOptouts')),
   ip_hunter: lazy(() => import('./Documents/IpHunter')),
   ip_blacklist: lazy(() => import('./Documents/IpBlacklist')),
