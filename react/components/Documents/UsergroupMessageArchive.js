@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
 
 /**
  * UsergroupMessageArchive - View archived messages sent to usergroups.
  * Styles in CSS: .usergroup-archive__*
  *
- * Allows copying messages to personal inbox.
+ * Copy-to-inbox + the reset-time preference moved to POST
+ * /api/usergroup_message_archive/copy (#4472); the form drives it via fetch and reports
+ * the copied count in place. Pagination stays as read-only links (server pure-render).
  */
 const UsergroupMessageArchive = ({ data, user, e2 }) => {
   const node_id = (e2 || (typeof window !== 'undefined' ? window.e2 : undefined))?.node?.node_id
@@ -17,7 +19,6 @@ const UsergroupMessageArchive = ({ data, user, e2 }) => {
     show_start,
     max_show,
     num_show,
-    copied_count,
     reset_time,
     error
   } = data
@@ -82,7 +83,6 @@ const UsergroupMessageArchive = ({ data, user, e2 }) => {
           showStart={show_start}
           maxShow={max_show}
           numShow={num_show}
-          copiedCount={copied_count}
           resetTime={reset_time}
           nodeId={node_id}
         />
@@ -98,71 +98,83 @@ const MessageDisplay = ({
   showStart,
   maxShow,
   numShow,
-  copiedCount,
-  resetTime,
+  resetTime: initialResetTime,
   nodeId
 }) => {
   const startDefault = Math.max(0, totalMessages - maxShow)
 
-  // Generate pagination links
+  const [checked, setChecked] = useState({})
+  const [resetTime, setResetTime] = useState(!!initialResetTime)
+  const [copiedCount, setCopiedCount] = useState(0)
+  const [banner, setBanner] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const toggleMsg = (id) => setChecked((prev) => ({ ...prev, [id]: !prev[id] }))
+
+  const handleCopy = async (e) => {
+    e.preventDefault()
+    const messageIds = Object.keys(checked).filter((id) => checked[id]).map(Number)
+    setLoading(true)
+    setBanner('')
+    try {
+      const res = await fetch('/api/usergroup_message_archive/copy', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          group: selectedGroup.title,
+          message_ids: messageIds,
+          reset_time: resetTime ? 1 : 0,
+        }),
+      })
+      const json = res.ok ? await res.json() : null
+      if (json && json.success) {
+        setCopiedCount(json.copied_count)
+        setChecked({}) // clear selections after a successful copy
+      } else {
+        setBanner((json && json.error) || 'Copy failed.')
+      }
+    } catch (err) {
+      setBanner(err.message || 'Copy failed.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Generate pagination links (read-only; the server renders the chosen page)
   const genPaginationData = () => {
     const links = []
 
-    // First
     if (showStart !== 0) {
       const limitU = Math.min(maxShow, totalMessages)
-      links.push({
-        label: `first ${maxShow} (1-${limitU})`,
-        startnum: 0,
-        active: false
-      })
+      links.push({ label: `first ${maxShow} (1-${limitU})`, startnum: 0, active: false })
     } else {
       links.push({ label: `first ${maxShow}`, active: true })
     }
 
-    // Previous
     if (showStart > 0) {
       const limitL = Math.max(1, showStart - maxShow)
       const limitU = Math.min(limitL + maxShow, totalMessages)
-      links.push({
-        label: `previous (${limitL}-${limitU - 1})`,
-        startnum: showStart - maxShow,
-        active: false
-      })
+      links.push({ label: `previous (${limitL}-${limitU - 1})`, startnum: showStart - maxShow, active: false })
     } else {
       links.push({ label: 'previous', active: true })
     }
 
-    // Current
-    links.push({
-      label: `current (${showStart + 1}-${showStart + numShow})`,
-      active: true,
-      current: true
-    })
+    links.push({ label: `current (${showStart + 1}-${showStart + numShow})`, active: true, current: true })
 
-    // Next
     if (showStart < startDefault) {
       let limitU = showStart + maxShow + maxShow
       limitU = Math.min(limitU, totalMessages)
       let limitL = limitU - maxShow + 1
       limitL = Math.max(1, limitL)
       limitL = Math.min(limitL, startDefault + 1)
-      links.push({
-        label: `next (${limitL}-${limitU})`,
-        startnum: limitL - 1,
-        active: false
-      })
+      links.push({ label: `next (${limitL}-${limitU})`, startnum: limitL - 1, active: false })
     } else {
       links.push({ label: 'next', active: true })
     }
 
-    // Last
     if (showStart < startDefault) {
-      links.push({
-        label: `last ${maxShow} (${startDefault + 1}-${totalMessages})`,
-        startnum: startDefault,
-        active: false
-      })
+      links.push({ label: `last ${maxShow} (${startDefault + 1}-${totalMessages})`, startnum: startDefault, active: false })
     } else {
       links.push({ label: `last ${maxShow}`, active: true })
     }
@@ -173,11 +185,7 @@ const MessageDisplay = ({
   const paginationLinks = totalMessages > messages.length ? genPaginationData() : []
 
   return (
-    <form method="post">
-      <input type="hidden" name="node_id" value={nodeId} />
-      <input type="hidden" name="viewgroup" value={selectedGroup.title} />
-      <input type="hidden" name="startnum" value={showStart} />
-
+    <form onSubmit={handleCopy}>
       <p>
         Viewing messages for group <LinkNode id={selectedGroup.node_id} display={selectedGroup.title} />:
       </p>
@@ -185,9 +193,8 @@ const MessageDisplay = ({
       <label className="usergroup-archive__checkbox">
         <input
           type="checkbox"
-          name="ugma_resettime"
-          value="1"
-          defaultChecked={resetTime}
+          checked={resetTime}
+          onChange={(e) => setResetTime(e.target.checked)}
         />
         Keep original send date (instead of using &quot;now&quot; time)
       </label>
@@ -198,6 +205,8 @@ const MessageDisplay = ({
           (Copied {copiedCount} group message{copiedCount === 1 ? '' : 's'} to self.)
         </p>
       )}
+
+      {banner && <p className="usergroup-archive__error">{banner}</p>}
 
       {numShow > 0 && (
         <p>
@@ -219,7 +228,11 @@ const MessageDisplay = ({
           {messages.map((msg) => (
             <tr key={msg.message_id}>
               <td className="usergroup-archive__td--cp">
-                <input type="checkbox" name={`cpgroupmsg_${msg.message_id}`} value="copy" />
+                <input
+                  type="checkbox"
+                  checked={!!checked[msg.message_id]}
+                  onChange={() => toggleMsg(msg.message_id)}
+                />
               </td>
               <td className="usergroup-archive__td--num">
                 ({msg.number})
@@ -249,7 +262,7 @@ const MessageDisplay = ({
         <div className="usergroup-archive__pagination">
           {paginationLinks.map((link, idx) => (
             <span key={idx}>
-              {idx > 0 && ' \u00A0 '}
+              {idx > 0 && '   '}
               [ {link.active ? (
                 <span className={link.current ? 'usergroup-archive__current-link' : undefined}>{link.label}</span>
               ) : (
@@ -266,7 +279,9 @@ const MessageDisplay = ({
       )}
 
       <div className="usergroup-archive__submit-section">
-        <button type="submit" className="usergroup-archive__button">Copy selected messages</button>
+        <button type="submit" className="usergroup-archive__button" disabled={loading}>
+          {loading ? 'Copying…' : 'Copy selected messages'}
+        </button>
       </div>
     </form>
   )
