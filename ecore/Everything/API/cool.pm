@@ -244,8 +244,11 @@ sub toggle_bookmark
     }];
   }
 
-  # Get the node
-  my $node = $APP->node_by_id($node_id);
+  # Resolve the effective bookmark target: a writeup itself isn't bookmarkable
+  # (disable_bookmark), so a bookmark request from a writeup is redirected to its parent
+  # e2node -- a display override so the bookmark control on a writeup page targets the
+  # containing node. See _bookmark_target.
+  my $node = $self->_bookmark_target($node_id);
   unless ($node) {
     return [$self->HTTP_OK, {
       success => 0,
@@ -253,6 +256,7 @@ sub toggle_bookmark
       message => 'The specified node does not exist'
     }];
   }
+  $node_id = $node->node_id;  # links rows + the CME notification follow the effective node
 
   # Check if node allows bookmarking
   my $NODE = $node->NODEDATA;
@@ -322,6 +326,25 @@ sub toggle_bookmark
 # The structured 'bookmark' notification is intentionally omitted in the API layer --
 # addNotification requires htmlcode delegation that isn't available here, the same
 # decision as Application.pm's nodenote path (Application.pm:1417).
+# Resolve the node a bookmark should actually attach to. A writeup itself isn't bookmarkable
+# (the writeup nodetype carries disable_bookmark), so a bookmark of a writeup is treated as a
+# bookmark of its parent e2node -- a display override so the bookmark control on a writeup page
+# targets the containing node. Any other (bookmarkable) node is returned unchanged. Returns the
+# blessed effective node, or undef if $node_id doesn't resolve.
+sub _bookmark_target
+{
+  my ($self, $node_id) = @_;
+  my $APP = $self->APP;
+
+  my $node = $APP->node_by_id($node_id) or return;
+  if ($node->type->title eq 'writeup') {
+    my $parent_id = $node->NODEDATA->{parent_e2node};
+    my $parent = $parent_id ? $APP->node_by_id($parent_id) : undef;
+    $node = $parent if $parent;
+  }
+  return $node;
+}
+
 sub _notify_bookmark
 {
   my ($self, $node, $user) = @_;
@@ -432,6 +455,11 @@ sub bookmark_status
 
   my $bookmark_id = $bookmark_type->{node_id};
   my $user_id = $user->node_id;
+
+  # Mirror toggle_bookmark: on a writeup, the bookmark lives on its parent e2node, so the
+  # displayed bookmarked-state must be read from that same effective target.
+  my $target = $self->_bookmark_target($node_id);
+  $node_id = $target->node_id if $target;
 
   # Check if bookmarked
   my $existing_link = $DB->sqlSelectHashref('*', 'links',
