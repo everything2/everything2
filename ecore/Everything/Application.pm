@@ -5477,7 +5477,18 @@ sub expire_borg_if_due
   my $cooldown = 300 + 60 * (($vars->{numborged} || 1) * 2);
   return 0 if time - $vars->{borged} < $cooldown;
 
-  $vars->{lastborg} = $vars->{borged};
+  $this->unborg_user($user, $vars);
+  return 1;
+}
+
+# Clear an active borg for $user: remember it in `lastborg`, drop the `borged` var, and
+# clear the room `borgd` flag. Mutates $vars in place (the caller persists it). Shared by
+# the auto-expiry above and the manual admin force-unborg (Everything::API::
+# nate_s_secret_unborg_doc, #4468) -- one implementation, two callers.
+sub unborg_user
+{
+  my ($this, $user, $vars) = @_;
+  $vars->{lastborg} = $vars->{borged} if $vars->{borged};
   delete $vars->{borged};
   $this->{db}->sqlUpdate('room', { borgd => '0' }, 'member_user=' . $user->{node_id});
   return 1;
