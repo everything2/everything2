@@ -52,11 +52,10 @@ sub confirm
 
   my $user = $DB->getNode($username, 'user');
 
-  # Expired link (and nuke an unactivated account whose activation link expired)
+  # Expired link. We no longer delete the unactivated account (policy: stop nuking expired
+  # accounts on the request path -- cleanup is deferred to a safe/phased maintenance job,
+  # #4476). Just report the expiry.
   if ($expiry && time() > $expiry) {
-    if ($action eq 'activate' && $user && !$user->{lasttime} && $expiry =~ /$user->{passwd}/) {
-      $DB->nukeNode($user, -1, 'no tombstone');
-    }
     return [$self->HTTP_OK, { success => 0, state => 'expired',
       error => 'This link has expired.' }];
   }

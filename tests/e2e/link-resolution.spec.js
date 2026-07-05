@@ -196,7 +196,8 @@ test.describe('Link construction → parse → click-through', () => {
   }
 
   // --- E) Negative control: confirm the loop detector actually works ---
-  // A truly bogus search lands on either Findings or the "Nothing Found"
+  // A truly bogus search lands on the Findings page (#4382 routed
+  // not_found_node -> search_results) or the legacy "Nothing Found"
   // superdoc — both terminal, neither redirects. The control asserts the
   // request resolves to a terminal page (no redirect loop, 2xx response).
   test('loop detector control: bogus search reaches a terminal page', async ({ page }) => {
@@ -206,7 +207,7 @@ test.describe('Link construction → parse → click-through', () => {
     expect(response.ok()).toBe(true)
     const body = await page.content()
     expect(body).toMatch(
-      /Here's the stuff we found when you searched|Nothing Found|nothing_found/,
+      /We couldn't find anything for|Here's the stuff we found when you searched|Nothing Found|nothing_found/,
     )
   })
 })

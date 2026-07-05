@@ -6,11 +6,8 @@ extends 'Everything::Page';
 sub buildReactData {
     my ($self, $REQUEST) = @_;
 
-    my $APP = $self->APP;
     my $DB = $self->DB;
-    my $USER = $REQUEST->user;
     my $q = $REQUEST->cgi;
-    my $VARS = $USER->VARS;
 
     my $token = $q->param('token') // '';
     my $action = $q->param('action') // '';
@@ -37,13 +34,11 @@ sub buildReactData {
 
     my $user = $DB->getNode($username, 'user');
 
-    # Check expiry
+    # Check expiry. We no longer delete the unactivated account here -- expired
+    # unactivated accounts just linger (harmless; can't log in) and cleanup is deferred to
+    # a safe, phased maintenance job in the post-ORM / login-with-Google account rework
+    # (#4476). This keeps buildReactData free of the GET-mutation.
     if ($expiry && time() > $expiry) {
-        # Nuke unactivated account if applicable
-        if ($action eq 'activate' && $user && !$user->{lasttime} && $expiry =~ /$user->{passwd}/) {
-            $DB->nukeNode($user, -1, 'no tombstone');
-        }
-
         my $link_page = $action eq 'reset' ? 'Reset password' : 'Sign up';
         my $link_node = $DB->getNode($link_page, 'superdoc');
 
@@ -76,23 +71,16 @@ sub buildReactData {
         };
     }
 
-    # Render the login form for a valid link. The actual activation/reset is
-    # finalized client-side by POST /api/users/confirm, which validates the
-    # token, sets the password, logs in, and (on activation) sends the welcome
-    # PM, then returns the success state. #4335
-    my $new_vars = $APP->getVars($user);
-    my $display_action = $action;
-
-    if ($new_vars->{infected}) {
-        # New user infects current user
-        $VARS->{infected} = 1 unless $USER->is_guest;
-        $display_action = 'validate';
-    }
-
+    # Render the login form for a valid link. The actual activation/reset is finalized
+    # client-side by POST /api/users/confirm, which validates the token, sets the password,
+    # logs in, and (on activation) sends the welcome PM, then returns the success state.
+    # #4335. (The old "infection spreads to the viewer here" GET-mutation was removed --
+    # the infected_ips shadowban has been effectively dead since 2010; retiring it wholesale
+    # is tracked in #4465.)
     return {
         type     => 'confirm_password',
         state    => 'login_required',
-        prompt   => "Please log in with your username and password to $display_action your account",
+        prompt   => "Please log in with your username and password to $action your account",
         username => $username,
         action   => $action,
         token    => $token,

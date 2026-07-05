@@ -211,11 +211,16 @@ SKIP: {
     is($result->[1]->{success}, 1, 'Bookmark add returns success');
     is($result->[1]->{bookmarked}, 1, 'Bookmark status is 1');
 
-    # Verify link was created from user to writeup
+    # A writeup isn't bookmarkable itself (disable_bookmark on the writeup type); a bookmark
+    # of a writeup is redirected to its parent e2node, so the link lands on the e2node.
     my $link = $DB->sqlSelectHashref('*', 'links',
       "from_node=" . $regular_user->{node_id} .
+      " AND to_node=$parent_e2node_id AND linktype=" . $bookmark_type->{node_id});
+    ok($link, 'Bookmark link created on the parent e2node (writeup redirect)');
+    my $stray = $DB->sqlSelectHashref('*', 'links',
+      "from_node=" . $regular_user->{node_id} .
       " AND to_node=$writeup_id AND linktype=" . $bookmark_type->{node_id});
-    ok($link, 'Bookmark link created in database');
+    ok(!$stray, 'No bookmark link created directly on the writeup');
   }
 
   # Test 18-20: Regular user can remove bookmark (toggle)
@@ -225,11 +230,11 @@ SKIP: {
     is($result->[1]->{success}, 1, 'Bookmark remove returns success');
     is($result->[1]->{bookmarked}, 0, 'Bookmark status is 0');
 
-    # Verify link was removed
+    # The link removed is the one on the parent e2node (see the add case above).
     my $link = $DB->sqlSelectHashref('*', 'links',
       "from_node=" . $regular_user->{node_id} .
-      " AND to_node=$writeup_id AND linktype=" . $bookmark_type->{node_id});
-    ok(!$link, 'Bookmark link removed from database');
+      " AND to_node=$parent_e2node_id AND linktype=" . $bookmark_type->{node_id});
+    ok(!$link, 'Bookmark link removed from the parent e2node');
   }
 
   # Test 21-22: Cannot bookmark non-existent node
@@ -246,16 +251,17 @@ SKIP: {
     is($result->[0], $api->HTTP_OK, 'Editor can bookmark writeup');
     is($result->[1]->{bookmarked}, 1, 'Editor bookmark status is 1');
 
-    # Cleanup
+    # Cleanup (the bookmark redirected to the parent e2node)
     $DB->sqlDelete('links',
       "from_node=" . $editor_user->{node_id} .
-      " AND to_node=$writeup_id AND linktype=" . $bookmark_type->{node_id});
+      " AND to_node=$parent_e2node_id AND linktype=" . $bookmark_type->{node_id});
   }
 
-  # Test 24-25: Cannot bookmark when node has disable_bookmark parameter
+  # Test 24-25: disable_bookmark on the effective target blocks the bookmark. Because a
+  # writeup bookmark redirects to its parent e2node, we set the flag on the e2node and confirm
+  # the gate fires on the (redirected) target.
   {
-    # Set disable_bookmark parameter on the writeup
-    $DB->setNodeParam($DB->getNode($writeup_id), 'disable_bookmark', 1);
+    $DB->setNodeParam($DB->getNode($parent_e2node_id), 'disable_bookmark', 1);
 
     my $result = $api->toggle_bookmark($regular_request, $writeup_id);
     is($result->[0], $api->HTTP_OK, 'Bookmark API returns 200 when disable_bookmark is set');
@@ -263,7 +269,7 @@ SKIP: {
     like($result->[1]->{error}, qr/Cannot bookmark/i, 'Bookmark returns error when disable_bookmark is set');
 
     # Clear the parameter
-    $DB->deleteNodeParam($DB->getNode($writeup_id), 'disable_bookmark');
+    $DB->deleteNodeParam($DB->getNode($parent_e2node_id), 'disable_bookmark');
   }
 
   # Test 26-27: Cannot editor cool when node has disable_cool parameter
