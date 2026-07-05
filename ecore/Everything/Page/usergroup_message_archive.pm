@@ -3,7 +3,7 @@ package Everything::Page::usergroup_message_archive;
 use Moose;
 extends 'Everything::Page';
 
-use Everything qw(getId getNode getNodeById getVars setVars);
+use Everything qw(getId getNode getNodeById getVars);
 use Everything::HTML qw(encodeHTML parseLinks);
 
 =head1 Everything::Page::usergroup_message_archive
@@ -22,8 +22,6 @@ sub buildReactData
     my $query = $REQUEST->cgi;
     my $NODE  = $REQUEST->node;
     my $VARS  = $APP->getVars( $USER->NODEDATA );
-
-    my $userid = getId( $USER->NODEDATA );
 
     # Guest check
     if ( $APP->isGuest( $USER->NODEDATA ) ) {
@@ -91,45 +89,25 @@ sub buildReactData
 
     my $ugID = getId( $UG );
 
-    # Handle message copy to self
-    my $copied_count = 0;
+    # Pure-render: the copy-to-self + reset-time-toggle mutations moved to POST
+    # /api/usergroup_message_archive/copy (Everything::API::usergroup_message_archive,
+    # #4472, Refs #4298). reset_time here is just the current stored preference.
     my $reset_time = $VARS->{ugma_resettime} ? 1 : 0;
 
-    foreach my $param ( $query->param ) {
-        if ( $param =~ /^cpgroupmsg_(\d+)$/ ) {
-            my $msg_id = $1;
-            my $MSG = $DB->sqlSelectHashref( '*', 'message', "message_id=$msg_id" );
-            next unless $MSG;
-
-            # Verify message belongs to this group archive
-            next unless ( $MSG->{for_user} == $ugID ) && ( $MSG->{for_usergroup} == $ugID );
-
-            $copied_count++;
-            delete $MSG->{message_id};
-            delete $MSG->{tstamp} if $reset_time;
-            $MSG->{for_user} = $userid;
-            $DB->sqlInsert( 'message', $MSG );
-        }
-    }
-
-    # Handle reset time preference toggle
-    if ( defined $query->param('ugma_resettime') ) {
-        $VARS->{ugma_resettime} = $query->param('ugma_resettime') ? 1 : 0;
-        setVars( $USER->NODEDATA, $VARS );
-        $reset_time = $VARS->{ugma_resettime};
-    }
-
-    # Get message count and pagination
+    # Get message count and pagination (numeric params validated -- #4456).
     my $LIMITS = "for_user=$ugID AND for_usergroup=$ugID";
     my ($numMsg) = $DB->sqlSelect( 'COUNT(*)', 'message', $LIMITS );
 
-    my $max_show = int( $query->param('max_show') || 25 );
+    my $max_show_param = $query->param('max_show');
+    my $max_show = ( defined $max_show_param && $max_show_param =~ /^\d+$/ && $max_show_param > 0 )
+        ? int($max_show_param) : 25;
+
     my $start_default = $numMsg - $max_show;
     $start_default = 0 if $start_default < 0;
 
-    my $show_start = defined $query->param('startnum')
-        ? int( $query->param('startnum') || 0 )
-        : $start_default;
+    my $startnum_param = $query->param('startnum');
+    my $show_start = ( defined $startnum_param && $startnum_param =~ /^\d+$/ )
+        ? int($startnum_param) : $start_default;
 
     $show_start = $start_default if $show_start > $start_default;
     $show_start = 0 if $show_start < 0;
@@ -185,7 +163,6 @@ sub buildReactData
         show_start     => $show_start,
         max_show       => $max_show,
         num_show       => $num_show,
-        copied_count   => $copied_count,
         reset_time     => $reset_time
     };
 }
