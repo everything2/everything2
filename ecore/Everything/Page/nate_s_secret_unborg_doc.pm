@@ -3,11 +3,14 @@ package Everything::Page::nate_s_secret_unborg_doc;
 use Moose;
 extends 'Everything::Page';
 
-use Everything qw(getId getVars setVars);
-
 =head1 Everything::Page::nate_s_secret_unborg_doc
 
-React page for Nate's Secret Unborg Doc - instantly unborgs admin.
+React page for Nate's Secret Unborg Doc.
+
+Pure-render: the instant un-borg moved to POST /api/nate_s_secret_unborg_doc/unborg
+(Everything::API::nate_s_secret_unborg_doc, #4468, Refs #4298) -- loading this page no
+longer mutates. It just reports whether the viewer may use the tool; the React component
+shows an admin the button (which POSTs the unborg and reloads so chat re-enables).
 
 =cut
 
@@ -15,31 +18,19 @@ sub buildReactData
 {
     my ( $self, $REQUEST ) = @_;
 
-    my $DB    = $self->DB;
-    my $APP   = $self->APP;
-    my $USER  = $REQUEST->user;
-    my $VARS  = $APP->getVars( $USER->NODEDATA );
+    my $USER = $REQUEST->user;
 
-    # Non-admins cannot use
-    unless ( $APP->isAdmin( $USER->NODEDATA ) ) {
+    unless ( $self->APP->isAdmin( $USER->NODEDATA ) ) {
         return {
-            type    => 'nate_s_secret_unborg_doc',
-            success => 0,
-            message => "Maybe you'd better just stay in there"
+            type     => 'nate_s_secret_unborg_doc',
+            is_admin => 0,
+            message  => "Maybe you'd better just stay in there"
         };
     }
 
-    # Unborg the user
-    $VARS->{borged} = '';
-    setVars( $USER->NODEDATA, $VARS );
-
-    my $UID = getId( $USER->NODEDATA );
-    $DB->sqlUpdate( 'room', { borgd => 0 }, "member_user=$UID" );
-
     return {
-        type    => 'nate_s_secret_unborg_doc',
-        success => 1,
-        message => "you're unborged"
+        type     => 'nate_s_secret_unborg_doc',
+        is_admin => 1
     };
 }
 
@@ -49,6 +40,6 @@ __PACKAGE__->meta->make_immutable;
 
 =head1 SEE ALSO
 
-L<Everything::Page>
+L<Everything::Page>, L<Everything::API::nate_s_secret_unborg_doc>
 
 =cut

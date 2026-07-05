@@ -21252,6 +21252,25 @@ a.node-toolset__btn {
   color: #c62828;
 }
 
+.nates-secret-unborg-doc__button {
+  padding: 8px 20px;
+  background-color: var(--e2-btn-primary-bg);
+  color: var(--e2-btn-primary-text);
+  border: 1px solid var(--e2-btn-primary-border);
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.nates-secret-unborg-doc__button:hover {
+  background-color: var(--e2-btn-primary-hover-bg);
+}
+
+.nates-secret-unborg-doc__button:disabled {
+  background-color: var(--e2-btn-disabled-bg);
+  cursor: not-allowed;
+}
+
 /* ==========================================================================
    Create Node - Full CSS conversion
    Form for creating new nodes
