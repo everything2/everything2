@@ -37,9 +37,9 @@ sub get {
     my $APP  = $self->APP;
     my $USER = $REQUEST->user;
 
-    # Security: Editors and admins only
-    unless ($APP->isEditor($USER->NODEDATA) || $APP->isAdmin($USER->NODEDATA)) {
-        return [$self->HTTP_OK, { success => 0, error => 'Access denied. Editors and admins only.' }];
+    # Security: administrators only (parity with the node_parameter_editor page oracle)
+    unless ($APP->isAdmin($USER->NODEDATA)) {
+        return [$self->HTTP_OK, { success => 0, error => 'Access denied. Administrators only.' }];
     }
 
     my $DB    = $self->DB;
@@ -109,9 +109,9 @@ sub set_param {
     my $APP  = $self->APP;
     my $USER = $REQUEST->user;
 
-    # Security: Editors and admins only
-    unless ($APP->isEditor($USER->NODEDATA) || $APP->isAdmin($USER->NODEDATA)) {
-        return [$self->HTTP_OK, { success => 0, error => 'Access denied. Editors and admins only.' }];
+    # Security: administrators only (parity with the node_parameter_editor page oracle)
+    unless ($APP->isAdmin($USER->NODEDATA)) {
+        return [$self->HTTP_OK, { success => 0, error => 'Access denied. Administrators only.' }];
     }
 
     my $DB = $self->DB;
@@ -191,9 +191,9 @@ sub delete_param {
     my $APP  = $self->APP;
     my $USER = $REQUEST->user;
 
-    # Security: Editors and admins only
-    unless ($APP->isEditor($USER->NODEDATA) || $APP->isAdmin($USER->NODEDATA)) {
-        return [$self->HTTP_OK, { success => 0, error => 'Access denied. Editors and admins only.' }];
+    # Security: administrators only (parity with the node_parameter_editor page oracle)
+    unless ($APP->isAdmin($USER->NODEDATA)) {
+        return [$self->HTTP_OK, { success => 0, error => 'Access denied. Administrators only.' }];
     }
 
     my $DB = $self->DB;

@@ -45,10 +45,20 @@ describe('StyleDefacer save -> /api/preferences/set (#4416)', () => {
     await waitFor(() => expect(getByText(/have been saved/i)).toBeInTheDocument())
   })
 
-  it('shows the length-cap error when the API rejects (non-ok)', async () => {
+  it('shows the length-cap error when the API rejects (non-ok / guest 401)', async () => {
     global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 401, json: async () => ({}) })
     const { container, getByText } = render(<StyleDefacer data={data} />)
     fireEvent.submit(container.querySelector('form'))
     await waitFor(() => expect(getByText(/too long/i)).toBeInTheDocument())
+  })
+
+  it('treats a 200 + {success:0} reject (over-cap CSS) as a failure, not a save', async () => {
+    // Contract: /api/preferences/set returns HTTP 200 with {success:0} on an over-cap value
+    // (response-code recut). The component must show the error, NOT the success banner.
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: 0, error: 'too long' }) })
+    const { container, getByText, queryByText } = render(<StyleDefacer data={data} />)
+    fireEvent.submit(container.querySelector('form'))
+    await waitFor(() => expect(getByText(/could not be saved/i)).toBeInTheDocument())
+    expect(queryByText(/have been saved/i)).toBeNull()
   })
 })
