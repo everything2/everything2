@@ -92,10 +92,10 @@ subtest 'Guest cannot SET preferences' => sub {
     plan tests => 2;
 
     my $r1 = $api->set_preferences(guest_request(postdata => { vit_hidenodeinfo => 1 }));
-    is($r1->[0], $api->HTTP_UNAUTHORIZED, "Guest set List pref returns 401");
+    is($r1->[0], $api->HTTP_UNAUTHORIZED, "Guest set List pref rejected (401 via around modifier)");
 
     my $r2 = $api->set_preferences(guest_request(postdata => { collapsedNodelets => "epicenter!" }));
-    is($r2->[0], $api->HTTP_UNAUTHORIZED, "Guest set String pref returns 401");
+    is($r2->[0], $api->HTTP_UNAUTHORIZED, "Guest set String pref rejected (401 via around modifier)");
 };
 
 #############################################################################
@@ -124,14 +124,12 @@ subtest 'SET rejects invalid keys and values' => sub {
     plan tests => 4;
 
     my $bad_key = auth_request(postdata => { not_a_real_preference => 1 });
-    is($api->set_preferences($bad_key)->[0], $api->HTTP_UNAUTHORIZED, "Unknown key rejected (401)");
+    is($api->set_preferences($bad_key)->[1]{success}, 0, "Unknown key rejected (200+success:0)");
     ok(!exists($bad_key->user->VARS->{not_a_real_preference}), "Unknown key not written to VARS");
 
-    is($api->set_preferences(auth_request(postdata => { num_newwus => 999 }))->[0],
-        $api->HTTP_UNAUTHORIZED, "Out-of-range enumerated value rejected (401)");
+    is($api->set_preferences(auth_request(postdata => { num_newwus => 999 }))->[1]{success}, 0, "Out-of-range enumerated value rejected (200+success:0)");
 
-    is($api->set_preferences(auth_request(postdata => { vit_hidenodeinfo => "badvalue", vit_hidemisc => 0 }))->[0],
-        $api->HTTP_UNAUTHORIZED, "Mixed valid/invalid rejected (401)");
+    is($api->set_preferences(auth_request(postdata => { vit_hidenodeinfo => "badvalue", vit_hidemisc => 0 }))->[1]{success}, 0, "Mixed valid/invalid rejected (200+success:0)");
 };
 
 #############################################################################
@@ -178,12 +176,9 @@ subtest 'SET handles multiple preferences in one request' => sub {
 subtest 'SET rejects bad request shapes' => sub {
     plan tests => 3;
 
-    is($api->set_preferences(auth_request(postdata => {}))->[0],
-        $api->HTTP_BAD_REQUEST, "Empty hash returns 400");
-    is($api->set_preferences(auth_request(postdata => "not a hash"))->[0],
-        $api->HTTP_BAD_REQUEST, "Non-hash returns 400");
-    is($api->set_preferences(auth_request(postdata => []))->[0],
-        $api->HTTP_BAD_REQUEST, "Array returns 400");
+    is($api->set_preferences(auth_request(postdata => {}))->[1]{success}, 0, "Empty hash rejected (200+success:0)");
+    is($api->set_preferences(auth_request(postdata => "not a hash"))->[1]{success}, 0, "Non-hash rejected (200+success:0)");
+    is($api->set_preferences(auth_request(postdata => []))->[1]{success}, 0, "Array rejected (200+success:0)");
 };
 
 #############################################################################
@@ -209,11 +204,11 @@ subtest 'nodeletusergroup is a whitelisted, bounded String preference' => sub {
 
     # Over-length (>80) rejected
     my $toolong = auth_request(postdata => { nodeletusergroup => ("x" x 81) });
-    is($api->set_preferences($toolong)->[0], $api->HTTP_UNAUTHORIZED, "Over-length title rejected (401)");
+    is($api->set_preferences($toolong)->[1]{success}, 0, "Over-length title rejected (200+success:0)");
 
     # Embedded newline rejected (titles are single-line)
     my $newline = auth_request(postdata => { nodeletusergroup => "E2science\ninjected" });
-    is($api->set_preferences($newline)->[0], $api->HTTP_UNAUTHORIZED, "Newline-bearing title rejected (401)");
+    is($api->set_preferences($newline)->[1]{success}, 0, "Newline-bearing title rejected (200+success:0)");
 };
 
 #############################################################################
@@ -231,16 +226,13 @@ subtest 'EDD_Sort is a whitelisted, enum-validated String preference' => sub {
     is($set->user->VARS->{EDD_Sort}, 'nameA', "Written to VARS");
 
     # Out-of-enum value rejected
-    is($api->set_preferences(auth_request(postdata => { EDD_Sort => 'bogus' }))->[0],
-        $api->HTTP_UNAUTHORIZED, "Out-of-enum sort rejected (401)");
+    is($api->set_preferences(auth_request(postdata => { EDD_Sort => 'bogus' }))->[1]{success}, 0, "Out-of-enum sort rejected (200+success:0)");
 
     # Trailing-newline injection rejected (\z anchor, not $)
-    is($api->set_preferences(auth_request(postdata => { EDD_Sort => "nameA\ninjected" }))->[0],
-        $api->HTTP_UNAUTHORIZED, "Newline-injected sort rejected (401)");
+    is($api->set_preferences(auth_request(postdata => { EDD_Sort => "nameA\ninjected" }))->[1]{success}, 0, "Newline-injected sort rejected (200+success:0)");
 
     # Guest blocked
-    is($api->set_preferences(guest_request(postdata => { EDD_Sort => 'nameA' }))->[0],
-        $api->HTTP_UNAUTHORIZED, "Guest cannot set EDD_Sort (401)");
+    is($api->set_preferences(guest_request(postdata => { EDD_Sort => 'nameA' }))->[0], $api->HTTP_UNAUTHORIZED, "Guest cannot set EDD_Sort (401 via around modifier)");
 };
 
 #############################################################################
@@ -258,16 +250,13 @@ subtest 'ListNodesOfType_Type is a whitelisted node_id String preference' => sub
     is($set->user->VARS->{ListNodesOfType_Type}, '14', "Written to VARS");
 
     # A type NAME (the old achievement/notification deep-links) is non-numeric -> rejected
-    is($api->set_preferences(auth_request(postdata => { ListNodesOfType_Type => 'achievement' }))->[0],
-        $api->HTTP_UNAUTHORIZED, "Non-numeric type value rejected (401)");
+    is($api->set_preferences(auth_request(postdata => { ListNodesOfType_Type => 'achievement' }))->[1]{success}, 0, "Non-numeric type value rejected (200+success:0)");
 
     # Trailing-newline injection rejected (\z anchor)
-    is($api->set_preferences(auth_request(postdata => { ListNodesOfType_Type => "14\ninjected" }))->[0],
-        $api->HTTP_UNAUTHORIZED, "Newline-injected value rejected (401)");
+    is($api->set_preferences(auth_request(postdata => { ListNodesOfType_Type => "14\ninjected" }))->[1]{success}, 0, "Newline-injected value rejected (200+success:0)");
 
     # Guest blocked
-    is($api->set_preferences(guest_request(postdata => { ListNodesOfType_Type => '14' }))->[0],
-        $api->HTTP_UNAUTHORIZED, "Guest cannot set ListNodesOfType_Type (401)");
+    is($api->set_preferences(guest_request(postdata => { ListNodesOfType_Type => '14' }))->[0], $api->HTTP_UNAUTHORIZED, "Guest cannot set ListNodesOfType_Type (401 via around modifier)");
 };
 
 #############################################################################
@@ -290,8 +279,7 @@ subtest 'customstyle is a whitelisted, length-capped (50000) String preference' 
         $api->HTTP_OK, "Multi-line CSS accepted (200)");
 
     # Over the 50000-char cap -> rejected
-    is($api->set_preferences(auth_request(postdata => { customstyle => ('x' x 50001) }))->[0],
-        $api->HTTP_UNAUTHORIZED, "Over-cap CSS rejected (401)");
+    is($api->set_preferences(auth_request(postdata => { customstyle => ('x' x 50001) }))->[1]{success}, 0, "Over-cap CSS rejected (200+success:0)");
 
     # Empty clears it (matches the old "clear the field to remove styles")
     my $clear = auth_request(vars => { customstyle => $css }, postdata => { customstyle => '' });
@@ -299,8 +287,7 @@ subtest 'customstyle is a whitelisted, length-capped (50000) String preference' 
     ok(!exists($clear->user->VARS->{customstyle}), "Empty value clears the pref");
 
     # Guest blocked
-    is($api->set_preferences(guest_request(postdata => { customstyle => $css }))->[0],
-        $api->HTTP_UNAUTHORIZED, "Guest cannot set customstyle (401)");
+    is($api->set_preferences(guest_request(postdata => { customstyle => $css }))->[0], $api->HTTP_UNAUTHORIZED, "Guest cannot set customstyle (401 via around modifier)");
 };
 
 done_testing();

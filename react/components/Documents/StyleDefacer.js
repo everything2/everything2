@@ -35,7 +35,10 @@ const StyleDefacer = ({ data }) => {
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ customstyle: styleValue })
       })
-      if (res.ok) {
+      // /api/preferences/set returns 200 with {success:0} when the value is rejected
+      // (e.g. CSS over the 50k cap); the guest around returns 401. Treat both as failure.
+      const body = await res.json().catch(() => ({}))
+      if (res.ok && body.success !== 0) {
         setSaved(true)
       } else {
         setSaved(false)

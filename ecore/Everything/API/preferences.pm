@@ -141,12 +141,16 @@ sub set_preferences
 {
   my ($self, $REQUEST) = @_;
 
+  # NB: guest access is already blocked by the `around unauthorized_if_guest` modifier below
+  # (returns 401). That base-class 401 is part of the larger response-code scrub, not this fix.
+
   my $data = $REQUEST->JSON_POSTDATA;
 
   my $valid = 1;
   if(ref $data ne "HASH" or scalar(keys %$data) == 0)
   {
-    return [$self->HTTP_BAD_REQUEST];
+    # short-term: 200-with-error until the response-code recut (filed)
+    return [$self->HTTP_OK, {success => 0, error => 'No preferences provided'}];
   }
 
   foreach my $key (keys %$data)
@@ -161,7 +165,9 @@ sub set_preferences
     last if $valid == 0;
   }
 
-  return [$self->HTTP_UNAUTHORIZED] if $valid == 0;
+  # NB: this is a validation failure, not an auth failure (HTTP_UNAUTHORIZED was a mislabel).
+  # short-term: 200-with-error until the response-code recut (filed).
+  return [$self->HTTP_OK, {success => 0, error => 'Invalid preference value'}] if $valid == 0;
 
   foreach my $key (keys %$data)
   {
@@ -221,8 +227,10 @@ sub set_notification_preferences
   my $user = $REQUEST->user;
   my $DB = $self->DB;
 
+  # (guest access blocked by the `around unauthorized_if_guest` modifier; see set_preferences)
+
   unless ($data && ref($data) eq 'HASH' && $data->{notifications}) {
-    return [$self->HTTP_BAD_REQUEST, {
+    return [$self->HTTP_OK, {  # short-term: 200-with-error until the response-code recut (filed)
       success => 0,
       error => 'invalid_data',
       message => 'notifications object is required'
@@ -231,7 +239,7 @@ sub set_notification_preferences
 
   my $notifications = $data->{notifications};
   unless (ref($notifications) eq 'HASH') {
-    return [$self->HTTP_BAD_REQUEST, {
+    return [$self->HTTP_OK, {  # short-term: 200-with-error until the response-code recut (filed)
       success => 0,
       error => 'invalid_notifications',
       message => 'notifications must be an object'
@@ -241,7 +249,7 @@ sub set_notification_preferences
   # Validate all notification IDs exist
   my $notification_type = $DB->getType('notification');
   unless ($notification_type) {
-    return [$self->HTTP_INTERNAL_SERVER_ERROR, {
+    return [$self->HTTP_OK, {  # short-term: 200-with-error until the response-code recut (filed)
       success => 0,
       error => 'notification_type_missing',
       message => 'Notification type not found'
@@ -250,7 +258,7 @@ sub set_notification_preferences
 
   foreach my $notif_id (keys %$notifications) {
     unless ($notif_id =~ /^\d+$/) {
-      return [$self->HTTP_BAD_REQUEST, {
+      return [$self->HTTP_OK, {  # short-term: 200-with-error until the response-code recut (filed)
         success => 0,
         error => 'invalid_notification_id',
         message => "Invalid notification ID: $notif_id"
@@ -259,7 +267,7 @@ sub set_notification_preferences
 
     my $notif = $DB->getNodeById($notif_id);
     unless ($notif && $notif->{type_nodetype} == $notification_type->{node_id}) {
-      return [$self->HTTP_BAD_REQUEST, {
+      return [$self->HTTP_OK, {  # short-term: 200-with-error until the response-code recut (filed)
         success => 0,
         error => 'notification_not_found',
         message => "Notification not found: $notif_id"
@@ -295,7 +303,7 @@ sub set_notification_preferences
   };
 
   unless ($update_ok) {
-    return [$self->HTTP_INTERNAL_SERVER_ERROR, {
+    return [$self->HTTP_OK, {  # short-term: 200-with-error until the response-code recut (filed)
       success => 0,
       error => 'update_failed',
       message => 'Failed to update notification preferences'

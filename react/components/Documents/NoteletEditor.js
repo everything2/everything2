@@ -4,14 +4,14 @@ import React, { useState } from 'react'
  * Notelet Editor - Manage user notelet content
  * Styles in CSS: .notelet-editor__*
  *
- * Provides notelet castrator and editor functionality.
- * Castrator comments out all JS, editor allows content editing with 2000 char limit.
+ * Castrator comments out all JS; the editor saves the raw source (per-level display cap).
+ * Both actions POST to /api/notelet (#4479, Refs #4298) — the page itself is pure-render.
  */
 const NoteletEditor = ({ data, e2 }) => {
   const {
     notelet_raw: initialNoteletRaw = '',
-    notelet_screened = '',
-    char_count = 0,
+    notelet_screened: initialScreened = '',
+    char_count: initialCharCount = 0,
     max_length = 2000,
     user_level = 0,
     notelet_enabled = false,
@@ -22,7 +22,7 @@ const NoteletEditor = ({ data, e2 }) => {
 
   // Strip script tags on initial load to allow users to remove legacy scripts
   const stripScriptTags = (text) => {
-    return text
+    return (text || '')
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
       .replace(/<script[^>]*>/gi, '')
       .replace(/<\/script>/gi, '')  // Also catch stray closing tags
@@ -30,13 +30,59 @@ const NoteletEditor = ({ data, e2 }) => {
 
   const [noteletRaw, setNoteletRaw] = useState(stripScriptTags(initialNoteletRaw))
   const [keepComments, setKeepComments] = useState(initialKeepComments)
+  const [screened, setScreened] = useState(initialScreened)
+  const [charCount, setCharCount] = useState(initialCharCount)
   const [showPreview, setShowPreview] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [successMessage, setSuccessMessage] = useState(success_message)
+  const [errorMsg, setErrorMsg] = useState(error)
 
   // Show warning if script tags were stripped
   const hadScriptTags = initialNoteletRaw !== stripScriptTags(initialNoteletRaw)
 
   const currentLength = noteletRaw.length
-  const screenedLength = notelet_screened.length
+  const screenedLength = screened.length
+
+  const applyResult = (result) => {
+    setNoteletRaw(stripScriptTags(result.notelet_raw || ''))
+    setScreened(result.notelet_screened || '')
+    setCharCount(result.char_count || 0)
+    setKeepComments(!!result.keep_comments)
+    setSuccessMessage(result.message || '')
+    setErrorMsg(result.error || '')
+  }
+
+  // /api/notelet returns 200 with {success:0,error} on a rejected write and 200 with the fresh
+  // payload on success (universal consumption rule: !ok || success===0 => failure).
+  const post = async (action, body) => {
+    setSubmitting(true)
+    setSuccessMessage('')
+    setErrorMsg('')
+    try {
+      const res = await fetch(`/api/notelet/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: body ? JSON.stringify(body) : undefined
+      })
+      const result = await res.json()
+      if (!res.ok || result.success === 0) {
+        setErrorMsg(result.error || 'Something went wrong saving your notelet.')
+      } else {
+        applyResult(result)
+      }
+    } catch (err) {
+      setErrorMsg('Network error: ' + err.message)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleCastrate = () => post('castrate')
+  const handleSave = (e) => {
+    e.preventDefault()
+    post('save', { notelet_source: noteletRaw, keep_comments: keepComments })
+  }
 
   return (
     <div className="notelet-editor">
@@ -50,16 +96,16 @@ const NoteletEditor = ({ data, e2 }) => {
           Use this tool when your Nodelet is causing problems and there is no other way to fix them.
         </p>
 
-        <form method="post" className="notelet-editor__form">
-          <input type="hidden" name="node_id" value={e2?.node_id || ''} />
-          <input type="hidden" name="YesReallyCastrate" value="1" />
+        <p>Your notelet contains {charCount} characters.</p>
 
-          <p>Your notelet contains {char_count} characters.</p>
-
-          <button type="submit" className="notelet-editor__danger-button">
-            Castrate Notelet
-          </button>
-        </form>
+        <button
+          type="button"
+          onClick={handleCastrate}
+          disabled={submitting}
+          className="notelet-editor__danger-button"
+        >
+          Castrate Notelet
+        </button>
       </div>
 
       <hr className="notelet-editor__separator" />
@@ -86,12 +132,12 @@ const NoteletEditor = ({ data, e2 }) => {
           </div>
         )}
 
-        {success_message && (
-          <div className="notelet-editor__success">{success_message}</div>
+        {successMessage && (
+          <div className="notelet-editor__success">{successMessage}</div>
         )}
 
-        {error && (
-          <div className="notelet-editor__error">{error}</div>
+        {errorMsg && (
+          <div className="notelet-editor__error">{errorMsg}</div>
         )}
 
         {/* Notes */}
@@ -112,7 +158,7 @@ const NoteletEditor = ({ data, e2 }) => {
         <div className="notelet-editor__preview-section">
           <p><strong>Preview</strong>:</p>
 
-          {!notelet_screened ? (
+          {!screened ? (
             <p className="notelet-editor__empty-preview">
               <em>No text entered for the Notelet nodelet.</em>
             </p>
@@ -126,7 +172,7 @@ const NoteletEditor = ({ data, e2 }) => {
                 Your filtered length is currently {screenedLength} character{screenedLength === 1 ? '' : 's'}.
               </p>
               <div className="notelet-editor__preview-box">
-                <div dangerouslySetInnerHTML={{ __html: notelet_screened }} />
+                <div dangerouslySetInnerHTML={{ __html: screened }} />
               </div>
             </>
           ) : (
@@ -141,10 +187,7 @@ const NoteletEditor = ({ data, e2 }) => {
           <p><strong>Edit</strong>:</p>
           <p>Your raw text is {currentLength} character{currentLength === 1 ? '' : 's'}.</p>
 
-          <form method="post" className="notelet-editor__form">
-            <input type="hidden" name="node_id" value={e2?.node_id || ''} />
-            <input type="hidden" name="sexisgood" value="1" />
-
+          <form onSubmit={handleSave} className="notelet-editor__form">
             <div className="notelet-editor__checkbox-group">
               <label>
                 <input
@@ -154,12 +197,6 @@ const NoteletEditor = ({ data, e2 }) => {
                 />
                 {' '}Remove HTML comments
               </label>
-              {/* Hidden field to set nodeletKeepComments based on checkbox state */}
-              <input
-                type="hidden"
-                name="nodeletKeepComments"
-                value={keepComments ? '1' : '0'}
-              />
               <span className="notelet-editor__checkbox-note">
                 {' '}(HTML comments like <code>&lt;!-- text --&gt;</code> will be stripped from the displayed output.
                 Your source text is never modified.)
@@ -191,8 +228,8 @@ const NoteletEditor = ({ data, e2 }) => {
               )}
             </div>
 
-            <button type="submit" name="makethechange" value="1" className="notelet-editor__submit-button">
-              Submit
+            <button type="submit" disabled={submitting} className="notelet-editor__submit-button">
+              {submitting ? 'Saving…' : 'Submit'}
             </button>
           </form>
         </div>

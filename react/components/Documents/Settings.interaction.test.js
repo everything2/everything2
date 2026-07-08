@@ -82,7 +82,7 @@ describe('Settings save contract', () => {
     expect(urls).not.toContain('/api/preferences/notifications')
   })
 
-  it('surfaces the error banner when a section save fails', async () => {
+  it('surfaces the error banner when a section save fails (HTTP-level error)', async () => {
     global.fetch = jest.fn().mockResolvedValue({ ok: false, json: async () => ({ message: 'server on fire' }) })
     render(<Settings data={baseData()} user={user} />)
 
@@ -90,6 +90,22 @@ describe('Settings save contract', () => {
     fireEvent.click(saveBtn())
 
     await waitFor(() => expect(screen.getByText(/server on fire/i)).toBeInTheDocument())
+    expect(screen.queryByText(/saved successfully/i)).toBeNull()
+  })
+
+  it('treats a 200 + {success:0} preference reject as a failure, not a silent success', async () => {
+    // Contract: /api/preferences/set now returns HTTP 200 with {success:0,error} on a validation
+    // reject (response-code recut). The component must NOT read that as "saved".
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: 0, error: 'Invalid preference value' }),
+    })
+    render(<Settings data={baseData()} user={user} />)
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /confirmation when voting/i }))
+    fireEvent.click(saveBtn())
+
+    await waitFor(() => expect(screen.getByText(/invalid preference value/i)).toBeInTheDocument())
     expect(screen.queryByText(/saved successfully/i)).toBeNull()
   })
 })

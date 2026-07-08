@@ -537,8 +537,10 @@ function Settings({ data, user }) {
         })
 
         const prefsResult = await prefsResponse.json()
-        if (!prefsResponse.ok) {
-          throw new Error(prefsResult.message || 'Failed to save preferences')
+        // /api/preferences/set returns 200 with {success:0,error} on a validation reject
+        // (and 401 via the guest around). Check both, not just the HTTP status.
+        if (!prefsResponse.ok || prefsResult.success === 0) {
+          throw new Error(prefsResult.error || prefsResult.message || 'Failed to save preferences')
         }
       }
 
@@ -606,8 +608,8 @@ function Settings({ data, user }) {
           })
 
           const nodeletPrefsResult = await nodeletPrefsResponse.json()
-          if (!nodeletPrefsResponse.ok) {
-            throw new Error(nodeletPrefsResult.message || 'Failed to save nodelet preferences')
+          if (!nodeletPrefsResponse.ok || nodeletPrefsResult.success === 0) {
+            throw new Error(nodeletPrefsResult.error || nodeletPrefsResult.message || 'Failed to save nodelet preferences')
           }
         }
       }
