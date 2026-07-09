@@ -14,12 +14,14 @@ sub buildReactData {
     my $APP = $self->APP;
     my $USER = $REQUEST->user->NODEDATA;
     my $VARS = $REQUEST->user->VARS;
-    my $query = $REQUEST->cgi;
-
-    # Get URL parameters
-    my $wuType = abs(int($query->param('wutype') || 0));
-    my $count = abs(int($query->param('count') || 50));
-    my $page = abs(int($query->param('page') || 0));
+    # URL params via the transport-agnostic accessor: $REQUEST->param delegates to the
+    # Plack-backed query object, so we no longer reach through ->cgi. The pagestate API path
+    # (API::pagestate -> route_node -> this buildReactData) supplies the same params through the
+    # same $REQUEST, so SSR and client-router navigation produce identical state.
+    # ($query->PageState sweep, tranche T2 -- see docs/controller-rationalization-inventory.md.)
+    my $wuType = abs(int($REQUEST->param('wutype') || 0));
+    my $count  = abs(int($REQUEST->param('count')  || 50));
+    my $page   = abs(int($REQUEST->param('page')   || 0));
 
     # Sanity check count
     $count = 50 if $count < 10 || $count > 500;

@@ -34,12 +34,13 @@ has 'user' => (lazy => 1, builder => "_build_user", isa => "Everything::Node::us
 has 'node' => (is => "rw", isa => "Everything::Node");
 
 # Cookies (Set-Cookie value strings) produced as a SIDE EFFECT of the request flow
-# -- chiefly login() on an explicit credential login. Historically login() printed
-# the Set-Cookie header directly into the STDOUT capture; the return-based API path
-# (Everything::APIRouter::output) bypasses that capture, so it reads these off the
-# request and folds them into the returned Everything::Response instead. The page
-# path (HTML.pm opLogin) still uses the print, so login() does BOTH (cheap, and the
-# accumulator is simply ignored by the page path). See docs/api-driven-architecture.md.
+# -- chiefly login() on an explicit credential login (the API /sessions/create +
+# /users/confirm flows). login() accumulates the Set-Cookie here and the return-based
+# emission path (Everything::APIRouter::output) reads these off the request and folds
+# them into the returned Everything::Response. Historically login() ALSO printed the
+# Set-Cookie header into the STDOUT capture for the old page-path opLogin; opLogin and
+# the capture are both gone (#4335 / #4483 1c), so the print was removed and this
+# accumulator is now the single mechanism. See docs/step1-return-based-controllers.md.
 has 'response_cookies' => (is => 'ro', isa => 'ArrayRef', default => sub { [] });
 
 sub add_response_cookie
@@ -70,6 +71,14 @@ has 'pagestate_meta' => (is => "rw", isa => "Maybe[Object]");
 # Page class instance - allows reusing the same instance across display() and buildReactData()
 # Critical for form-processing pages like Sign Up that cache state between calls
 has 'page_class_instance' => (is => "rw");
+
+# Return-based page path (#4483, api-driven Step 1). An emission site stashes an
+# Everything::Response here instead of printing; mod_perlInit returns it and app.psgi
+# finalizes it directly (bypassing the STDOUT capture, immune to the #4237 class). Sites not
+# yet converted leave this undef and still print -> app.psgi falls through to the capture, so
+# this is a backward-compatible dual-mode. (No strict isa: avoids a load-order coupling to
+# Everything::Response; app.psgi discriminates via ->isa.)
+has 'response' => (is => "rw", default => undef);
 
 has 'NODE' => (is => "rw", isa => "HashRef");
 
@@ -266,8 +275,7 @@ sub get_current_user
           unless($cookie)
           {
             my $login_cookie = $self->make_login_cookie($user, $expires);
-            print $self->header({-cookie => $login_cookie});  # page path (HTML.pm opLogin -> capture)
-            $self->add_response_cookie($login_cookie);        # return-based API path
+            $self->add_response_cookie($login_cookie);  # folded into the Response by APIRouter::output
           }
         }else{
           # Salted password not accepted by default for user
@@ -286,8 +294,7 @@ sub get_current_user
                 unless($cookie)
                 {
                   my $login_cookie = $self->make_login_cookie($user, $expires);
-                  print $self->header({-cookie => $login_cookie});  # page path (HTML.pm opLogin -> capture)
-                  $self->add_response_cookie($login_cookie);        # return-based API path
+                  $self->add_response_cookie($login_cookie);  # folded into the Response by APIRouter::output
                 }
                 # Successfully updated password and logged in
             }

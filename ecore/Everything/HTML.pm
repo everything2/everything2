@@ -342,9 +342,13 @@ sub displayPage
 			$status_text = 'Forbidden';
 		}
 
-		print "Status: $status $status_text\n";
-		print "Content-Type: text/html; charset=utf-8\n";
-		print "X-E2-Head-Optimized: 1\n\n";
+		# Return-based (#4483, Step 1a): stash a header-only Response for the HEAD fast-path
+		# instead of printing into the STDOUT capture. mod_perlInit returns it; app.psgi finalizes.
+		my $resp = Everything::Response->new;
+		$resp->status($status);
+		$resp->content_type('text/html; charset=utf-8');
+		$resp->set_header('X-E2-Head-Optimized' => 1);
+		$REQUEST->response($resp);
 		return;
 	}
 
@@ -443,9 +447,13 @@ sub gotoNode
 			$status_text = 'Forbidden';
 		}
 
-		print "Status: $status $status_text\n";
-		print "Content-Type: text/html; charset=utf-8\n";
-		print "X-E2-Head-Optimized: 1\n\n";
+		# Return-based (#4483, Step 1a): stash a header-only Response for the HEAD fast-path
+		# instead of printing into the STDOUT capture. mod_perlInit returns it; app.psgi finalizes.
+		my $resp = Everything::Response->new;
+		$resp->status($status);
+		$resp->content_type('text/html; charset=utf-8');
+		$resp->set_header('X-E2-Head-Optimized' => 1);
+		$REQUEST->response($resp);
 		return;
 	}
 
@@ -507,15 +515,15 @@ sub gotoNode
 			# Generate relative URL without hostname/port for proper development environment support
 			my $url = urlGen(\%redir_params, $noQuotes, $NODE);
 
-			# Emit the canonical 303 (Status/Location) for app.psgi's STDOUT
-			# capture to turn into the redirect. Was a raw CGI ->redirect();
-			# now Everything::Response (no CGI). This is the #4237 redirect site.
-			my $redir_header = Everything::Response->cgi_redirect(
-				-uri => $url
-				, -status => 303
-				, -Cache_Control => 'private, no-cache, no-store'
+			# Return-based (#4483, Step 1): stash the canonical 303 as an
+			# Everything::Response on the request instead of printing header text into
+			# the STDOUT capture. mod_perlInit returns it; app.psgi finalizes it directly
+			# (immune to the #4237 capture-poisoning class). First converted emission site.
+			$REQUEST->response(
+				Everything::Response->new
+					->redirect($url, 303)
+					->set_header('Cache-Control' => 'private, no-cache, no-store')
 			);
-			print $redir_header;
 			return;
 		}
 	}
@@ -748,9 +756,9 @@ sub mod_perlInit
 {
 	if($Everything::CONF->maintenance_message)
 	{
-		print "Content-Type: text/html\n\n";
-		print $Everything::CONF->maintenance_message."\n";
-		return;
+		# Return-based (#4483, Step 1a): return the Response directly -- this runs before
+		# $REQUEST exists, so there's no stash to use; app.psgi finalizes the returned Response.
+		return Everything::Response->new->html($Everything::CONF->maintenance_message . "\n");
 	}
 
 	#blow away the globals
@@ -763,8 +771,10 @@ sub mod_perlInit
 	# Initialize our connection to the database
 
 	if (!defined $DB->getDatabaseHandle()) {
-		$query->print($SITE_UNAVAILABLE);
-		return;
+		# Return-based (#4483, Step 1a): return the Response directly (503 Service Unavailable
+		# -- was an implicit 200 via $query->print; the page is a DB-down error, so 503 is
+		# correct now that we own the status). app.psgi finalizes it.
+		return Everything::Response->new->html($SITE_UNAVAILABLE, 503);
 	}
 
 	%HEADER_PARAMS = ( );
@@ -801,7 +811,12 @@ sub mod_perlInit
 	handleUserRequest();
 
 	$DB->closeTransaction();
-	return;
+
+	# Return-based page path (#4483, Step 1): if an emission site stashed an
+	# Everything::Response on the request, return it so app.psgi finalizes it directly
+	# (bypassing the STDOUT capture). Unconverted sites leave this undef and still print ->
+	# app.psgi falls through to the capture parser. Backward-compatible dual-mode.
+	return $REQUEST->response;
 }
 
 #####################

@@ -105,100 +105,56 @@ my $app = sub {
     $path = $env->{REQUEST_URI} // '/' unless defined $path && length $path;
     my $is_api = $path =~ m{^/api/};
 
-    # 4. Capture STDOUT while running the chosen CGI-style handler. Capture RAW
-    # BYTES, not :utf8: the app emits *bytes* -- UTF-8-encoded HTML, or (when the
-    # client sends Accept-Encoding) a br/gzip/zstd-compressed BINARY body from
-    # optimally_compress_page. A :utf8 layer corrupts that compressed binary, which
-    # the browser then can't decode (net::ERR_CONTENT_DECODING_FAILED). Invisible to
-    # curl-without-Accept-Encoding, fatal to every real browser page load.
-    my $body = '';
+    # 4. Run the chosen CGI-style handler. Both paths are now RETURN-BASED (#4483): the
+    # API dispatcher and mod_perlInit each return an Everything::Response that we finalize
+    # to a PSGI triple directly. The old STDOUT-capture-and-parse-back machinery -- and
+    # with it the #4237 select-STDOUT re-assert dance that guarded a leaked capture
+    # selection -- is gone: nothing in the request path prints to STDOUT anymore (proven
+    # by the 1c straggler sweep across the full e2e suite + every page type). Removing the
+    # per-request capture handle also structurally eliminates the #4237 capture-poisoning
+    # class -- there is no capture to leave selected or to close out from under a later
+    # print. See docs/step1-return-based-controllers.md.
     my $returned;
-    open my $capture, '>:raw', \$body or die "capture open: $!";
-    {
-        local *STDOUT = $capture;
-        # Re-assert the default output handle for THIS request. Under production
-        # config, E2 can leave the process's *selected* filehandle
-        # (select()/PL_defoutgv) pointing at a PRIOR request's captured STDOUT via
-        # an unrestored select() deep in the stack (observed at the XS level). Once
-        # that prior $capture is closed, every later plain print() on this preforked
-        # Starman worker writes to a closed handle -> empty body + "print() on closed
-        # filehandle $capture" -> 5xx, and stays poisoned until the worker recycles.
-        # `local *STDOUT = $capture` only swaps the glob, NOT the selected handle, so
-        # it can't fix a leaked selection on its own. Selecting STDOUT (now aliased to
-        # this request's $capture) makes each request immune. See issue #4237.
-        select STDOUT;
-        my $ok = eval {
-            # First real request on this worker: ensure $DB exists, then eagerly load
-            # the core-node hydration bundle into this worker's cache (once). Inside
-            # the request eval so a load failure degrades gracefully rather than
-            # poisoning the worker; loadHydrationCache is itself best-effort.
-            unless ($hydrated) {
-                Everything::initEverything();
-                $Everything::DB->{cache}->loadHydrationCache;
-                $hydrated = 1;
-            }
-            if ($is_api) {
-                Everything::initEverything();
-                $returned = $APIr->dispatcher;
-            }
-            else {
-                mod_perlInit();
-            }
-            1;
-        };
-        unless ($ok) {
-            my $err = $@ || 'unknown error';
-            close $capture;
-            return [ 500, [ 'Content-Type' => 'text/plain' ],
-                     [ "PSGI wrapper caught a die from " .
-                       ($is_api ? 'APIRouter' : 'mod_perlInit') . ":\n$err" ] ];
+    my $ok = eval {
+        # First real request on this worker: ensure $DB exists, then eagerly load the
+        # core-node hydration bundle into this worker's cache (once). Inside the request
+        # eval so a load failure degrades gracefully rather than poisoning the worker;
+        # loadHydrationCache is itself best-effort.
+        unless ($hydrated) {
+            Everything::initEverything();
+            $Everything::DB->{cache}->loadHydrationCache;
+            $hydrated = 1;
         }
+        if ($is_api) {
+            Everything::initEverything();
+            $returned = $APIr->dispatcher;
+        }
+        else {
+            $returned = mod_perlInit();
+        }
+        1;
+    };
+    unless ($ok) {
+        # A die anywhere in the render unwinds through HTML::handle_errors (which
+        # re-throws while inside this eval, $^S true) to here. Build a fresh 500 -- the
+        # error response never depended on captured bytes.
+        my $err = $@ || 'unknown error';
+        return [ 500, [ 'Content-Type' => 'text/plain' ],
+                 [ "PSGI wrapper caught a die from " .
+                   ($is_api ? 'APIRouter' : 'mod_perlInit') . ":\n$err" ] ];
     }
-    close $capture;
 
-    # Return-based fast path: an API handler that returned an Everything::Response is
-    # finalized directly -- it never went through the STDOUT capture, so it is immune
-    # to the #4237 capture-poisoning class. The page path (mod_perlInit) prints into
-    # the capture and leaves $returned unset, so it falls through to the capture
-    # parser below. Dual-mode; the capture is deleted last, once nothing prints.
-    # See docs/api-driven-architecture.md.
+    # Both the API and page paths return an Everything::Response; finalize it.
     if ( $APIr->is_response($returned) ) {
         return $returned->finalize;
     }
 
-    return _cgi_output_to_psgi($body);
+    # A controller that neither emitted a Response nor died is a bug (post-1b every page
+    # path stashes one via Router::output or a mod_perlInit short-circuit). Fail loud
+    # rather than silently serve an empty 200.
+    warn "app.psgi: no Everything::Response produced for path=$path (is_api=$is_api)\n";
+    return [ 500, [ 'Content-Type' => 'text/plain' ], [ 'No response produced' ] ];
 };
-
-# CGI response (Header: val CRLF ... CRLF CRLF body) -> PSGI [status, headers, body].
-sub _cgi_output_to_psgi {
-    my ($raw) = @_;
-
-    unless ( $raw =~ /\r?\n\r?\n/ ) {
-        return [ 200, [ 'Content-Type' => 'text/html; charset=utf-8' ], [ $raw ] ];
-    }
-
-    my ( $head, $body ) = split /\r?\n\r?\n/, $raw, 2;
-    $body //= '';
-
-    my $status = 200;
-    my @headers;
-    my $have_ct = 0;
-    for my $line ( split /\r?\n/, $head ) {
-        my ( $k, $v ) = split /:\s*/, $line, 2;
-        next unless defined $v;
-        if ( lc $k eq 'status' ) {
-            ($status) = $v =~ /(\d{3})/;
-            $status ||= 200;
-        }
-        else {
-            $have_ct = 1 if lc $k eq 'content-type';
-            push @headers, $k, $v;     # multiple Set-Cookie lines each push a pair
-        }
-    }
-    push @headers, 'Content-Type', 'text/html; charset=utf-8' unless $have_ct;
-
-    return [ $status, \@headers, [ $body ] ];
-}
 
 # Serve the file-backed static assets (/css, /react, /images, /static, favicon)
 # so Starman is self-sufficient when run standalone. In the real deployment Apache

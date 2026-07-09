@@ -5,6 +5,7 @@ use Moose;
 use namespace::autoclean;
 use Everything;
 use Everything::Request;
+use Everything::Response;
 
 with 'Everything::Globals';
 with 'Everything::HTTP';
@@ -86,10 +87,15 @@ sub output
 
   my ($headers, $body) = $self->_build_response_parts($output);
 
-  print $REQUEST->header($headers);
-  print $body if defined $body;
+  # Return-based page path (#4483, Step 1b): stash the Response on the request instead of
+  # printing header+body into the STDOUT capture. This is the single main-body emission point
+  # for every page controller (route_node -> output). We pair the SAME ($headers, $body) with
+  # Everything::Response->from_cgi_parts that the API path already returns -- byte-equivalent by
+  # construction (t/131) -- so mod_perlInit returns it and app.psgi finalizes directly, immune
+  # to the #4237 capture-poisoning class. Unconverted sites still print -> app.psgi falls through.
+  $REQUEST->response(Everything::Response->from_cgi_parts($headers, $body));
 
-  return 1; # Indicate success for callers checking result (page path prints to capture)
+  return 1; # Indicate success for callers checking result
 }
 
 __PACKAGE__->meta->make_immutable;
