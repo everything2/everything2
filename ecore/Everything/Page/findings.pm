@@ -31,10 +31,11 @@ sub buildReactData {
     my $APP = $self->APP;
     my $USER = $REQUEST->user;
     my $NODE = $REQUEST->node;
-    my $query = $REQUEST->cgi;
-
-    my $title = $query->param('node') || '';
-    my $lastnode_id = $query->param('lastnode_id') || 0;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the
+    # Plack-backed query object) so the pagestate API path parses them identically.
+    # (routing-epoch param sweep, tranche T1 -- docs/controller-rationalization-inventory.md.)
+    my $title = $REQUEST->param('node') || '';
+    my $lastnode_id = $REQUEST->param('lastnode_id') || 0;
     my $is_admin = $APP->isAdmin($USER);
     my $is_guest = $USER->is_guest;  # Use blessed object method directly
 
@@ -205,7 +206,7 @@ sub buildReactData {
         search_term => $title,
         # Set when the "search term" is actually a non-existent node_id (e.g. /node/5),
         # so the no-results message reads "node ID 5" instead of a bare "5". (#4382)
-        search_was_node_id => $query->param('not_found_by_id') ? 1 : 0,
+        search_was_node_id => $REQUEST->param('not_found_by_id') ? 1 : 0,
         findings => \@findings,
         lastnode_id => $lastnode_id,
         has_excerpts => $excerpt_count > 0
