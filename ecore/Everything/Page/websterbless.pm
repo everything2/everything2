@@ -16,7 +16,6 @@ sub buildReactData
     my $DB    = $self->DB;
     my $APP   = $self->APP;
     my $USER  = $REQUEST->user;
-    my $query = $REQUEST->cgi;
 
     # Only editors and admins can access this tool
     unless ( $APP->isEditor( $USER->NODEDATA ) || $APP->isAdmin( $USER->NODEDATA ) ) {
@@ -46,8 +45,10 @@ sub buildReactData
     # pure-render: the React component posts the blessings and renders the per-user
     # results from the response.
 
-    # prefill_username from the URL (user-tools modal integration)
-    my $prefill_username = $query->param('prefill_username') || '';
+    # prefill_username from the URL (user-tools modal integration). Transport-agnostic
+    # accessor ($REQUEST->param delegates to the Plack query object) so the pagestate API
+    # path parses it identically. (routing-epoch param sweep, tranche T3a -- #4494.)
+    my $prefill_username = $REQUEST->param('prefill_username') || '';
 
     return {
         type             => 'websterbless',
