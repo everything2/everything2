@@ -232,6 +232,78 @@ check, not the gate).
 
 ---
 
+### Part C.3 — Response-code consumption audit (2026-07-08, #3768) — scope-down
+
+**Diagnostic (decisive):** under Starman/PSGI a non-200 comes back CLEAN (correct status,
+`application/json`, no HTML append). The "200-only rule" is a **dead mod_perl artifact** — proper
+status codes work now. (`CLAUDE.md` still asserts the rule → retire it.)
+
+**Result:** the feared systemic silent-success hazard is **mostly not real**.
+- The codebase is predominantly **status-code style** (server non-200 on failure, client checks
+  `res.ok`) — consistent + correct under Starman (`sessions`, `wheel`, `poll`, `messages`,
+  `nodenotes`, `nodes`, `notifications`, `chatroom`, most `admin`).
+- Silent-success bug = **envelope endpoint (200+success:0) × `.ok`-only client**. Of the 23
+  `.ok`-without-`.success` consumers: 2 were real (`Settings`, `StyleDefacer` — fixed); the rest
+  either read the body correctly (`E2PennyJar`, `ConfirmPassword`), or are reads / fire-and-forget /
+  unreachable-failure (`RecentNodes`, `UsergroupWriteups`, `NodeToolset`, all the GET nodelets).
+- **No live silent-success bug remains** beyond the two already fixed.
+
+**Downgraded:** #3768 goes from "systemic hazard / deep client surgery" to "low-priority consistency
+cleanup" — (1) retire the 200-only rule in docs, (2) optional: standardize one envelope style + lint,
+(3) keep `!res.ok || body.success === 0` as the client convention. The audit's payoff was *proving the
+surgery isn't needed*.
+
+---
+
+## Part E — `$query`→PageState sweep tranches (routing epoch)
+
+**77 pages** read `$REQUEST->cgi->param` directly (feeds excluded; `confirm_password` excluded — done,
+auth-token flow). Target: pages get params via the **PageState facade** now; eventually a shared
+**`Everything::Roles::PageState`** consumed by both `Everything::Page` (SSR) and `Everything::API::pagestate`
+(the client-router source) so one parser produces param-derived state for both paths. Each page is
+migrated once (all its params routed together); assigned to its **primary** param shape below.
+
+**Recommended order:** T1 → T3a → T2 → T3 → T4 (foundational+small first; warm-up; then by parity-template).
+
+### Tranche 1 — Route / dispatch recovery (6) — *do first; PageState route-recovery already owns this*
+Parity: `url-routing.spec.js` + `link-resolution.spec.js` (+ `t/101/103/120`).
+`nothing_found`, `findings`, `duplicates_found`, `login`, `short_url_lookup`, `e2_rot13_encoder`
+
+### Tranche 3a — Prefill-username hint (9) — *trivial warm-up; establishes the facade accessor*
+Single `prefill_username`/`prefill` hint param each.
+`bestow_cools`, `bestow_easter_eggs`, `enrichify`, `fiery_teddy_bear_suit`, `giant_teddy_bear_suit`,
+`superbless`, `websterbless`, `xp_superbless`, `the_old_hooked_pole`
+
+### Tranche 2 — Pagination (13)
+Parity: `writeups-by-type.spec.js` (Gap C). Params: `startat/page/offset/count/limit/start/next`.
+`a_year_ago_today`, `caja_de_arena`, `everything_user_search`, `fresh_blood`, `freshly_bloodied`,
+`homenode_inspector`, `nodes_of_the_year`, `recent_node_notes`, `security_monitor`, `topic_archive`,
+`usergroup_discussions`, `usergroup_message_archive`, `writeups_by_type`
+
+### Tranche 3 — Entity deep-link (26)
+Parity: `entity-deeplink.spec.js` (Gap D). Params: `id/username/user/for_node/for_usergroup/author/
+editor/cooluser/…` (single-entity selector).
+`reputation_graph`, `reputation_graph_horizontal`, `show_user_vars`, `do_you_c_what_i_c`,
+`the_recommender`, `node_parameter_editor`, `simple_usergroup_editor`, `editor_endorsements`,
+`noding_speedometer`, `the_borg_clinic`, `e2_bouncer`, `ip_hunter`, `ip2name`, `renunciation_chainsaw`,
+`drafts`, `e2_editor_beta`, `message_inbox`, `node_heaven_title_search`, `create_node`, `the_oracle`,
+`dr_nate_s_secret_lab`, `e2node_reparenter`, `magical_writeup_reparenter`, `node_notes_by_editor`,
+`who_killed_what`, `altar_of_sacrifice`
+
+### Tranche 4 — Filter / display / date options (23) — *lowest risk, most heterogeneous; last*
+Params: filter/sort/date/toggle (`filter_*`, `orderby`, `y`/`m`/`year`, `days`, boolean toggles).
+`everything_document_directory`, `my_big_writeup_list`, `everything_s_best_users`, `display_categories`,
+`the_everything2_voting_experience_system`, `voting_data`, `the_catwalk`, `buffalo_generator`,
+`buffalo_haiku_generator`, `the_node_crypt`, `manna_from_heaven`, `who_is_doing_what`,
+`historical_iron_noder_stats`, `site_trajectory`, `site_trajectory_2`, `log_archive`, `the_registries`,
+`my_achievements`, `content_reports`, `clientdev_home`, `news_for_noders_stuff_that_matters`,
+`news_archives`, `usergroup_picks`
+
+> Pages spanning multiple shapes (e.g. `who_killed_what`=entity+pagination, `caja_de_arena`=pagination+
+> filter) are listed in their *primary* tranche but migrate all their params at once.
+
+---
+
 ## Part D — SSR-role sharing plan (ORM prep)
 
 **Existing (the pattern):** `Everything::Roles::NodeTrackerStats`, `Everything::Roles::IPBlacklist` —

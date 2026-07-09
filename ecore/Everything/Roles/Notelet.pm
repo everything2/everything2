@@ -1,6 +1,7 @@
 package Everything::Roles::Notelet;
 
 use Moose::Role;
+use Readonly;
 
 # Shared notelet logic (#4479, Refs #4298). The pure-render Everything::Page::notelet_editor and
 # the mutating Everything::API::notelet both compute the level-based max length + the display
@@ -10,9 +11,9 @@ use Moose::Role;
 requires qw(APP);
 
 # The Notelet nodelet's node_id -- notelet_enabled checks the user's nodelet list for it.
-use constant NOTELET_NODELET_ID => 1290534;
+Readonly my $NOTELET_NODELET_ID => 1290534;
 # Hard cap on the raw source we store (matches the old buildReactData + the React maxLength).
-use constant NOTELET_RAW_CAP => 32768;
+Readonly my $NOTELET_RAW_CAP => 32768;
 
 # Level-based cap on how much of the raw text is *displayed* (screened). Extracted verbatim
 # from the old Everything::Page::notelet_editor buildReactData.
@@ -58,7 +59,7 @@ sub notelet_payload {
         char_count       => length($raw),
         max_length       => $self->notelet_max_length($user->NODEDATA),
         user_level       => $self->APP->getLevel($user->NODEDATA) || 0,
-        notelet_enabled  => (index($VARS->{nodelets} || '', NOTELET_NODELET_ID) >= 0) ? 1 : 0,
+        notelet_enabled  => (index($VARS->{nodelets} || '', $NOTELET_NODELET_ID) >= 0) ? 1 : 0,
         keep_comments    => $VARS->{nodeletKeepComments} ? 1 : 0,
     };
 }
@@ -82,8 +83,8 @@ sub save_notelet {
     if (!defined $notelet_source || !length($notelet_source)) {
         delete $VARS->{noteletRaw};
     } else {
-        $notelet_source = substr($notelet_source, 0, NOTELET_RAW_CAP)
-            if length($notelet_source) > NOTELET_RAW_CAP;
+        $notelet_source = substr($notelet_source, 0, $NOTELET_RAW_CAP)
+            if length($notelet_source) > $NOTELET_RAW_CAP;
 
         my $max = $self->notelet_max_length($user->NODEDATA);
         if (length($notelet_source) > $max) {

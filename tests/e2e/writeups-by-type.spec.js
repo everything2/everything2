@@ -35,4 +35,21 @@ test.describe('Writeups by Type — routing parity (Gap C)', () => {
     expect(href).toContain('count=10');
     expect(href).toContain('page=0');
   });
+
+  // SSR == client-router parity. The React router will fetch /api/pagestate/lookup/:type/:title
+  // for a client-side nav; it routes through the SAME buildReactData as the SSR page (via
+  // route_node), so the param-derived state must match. This locks the seam that the $query
+  // sweep relies on — future edits to writeups_by_type's buildReactData can't drift SSR from
+  // the client-router path. (Refs the $query→PageState sweep, T2.)
+  test('routing parity: /api/pagestate (client-router path) yields the same param-derived state', async ({ request }) => {
+    const res = await request.get(
+      `/api/pagestate/lookup/superdoc/${encodeURIComponent('Writeups by Type')}?wutype=251&count=25&page=1`
+    );
+    expect(res.ok()).toBe(true);
+    const cd = (await res.json()).contentData;
+    expect(cd.type).toBe('writeups_by_type');
+    expect(cd.current_type).toBe(251);   // integer contract (#4152), same as SSR
+    expect(cd.current_count).toBe(25);
+    expect(cd.current_page).toBe(1);
+  });
 });
