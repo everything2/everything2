@@ -29,8 +29,10 @@ sub buildReactData
         };
     }
 
-    # prefill username, for links coming in from the spam-detection tools
-    my $prefill = scalar( $REQUEST->cgi->param('prefill') ) || '';
+    # prefill username, for links coming in from the spam-detection tools. Transport-agnostic
+    # accessor ($REQUEST->param delegates to the Plack query object) so the pagestate API path
+    # parses it identically. (routing-epoch param sweep, tranche T3a -- #4494.)
+    my $prefill = scalar( $REQUEST->param('prefill') ) || '';
 
     return {
         type    => 'the_old_hooked_pole',

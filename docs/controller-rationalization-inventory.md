@@ -276,10 +276,16 @@ same Plack-backed query object). `login`/`short_url_lookup`/`e2_rot13_encoder` w
 e2e 141 passed — incl. the `url-routing` (43) + `link-resolution` parity net. No `->cgi` param reads
 remain in the 6 pages.
 
-### Tranche 3a — Prefill-username hint (9) — *trivial warm-up; establishes the facade accessor*
+### Tranche 3a — Prefill-username hint (9) — ✅ DONE 2026-07-09 (#4494)
 Single `prefill_username`/`prefill` hint param each.
 `bestow_cools`, `bestow_easter_eggs`, `enrichify`, `fiery_teddy_bear_suit`, `giant_teddy_bear_suit`,
 `superbless`, `websterbless`, `xp_superbless`, `the_old_hooked_pole`
+
+Only 2 needed work: `websterbless` (dropped `my $query = $REQUEST->cgi`) + `the_old_hooked_pole`
+(`$REQUEST->cgi->param('prefill')`) → `$REQUEST->param`. The other 7 were already on `$REQUEST->param`.
+Behavior-identical accessor swap. Validation: jest 2572/2572, e2e 141 passed; full perl green except
+baseline `t/104` + a `t/190` `-j4` shared-seed flake (#4267 — passes solo). No `->cgi` param reads
+remain in the 9.
 
 ### Tranche 2 — Pagination (13)
 Parity: `writeups-by-type.spec.js` (Gap C). Params: `startat/page/offset/count/limit/start/next`.
