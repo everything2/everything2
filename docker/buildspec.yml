@@ -15,12 +15,11 @@ phases:
       - echo "Cache verification:"
       - docker images | grep $ECR_REPOSITORY_NAME || echo "No cache images available"
       - echo Installing node elements
-      - n 20.19.2
-      # Pin to npm 11 (latest major that still supports the pinned node 20.19.2:
-      # node ^20.17.0 || >=22.9.0). npm@latest floated to 12.x, which is node-22+ only
-      # and EBADENGINE-rejects node 20 -- broke every build until repinned. Bump this in
-      # lockstep when node moves off 20 (node 20 is EOL; see the node-22 bump follow-up).
-      - npm install -g npm@11
+      # Single source of truth: /.nvmrc. The image build reads the same value via
+      # --build-arg NODE_VERSION below, so host toolchain == image. Node 24 (Krypton LTS)
+      # ships npm 11.x in-box, so there is NO `npm install -g` step to float-break (#4488).
+      - export NODE_VERSION="$(cat .nvmrc)"
+      - n "$NODE_VERSION"
       - npm install
       - echo Installing ruby sdk elements
       - gem install aws-sdk-s3 brotli zstd-ruby
@@ -31,11 +30,11 @@ phases:
       - npx webpack --config etc/webpack.config.js
       - ./tools/asset_pipeline.rb --assets=$ASSETS_BUCKET
       - echo Building deps stage with layer caching...
-      - docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --target deps --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps --build-arg="ARCH=$NODEJS_ARCH" -f docker/e2app/Dockerfile . ;
+      - docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --target deps --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps --build-arg="ARCH=$NODEJS_ARCH" --build-arg="NODE_VERSION=$NODE_VERSION" -f docker/e2app/Dockerfile . ;
       - echo Pushing deps cache image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps || true
       - echo Building final image with layer caching...
-      - docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG --build-arg="ARCH=$NODEJS_ARCH" --build-arg="CODEBUILD_RESOLVED_SOURCE_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION" -f docker/e2app/Dockerfile . ;
+      - docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG --build-arg="ARCH=$NODEJS_ARCH" --build-arg="NODE_VERSION=$NODE_VERSION" --build-arg="CODEBUILD_RESOLVED_SOURCE_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION" -f docker/e2app/Dockerfile . ;
       - echo Pushing the final Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG ;
   post_build:
