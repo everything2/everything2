@@ -166,7 +166,8 @@ build_app_image() {
   echo "Building application image..."
   echo "========================================="
   docker image rm everything2/e2app 2>/dev/null
-  if ! docker build -t everything2/e2app -f docker/e2app/Dockerfile .; then
+  # Read the Node version from the single source of truth (.nvmrc) so local dev == prod build.
+  if ! docker build -t everything2/e2app --build-arg NODE_VERSION="$(cat .nvmrc)" -f docker/e2app/Dockerfile .; then
     echo ""
     echo "ERROR: Application image build failed!"
     exit 1

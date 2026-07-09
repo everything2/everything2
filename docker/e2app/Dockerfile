@@ -2,6 +2,11 @@
 FROM ubuntu:26.04 AS deps
 
 ARG ARCH=x64
+# Single source of truth for the Node version is /.nvmrc; keep this default in sync with it.
+# buildspec.yml + devbuild.sh pass --build-arg NODE_VERSION="$(cat .nvmrc)" so the CodeBuild
+# host toolchain and this image always match. Node 24 is Active LTS (Krypton) and ships a
+# current npm (11.x) in-box -- no separate `npm install -g` step to float-break (#4488, was #4486).
+ARG NODE_VERSION=24.18.0
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libcrypt-dev libssl-dev zlib1g-dev libbrotli-dev libzstd-dev libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 libapache2-mod-evasive mysql-client ruby ruby-dev xz-utils cpanminus perlmagick psmisc cmake unzip && rm -rf /var/lib/apt/lists/*
 ENV TZ=Etc/UTC
@@ -32,11 +37,9 @@ COPY ./vendor/cache/ /var/bootstrap/cache/
 COPY ./cpanfile /var/bootstrap
 RUN cpanm -L /var/libraries --from "/var/bootstrap/cache" --installdeps --notest --cpanfile=/var/bootstrap/cpanfile .
 
-# NodeJS / React
-RUN curl -L "https://nodejs.org/download/release/v20.19.2/node-v20.19.2-linux-$ARCH.tar.xz" | xz -cd | tar xv --strip-components=1 -C /usr
-# Pin npm to 11 (newest major compatible with the pinned node 20.19.2). npm@latest
-# floated to 12.x (node-22+ only) and EBADENGINE-rejects node 20; bump in lockstep with node.
-RUN /usr/bin/npm install -g npm@11
+# NodeJS / React. Use the npm bundled with Node (v24.18.0 ships npm 11.16.0) -- no floating
+# `npm install -g npm@latest`, which is what silently broke the build when npm 12 dropped Node 20 (#4486).
+RUN curl -L "https://nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-$ARCH.tar.xz" | xz -cd | tar xv --strip-components=1 -C /usr
 
 # Node dependencies (only changes when package.json/package-lock.json changes)
 WORKDIR /var/everything
