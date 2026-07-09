@@ -16,7 +16,11 @@ phases:
       - docker images | grep $ECR_REPOSITORY_NAME || echo "No cache images available"
       - echo Installing node elements
       - n 20.19.2
-      - npm install -g npm@latest
+      # Pin to npm 11 (latest major that still supports the pinned node 20.19.2:
+      # node ^20.17.0 || >=22.9.0). npm@latest floated to 12.x, which is node-22+ only
+      # and EBADENGINE-rejects node 20 -- broke every build until repinned. Bump this in
+      # lockstep when node moves off 20 (node 20 is EOL; see the node-22 bump follow-up).
+      - npm install -g npm@11
       - npm install
       - echo Installing ruby sdk elements
       - gem install aws-sdk-s3 brotli zstd-ruby

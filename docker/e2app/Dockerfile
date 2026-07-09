@@ -34,7 +34,9 @@ RUN cpanm -L /var/libraries --from "/var/bootstrap/cache" --installdeps --notest
 
 # NodeJS / React
 RUN curl -L "https://nodejs.org/download/release/v20.19.2/node-v20.19.2-linux-$ARCH.tar.xz" | xz -cd | tar xv --strip-components=1 -C /usr
-RUN /usr/bin/npm install -g npm@latest
+# Pin npm to 11 (newest major compatible with the pinned node 20.19.2). npm@latest
+# floated to 12.x (node-22+ only) and EBADENGINE-rejects node 20; bump in lockstep with node.
+RUN /usr/bin/npm install -g npm@11
 
 # Node dependencies (only changes when package.json/package-lock.json changes)
 WORKDIR /var/everything

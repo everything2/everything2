@@ -458,35 +458,6 @@ sub checkToken
 	return 1;
 }
 
-#############################################################################
-#	Sub
-#		updateLogin
-#
-#	purpose
-#		log in a user whose password has not yet been hashed,
-#		and hash it
-#
-#	parameter
-#		(hashref) user, CGI object, old login cookie
-#
-#	returns
-#		user hashref if user was logged in and updated, 0 if not
-#
-
-sub updateLogin
-{
-	my ($this, $user, $query, $cookie) = @_;
-
-	return 0 if substr($query->param('passwd'), 0, 10) ne $user->{passwd}
-		&& $this->urlDecode($cookie) ne $user->{title}.'|'.crypt($user->{passwd}, $user->{title});
-
-	$this->updatePassword($user, $user->{passwd});
-
-	# set new login cookie, unless we're going to anyway (and avoid infinite loop)
-        Everything::HTML::oplogin() unless $query->param('op') eq 'login';
-	return $user;
-}
-
 ######################################################################
 #	sub
 #		cleanWordAggressive
@@ -2353,56 +2324,6 @@ sub logUserIp {
   }
 
   return;
-}
-
-#############################################################################
-#	Sub
-#		confirmUser
-#
-#	Purpose
-#		Check user credentials if presented.
-#
-#	Parameters
-#		user name, password, cookie
-#
-#	Returns
-#		The USER node hash reference if credentials are accepted,
-#		otherwise 0
-sub confirmUser
-{
-  my ($this, $username, $pass, $cookie, $query) = @_;
-
-  my $user = $this->{db}->getNode($username, 'user');
-  unless($user)
-  {
-    return 0;
-  }
-
-  unless($user->{acctlock} == 0)
-  {
-    return 0;
-  }
-
-  unless ($cookie)
-  {
-    # login with plaintext password. May reset password or activate account first:
-    if($query and $query->param('token'))
-    {
-      $this->checkToken($user, $query->param('action'), $query->param('expiry'),
-        $query->param('passwd'), $query->param('token'));
-    }
-
-    $pass = $this->hashString($pass, $user->{salt});
-  }
-
-  return $user if $pass eq $user->{passwd};
-  if($user->{salt})
-  {
-    return 0;
-  }
-
-  # legacy user with unsalted password
-  return $this->updateLogin($user, $query, $cookie);
 }
 
 #############################################################################
