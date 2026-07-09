@@ -36,12 +36,13 @@ sub buildReactData {
     my $DB = $self->DB;
     my $APP = $self->APP;
     my $USER = $REQUEST->user;
-    my $query = $REQUEST->cgi;
-
-    my $node_param = $query->param('node') || '';
-    my $op = $query->param('op') || '';
-    my $node_id = $query->param('node_id') || '';
-    my $lastnode_id = $query->param('lastnode_id') || 0;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the
+    # Plack-backed query object) so the pagestate API path parses them identically.
+    # (routing-epoch param sweep, tranche T1 -- docs/controller-rationalization-inventory.md.)
+    my $node_param = $REQUEST->param('node') || '';
+    my $op = $REQUEST->param('op') || '';
+    my $node_id = $REQUEST->param('node_id') || '';
+    my $lastnode_id = $REQUEST->param('lastnode_id') || 0;
 
     # Searching for CJK (e.g. ?node=美国国家安全局) was rendering on the page
     # as Latin-1 mojibake (ç¾Žå›½…) because the CGI -utf8 pragma in
@@ -79,12 +80,12 @@ sub buildReactData {
     my $is_admin = $APP->isAdmin($USER);
     my $show_tin_opener = 0;
     my $tin_opener_message = '';
-    my $tinopener_active = $query->param('tinopener') || 0;
+    my $tinopener_active = $REQUEST->param('tinopener') || 0;
 
-    if ($is_admin && $query->param('type') eq 'writeup' && $query->param('author')) {
+    if ($is_admin && $REQUEST->param('type') eq 'writeup' && $REQUEST->param('author')) {
         $show_tin_opener = 1;
         if ($tinopener_active) {
-            my $author = $DB->getNode(scalar($query->param('author')), 'user');
+            my $author = $DB->getNode(scalar($REQUEST->param('author')), 'user');
             if (!$author) {
                 $tin_opener_message = 'User does not exist.';
             } elsif ($author->{acctlock}) {

@@ -27,10 +27,11 @@ sub buildReactData {
     my $APP = $self->APP;
     my $USER = $REQUEST->user->NODEDATA;
     my $NODE = $REQUEST->node;
-    my $query = $REQUEST->cgi;
-
-    my $search_term = $query->param('node') || '';
-    my $lastnode_id = $query->param('lastnode_id') || 0;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the
+    # Plack-backed query object) so the pagestate API path parses them identically.
+    # (routing-epoch param sweep, tranche T1 -- docs/controller-rationalization-inventory.md.)
+    my $search_term = $REQUEST->param('node') || '';
+    my $lastnode_id = $REQUEST->param('lastnode_id') || 0;
     my $current_user_id = $USER->{node_id};
 
     my @matches = ();

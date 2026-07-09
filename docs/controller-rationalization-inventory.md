@@ -265,9 +265,16 @@ migrated once (all its params routed together); assigned to its **primary** para
 
 **Recommended order:** T1 → T3a → T2 → T3 → T4 (foundational+small first; warm-up; then by parity-template).
 
-### Tranche 1 — Route / dispatch recovery (6) — *do first; PageState route-recovery already owns this*
+### Tranche 1 — Route / dispatch recovery (6) — ✅ DONE 2026-07-09 (#4491)
 Parity: `url-routing.spec.js` + `link-resolution.spec.js` (+ `t/101/103/120`).
 `nothing_found`, `findings`, `duplicates_found`, `login`, `short_url_lookup`, `e2_rot13_encoder`
+
+Migrated `nothing_found`/`findings`/`duplicates_found` off `$REQUEST->cgi->param` → `$REQUEST->param`
+(dropped the `my $query = $REQUEST->cgi` reach-through; behavior-identical — `param` delegates to the
+same Plack-backed query object). `login`/`short_url_lookup`/`e2_rot13_encoder` were already on
+`$REQUEST->param` (verified, no change). Validation: full perl (baseline `t/104` only), jest 2572/2572,
+e2e 141 passed — incl. the `url-routing` (43) + `link-resolution` parity net. No `->cgi` param reads
+remain in the 6 pages.
 
 ### Tranche 3a — Prefill-username hint (9) — *trivial warm-up; establishes the facade accessor*
 Single `prefill_username`/`prefill` hint param each.
