@@ -21,9 +21,8 @@ sub buildReactData
     my $APP = $self->APP;
     my $user = $REQUEST->user;
 
-    # Get prefill_username from URL parameter (for user tools modal integration)
-    my $prefill_username = $REQUEST->param('prefill_username') || '';
-
+    # prefill_username is NOT read here -- it's a client concern; AdminBestowTool reads it off
+    # window.location. The server neither reads nor ships it (#4500, same as websterbless #4497).
     return {
         type => 'admin_bestow_tool',
         title => 'XP Superbless (Archived)',
@@ -39,7 +38,6 @@ sub buildReactData
         button_text => 'Grant XP',
         button_text_loading => 'Granting XP...',
         note_text => 'All XP grants are logged and audited. Use [Superbless] for normal GP blessings.',
-        prefill_username => $prefill_username
     };
 }
 

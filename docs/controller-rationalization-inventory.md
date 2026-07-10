@@ -345,9 +345,16 @@ the Page and the API twin via `with`. Replicate this shape.
   editors) replaces the server-shipped "Access denied…" string. **Interim:** the gate is still an inline
   `buildReactData` check (gates both the render + `/api/pagestate` paths) — the self-documenting
   `with 'Everything::Security::StaffOnly'` form + soft-render framework flip are **deferred to #4498**
-  (the mixin doesn't yet gate the pagestate path). Still to fold in: superbless / xp_superbless + their
-  shared `adjustGP`+karma+`checkAchievementsByType`+`securityLog` bless-write, and the stray
-  `getNode('Webster 1913')` in `Everything::API::ilikeit`.
+  (the mixin doesn't yet gate the pagestate path).
+  - **2nd growth — #4500 (superbless/xp_superbless):** added `award_karma($target,$delta)` (karma bump +
+    `updateNode` + `checkAchievementsByType`; no-op on 0) and deduped the three verbatim karma-triple
+    copies (`API::superbless::grant_gp`/`grant_xp` + `API::websterbless::bless_users`) onto it; `t/196`
+    covers it with a mock DB/APP. superbless + xp_superbless Pages moved `prefill_username` off the
+    server → `AdminBestowTool` reads `data.prefill_username || window.location` (the other 6
+    AdminBestowTool consumers keep their redundant server read until their own pass). Left as-is:
+    `grant_cools`/`fiery_hug` karma (no achievement check + getVars/setVars shape — divergence noted).
+  - Still to fold in: the shared `adjustGP`/loop scaffolding, and the stray `getNode('Webster 1913')`
+    in `Everything::API::ilikeit`.
 - `Everything::Roles::NodeVars` — show_user_vars / viewvars / UserEditVars ↔ `nodevars`
 - `Everything::Roles::Reparent` — magical_writeup_reparenter / e2node_reparenter ↔ `writeup_reparent`
 - `Everything::Roles::Preferences` — settings ↔ preferences/nodelets/user
@@ -386,6 +393,14 @@ proved the vertical pattern: Page drops `$DB`, Page+API share the role, role uni
 via `$REQUEST->param`, (c) call role methods, (d) shape the return hash — and must **not** touch
 `$DB`/`getNode`/SQL directly. Storage access is a role method, shared with the API twin, mockable in a
 unit test.
+
+**Also audit permission flags on every touched page (#4500 finding).** `/api/pagestate` bypasses BOTH
+node-level read perms AND the controller `check_permission` mixin (it's `route_node → buildReactData`),
+so any per-user flag the page returns (`has_permission`, `can_*`, …) must be **computed from the actual
+user** (`$REQUEST->user->is_editor`/`is_admin`, matching the API twin's gate) — **never hardcoded**.
+superbless shipped `has_permission => 1` unconditionally → a guest pulling it via the client-router path
+got a usable-looking tool (write still blocked by the API, which is the real boundary — a soft
+UX/disclosure gap, not escalation). Fixed in #4500. Full mixin consolidation gating both paths = #4498.
 
 ## Resolved
 - **Sequencing = vertical, value-first** (Jay 2026-07-09): the horizontal `$query` sweep does NOT gate

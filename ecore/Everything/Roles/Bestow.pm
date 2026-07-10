@@ -43,4 +43,20 @@ sub webster_payload {
     };
 }
 
+# --- shared bless-write -----------------------------------------------------
+
+# Bump a recipient's karma by $delta, persist it, and run the karma achievement check -- the
+# shared "bless a recipient's karma" write behind superbless grant_gp/grant_xp and the
+# websterbless thank-you (#4500). $delta of 0 is a no-op (matches the old `if $signum != 0`
+# guard in the grant paths). $target is a raw user hashref (the APIs work in hashrefs).
+# Returns the new karma total.
+sub award_karma {
+    my ($self, $target, $delta) = @_;
+    return $target->{karma} unless $delta;
+    $target->{karma} = ($target->{karma} || 0) + $delta;
+    $self->DB->updateNode($target, -1);
+    $self->APP->checkAchievementsByType('karma', $target->{user_id});
+    return $target->{karma};
+}
+
 1;

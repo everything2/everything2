@@ -31,6 +31,14 @@ use Test::More;
         return undef unless $what eq 'COUNT(*)' && $table eq 'message' && $where =~ /^for_user=\d+$/;
         return $self->{count};
     }
+    sub updateNode { my ($self, $node, $user) = @_; push @{$self->{updates}}, $node; return 1; }
+}
+
+# --- a mock APP: records the karma achievement checks award_karma triggers -------------------
+{
+    package MockBestowAPP;
+    sub new { my ($class, %args) = @_; return bless {%args, checks => []}, $class }
+    sub checkAchievementsByType { my ($self, $type, $uid) = @_; push @{$self->{checks}}, [$type, $uid]; return 1; }
 }
 
 # --- a throwaway consumer of the role, backed by the mock (no Everything, no DB) --------------
@@ -85,6 +93,37 @@ ok(BestowConsumer->does('Everything::Roles::Bestow'), 'consumer composes Everyth
     my $p = $c->webster_payload;
     like($p->{error}, qr/Webster 1913/, 'payload carries the missing-Webster error');
     ok(!exists $p->{webster_id}, 'no webster_id in the error payload');
+}
+
+#############################################################################
+# award_karma: the shared bless-write (karma bump + persist + achievement check) behind
+# superbless grant_gp/grant_xp and the websterbless thank-you (#4500).
+#############################################################################
+{
+    my $db  = MockBestowDB->new(updates => []);
+    my $app = MockBestowAPP->new;
+    my $c   = BestowConsumer->new(DB => $db, APP => $app);
+
+    my $target = { node_id => 500, user_id => 500, karma => 10 };
+
+    is($c->award_karma($target, 1), 11, 'award_karma(+1) returns the new karma total');
+    is($target->{karma}, 11, 'target karma bumped in place');
+    is(scalar @{$db->{updates}}, 1, 'updateNode called once (persisted)');
+    is_deeply($app->{checks}, [['karma', 500]], 'checkAchievementsByType(karma, user_id) run');
+
+    is($c->award_karma($target, -1), 10, 'award_karma(-1) decrements');
+    is($target->{karma}, 10, 'karma back to 10');
+
+    # delta 0 -> no-op: no persist, no achievement check, karma untouched (matches the old guard)
+    my ($u0, $c0) = (scalar @{$db->{updates}}, scalar @{$app->{checks}});
+    $c->award_karma($target, 0);
+    is($target->{karma}, 10, 'award_karma(0) leaves karma unchanged');
+    is(scalar @{$db->{updates}}, $u0, 'award_karma(0) does not persist');
+    is(scalar @{$app->{checks}}, $c0, 'award_karma(0) skips the achievement check');
+
+    # undef karma treated as 0 (|| 0 guard) -- no undef-warning, result identical to the old code
+    my $fresh = { node_id => 501, user_id => 501 };
+    is($c->award_karma($fresh, 1), 1, 'award_karma on an undef karma yields 1');
 }
 
 done_testing;

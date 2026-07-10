@@ -23,3 +23,35 @@ describe('AdminBestowTool (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+// Prefill is client-owned (#4500): read off window.location, with a fallback to a server-supplied
+// data.prefill_username for AdminBestowTool consumers not yet migrated off the server read.
+describe('AdminBestowTool prefill_username', () => {
+  const origLocation = window.location
+  const setSearch = (search) =>
+    Object.defineProperty(window, 'location', { configurable: true, writable: true, value: { search } })
+  afterEach(() =>
+    Object.defineProperty(window, 'location', { configurable: true, writable: true, value: origLocation })
+  )
+
+  const cfg = { type: 'admin_bestow_tool', has_permission: 1, row_count: 3, api_endpoint: '/api/x' }
+  const firstUser = (c) => c.querySelector('input[placeholder="Enter username"]').value
+
+  it('prefills the first username from ?prefill_username when the server ships none', () => {
+    setSearch('?prefill_username=bob')
+    const { container } = render(<AdminBestowTool data={cfg} />)
+    expect(firstUser(container)).toBe('bob')
+  })
+
+  it('a server-supplied data.prefill_username still wins (unmigrated consumers)', () => {
+    setSearch('?prefill_username=bob')
+    const { container } = render(<AdminBestowTool data={{ ...cfg, prefill_username: 'alice' }} />)
+    expect(firstUser(container)).toBe('alice')
+  })
+
+  it('leaves the first username blank when neither URL nor data provide it', () => {
+    setSearch('')
+    const { container } = render(<AdminBestowTool data={cfg} />)
+    expect(firstUser(container)).toBe('')
+  })
+})
