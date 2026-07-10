@@ -25,12 +25,17 @@ describe('Websterbless (real pagestate fixture)', () => {
 // so the component posts the blessings and renders the per-user results from the
 // response (was a server-rendered POST-back).
 describe('Websterbless interaction (#4451)', () => {
+  const origLocation = window.location
   afterEach(() => {
     jest.restoreAllMocks()
     delete global.fetch
+    Object.defineProperty(window, 'location', { configurable: true, writable: true, value: origLocation })
   })
 
-  const authData = { type: 'websterbless', msg_count: 0, webster_id: 176726, prefill_username: '' }
+  const setSearch = (search) =>
+    Object.defineProperty(window, 'location', { configurable: true, writable: true, value: { search } })
+
+  const authData = { type: 'websterbless', msg_count: 0, webster_id: 176726 }
 
   it('posts blessings to /api/websterbless/bless and renders results', async () => {
     global.fetch = jest.fn().mockResolvedValue({
@@ -57,8 +62,24 @@ describe('Websterbless interaction (#4451)', () => {
     await waitFor(() => expect(screen.getByText(/Couldn't find user: bob/)).toBeInTheDocument())
   })
 
-  it('renders the access-denied error', () => {
-    render(<Websterbless data={{ type: 'websterbless', error: 'Access denied. This tool is restricted to editors and administrators.' }} />)
-    expect(screen.getByText(/restricted to editors/i)).toBeInTheDocument()
+  // Permission denial no longer flows through this component (the Page returns { type:'staff_only' }
+  // → StaffOnly, #4497). Websterbless still renders a *data* error inline — e.g. Webster 1913 missing.
+  it('renders a data error (Webster 1913 missing) inline', () => {
+    render(<Websterbless data={{ type: 'websterbless', error: 'Webster 1913 user not found in database.' }} />)
+    expect(screen.getByText(/Webster 1913 user not found/i)).toBeInTheDocument()
+  })
+
+  // Prefill is client-owned (#4497): read off window.location, NOT shipped by the server.
+  it('prefills the first username from the ?prefill_username URL hint', () => {
+    setSearch('?prefill_username=webby')
+    const { container } = render(<Websterbless data={authData} />)
+    expect(container.querySelector('[name="webbyblessUser0"]').value).toBe('webby') // first row prefilled
+    expect(container.querySelector('[name="webbyblessUser1"]').value).toBe('')      // second row blank
+  })
+
+  it('leaves the username blank when there is no prefill_username in the URL', () => {
+    setSearch('')
+    const { container } = render(<Websterbless data={authData} />)
+    expect(container.querySelector('[name="webbyblessUser0"]').value).toBe('')
   })
 })

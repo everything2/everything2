@@ -6,11 +6,12 @@ extends 'Everything::Page';
 sub buildReactData {
     my ( $self, $REQUEST ) = @_;
 
-    my $query = $REQUEST->cgi;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the Plack
+    # query object) so the pagestate API path parses them identically. (routing-epoch sweep T2 -- #4496.)
 
     # Get parameters from URL (usersearch comes from Apache rewrite rule)
-    my $username = $query->param('usersearch') || '';
-    my $orderby  = $query->param('orderby') || 'publishtime_desc';
+    my $username = $REQUEST->param('usersearch') || '';
+    my $orderby  = $REQUEST->param('orderby') || 'publishtime_desc';
 
     # Convert legacy orderby format to new format
     my %orderby_map = (
@@ -31,9 +32,9 @@ sub buildReactData {
 
     $orderby = $orderby_map{$orderby} if exists $orderby_map{$orderby};
 
-    my $page_param = $query->param('page') // '';
+    my $page_param = $REQUEST->param('page') // '';
     my $page = ($page_param =~ /^\d+$/) ? int($page_param) : 1;
-    my $filter_param = $query->param('filterhidden') // '';
+    my $filter_param = $REQUEST->param('filterhidden') // '';
     my $filter_hidden = ($filter_param =~ /^\d+$/) ? int($filter_param) : 0;
 
     return {

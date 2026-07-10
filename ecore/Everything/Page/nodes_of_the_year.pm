@@ -23,16 +23,17 @@ sub buildReactData {
     my ($self, $REQUEST) = @_;
 
     my $DB = $self->DB;
-    my $CGI = $REQUEST->cgi;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the Plack
+    # query object) so the pagestate API path parses them identically. (routing-epoch sweep T2 -- #4496.)
     my $USER = $REQUEST->user;
 
     # Get parameters
-    my $wutype = abs(int($CGI->param("wutype") || 0));
-    my $count = abs(int($CGI->param("count") || 50));
-    my $orderby = $CGI->param('orderby') || 'cooled DESC,reputation DESC';
+    my $wutype = abs(int($REQUEST->param("wutype") || 0));
+    my $count = abs(int($REQUEST->param("count") || 50));
+    my $orderby = $REQUEST->param('orderby') || 'cooled DESC,reputation DESC';
 
     # Show last year until Decemberish (11*30.5*24*3600 = 28987200)
-    my $year = $CGI->param('year') || (localtime(time - 28987200))[5] + 1900;
+    my $year = $REQUEST->param('year') || (localtime(time - 28987200))[5] + 1900;
     $year = int($year);
 
     my $nextyear = $year + 1;

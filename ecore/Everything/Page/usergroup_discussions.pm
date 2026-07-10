@@ -18,7 +18,8 @@ sub buildReactData
     my $DB    = $self->DB;
     my $APP   = $self->APP;
     my $USER  = $REQUEST->user;
-    my $query = $REQUEST->cgi;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the Plack
+    # query object) so the pagestate API path parses them identically. (routing-epoch sweep T2 -- #4496.)
 
     my $uid = getId( $USER->NODEDATA );
 
@@ -86,7 +87,7 @@ sub buildReactData
         };
     }
 
-    my $show_ug = int( $query->param('show_ug') || 0 );
+    my $show_ug = int( $REQUEST->param('show_ug') || 0 );
 
     # Check for unauthorized usergroup access
     if ( $show_ug ) {
@@ -153,7 +154,7 @@ sub buildReactData
     @nodes = sort { $b->{latesttime} <=> $a->{latesttime} } @nodes;
 
     # Pagination
-    my $offset     = int( $query->param("offset") || 0 );
+    my $offset     = int( $REQUEST->param("offset") || 0 );
     my $limit      = 50;
     my $totalnodes = scalar( @nodes );
     my $nodesleft  = $totalnodes - $offset;

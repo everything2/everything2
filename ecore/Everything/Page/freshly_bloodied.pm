@@ -19,7 +19,8 @@ sub buildReactData {
 
     my $DB    = $self->DB;
     my $APP   = $self->APP;
-    my $query = $REQUEST->cgi;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the Plack
+    # query object) so the pagestate API path parses them identically. (routing-epoch sweep T2 -- #4496.)
 
     my $usertype = $DB->getType('user');
     return { type => 'freshly_bloodied', error => 'Could not find user type' }
@@ -51,7 +52,7 @@ sub buildReactData {
 
     # Pagination
     my $page_size = 50;
-    my $start = int($query->param('start') || 0);
+    my $start = int($REQUEST->param('start') || 0);
     $start = 0 if $start < 0;
 
     # Main query - get locked users with locker info

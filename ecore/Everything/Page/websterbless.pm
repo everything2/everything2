@@ -2,6 +2,7 @@ package Everything::Page::websterbless;
 
 use Moose;
 extends 'Everything::Page';
+with 'Everything::Roles::Bestow';
 
 =head1 Everything::Page::websterbless
 
@@ -13,49 +14,27 @@ sub buildReactData
 {
     my ($self, $REQUEST) = @_;
 
-    my $DB    = $self->DB;
-    my $APP   = $self->APP;
-    my $USER  = $REQUEST->user;
+    # Soft gate: editors only (admins are editors, so is_editor covers both). Return a blank
+    # { type => 'staff_only' }; React (StaffOnly.js) owns the friendly copy -- no "Access denied…"
+    # string in the payload (#4497).
+    #
+    # INTERIM: this is an inline check ON PURPOSE for now. The self-documenting-mixin form
+    # (`with 'Everything::Security::StaffOnly'`) is deferred to the post-audit permissions
+    # consolidation, because that mixin's check_permission only gates the page-render controller
+    # (Controller/superdoc.pm) -- it does NOT yet gate the /api/pagestate path, which this Page's
+    # buildReactData feeds too. An inline check here gates BOTH paths; the mixin swap lands when the
+    # consolidation makes the gate cover the pagestate/API path as well.
+    return { type => 'staff_only' } unless $REQUEST->user->is_editor;
 
-    # Only editors and admins can access this tool
-    unless ( $APP->isEditor( $USER->NODEDATA ) || $APP->isAdmin( $USER->NODEDATA ) ) {
-        return {
-            type  => 'websterbless',
-            error => 'Access denied. This tool is restricted to editors and administrators.'
-        };
-    }
-
-    # Get Webster 1913 user node
-    my $webster = $DB->getNode( 'Webster 1913', 'user' );
-    unless ($webster) {
-        return {
-            type  => 'websterbless',
-            error => 'Webster 1913 user not found in database.'
-        };
-    }
-
-    my $webster_id = $webster->{node_id};
-
-    # Count Webster 1913's messages
-    my $msg_count = $DB->sqlSelect( 'COUNT(*)', 'message', "for_user=$webster_id" ) || 0;
-
-    # The bless WRITE (per user: Webster thank-you PM + karma + GP + securityLog) moved
-    # to POST /api/websterbless/bless (Everything::API::websterbless, #4451), so this
-    # page no longer mutates a user's data off query params. buildReactData is now
-    # pure-render: the React component posts the blessings and renders the per-user
-    # results from the response.
-
-    # prefill_username from the URL (user-tools modal integration). Transport-agnostic
-    # accessor ($REQUEST->param delegates to the Plack query object) so the pagestate API
-    # path parses it identically. (routing-epoch param sweep, tranche T3a -- #4494.)
-    my $prefill_username = $REQUEST->param('prefill_username') || '';
-
-    return {
-        type             => 'websterbless',
-        msg_count        => $msg_count,
-        webster_id       => $webster_id,
-        prefill_username => $prefill_username
-    };
+    # Webster 1913 read data (webster_id + msg_count) via Everything::Roles::Bestow -- the page
+    # no longer calls $DB directly (#4497). webster_payload carries { error } instead if the
+    # Webster account is missing; either way the page just merges it into the return hash.
+    #
+    # NB: the `prefill_username` URL hint is NOT read here -- prefilling a form field from the
+    # query string is a pure client concern, so React reads it off window.location directly
+    # (Websterbless.js). The server neither reads nor ships it. The bless WRITE likewise lives in
+    # POST /api/websterbless/bless (#4451). This page is now just: gate -> role read -> shape.
+    return { type => 'websterbless', %{ $self->webster_payload } };
 }
 
 __PACKAGE__->meta->make_immutable;

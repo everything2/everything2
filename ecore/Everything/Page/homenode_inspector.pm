@@ -21,7 +21,8 @@ sub buildReactData {
     my $APP  = $self->APP;
     my $DB   = $self->DB;
     my $USER = $REQUEST->user;
-    my $q    = $REQUEST->cgi;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the Plack
+    # query object) so the pagestate API path parses them identically. (routing-epoch sweep T2 -- #4496.)
 
     # Admin-only page
     unless ($APP->isAdmin($USER->NODEDATA)) {
@@ -34,16 +35,16 @@ sub buildReactData {
     my $node_id = $REQUEST->node->node_id;
 
     # Get filter parameters
-    my $gonetime   = $q->param('gonetime');
+    my $gonetime   = $REQUEST->param('gonetime');
     $gonetime = 0 if defined($gonetime) && $gonetime eq '0';
     $gonetime //= 0;
 
-    my $goneunit   = $q->param('goneunit') || 'MONTH';
-    my $showlength = $q->param('showlength') || 1000;
-    my $maxwus     = $q->param('maxwus') || 0;
-    my $extlinks   = $q->param('extlinks') ? 1 : 0;
-    my $dotstoo    = $q->param('dotstoo') ? 1 : 0;
-    my $page       = $q->param('page') || 1;
+    my $goneunit   = $REQUEST->param('goneunit') || 'MONTH';
+    my $showlength = $REQUEST->param('showlength') || 1000;
+    my $maxwus     = $REQUEST->param('maxwus') || 0;
+    my $extlinks   = $REQUEST->param('extlinks') ? 1 : 0;
+    my $dotstoo    = $REQUEST->param('dotstoo') ? 1 : 0;
+    my $page       = $REQUEST->param('page') || 1;
 
     # Validate parameters
     unless ($maxwus =~ /^\d+$/ && $gonetime =~ /^\d+$/ &&
