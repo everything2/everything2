@@ -12,13 +12,14 @@ sub buildReactData {
     my ($self, $REQUEST) = @_;
 
     my $DB = $self->DB;
-    my $q = $REQUEST->cgi;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the Plack
+    # query object) so the pagestate API path parses them identically. (routing-epoch sweep T2 -- #4496.)
 
     # Room-topic-change events (decoupled from the old E2 Gift Shop seclog_node).
     my $event = SECLOG_GIFTSHOP_TOPIC;
 
     # Pagination
-    my $startat = $q->param('startat') || 0;
+    my $startat = $REQUEST->param('startat') || 0;
     $startat =~ s/[^0-9]//g;
     $startat ||= 0;
     $startat = int($startat);

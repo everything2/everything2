@@ -2,6 +2,7 @@ package Everything::API::websterbless;
 
 use Moose;
 extends 'Everything::API';
+with 'Everything::Roles::Bestow';
 
 use Everything::SecurityLog qw(:events);
 
@@ -29,7 +30,7 @@ sub bless_users {
     return [$self->HTTP_OK, {success => 0, error => 'No users to bless'}]
         unless (ref $blessings eq 'ARRAY' && @$blessings);
 
-    my $webster = $self->DB->getNode('Webster 1913', 'user');
+    my $webster = $self->webster_user;    # shared lookup via Everything::Roles::Bestow (#4497)
     return [$self->HTTP_OK, {success => 0, error => 'Webster 1913 user not found in database.'}]
         unless $webster;
 

@@ -21,7 +21,8 @@ sub buildReactData {
     my $APP  = $self->APP;
     my $DB   = $self->DB;
     my $USER = $REQUEST->user;
-    my $q    = $REQUEST->cgi;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the Plack
+    # query object) so the pagestate API path parses them identically. (routing-epoch sweep T2 -- #4496.)
 
     # Admin-only page
     unless ($APP->isAdmin($USER->NODEDATA)) {
@@ -34,11 +35,11 @@ sub buildReactData {
     my $node_id = $REQUEST->node->node_id;
 
     # Get filter parameters
-    my $gonesince  = $q->param('gonesince') || '1 YEAR';
-    my $showlength = $q->param('showlength') || 1000;
-    my $published  = $q->param('published') ? 1 : 0;
-    my $extlinks   = $q->param('extlinks') ? 1 : 0;
-    my $page       = $q->param('page') || 1;
+    my $gonesince  = $REQUEST->param('gonesince') || '1 YEAR';
+    my $showlength = $REQUEST->param('showlength') || 1000;
+    my $published  = $REQUEST->param('published') ? 1 : 0;
+    my $extlinks   = $REQUEST->param('extlinks') ? 1 : 0;
+    my $page       = $REQUEST->param('page') || 1;
 
     # Validate gonesince format (number + unit)
     unless ($gonesince =~ /^\d+\s+(YEAR|MONTH|WEEK|DAY)$/i) {

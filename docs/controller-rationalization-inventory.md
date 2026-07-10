@@ -263,7 +263,12 @@ auth-token flow). Target: pages get params via the **PageState facade** now; eve
 (the client-router source) so one parser produces param-derived state for both paths. Each page is
 migrated once (all its params routed together); assigned to its **primary** param shape below.
 
-**Recommended order:** T1 → T3a → T2 → T3 → T4 (foundational+small first; warm-up; then by parity-template).
+**Sequencing (revised 2026-07-09):** the param swap is *not* the primary driver and does **not** gate
+the role work — the two are orthogonal (param = how a page reads URL input; role = how it reads DB /
+computes). The mechanical `$query`→`$REQUEST->param` swap is now **mop-up**, not a prerequisite. T1 → T3a
+→ T2 are ✅ done; the remaining pages (T3/T4 shape) get their swap **as a role/vertical pass touches
+them** (touch once), and any page with no role to extract is swept in cheap batches whenever. Lead with
+**roles (Part D)**, not the param tranches. See "Proposed module order" below.
 
 ### Tranche 1 — Route / dispatch recovery (6) — ✅ DONE 2026-07-09 (#4491)
 Parity: `url-routing.spec.js` + `link-resolution.spec.js` (+ `t/101/103/120`).
@@ -287,11 +292,19 @@ Behavior-identical accessor swap. Validation: jest 2572/2572, e2e 141 passed; fu
 baseline `t/104` + a `t/190` `-j4` shared-seed flake (#4267 — passes solo). No `->cgi` param reads
 remain in the 9.
 
-### Tranche 2 — Pagination (13)
+### Tranche 2 — Pagination (13) — ✅ DONE 2026-07-09 (#4496)
 Parity: `writeups-by-type.spec.js` (Gap C). Params: `startat/page/offset/count/limit/start/next`.
 `a_year_ago_today`, `caja_de_arena`, `everything_user_search`, `fresh_blood`, `freshly_bloodied`,
 `homenode_inspector`, `nodes_of_the_year`, `recent_node_notes`, `security_monitor`, `topic_archive`,
 `usergroup_discussions`, `usergroup_message_archive`, `writeups_by_type`
+
+10 migrated off `->cgi`/`$query`/`$q`/`$CGI` → `$REQUEST->param` (mixed-shape pages —
+`caja_de_arena`/`homenode_inspector`/`nodes_of_the_year` — migrated ALL params at once incl. their
+filter/display params, so they're done for T4 too). `a_year_ago_today`/`recent_node_notes`/
+`writeups_by_type` were already clean. Behavior-identical accessor swap. Validation: full perl (baseline
+`t/104` only), jest 2572/2572, e2e 141 passed; **pagestate-parity smoke** confirmed `nodes_of_the_year`
+via `/api/pagestate?year=2020&count=7` reflects the params on the client-router path (not just SSR). No
+`->cgi` param reads remain in the 13.
 
 ### Tranche 3 — Entity deep-link (26)
 Parity: `entity-deeplink.spec.js` (Gap D). Params: `id/username/user/for_node/for_usergroup/author/
@@ -319,11 +332,22 @@ Params: filter/sort/date/toggle (`filter_*`, `orderby`, `y`/`m`/`year`, `days`, 
 
 ## Part D — SSR-role sharing plan (ORM prep)
 
-**Existing (the pattern):** `Everything::Roles::NodeTrackerStats`, `Everything::Roles::IPBlacklist` —
-each `requires qw(DB APP)`, consumed by both the Page and the API twin via `with`. Replicate this shape.
+**Existing (the pattern):** `Everything::Roles::NodeTrackerStats`, `Everything::Roles::IPBlacklist`,
+`Everything::Roles::Notelet`, `Everything::Roles::Bestow` — each `requires qw(DB APP)`, consumed by both
+the Page and the API twin via `with`. Replicate this shape.
 
 **New-role candidates (Page+API share genuine SSR logic):**
-- `Everything::Roles::Bestow` — websterbless / superbless / xp_superbless (+ AdminBestowTool)
+- `Everything::Roles::Bestow` — ✅ **created 2026-07-09 (#4497), websterbless pilot.** Delivered: Page
+  is `$DB`-free (`webster_user`/`webster_message_count`/`webster_payload` on the role, shared with the
+  API twin; `t/196` mock-DB unit test — testable with no live DB); the `prefill_username` URL hint moved
+  **out of the server into React** (`Websterbless.js` reads `window.location.search` — a pure client
+  concern); a friendly **soft-gate** (`StaffOnly.js` / `staff_only` type, `is_editor` since admins are
+  editors) replaces the server-shipped "Access denied…" string. **Interim:** the gate is still an inline
+  `buildReactData` check (gates both the render + `/api/pagestate` paths) — the self-documenting
+  `with 'Everything::Security::StaffOnly'` form + soft-render framework flip are **deferred to #4498**
+  (the mixin doesn't yet gate the pagestate path). Still to fold in: superbless / xp_superbless + their
+  shared `adjustGP`+karma+`checkAchievementsByType`+`securityLog` bless-write, and the stray
+  `getNode('Webster 1913')` in `Everything::API::ilikeit`.
 - `Everything::Roles::NodeVars` — show_user_vars / viewvars / UserEditVars ↔ `nodevars`
 - `Everything::Roles::Reparent` — magical_writeup_reparenter / e2node_reparenter ↔ `writeup_reparent`
 - `Everything::Roles::Preferences` — settings ↔ preferences/nodelets/user
@@ -333,17 +357,43 @@ Each role: Node::-shaped interface (blessed accessors, no raw hashrefs), unit-te
 
 ---
 
-## Proposed module order (risk-first)
+## Proposed module order (vertical, value-first — revised 2026-07-09)
 
-1. **A5 mutation-leftover suspects** — read + confirm each is API-driven or migrate it (highest blast radius).
-2. **Permission audit of the ~35 mixin Pages vs their API twins** — record mismatches; this is the
-   safety-critical reconciliation, do it before routing churn moves code around.
-3. **A1 route-recovery Pages** — fold into PageState (facade already exists + parity specs green).
-4. **A2 pagination + A3 entity-select** — route through PageState, each backed by the Gap-C/D specs.
-5. **A4 filter/display options** — same, lower risk.
-6. **Extract Part-D roles** as each twin is touched — combined pass, not a separate sweep.
+The original plan front-loaded the horizontal `$query` sweep (all pagination, then all filters, …)
+before any role work. That was wrong: it's ~49 pages of low-value plumbing ahead of the work that
+actually pays off (testability, DB-out-of-the-page, ORM/composer prep), and it violates "touch each
+module once" — every role page would be revisited later for its DB extraction. The two axes are
+orthogonal and neither gates the other, so we go **vertical**: touch a module once and rationalize it
+fully.
+
+**Done:** A5 mutation-leftovers (#4479) ✅ · permission audit C.1–C.3 (#4463) ✅ · param tranches T1
+(#4491) / T3a (#4494) / T2 (#4496) ✅ · **`Everything::Roles::Bestow` pilot** (websterbless, #4497) ✅ —
+proved the vertical pattern: Page drops `$DB`, Page+API share the role, role unit-tested with a mock DB
+(`t/196`, no live DB — the tier-2 net we lacked).
+
+**Forward (each module touched once):**
+1. **Extract Part-D roles, module by module** — the value work. For each twin: pull DB/SSR logic into a
+   shared `Everything::Roles::*` (Page + API `with` it), swap that page's `$query`→`$REQUEST->param` in
+   the same touch, and reconcile the gate (#4463) while the file is open. Order by the Part-D candidate
+   list: `Bestow` (websterbless ✅ → fold in superbless/xp_superbless + their shared bless-write next) →
+   `NodeVars` → `Reparent` → `Preferences` → `Borg`.
+2. **Batch the param-only stragglers** — pages with no role to extract (much of T3/T4) get the mechanical
+   `$REQUEST->param` swap in cheap bulk passes (like T2), on the side, whenever. Not a blocker.
+3. **Final param-clean checkpoint** — right before the SPA flip, confirm no page reads `$query`
+   directly. This is the *last* mop-up, not the prerequisite it was originally sequenced as.
+
+**Rule of thumb (the invariant every touched page must satisfy):** a Page may (a) gate, (b) read params
+via `$REQUEST->param`, (c) call role methods, (d) shape the return hash — and must **not** touch
+`$DB`/`getNode`/SQL directly. Storage access is a role method, shared with the API twin, mockable in a
+unit test.
 
 ## Resolved
+- **Sequencing = vertical, value-first** (Jay 2026-07-09): the horizontal `$query` sweep does NOT gate
+  the role work — orthogonal axes. Lead with Part-D role extraction module-by-module (DB-out-of-page +
+  shared role + param swap + gate, all in one touch); param-only pages are cheap batched mop-up, and the
+  "every page param-clean" checkpoint is the *last* step before the SPA flip, not a prerequisite.
+  Validated by the `Bestow`/websterbless pilot (#4497). Supersedes the original risk-first param-tranche
+  ordering.
 - **Role interface** = Node:: blessed-object (Jay 2026-07-05) — roles `requires` accessors, no raw hashrefs.
 - **#4463 permission shape** (Jay 2026-07-06): APIs do **not** `:does` the mixin (they're per-route, not
   per-controller). One stateless `Everything::Security::*` predicate is the single source of truth; Page

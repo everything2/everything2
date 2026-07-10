@@ -132,6 +132,9 @@ const COMPONENT_MAP = {
   online_only_msg: lazy(() => import('./Documents/OnlineOnlyMsg')),
   chatterbox_help_topics: lazy(() => import('./Documents/ChatterboxHelpTopics')),
   permission_denied: lazy(() => import('./Documents/PermissionDenied')),
+  // Soft per-scheme gate results (#4497): a gated Page returns a blank { type } and React owns the
+  // friendly copy. Distinct from permission_denied (the real "Permission Denied" node route).
+  staff_only: lazy(() => import('./Documents/StaffOnly')),
   super_mailbox: lazy(() => import('./Documents/SuperMailbox')),
   available_rooms: lazy(() => import('./Documents/AvailableRooms')),
   random_nodeshells: lazy(() => import('./Documents/RandomNodeshells')),

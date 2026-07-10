@@ -19,7 +19,8 @@ sub buildReactData
     my $DB    = $self->DB;
     my $APP   = $self->APP;
     my $USER  = $REQUEST->user;
-    my $query = $REQUEST->cgi;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the Plack
+    # query object) so the pagestate API path parses them identically. (routing-epoch sweep T2 -- #4496.)
     my $NODE  = $REQUEST->node;
     my $VARS  = $APP->getVars( $USER->NODEDATA );
 
@@ -44,7 +45,7 @@ sub buildReactData
     }
 
     # Check if viewing a specific group
-    my $viewgroup = $query->param('viewgroup');
+    my $viewgroup = $REQUEST->param('viewgroup');
     unless ( $viewgroup ) {
         return {
             type           => 'usergroup_message_archive',
@@ -98,14 +99,14 @@ sub buildReactData
     my $LIMITS = "for_user=$ugID AND for_usergroup=$ugID";
     my ($numMsg) = $DB->sqlSelect( 'COUNT(*)', 'message', $LIMITS );
 
-    my $max_show_param = $query->param('max_show');
+    my $max_show_param = $REQUEST->param('max_show');
     my $max_show = ( defined $max_show_param && $max_show_param =~ /^\d+$/ && $max_show_param > 0 )
         ? int($max_show_param) : 25;
 
     my $start_default = $numMsg - $max_show;
     $start_default = 0 if $start_default < 0;
 
-    my $startnum_param = $query->param('startnum');
+    my $startnum_param = $REQUEST->param('startnum');
     my $show_start = ( defined $startnum_param && $startnum_param =~ /^\d+$/ )
         ? int($startnum_param) : $start_default;
 

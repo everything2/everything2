@@ -9,7 +9,12 @@ import LinkNode from '../LinkNode'
  * Sends automated thank-you message from Webster 1913
  */
 const Websterbless = ({ data }) => {
-  const { error, msg_count, webster_id, results: initialResults = [], prefill_username = '' } = data
+  const { error, msg_count, webster_id, results: initialResults = [] } = data
+
+  // Prefill the first username from the URL hint (user-tools / spam-detection tool links pass
+  // ?prefill_username=…). This is a pure client concern — the server doesn't read or ship it.
+  const prefill_username =
+    new URLSearchParams(window.location.search).get('prefill_username') || ''
 
   const [rows, setRows] = useState(
     Array(5)

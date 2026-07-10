@@ -20,7 +20,8 @@ sub buildReactData {
 
     my $APP  = $self->APP;
     my $USER = $REQUEST->user;
-    my $q    = $REQUEST->cgi;
+    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the Plack
+    # query object) so the pagestate API path parses them identically. (routing-epoch sweep T2 -- #4496.)
 
     # Admin-only page
     unless ($APP->isAdmin($USER->NODEDATA)) {
@@ -55,9 +56,9 @@ sub buildReactData {
 
     # Drill-in: sectype is now an EVENT id (0..N), not a node id. Entries come
     # back keyed off seclog_event, with the affected node from seclog_subject.
-    my $sectype = $q->param('sectype');
+    my $sectype = $REQUEST->param('sectype');
     if (defined $sectype && $sectype =~ /^\d+$/) {
-        my $startat = $q->param('startat') || 0;
+        my $startat = $REQUEST->param('startat') || 0;
         $startat =~ s/[^0-9]//g;
         $startat = int($startat);
 
