@@ -56,10 +56,8 @@ sub bless_users {
             next;
         }
 
-        # +1 karma
-        $recipient->{karma} += 1;
-        $self->DB->updateNode($recipient, -1);
-        $self->APP->checkAchievementsByType('karma', $recipient->{user_id});
+        # +1 karma (shared write via Everything::Roles::Bestow, #4500)
+        $self->award_karma($recipient, 1);
 
         # +3 GP
         $self->APP->adjustGP($recipient, $GP_AMOUNT);

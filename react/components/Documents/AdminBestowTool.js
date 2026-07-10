@@ -41,9 +41,14 @@ const AdminBestowTool = ({ data, user }) => {
     api_endpoint,
     button_text = 'Submit',
     button_text_loading = 'Processing...',
-    note_text,
-    prefill_username
+    note_text
   } = data
+
+  // prefill_username is a client concern (user-tools modal links pass ?prefill_username=…): read it
+  // off the URL. Fall back to a server-supplied data.prefill_username for the AdminBestowTool
+  // consumers not yet migrated off the server read (#4500; superbless/xp_superbless are migrated).
+  const prefill_username =
+    data.prefill_username || new URLSearchParams(window.location.search).get('prefill_username') || ''
 
   // Initialize rows with usernames and optional amounts
   const createEmptyRows = useCallback(() => {

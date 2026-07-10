@@ -5,6 +5,7 @@ use Moose;
 use namespace::autoclean;
 
 extends 'Everything::API';
+with 'Everything::Roles::Bestow';
 
 =head1 Everything::API::superbless
 
@@ -99,13 +100,9 @@ sub grant_gp
         # Grant/remove GP
         $APP->adjustGP($target_user, $amount);
 
-        # Adjust karma based on direction
+        # Adjust karma by direction (shared write via Everything::Roles::Bestow; no-op on 0)
         my $signum = ($amount > 0) ? 1 : (($amount < 0) ? -1 : 0);
-        if ($signum != 0) {
-            $target_user->{karma} += $signum;
-            $DB->updateNode($target_user, -1);
-            $APP->checkAchievementsByType('karma', $target_user->{user_id});
-        }
+        $self->award_karma($target_user, $signum);
 
         # Security log
         $APP->securityLog(SECLOG_SUPERBLESS,
@@ -195,13 +192,9 @@ sub grant_xp
         # Adjust XP
         $APP->adjustExp($target_user, $amount);
 
-        # Adjust karma based on direction
+        # Adjust karma by direction (shared write via Everything::Roles::Bestow; no-op on 0)
         my $signum = ($amount > 0) ? 1 : (($amount < 0) ? -1 : 0);
-        if ($signum != 0) {
-            $target_user->{karma} += $signum;
-            $DB->updateNode($target_user, -1);
-            $APP->checkAchievementsByType('karma', $target_user->{user_id});
-        }
+        $self->award_karma($target_user, $signum);
 
         # Security log
         $APP->securityLog(SECLOG_XP_SUPERBLESS,
