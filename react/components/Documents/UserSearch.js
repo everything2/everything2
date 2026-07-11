@@ -44,6 +44,41 @@ const EmptyState = ({ onSelectUser }) => {
   )
 }
 
+// Legacy orderby values (old SQL-string form) -> the short codes the UI/API use now, so that
+// old bookmarked links like ?orderby=node.title%20ASC still resolve. Mirrors the map the Page
+// used to apply server-side (#4506).
+const LEGACY_ORDERBY_MAP = {
+  'writeup.publishtime DESC': 'publishtime_desc',
+  'writeup.publishtime ASC': 'publishtime_asc',
+  'node.title ASC': 'title_asc',
+  'node.title DESC': 'title_desc',
+  'node.reputation DESC': 'reputation_desc',
+  'node.reputation ASC': 'reputation_asc',
+  'writeup.wrtype_writeuptype ASC': 'type_asc',
+  'writeup.wrtype_writeuptype DESC': 'type_desc',
+  'node.hits DESC': 'hits_desc',
+  'node.hits ASC': 'hits_asc',
+  'RAND()': 'random',
+  'node.createtime DESC': 'publishtime_desc',
+  'node.createtime ASC': 'publishtime_asc'
+}
+
+// Read the search's initial state off the URL (query params). Fully client-resolved (#4506): the
+// Page is a pure gate and no longer seeds these. usersearch/orderby/page/filterhidden are plain
+// query params (index.pl?node=Everything User Search&usersearch=foo), so no path parsing is needed.
+const readInitialFromUrl = () => {
+  const qs = new URLSearchParams(window.location.search)
+  const rawOrderby = qs.get('orderby') || 'publishtime_desc'
+  const pageParam = qs.get('page') || ''
+  const filterParam = qs.get('filterhidden') || ''
+  return {
+    username: qs.get('usersearch') || '',
+    orderby: LEGACY_ORDERBY_MAP[rawOrderby] || rawOrderby,
+    page: /^\d+$/.test(pageParam) ? parseInt(pageParam, 10) : 1,
+    filterHidden: /^\d+$/.test(filterParam) ? parseInt(filterParam, 10) : 0
+  }
+}
+
 /**
  * Everything User Search - Browse writeups by user
  * Styles in CSS: .user-search__*
@@ -53,10 +88,12 @@ const EmptyState = ({ onSelectUser }) => {
  */
 const UserSearch = ({ data, user }) => {
   const isMobile = useIsMobile()
-  const [username, setUsername] = useState(data.initialUsername || '')
-  const [orderby, setOrderby] = useState(data.initialOrderby || 'publishtime_desc')
-  const [page, setPage] = useState(data.initialPage || 1)
-  const [filterHidden, setFilterHidden] = useState(data.initialFilterHidden || 0)
+  // Seed initial search state from the URL (the Page no longer ships initial* -- #4506).
+  const initial = useMemo(() => readInitialFromUrl(), [])
+  const [username, setUsername] = useState(initial.username)
+  const [orderby, setOrderby] = useState(initial.orderby)
+  const [page, setPage] = useState(initial.page)
+  const [filterHidden, setFilterHidden] = useState(initial.filterHidden)
 
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)

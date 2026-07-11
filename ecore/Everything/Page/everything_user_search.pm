@@ -3,49 +3,30 @@ package Everything::Page::everything_user_search;
 use Moose;
 extends 'Everything::Page';
 
+=head1 NAME
+
+Everything::Page::everything_user_search - Browse writeups by user
+
+=head1 DESCRIPTION
+
+Pure gate: ships only { type }. React (UserSearch) reads the search params (usersearch, orderby,
+page, filterhidden) off the URL, resolves suggestions via the shared autofill (GET /api/node_search),
+and fetches results via GET /api/user_search. No param reading or resolution here (#4506). The legacy
+orderby-format mapping the Page used to apply now lives client-side in UserSearch.js.
+
+=cut
+
 sub buildReactData {
     my ( $self, $REQUEST ) = @_;
-
-    # URL params via the transport-agnostic accessor ($REQUEST->param delegates to the Plack
-    # query object) so the pagestate API path parses them identically. (routing-epoch sweep T2 -- #4496.)
-
-    # Get parameters from URL (usersearch comes from Apache rewrite rule)
-    my $username = $REQUEST->param('usersearch') || '';
-    my $orderby  = $REQUEST->param('orderby') || 'publishtime_desc';
-
-    # Convert legacy orderby format to new format
-    my %orderby_map = (
-        'writeup.publishtime DESC'       => 'publishtime_desc',
-        'writeup.publishtime ASC'        => 'publishtime_asc',
-        'node.title ASC'                 => 'title_asc',
-        'node.title DESC'                => 'title_desc',
-        'node.reputation DESC'           => 'reputation_desc',
-        'node.reputation ASC'            => 'reputation_asc',
-        'writeup.wrtype_writeuptype ASC' => 'type_asc',
-        'writeup.wrtype_writeuptype DESC'=> 'type_desc',
-        'node.hits DESC'                 => 'hits_desc',
-        'node.hits ASC'                  => 'hits_asc',
-        'RAND()'                         => 'random',
-        'node.createtime DESC'           => 'publishtime_desc',
-        'node.createtime ASC'            => 'publishtime_asc'
-    );
-
-    $orderby = $orderby_map{$orderby} if exists $orderby_map{$orderby};
-
-    my $page_param = $REQUEST->param('page') // '';
-    my $page = ($page_param =~ /^\d+$/) ? int($page_param) : 1;
-    my $filter_param = $REQUEST->param('filterhidden') // '';
-    my $filter_hidden = ($filter_param =~ /^\d+$/) ? int($filter_param) : 0;
-
-    return {
-        type => 'everything_user_search',
-        initialUsername  => $username,
-        initialOrderby   => $orderby,
-        initialPage      => $page,
-        initialFilterHidden => $filter_hidden
-    };
+    return { type => 'everything_user_search' };
 }
 
 __PACKAGE__->meta->make_immutable;
 
 1;
+
+=head1 SEE ALSO
+
+L<Everything::Page>, L<Everything::API::user_search>, L<Everything::API::node_search>
+
+=cut
