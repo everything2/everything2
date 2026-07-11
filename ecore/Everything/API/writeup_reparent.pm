@@ -31,11 +31,8 @@ sub get
 {
     my ( $self, $REQUEST ) = @_;
 
-    my $APP  = $self->APP;
-    my $USER = $REQUEST->user;
-
-    # Security: Editors and admins only
-    unless ( $APP->isEditor( $USER->NODEDATA ) || $APP->isAdmin( $USER->NODEDATA ) ) {
+    # Editors only (admins are editors)
+    unless ( $REQUEST->user->is_editor ) {
         return [ $self->HTTP_OK, { success => 0, error => 'Access denied. Editors and admins only.' } ];
     }
 
@@ -46,11 +43,8 @@ sub post
 {
     my ( $self, $REQUEST ) = @_;
 
-    my $APP  = $self->APP;
-    my $USER = $REQUEST->user;
-
-    # Security: Editors and admins only
-    unless ( $APP->isEditor( $USER->NODEDATA ) || $APP->isAdmin( $USER->NODEDATA ) ) {
+    # Editors only (admins are editors)
+    unless ( $REQUEST->user->is_editor ) {
         return [ $self->HTTP_OK, { success => 0, error => 'Access denied. Editors and admins only.' } ];
     }
 
@@ -69,12 +63,11 @@ sub handle_get
 {
     my ( $self, $REQUEST ) = @_;
 
-    my $DB    = $self->DB;
-    my $query = $REQUEST->cgi;
+    my $DB = $self->DB;
 
-    my $old_e2node_id  = $query->param('old_e2node_id');
-    my $old_writeup_id = $query->param('old_writeup_id');
-    my $new_e2node_id  = $query->param('new_e2node_id');
+    my $old_e2node_id  = $REQUEST->param('old_e2node_id');
+    my $old_writeup_id = $REQUEST->param('old_writeup_id');
+    my $new_e2node_id  = $REQUEST->param('new_e2node_id');
 
     my $result = {
         old_e2node       => undef,
@@ -125,6 +118,10 @@ sub handle_get
             push @{ $result->{errors} }, 'Invalid new e2node ID or title';
         }
     }
+
+    # Klaproth Van Lines link id (the bulk-move tool) -- shipped so React needs no separate call.
+    my $kvl_node = $DB->getNode( 'Klaproth Van Lines', 'restricted_superdoc' );
+    $result->{kvl_node_id} = $kvl_node ? $kvl_node->{node_id} : undef;
 
     return [ $self->HTTP_OK, { success => 1, data => $result } ];
 }
@@ -295,27 +292,24 @@ sub reparentWriteup
     };
 }
 
-=head2 getNodeByNameOrId
+# --- node resolve/format helpers (this API is now their only consumer; the reparenter Pages
+# --- resolve entirely client-side via GET /api/writeup_reparent, so Everything::Roles::Reparent
+# --- was removed and the helpers live here again). #4502.
 
-Gets a node by ID (numeric) or title (string).
-
-=cut
-
+# Resolve a node by numeric id or title, constrained to $nodetype.
 sub getNodeByNameOrId
 {
     my ( $self, $node_id_or_name, $nodetype ) = @_;
 
     my $DB = $self->DB;
 
-    return unless defined $node_id_or_name;
+    return unless defined $node_id_or_name && $node_id_or_name ne '';
 
     my $target_node;
 
     if ( $node_id_or_name =~ m/\D/ ) {
-        # Contains non-digits, treat as title
         $target_node = $DB->getNode( $node_id_or_name, $nodetype );
     } else {
-        # All digits, treat as ID
         $target_node = $DB->getNodeById( $node_id_or_name, $nodetype );
         $target_node = undef unless $target_node && $target_node->{type}{title} eq $nodetype;
     }
@@ -323,13 +317,7 @@ sub getNodeByNameOrId
     return $target_node;
 }
 
-=head2 guessParentForWriteup
-
-Attempts to guess the parent e2node for an orphaned writeup by stripping
-the writeuptype suffix from the title.
-
-=cut
-
+# Guess the parent e2node for an orphaned writeup by stripping the "(writeuptype)" title suffix.
 sub guessParentForWriteup
 {
     my ( $self, $writeup ) = @_;
@@ -337,24 +325,38 @@ sub guessParentForWriteup
     my $DB = $self->DB;
 
     my $guess_title = $writeup->{title};
-
-    # Strip writeuptype suffix like "(idea)" from title
-    # Be tolerant of writeups where it gets cut off
     $guess_title =~ s/^(.*?)(\([^\(]*)?$/$1/;
-    $guess_title =~ s/\s+$//;    # Trim trailing whitespace
+    $guess_title =~ s/\s+$//;
 
     return unless $guess_title;
 
-    my $potential_parent = $DB->getNode( $guess_title, 'e2node' );
-    return $potential_parent;
+    return $DB->getNode( $guess_title, 'e2node' );
 }
 
-=head2 formatE2NodeInfo
+# Format a writeup node for the JSON response.
+sub formatWriteupInfo
+{
+    my ( $self, $writeup ) = @_;
 
-Formats e2node information for JSON response.
+    return unless $writeup;
 
-=cut
+    my $DB = $self->DB;
 
+    my $author      = $DB->getNodeById( $writeup->{author_user} );
+    my $writeuptype = $DB->getNodeById( $writeup->{wrtype_writeuptype} );
+
+    return {
+        node_id       => $writeup->{node_id},
+        title         => $writeup->{title},
+        parent_e2node => $writeup->{parent_e2node},
+        author_id     => $author ? $author->{node_id} : undef,
+        author_title  => $author ? $author->{title} : 'unknown',
+        writeuptype   => $writeuptype ? $writeuptype->{title} : 'unknown',
+        createtime    => $writeup->{createtime}
+    };
+}
+
+# Format an e2node node (with its formatted writeups) for the JSON response.
 sub formatE2NodeInfo
 {
     my ( $self, $e2node ) = @_;
@@ -369,43 +371,14 @@ sub formatE2NodeInfo
     foreach my $writeup_id (@$group) {
         my $writeup = $DB->getNodeById($writeup_id);
         next unless $writeup && $writeup->{type}{title} eq 'writeup';
-
         push @writeups, $self->formatWriteupInfo($writeup);
     }
 
     return {
-        node_id  => $e2node->{node_id},
-        title    => $e2node->{title},
-        writeups => \@writeups,
+        node_id      => $e2node->{node_id},
+        title        => $e2node->{title},
+        writeups     => \@writeups,
         is_nodeshell => @writeups ? 0 : 1
-    };
-}
-
-=head2 formatWriteupInfo
-
-Formats writeup information for JSON response.
-
-=cut
-
-sub formatWriteupInfo
-{
-    my ( $self, $writeup ) = @_;
-
-    return unless $writeup;
-
-    my $DB = $self->DB;
-
-    my $author = $DB->getNodeById( $writeup->{author_user} );
-    my $writeuptype = $DB->getNodeById( $writeup->{wrtype_writeuptype} );
-
-    return {
-        node_id         => $writeup->{node_id},
-        title           => $writeup->{title},
-        parent_e2node   => $writeup->{parent_e2node},
-        author_id       => $author ? $author->{node_id} : undef,
-        author_title    => $author ? $author->{title} : 'unknown',
-        writeuptype     => $writeuptype ? $writeuptype->{title} : 'unknown',
-        createtime      => $writeup->{createtime}
     };
 }
 
