@@ -140,7 +140,9 @@ package MockUser {
     has 'title' => (is => 'rw');
     has 'is_editor_flag' => (is => 'rw', default => 0);
     has 'is_admin_flag' => (is => 'rw', default => 0);
-    sub is_editor { return shift->is_editor_flag; }
+    # Admins ARE editors (the real Everything user predicate treats is_editor as inclusive of
+    # admins unless a check opts out), so the mock mirrors that -- an admin passes is_editor.
+    sub is_editor { my $s = shift; return $s->is_editor_flag || $s->is_admin_flag; }
     sub is_admin { return shift->is_admin_flag; }
 }
 
@@ -148,7 +150,9 @@ package MockUser {
 package MockRequest {
     use Moose;
     has 'user' => (is => 'rw', isa => 'MockUser');
-    has 'cgi' => (is => 'rw');
+    # Everything::Request delegates param() to the query object; mirror that so the mock is faithful
+    # (writeup_reparent now reads $REQUEST->param directly, #4502).
+    has 'cgi' => (is => 'rw', handles => ['param']);
     has 'POSTDATA' => (is => 'rw', default => '{}');
     has 'JSON_POSTDATA' => (is => 'rw');
     sub request_method { return 'GET'; }
@@ -167,7 +171,7 @@ ok($api, "Created writeup_reparent API instance");
 #############################################################################
 
 subtest 'GET: Lookup e2node by ID' => sub {
-    plan tests => 8;
+    plan tests => 9;
 
     my $timestamp = time();
     my $e2node = create_test_e2node("Reparent Test E2Node $timestamp");
@@ -202,6 +206,7 @@ subtest 'GET: Lookup e2node by ID' => sub {
     is($data->{old_e2node}{node_id}, $e2node->{node_id}, "old_e2node has correct node_id");
     is($data->{old_e2node}{title}, $e2node->{title}, "old_e2node has correct title");
     is(scalar @{$data->{old_e2node}{writeups}}, 1, "old_e2node has 1 writeup");
+    ok(exists $data->{kvl_node_id}, "GET ships kvl_node_id so React needs no extra call (#4502)");
 
     # Cleanup
     cleanup_node($writeup->{node_id});

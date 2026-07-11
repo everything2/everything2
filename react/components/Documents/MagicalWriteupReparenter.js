@@ -1,34 +1,90 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import LinkNode from '../LinkNode'
 
 /**
- * MagicalWriteupReparenter - Admin/Editor tool to move writeups between e2nodes
+ * MagicalWriteupReparenter - Admin/Editor tool to move writeups between e2nodes.
  * Styles in CSS: .mwr__*
  *
- * Features:
- * - Look up source e2node by ID or title
- * - Look up destination e2node by ID or title
- * - Select writeups to move via checkboxes
- * - Auto-detect orphaned writeups and suggest parent
- * - Performs reparenting via API
+ * The lookup is entirely client-side (#4502): this reads old_e2node_id / old_writeup_id /
+ * new_e2node_id (and the legacy `repare` source) off the URL and resolves them via
+ * GET /api/writeup_reparent. The Page ships only { type, access_denied } -- no server-side param
+ * reading, no page reload. "Look Up Nodes" re-fetches and updates the URL via history.pushState.
+ * The reparent itself is POST /api/writeup_reparent/reparent, after which we re-fetch to refresh.
  */
 const MagicalWriteupReparenter = ({ data }) => {
-  const {
-    access_denied,
-    old_e2node,
-    old_writeup,
-    new_e2node,
-    suggested_parent,
-    errors = [],
-    kvl_node_id
-  } = data
+  const { access_denied } = data
 
-  const [oldE2nodeInput, setOldE2nodeInput] = useState('')
-  const [oldWriteupInput, setOldWriteupInput] = useState('')
-  const [newE2nodeInput, setNewE2nodeInput] = useState('')
+  // Seed the input fields from the URL so the form reflects the current lookup and a re-lookup
+  // preserves the source (which arrives via ?repare=… or ?old_e2node_id=…).
+  const initialParams = new URLSearchParams(window.location.search)
+  const [oldE2nodeInput, setOldE2nodeInput] = useState(
+    initialParams.get('old_e2node_id') || initialParams.get('repare') || ''
+  )
+  const [oldWriteupInput, setOldWriteupInput] = useState(initialParams.get('old_writeup_id') || '')
+  const [newE2nodeInput, setNewE2nodeInput] = useState(initialParams.get('new_e2node_id') || '')
+
+  const [resolved, setResolved] = useState({
+    old_e2node: null,
+    old_writeup: null,
+    new_e2node: null,
+    suggested_parent: null,
+    errors: [],
+    kvl_node_id: null
+  })
   const [selectedWriteups, setSelectedWriteups] = useState({})
   const [feedback, setFeedback] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [lookupError, setLookupError] = useState(null)
+
+  // Resolve source/destination via the API GET. old_e2node takes precedence over old_writeup.
+  const lookup = useCallback(async ({ e2, writeup, dest }) => {
+    const params = new URLSearchParams()
+    if (e2) params.set('old_e2node_id', e2)
+    else if (writeup) params.set('old_writeup_id', writeup)
+    if (dest) params.set('new_e2node_id', dest)
+
+    if ([...params.keys()].length === 0) {
+      // Nothing to look up yet (fresh page) -- leave the empty resolved state.
+      return
+    }
+
+    setIsLoading(true)
+    setLookupError(null)
+    try {
+      const res = await fetch(`/api/writeup_reparent?${params.toString()}`, {
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin'
+      })
+      const json = res.ok ? await res.json() : null
+      if (json && json.success) {
+        setResolved(json.data)
+      } else {
+        setLookupError((json && json.error) || 'Lookup failed')
+      }
+    } catch (err) {
+      setLookupError(`Network error: ${err.message}`)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  // On mount, resolve whatever is already in the URL (?repare=…, ?old_e2node_id=…, …).
+  useEffect(() => {
+    if (access_denied) return
+    const p = new URLSearchParams(window.location.search)
+    lookup({
+      e2: p.get('old_e2node_id') || p.get('repare'),
+      writeup: p.get('old_writeup_id'),
+      dest: p.get('new_e2node_id')
+    })
+  }, [access_denied, lookup])
+
+  // Auto-select the orphaned writeup once a suggested parent is found.
+  useEffect(() => {
+    if (resolved.old_writeup && resolved.suggested_parent) {
+      setSelectedWriteups({ [resolved.old_writeup.node_id]: true })
+    }
+  }, [resolved.old_writeup, resolved.suggested_parent])
 
   if (access_denied) {
     return (
@@ -40,36 +96,21 @@ const MagicalWriteupReparenter = ({ data }) => {
     )
   }
 
-  // Initialize selected writeups from suggested parent auto-detection
-  React.useEffect(() => {
-    if (old_writeup && suggested_parent) {
-      setSelectedWriteups({ [old_writeup.node_id]: true })
-    }
-  }, [old_writeup, suggested_parent])
+  const { old_e2node, old_writeup, new_e2node, suggested_parent, errors = [], kvl_node_id } = resolved
 
   const handleLookup = (e) => {
     e.preventDefault()
+    // Update the URL (shareable) without a reload, then re-resolve.
     const params = new URLSearchParams()
-    params.set('node_id', window.e2?.node_id || '')
-
-    if (oldE2nodeInput) {
-      params.set('old_e2node_id', oldE2nodeInput)
-    } else if (oldWriteupInput) {
-      params.set('old_writeup_id', oldWriteupInput)
-    }
-
-    if (newE2nodeInput) {
-      params.set('new_e2node_id', newE2nodeInput)
-    }
-
-    window.location.href = `?${params.toString()}`
+    if (oldE2nodeInput) params.set('old_e2node_id', oldE2nodeInput)
+    else if (oldWriteupInput) params.set('old_writeup_id', oldWriteupInput)
+    if (newE2nodeInput) params.set('new_e2node_id', newE2nodeInput)
+    window.history.pushState({}, '', params.toString() ? `?${params.toString()}` : window.location.pathname)
+    lookup({ e2: oldE2nodeInput, writeup: oldWriteupInput, dest: newE2nodeInput })
   }
 
   const handleCheckboxChange = (writeupId) => {
-    setSelectedWriteups((prev) => ({
-      ...prev,
-      [writeupId]: !prev[writeupId]
-    }))
+    setSelectedWriteups((prev) => ({ ...prev, [writeupId]: !prev[writeupId] }))
   }
 
   const handleSelectAll = () => {
@@ -82,9 +123,7 @@ const MagicalWriteupReparenter = ({ data }) => {
     setSelectedWriteups(allWriteups)
   }
 
-  const handleSelectNone = () => {
-    setSelectedWriteups({})
-  }
+  const handleSelectNone = () => setSelectedWriteups({})
 
   const handleReparent = async () => {
     const writeupIds = Object.keys(selectedWriteups).filter((id) => selectedWriteups[id])
@@ -106,9 +145,8 @@ const MagicalWriteupReparenter = ({ data }) => {
     try {
       const response = await fetch('/api/writeup_reparent/reparent', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           new_e2node_id: destE2node.node_id,
           writeup_ids: writeupIds.map((id) => parseInt(id, 10))
@@ -122,7 +160,6 @@ const MagicalWriteupReparenter = ({ data }) => {
         const successCount = result.results.filter((r) => r.success).length
         const failCount = result.results.filter((r) => !r.success).length
 
-        // Add summary header
         if (successCount > 0 || failCount > 0) {
           feedbackItems.push({
             type: 'header',
@@ -136,23 +173,18 @@ const MagicalWriteupReparenter = ({ data }) => {
         }
 
         result.results.forEach((r) => {
-          if (r.success) {
-            feedbackItems.push({
-              type: 'success',
-              text: `Moved "${r.old_title}" to "${r.new_title}"`
-            })
-          } else {
-            feedbackItems.push({
-              type: 'error',
-              text: `Failed to move writeup ${r.writeup_id}: ${r.error}`
-            })
-          }
+          feedbackItems.push(
+            r.success
+              ? { type: 'success', text: `Moved "${r.old_title}" to "${r.new_title}"` }
+              : { type: 'error', text: `Failed to move writeup ${r.writeup_id}: ${r.error}` }
+          )
         })
         setFeedback(feedbackItems)
 
-        // Clear selected writeups after successful moves
         if (result.moved_count > 0) {
           setSelectedWriteups({})
+          // Re-resolve so the source/destination writeup lists reflect the move.
+          lookup({ e2: oldE2nodeInput, writeup: oldWriteupInput, dest: newE2nodeInput })
         }
       } else {
         setFeedback([{ type: 'error', text: result.error || 'Unknown error occurred' }])
@@ -193,9 +225,10 @@ const MagicalWriteupReparenter = ({ data }) => {
 
   return (
     <div className="mwr">
-      {/* Error messages */}
-      {errors.length > 0 && (
+      {/* Lookup / resolution errors */}
+      {(errors.length > 0 || lookupError) && (
         <div className="mwr__error-box">
+          {lookupError && <p>{lookupError}</p>}
           {errors.map((err, idx) => (
             <p key={idx}>{err}</p>
           ))}
@@ -294,8 +327,8 @@ const MagicalWriteupReparenter = ({ data }) => {
           </div>
         </div>
 
-        <button type="submit" className="mwr__button">
-          Look Up Nodes
+        <button type="submit" className="mwr__button" disabled={isLoading}>
+          {isLoading ? 'Looking Up…' : 'Look Up Nodes'}
         </button>
       </form>
 
@@ -361,7 +394,7 @@ const MagicalWriteupReparenter = ({ data }) => {
             disabled={isLoading}
             className={isLoading ? 'mwr__button--disabled' : 'mwr__action-button'}
           >
-            {isLoading ? 'Moving...' : 'Move Selected Writeups'}
+            {isLoading ? 'Moving…' : 'Move Selected Writeups'}
           </button>
         </div>
       )}

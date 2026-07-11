@@ -356,7 +356,15 @@ the Page and the API twin via `with`. Replicate this shape.
   - Still to fold in: the shared `adjustGP`/loop scaffolding, and the stray `getNode('Webster 1913')`
     in `Everything::API::ilikeit`.
 - `Everything::Roles::NodeVars` — show_user_vars / viewvars / UserEditVars ↔ `nodevars`
-- `Everything::Roles::Reparent` — magical_writeup_reparenter / e2node_reparenter ↔ `writeup_reparent`
+- `Everything::Roles::Reparent` — ✅ **created 2026-07-10 (#4502).** The four node resolve/format
+  helpers (`getNodeByNameOrId`/`guessParentForWriteup`/`formatE2NodeInfo`/`formatWriteupInfo`) were
+  byte-triplicated across `Page::magical_writeup_reparenter`, `Page::e2node_reparenter`, and
+  `API::writeup_reparent`; now one copy in the role. `reparent_view()` (page-flavor resolve+format+kvl)
+  is shared by the two Pages (which collapsed to gate + one call, `$DB`-free; e2node keeps its `repare`
+  fallback). The API `with`s the role for the helpers but keeps its own `handle_get` (independent
+  old-e2node/old-writeup checks) + write path (`handle_post`/`reparentWriteup`). Gates simplified to
+  `$REQUEST->user->is_editor`; params → `$REQUEST->param`. `t/197` mock-DB unit test; `t/053` API test
+  kept green (its inline mocks made faithful: `param` delegates to cgi, and `is_editor` includes admins).
 - `Everything::Roles::Preferences` — settings ↔ preferences/nodelets/user
 - `Everything::Roles::Borg` — the_borg_clinic ↔ borgclinic (+ nate_s_secret_unborg_doc unborg logic)
 
