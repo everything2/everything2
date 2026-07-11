@@ -190,10 +190,23 @@ sub votes {
         };
     }
 
+    # Writeup + author metadata so the client gets everything from this one call -- the reputation
+    # Pages are now pure gates and no longer resolve/ship this (#4504).
+    my $author = $DB->getNodeById($writeup->{author_user});
+
     return [$self->HTTP_OK, {
         success => 1,
         data => {
-            writeup_id => $writeup_id,
+            writeup_id => int($writeup_id),
+            writeup => {
+                node_id     => int($writeup->{node_id}),
+                title       => $writeup->{title},
+                publishtime => $writeup->{publishtime}
+            },
+            author => {
+                node_id => $author ? int($author->{node_id}) : 0,
+                title   => $author ? $author->{title} : 'unknown'
+            },
             months => \@months
         }
     }];

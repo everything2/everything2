@@ -7300,6 +7300,32 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   text-align: right;
 }
 
+/* Reputation graph link -- inline chart icon next to the revealed Rep count (author/voter/admin).
+   Sized as a touch target to match the footer vote/tool buttons: 32px desktop, 44px on mobile. */
+.wu_rep_graph_link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  margin-left: 0.15em;
+  vertical-align: middle;
+  font-size: 18px;
+  color: var(--e2-link);
+  opacity: 0.75;
+}
+
+.wu_rep_graph_link:hover {
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .wu_rep_graph_link {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 /* Inline tool container */
 .wu_tools_inline {
   display: inline-flex;
@@ -30279,6 +30305,40 @@ a.node-toolset__btn {
 }
 
 /* Horizontal graph styles */
+/* View toggle pill: switch between the Table (vertical) and Chart (horizontal) layouts */
+.reputation-graph__view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--e2-border-color, #c5cdd7);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 0 0 10px;
+}
+
+.reputation-graph__view-pill {
+  background: none;
+  border: none;
+  padding: 6px 16px;
+  min-height: 32px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--e2-link, #4060b0);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.reputation-graph__view-pill + .reputation-graph__view-pill {
+  border-left: 1px solid var(--e2-border-color, #c5cdd7);
+}
+
+.reputation-graph__view-pill:hover:not(.reputation-graph__view-pill--active) {
+  background-color: var(--e2-nodelet-filter-bg, #e8f4f8);
+}
+
+.reputation-graph__view-pill--active {
+  background-color: var(--e2-btn-secondary-bg, #38495e);
+  color: var(--e2-btn-secondary-text, #fff);
+  cursor: default;
+}
+
 .reputation-graph__horizontal-container {
   overflow-x: auto;
   text-align: center;
@@ -30291,9 +30351,23 @@ a.node-toolset__btn {
 }
 
 .reputation-graph__horizontal-cell {
-  width: 4px;
-  padding: 0 1px;
+  min-width: 20px;
+  padding: 0 2px;
   vertical-align: bottom;
+  text-align: center;
+}
+
+/* Per-month cumulative reputation number under each bar */
+.reputation-graph__value-row {
+  font-size: 11px;
+}
+
+.reputation-graph__value-cell {
+  text-align: center;
+  padding: 2px 2px 0;
+  color: var(--e2-text, #38495e);
+  border-top: 1px solid var(--e2-border-color, #c5cdd7);
+  white-space: nowrap;
 }
 
 .reputation-graph__label-row {
@@ -30304,10 +30378,12 @@ a.node-toolset__btn {
 .reputation-graph__label-cell {
   text-align: center;
   color: #507898;
+  white-space: nowrap;
 }
 
 .reputation-graph__pos-bar {
-  width: 4px;
+  width: 12px;
+  margin: 0 auto;
   background-color: #0c0;
   border-top: 2px solid #5a5;
   border-left: 2px solid #5a5;
@@ -30316,7 +30392,8 @@ a.node-toolset__btn {
 }
 
 .reputation-graph__neg-bar {
-  width: 4px;
+  width: 12px;
+  margin: 0 auto;
   background-color: #f00;
   border-top: 2px solid #f88;
   border-left: 2px solid #f88;

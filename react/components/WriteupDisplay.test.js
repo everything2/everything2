@@ -128,6 +128,26 @@ describe('WriteupDisplay Component', () => {
       expect(screen.getByText(/Rep: \+5 \(\+7\/-2\)/)).toBeInTheDocument()
     })
 
+    it('offers the Rep Graph icon link beside the revealed reputation (restored entry point)', () => {
+      // The reputation graph has no other UI entry point; it lives inline with the Rep count,
+      // shown to exactly the audience allowed to view the graph (author or voter).
+      const votedWriteup = { ...mockWriteup, vote: 1 }
+      render(<WriteupDisplay writeup={votedWriteup} user={mockUser} />)
+
+      const link = screen.getByRole('link', { name: /reputation graph/i })
+      expect(link).toBeInTheDocument()
+      // deep-links to the graph superdoc carrying this writeup's node_id
+      expect(link).toHaveAttribute('href', '/title/Reputation+Graph?id=123')
+      // renders as an icon, not the old text label
+      expect(link.querySelector('svg')).toBeInTheDocument()
+    })
+
+    it('hides the Rep Graph icon link when reputation is hidden (non-voter, non-author)', () => {
+      render(<WriteupDisplay writeup={mockWriteup} user={mockUser} />)
+
+      expect(screen.queryByRole('link', { name: /reputation graph/i })).not.toBeInTheDocument()
+    })
+
     it('displays C!s when present', () => {
       const writeupWithCools = {
         ...mockWriteup,

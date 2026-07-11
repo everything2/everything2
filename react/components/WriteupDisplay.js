@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { FaCaretUp, FaCaretDown, FaEnvelope, FaFacebookSquare, FaTwitterSquare, FaRedditSquare } from 'react-icons/fa'
+import { FaCaretUp, FaCaretDown, FaEnvelope, FaFacebookSquare, FaTwitterSquare, FaRedditSquare, FaChartLine } from 'react-icons/fa'
 import ParseLinks from './ParseLinks'
 import LinkNode from './LinkNode'
 import AdminModal from './AdminModal'
@@ -578,6 +578,15 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                   {(isAuthor || (voteState.userVote !== null && voteState.userVote !== undefined)) && (
                     <small>
                       Rep: {voteState.reputation > 0 && '+'}{voteState.reputation} (+{voteState.upvotes}/-{voteState.downvotes})
+                      {' '}
+                      <a
+                        className="wu_rep_graph_link"
+                        href={`/title/Reputation+Graph?id=${node_id}`}
+                        title="Graph of reputation over time"
+                        aria-label="Reputation graph"
+                      >
+                        <FaChartLine aria-hidden="true" />
+                      </a>
                     </small>
                   )}
                 </td>
