@@ -168,6 +168,11 @@ is($result->[1]{success}, 1, "Author can view own writeup votes");
 ok(defined($result->[1]{data}), "Data object returned");
 is($result->[1]{data}{writeup_id}, $writeup_id, "Writeup ID in response");
 ok(defined($result->[1]{data}{months}), "Months array returned");
+# Writeup + author metadata now come from this call (the Page is a pure gate, #4504)
+is($result->[1]{data}{writeup}{node_id}, $writeup_id, "Response carries writeup node_id");
+ok(defined($result->[1]{data}{writeup}{title}), "Response carries writeup title");
+is($result->[1]{data}{author}{node_id}, $author_user->{node_id}, "Response carries author node_id");
+is($result->[1]{data}{author}{title}, $author_user->{title}, "Response carries author title");
 
 #############################################################################
 # Test: Guest cannot view votes (no access)

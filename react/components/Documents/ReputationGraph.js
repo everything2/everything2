@@ -1,77 +1,59 @@
 import React, { useState, useEffect } from 'react';
 
 /**
- * ReputationGraph - Monthly reputation visualization for writeups
+ * ReputationGraph - Monthly reputation visualization for writeups.
  * Styles in CSS: .reputation-graph__*
  *
- * Supports both horizontal (simple bar) and vertical (table) layouts
+ * Fully client-resolved (#4504): the Page ships only { type, layout }; this reads the writeup `id`
+ * off the URL and fetches GET /api/reputation/votes, which returns the writeup + author metadata,
+ * enforces the per-user permission, and returns the monthly vote data. Supports horizontal (bar) and
+ * vertical (table) layouts, selected by the page-provided `layout`.
  */
 const ReputationGraph = ({ data, user }) => {
-  const {
-    error,
-    writeup,
-    author,
-    can_view,
-    layout = 'vertical' // 'horizontal' or 'vertical'
-  } = data;
-
+  const { layout = 'vertical' } = data;
   const isAdmin = !!user?.admin;
 
-  const [graphData, setGraphData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [fetchError, setFetchError] = useState(null);
+  const [graphData, setGraphData] = useState(null); // { writeup, author, months }
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
+  // One component renders both layouts (#4504): the Page seeds the initial view (the "Reputation
+  // Graph" node -> vertical, "Reputation Graph Horizontal" -> horizontal), and the pill lets the
+  // reader switch client-side without navigating.
+  const [view, setView] = useState(layout === 'horizontal' ? 'horizontal' : 'vertical');
 
-  // Fetch vote data when we have a valid writeup
   useEffect(() => {
-    if (!writeup || !can_view) return;
+    const id = new URLSearchParams(window.location.search).get('id');
+    if (!id) {
+      setErrorMessage(friendlyError('Invalid writeup ID'));
+      setLoading(false);
+      return undefined;
+    }
 
-    const fetchVoteData = async () => {
-      setLoading(true);
-      setFetchError(null);
-
+    let cancelled = false;
+    (async () => {
       try {
-        const response = await fetch(`/api/reputation/votes?writeup_id=${writeup.node_id}`);
+        const response = await fetch(`/api/reputation/votes?writeup_id=${encodeURIComponent(id)}`, {
+          credentials: 'same-origin'
+        });
         const result = await response.json();
-
+        if (cancelled) return;
         if (result.success) {
           setGraphData(result.data);
         } else {
-          setFetchError(result.error || 'Failed to fetch vote data');
+          setErrorMessage(friendlyError(result.error));
         }
       } catch (err) {
-        setFetchError('Network error: ' + err.message);
+        if (!cancelled) setErrorMessage('Network error: ' + err.message);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    })();
+
+    return () => {
+      cancelled = true;
     };
+  }, []);
 
-    fetchVoteData();
-  }, [writeup, can_view]);
-
-  // Error state
-  if (error) {
-    return (
-      <div className="reputation-graph">
-        <div className="reputation-graph__error">
-          <p>{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Access denied
-  if (!can_view) {
-    return (
-      <div className="reputation-graph">
-        <div className="reputation-graph__access-denied">
-          <p>You haven't voted on that writeup, so you are not allowed to see its reputation.</p>
-          <p>Try clicking on the "Rep Graph" link from a writeup you have already voted on.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Loading state
   if (loading) {
     return (
       <div className="reputation-graph">
@@ -80,27 +62,18 @@ const ReputationGraph = ({ data, user }) => {
     );
   }
 
-  // Fetch error
-  if (fetchError) {
+  if (errorMessage) {
     return (
       <div className="reputation-graph">
         <div className="reputation-graph__error">
-          <p>{fetchError}</p>
+          <p>{errorMessage}</p>
         </div>
       </div>
     );
   }
 
-  // Waiting for data
-  if (!graphData) {
-    return (
-      <div className="reputation-graph">
-        <p className="reputation-graph__loading">Loading...</p>
-      </div>
-    );
-  }
-
-  const isHorizontal = layout === 'horizontal';
+  const { writeup, author } = graphData;
+  const isHorizontal = view === 'horizontal';
 
   return (
     <div className="reputation-graph">
@@ -110,6 +83,25 @@ const ReputationGraph = ({ data, user }) => {
         {' by '}
         <a href={`/?node_id=${author.node_id}`} className="reputation-graph__link">{author.title}</a>
       </p>
+
+      <div className="reputation-graph__view-toggle" role="group" aria-label="Graph layout">
+        <button
+          type="button"
+          className={`reputation-graph__view-pill${!isHorizontal ? ' reputation-graph__view-pill--active' : ''}`}
+          aria-pressed={!isHorizontal}
+          onClick={() => setView('vertical')}
+        >
+          Table
+        </button>
+        <button
+          type="button"
+          className={`reputation-graph__view-pill${isHorizontal ? ' reputation-graph__view-pill--active' : ''}`}
+          aria-pressed={isHorizontal}
+          onClick={() => setView('horizontal')}
+        >
+          Chart
+        </button>
+      </div>
 
       <p className="reputation-graph__hint">
         {isHorizontal
@@ -130,6 +122,18 @@ const ReputationGraph = ({ data, user }) => {
       )}
     </div>
   );
+};
+
+// Map the API's terse error to the user-facing guidance the page used to show.
+const friendlyError = (err) => {
+  if (err === 'Access denied') {
+    return "You haven't voted on that writeup, so you are not allowed to see its reputation. Try clicking the \"Rep Graph\" link from a writeup you have already voted on.";
+  }
+  if (err === 'Node is not a writeup') {
+    return 'You can only view the reputation graph for writeups. Try clicking the "Rep Graph" link from a writeup you have already voted on.';
+  }
+  // Invalid writeup ID / Writeup not found / missing id
+  return 'Not a valid node. Try clicking the "Rep Graph" link from a writeup you have already voted on.';
 };
 
 /**
@@ -185,11 +189,23 @@ const HorizontalGraph = ({ data }) => {
               </td>
             ))}
           </tr>
-          {/* Year labels row */}
+          {/* Cumulative reputation value per month */}
+          <tr className="reputation-graph__value-row">
+            {months.map((month, idx) => (
+              <td
+                key={`val-${idx}`}
+                className="reputation-graph__value-cell"
+                title={month.label}
+              >
+                {month.reputation}
+              </td>
+            ))}
+          </tr>
+          {/* Year labels row (marked at each January) */}
           <tr className="reputation-graph__label-row">
             {months.map((month, idx) => (
               <td key={`label-${idx}`} className="reputation-graph__label-cell">
-                {month.is_january ? '|' : ''}
+                {month.is_january ? month.year : ''}
               </td>
             ))}
           </tr>
