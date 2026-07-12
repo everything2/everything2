@@ -63,16 +63,26 @@ const LEGACY_ORDERBY_MAP = {
   'node.createtime ASC': 'publishtime_asc'
 }
 
-// Read the search's initial state off the URL (query params). Fully client-resolved (#4506): the
-// Page is a pure gate and no longer seeds these. usersearch/orderby/page/filterhidden are plain
-// query params (index.pl?node=Everything User Search&usersearch=foo), so no path parsing is needed.
+// Read the search's initial state off the URL. Fully client-resolved (#4506): the Page is a pure
+// gate and no longer seeds these. The username arrives in TWO shapes and we must handle both:
+//   - query form:  index.pl?node=Everything User Search&usersearch=foo   (feed links, form submits)
+//   - path form:   /user/foo/writeups                                    (homenode "writeups" link)
+// The path form is a clean URL with NO query string, so window.location.search is empty there; we
+// must recover the username from window.location.pathname, mirroring the server route-recovery in
+// Everything::HTML (m{^/?user/(.+?)/writeups/?$} -> usersearch). Missing this was #4515: the
+// homenode writeups link landed on the empty base widget instead of the user's writeups.
+const usernameFromPath = () => {
+  const m = window.location.pathname.match(/^\/?user\/(.+?)\/writeups\/?$/)
+  return m ? decodeURIComponent(m[1]) : ''
+}
+
 const readInitialFromUrl = () => {
   const qs = new URLSearchParams(window.location.search)
   const rawOrderby = qs.get('orderby') || 'publishtime_desc'
   const pageParam = qs.get('page') || ''
   const filterParam = qs.get('filterhidden') || ''
   return {
-    username: qs.get('usersearch') || '',
+    username: qs.get('usersearch') || usernameFromPath(),
     orderby: LEGACY_ORDERBY_MAP[rawOrderby] || rawOrderby,
     page: /^\d+$/.test(pageParam) ? parseInt(pageParam, 10) : 1,
     filterHidden: /^\d+$/.test(filterParam) ? parseInt(filterParam, 10) : 0

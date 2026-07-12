@@ -235,8 +235,8 @@ sub sqlDelete
 #
 sub sqlSelect
 {
-	my($this, $select, $from, $where, $other) = @_;
-	my $cursor = $this->sqlSelectMany($select, $from, $where, $other);
+	my($this, $select, $from, $where, $other, $bind) = @_;
+	my $cursor = $this->sqlSelectMany($select, $from, $where, $other, $bind);
 	my @result;
 	
 	return if(not defined $cursor);
@@ -269,7 +269,7 @@ sub sqlSelect
 #
 sub sqlSelectMany
 {
-	my($this, $select, $from, $where, $other) = @_;
+	my($this, $select, $from, $where, $other, $bind) = @_;
 
 	my $sql="SELECT $select ";
 	$sql .= "FROM $from " if $from;
@@ -277,8 +277,12 @@ sub sqlSelectMany
 	$sql .= "$other" if $other;
 
 	my $cursor = $this->{dbh}->prepare($sql);
-	my $result = $cursor->execute();
-	
+	# Optional bind params for '?' placeholders (5th arg, an arrayref). Guarded so the ~160
+	# existing 4-arg callers stay byte-identical: execute() with no args unless a real arrayref
+	# is passed. Callers that DID pass binds (e.g. my_achievements) were silently unbound before
+	# -- the '?' bound to NULL and matched nothing (#4516).
+	my $result = $cursor->execute(ref($bind) eq 'ARRAY' ? @$bind : ());
+
 	return $cursor if($result);
 	return;
 }

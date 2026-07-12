@@ -7,11 +7,13 @@ import fixture from '../../__fixtures__/pagestate/everything_user_search.json'
 // state (usersearch / orderby / page / filterhidden) off the URL and fetches results from
 // /api/user_search, reusing the shared autofill (UserSearchInput -> /api/node_search).
 
-// test-setup.js replaces window.location with a plain object, so set .search directly.
+// test-setup.js replaces window.location with a plain object, so set .search/.pathname directly.
 const setSearch = (search) => { window.location.search = search }
+const setPath = (pathname) => { window.location.pathname = pathname }
 
 beforeEach(() => {
   setSearch('')
+  setPath('/')
 })
 afterEach(() => {
   delete global.fetch
@@ -99,5 +101,54 @@ describe('UserSearch URL-seeded initial state (#4506)', () => {
     expect(url).toContain('username=fromurl')
     expect(url).not.toContain('username=fromserver')
     expect(url).toContain('page=1')
+  })
+})
+
+// #4515 regression: the homenode "writeups" link is a clean PATH url (/user/<name>/writeups) with no
+// query string, so the username must be recovered from window.location.pathname (mirrors the server
+// route-recovery in Everything::HTML). Missing this landed the reader on the empty base widget.
+describe('UserSearch recovers the username from the /user/<name>/writeups path (#4515)', () => {
+  const okResults = { writeups: [], total: 0, user: { title: 'root', node_id: 113 } }
+  const mockFetch = () => jest.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve(okResults) }))
+
+  it('seeds the username from the path and fetches for it (no query string)', async () => {
+    setSearch('')
+    setPath('/user/Serjeant%27s%20Muse/writeups')
+    global.fetch = mockFetch()
+    render(<UserSearch data={{}} user={{}} />)
+    await waitFor(() => expect(global.fetch).toHaveBeenCalled())
+    // decode the fetched query so we're not asserting a particular encoding
+    const url = global.fetch.mock.calls[0][0]
+    const sent = new URLSearchParams(url.split('?')[1])
+    expect(sent.get('username')).toBe("Serjeant's Muse")
+  })
+
+  it('handles a plain username in the path', async () => {
+    setSearch('')
+    setPath('/user/wertperch/writeups')
+    global.fetch = mockFetch()
+    render(<UserSearch data={{}} user={{}} />)
+    await waitFor(() => expect(global.fetch).toHaveBeenCalled())
+    expect(global.fetch.mock.calls[0][0]).toContain('username=wertperch')
+  })
+
+  it('does not treat an unrelated path as a username (empty state, no fetch)', async () => {
+    setSearch('')
+    setPath('/title/Everything+User+Search')
+    global.fetch = mockFetch()
+    render(<UserSearch data={{}} user={{}} />)
+    await new Promise((r) => setTimeout(r, 0))
+    expect(global.fetch).not.toHaveBeenCalled()
+  })
+
+  it('prefers an explicit ?usersearch= query over the path', async () => {
+    setSearch('?usersearch=fromquery')
+    setPath('/user/frompath/writeups')
+    global.fetch = mockFetch()
+    render(<UserSearch data={{}} user={{}} />)
+    await waitFor(() => expect(global.fetch).toHaveBeenCalled())
+    const url = global.fetch.mock.calls[0][0]
+    expect(url).toContain('username=fromquery')
+    expect(url).not.toContain('frompath')
   })
 })
