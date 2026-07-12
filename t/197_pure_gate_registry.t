@@ -30,6 +30,10 @@ my @expected = qw(
     bestow_cools bestow_easter_eggs enrichify
     fiery_teddy_bear_suit giant_teddy_bear_suit
     superbless xp_superbless the_well_of_cool
+    e2_color_toy wharfinger_s_linebreaker text_formatter word_messer_upper
+    zenmastery everything_quote_server oblique_strategies_garden teddisms_generator
+    e2_marble_shop e2_source_code_formatter between_the_cracks suspension_info
+    e2_word_counter
 );
 for my $name (@expected) {
     ok(exists $reg->{$name}, "registry has '$name'");

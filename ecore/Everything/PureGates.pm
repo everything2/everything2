@@ -57,6 +57,23 @@ my %REGISTRY = (
     superbless            => { type => 'superbless' },
     xp_superbless         => { type => 'xp_superbless' },
     the_well_of_cool      => { type => 'the_well_of_cool' },
+
+    # JS-only toys / static pages (#4517): the whole page is a client-side widget or a static
+    # document -- the server has nothing to add. The name IS the type, so the payload is empty
+    # ({} -> buildNodeInfoStructure auto-adds type => the page name).
+    e2_color_toy              => {},
+    wharfinger_s_linebreaker  => {},
+    text_formatter            => {},
+    word_messer_upper         => {},
+    zenmastery                => {},
+    everything_quote_server   => {},
+    oblique_strategies_garden => {},
+    teddisms_generator        => {},
+    e2_marble_shop            => {},
+    e2_source_code_formatter  => {},
+    between_the_cracks        => {},
+    suspension_info           => {},
+    e2_word_counter           => {},
 );
 
 sub registry { return \%REGISTRY; }
