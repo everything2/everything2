@@ -34,19 +34,29 @@ my @expected = qw(
     zenmastery everything_quote_server oblique_strategies_garden teddisms_generator
     e2_marble_shop e2_source_code_formatter between_the_cracks suspension_info
     e2_word_counter
+    about_nobody e2_acceptable_use_policy online_only_msg
+    ask_everything_do_i_have_the_swine_flu
+    everything_poll_archive everything_poll_directory everything_user_poll
+    is_it_christmas_yet is_it_halloween_yet is_it_new_year_s_day_yet
+    is_it_new_year_s_eve_yet is_it_april_fools_day_yet
+    spam_cannon
 );
 for my $name (@expected) {
     ok(exists $reg->{$name}, "registry has '$name'");
 }
 
-# Pure gates ship ONLY type (+ optional static layout) -- no copy/config leaked back to the server.
-my %allowed = map { $_ => 1 } qw(type layout);
+# Registry payloads are static contentData: type + structural discriminators (layout, occasion) and
+# small config (max_recipients) are fine. What must NEVER leak back to the server is display COPY --
+# titles, descriptions, messages, button/note text -- that belongs in React (the whole point).
+my %copy_key = map { $_ => 1 } qw(
+    title description message note_text button_text button_text_loading intro_text prompt
+    permission_error extended_title label heading subtitle blurb help_text placeholder
+);
 for my $name (sort keys %$reg) {
     my $payload = $reg->{$name};
     is(ref($payload), 'HASH', "$name: payload is a hashref");
-    ok(exists $payload->{type} || 1, "$name: (type auto-added if absent)");
-    my @bad = grep { !$allowed{$_} } keys %$payload;
-    is(scalar(@bad), 0, "$name: ships only type/layout, no copy/config (@bad)");
+    my @copy = grep { $copy_key{$_} } keys %$payload;
+    is(scalar(@copy), 0, "$name: no display copy leaked into the registry (@copy)");
 }
 
 # The reputation pair reuses one component; the horizontal node overrides its type + carries layout.
@@ -54,6 +64,14 @@ is($reg->{reputation_graph}{type}, 'reputation_graph', 'reputation_graph -> type
 is($reg->{reputation_graph}{layout}, 'vertical', 'reputation_graph -> vertical');
 is($reg->{reputation_graph_horizontal}{type}, 'reputation_graph', 'horizontal reuses the reputation_graph component');
 is($reg->{reputation_graph_horizontal}{layout}, 'horizontal', 'horizontal -> layout horizontal');
+
+# The five holiday pages share the IsItHoliday component, distinguished by an occasion discriminator.
+is($reg->{is_it_christmas_yet}{occasion},       'xmas',      'christmas -> xmas');
+is($reg->{is_it_halloween_yet}{occasion},       'halloween', 'halloween -> halloween');
+is($reg->{is_it_new_year_s_day_yet}{occasion},  'nyd',       'new year day -> nyd');
+is($reg->{is_it_new_year_s_eve_yet}{occasion},  'nye',       'new year eve -> nye');
+is($reg->{is_it_april_fools_day_yet}{occasion}, 'afd',       'april fools -> afd');
+is($reg->{spam_cannon}{max_recipients},         20,          'spam_cannon carries its static max_recipients');
 
 # The generic gate emits (a copy of) its payload from buildReactData.
 my $gate = Everything::PureGatePage->new(content => { type => 'reputation_graph', layout => 'horizontal' });

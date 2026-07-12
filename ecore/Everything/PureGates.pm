@@ -74,6 +74,25 @@ my %REGISTRY = (
     between_the_cracks        => {},
     suspension_info           => {},
     e2_word_counter           => {},
+
+    # Static docs / poll pages (#4520): pure gates, name == type, no payload.
+    about_nobody                           => {},
+    e2_acceptable_use_policy               => {},
+    online_only_msg                        => {},
+    ask_everything_do_i_have_the_swine_flu => {},
+    everything_poll_archive                => {},
+    everything_poll_directory              => {},
+    everything_user_poll                   => {},
+
+    # "Is it <holiday> yet" (#4520): all five share the IsItHoliday component, selected by occasion.
+    is_it_christmas_yet       => { occasion => 'xmas' },
+    is_it_halloween_yet       => { occasion => 'halloween' },
+    is_it_new_year_s_day_yet  => { occasion => 'nyd' },
+    is_it_new_year_s_eve_yet  => { occasion => 'nye' },
+    is_it_april_fools_day_yet => { occasion => 'afd' },
+
+    # Static config payload (#4520).
+    spam_cannon => { max_recipients => 20 },
 );
 
 sub registry { return \%REGISTRY; }
