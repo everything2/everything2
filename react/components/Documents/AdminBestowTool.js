@@ -1,37 +1,128 @@
 import React, { useState, useCallback } from 'react'
 
 /**
- * AdminBestowTool - Unified admin tool for granting resources to users
+ * TOOL_CONFIG - the flavor text + behavior for each bestow tool, keyed by document type.
  *
- * A configurable component that provides a consistent UI for all admin
- * resource granting functions (GP, XP, cools, easter eggs, teddy hugs, etc.)
+ * The Pages are pure gates that ship only { type } (#4509); React owns all presentation here.
+ * `requires` names the permission tier the UI enforces for display; the API is the real
+ * enforcement boundary. `intro_text` may be a function of the acting user (the teddy tools name
+ * them). `prefill_self` fills the first row with the acting user (self-service well_of_cool).
+ */
+const TOOL_CONFIG = {
+  bestow_cools: {
+    requires: 'admin',
+    permission_error: 'Only administrators can bestow cools.',
+    title: 'Bestow Cools',
+    description: 'Grant cools (C!) to users. Users can use cools to highlight excellent writeups.',
+    resource_name: 'Cools',
+    show_amount_input: true, allow_negative: false, default_amount: '1', row_count: 5,
+    api_endpoint: '/api/superbless/grant_cools',
+    button_text: 'Bestow Cools', button_text_loading: 'Bestowing...',
+    note_text: 'Cools allow users to C! writeups they find excellent.'
+  },
+  bestow_easter_eggs: {
+    requires: 'admin',
+    permission_error: 'Who do you think you are? The Easter Bunny?',
+    title: 'Bestow Easter Eggs',
+    description: 'Grant easter eggs to users. Each user receives one easter egg per entry.',
+    resource_name: 'Eggs',
+    fixed_amount: 1, show_amount_input: false, row_count: 5,
+    api_endpoint: '/api/easter_eggs/bestow',
+    button_text: 'Bestow Easter Eggs', button_text_loading: 'Bestowing...',
+    note_text: 'Each user receives one easter egg. Users get a message from Cool Man Eddie.'
+  },
+  enrichify: {
+    requires: 'admin',
+    permission_error: 'You want to be supercursed? No? Then play elsewhere.',
+    title: 'Enrichify',
+    description: 'Grant GP to users. Positive values give GP, negative values remove GP. Karma is adjusted accordingly.',
+    resource_name: 'GP',
+    show_amount_input: true, allow_negative: true, default_amount: '', row_count: 10,
+    api_endpoint: '/api/superbless/grant_gp',
+    button_text: 'Enrichify', button_text_loading: 'Enrichifying...',
+    note_text: 'All GP grants are logged. Karma is adjusted based on the direction of the grant.'
+  },
+  fiery_teddy_bear_suit: {
+    requires: 'admin',
+    permission_error: 'Hands off the bear, bobo.',
+    title: 'Fiery Teddy Bear Suit',
+    description: 'The user(s) are publicly hugged by a Fiery Teddy Bear. Users are cursed with -1 GP and -1 karma.',
+    intro_text: (user) => `${user?.title || 'Someone'} is engulfed in flames . . . OW!`,
+    resource_name: 'GP',
+    fixed_amount: -1, show_amount_input: false, row_count: 5,
+    api_endpoint: '/api/superbless/fiery_hug',
+    button_text: 'Hug Users', button_text_loading: 'Hugging...',
+    note_text: 'Fiery hugs remove 1 GP and post a public hug message to the chatterbox.'
+  },
+  giant_teddy_bear_suit: {
+    requires: 'admin',
+    permission_error: 'Hands off the bear, bobo.',
+    title: 'Giant Teddy Bear Suit',
+    description: 'The user(s) are publicly hugged by a Giant Teddy Bear. Users receive +2 GP and +1 karma.',
+    intro_text: (user) => `${user?.title || 'Someone'} has donned the Giant Teddy Bear Suit . . .`,
+    resource_name: 'GP',
+    fixed_amount: 2, show_amount_input: false, row_count: 5,
+    api_endpoint: '/api/teddybear/hug',
+    button_text: 'Hug Users', button_text_loading: 'Hugging...',
+    note_text: 'Giant Teddy Bear hugs grant 2 GP and post a public hug message to the chatterbox.'
+  },
+  superbless: {
+    requires: 'editor',
+    permission_error: 'This tool is available to editors and administrators.',
+    title: 'Superbless',
+    description: 'Grant GP to users. Positive values give GP, negative values remove GP. Karma is adjusted accordingly.',
+    resource_name: 'GP',
+    show_amount_input: true, allow_negative: true, default_amount: '', row_count: 10,
+    api_endpoint: '/api/superbless/grant_gp',
+    button_text: 'Superbless', button_text_loading: 'Superblessing...',
+    note_text: 'All GP grants are logged. Karma is adjusted based on the direction of the grant.'
+  },
+  xp_superbless: {
+    requires: 'admin',
+    permission_error: 'Only administrators can grant XP.',
+    title: 'XP Superbless (Archived)',
+    description: 'WARNING: This is an archived version of the old Superbless which used to give XP instead of GP. All blessings should be given in GP nowadays. There is no reason why administrators should fiddle with user XP except for extraordinary circumstances. All usage of this tool is logged. Please contact Tem42 if a user wants XP reset to zero.',
+    resource_name: 'XP',
+    show_amount_input: true, allow_negative: true, default_amount: '', row_count: 5,
+    api_endpoint: '/api/superbless/grant_xp',
+    button_text: 'Grant XP', button_text_loading: 'Granting XP...',
+    note_text: 'All XP grants are logged and audited. Use [Superbless] for normal GP blessings.'
+  },
+  the_well_of_cool: {
+    // Self-service: any user, first row prefilled with themselves.
+    requires: null, prefill_self: true, permission_error: '',
+    title: 'The Well of Cool',
+    description: 'Drink deeply from the well of cool. Grant yourself cools (C!) to highlight excellent writeups.',
+    resource_name: 'Cools',
+    show_amount_input: true, allow_negative: false, default_amount: '1', row_count: 1,
+    api_endpoint: '/api/superbless/grant_cools',
+    button_text: 'Drink deeply from the well of cool', button_text_loading: 'Drinking...',
+    note_text: 'Cools allow you to C! writeups you find excellent.'
+  }
+}
+
+// Whether the acting user meets a tool's permission tier (admins count as editors).
+const meetsRequirement = (requires, user) => {
+  if (!requires) return true
+  if (requires === 'admin') return !!user?.admin
+  if (requires === 'editor') return !!user?.admin || !!user?.editor
+  return false
+}
+
+/**
+ * AdminBestowTool - Unified admin tool for granting resources to users.
  *
- * Props from data:
- * - type: Tool type identifier for API routing
- * - title: Display title for the tool
- * - description: Help text explaining what this tool does
- * - permission_error: Message shown if user lacks permission
- * - has_permission: Whether current user can use this tool
- * - resource_name: What's being granted (e.g., "GP", "XP", "cools", "easter eggs")
- * - fixed_amount: If set, grants this fixed amount per user (no amount input shown)
- * - show_amount_input: Whether to show an amount input field per user
- * - default_amount: Default value for amount input (if show_amount_input is true)
- * - allow_negative: Whether negative amounts are allowed (for curses/penalties)
- * - row_count: Number of user input rows to show (default 5)
- * - api_endpoint: API endpoint to call (e.g., "/api/superbless/grant_gp")
- * - button_text: Text for submit button (default "Submit")
- * - button_text_loading: Text while submitting (default "Processing...")
- * - note_text: Optional note text shown at bottom of form
- * - prefill_username: Username to pre-fill in the first row (for self-service tools)
+ * Config comes from TOOL_CONFIG keyed on data.type (the Page ships just { type }). A data.* path
+ * is kept as a fallback for any external caller still shipping config inline (e.g. the fixture).
  */
 const AdminBestowTool = ({ data, user }) => {
+  const toolConfig = TOOL_CONFIG[data.type]
+  const config = toolConfig || data
+
   const {
-    type,
     title,
     description,
-    intro_text,
     permission_error,
-    has_permission,
     resource_name,
     fixed_amount,
     show_amount_input,
@@ -42,13 +133,20 @@ const AdminBestowTool = ({ data, user }) => {
     button_text = 'Submit',
     button_text_loading = 'Processing...',
     note_text
-  } = data
+  } = config
 
-  // prefill_username is a client concern (user-tools modal links pass ?prefill_username=…): read it
-  // off the URL. Fall back to a server-supplied data.prefill_username for the AdminBestowTool
-  // consumers not yet migrated off the server read (#4500; superbless/xp_superbless are migrated).
-  const prefill_username =
-    data.prefill_username || new URLSearchParams(window.location.search).get('prefill_username') || ''
+  // intro_text may be a function of the acting user (the teddy tools name them).
+  const intro_text = typeof config.intro_text === 'function' ? config.intro_text(user) : config.intro_text
+
+  // Permission: config-driven tools compute the display flag from the actual user; legacy
+  // data-driven consumers still ship has_permission. The API is the real enforcement boundary.
+  const has_permission = toolConfig ? meetsRequirement(toolConfig.requires, user) : data.has_permission
+
+  // prefill: self-service tools fill row 0 with the acting user; otherwise read ?prefill_username
+  // off the URL (user-tools modal links pass it), with a legacy data.prefill_username fallback.
+  const prefill_username = config.prefill_self
+    ? (user?.title || '')
+    : (data.prefill_username || new URLSearchParams(window.location.search).get('prefill_username') || '')
 
   // Initialize rows with usernames and optional amounts
   const createEmptyRows = useCallback(() => {

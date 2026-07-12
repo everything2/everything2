@@ -17,29 +17,9 @@ sub buildReactData
 {
     my ($self, $REQUEST) = @_;
 
-    my $APP = $self->APP;
-    my $user = $REQUEST->user;
-
-    # Get prefill_username from URL parameter (for user tools modal integration)
-    my $prefill_username = $REQUEST->param('prefill_username') || '';
-
-    return {
-        type => 'admin_bestow_tool',
-        title => 'Enrichify',
-        description => 'Grant GP to users. Positive values give GP, negative values remove GP. Karma is adjusted accordingly.',
-        has_permission => $APP->isAdmin($user->NODEDATA) ? 1 : 0,
-        permission_error => 'You want to be supercursed? No? Then play elsewhere.',
-        resource_name => 'GP',
-        show_amount_input => 1,
-        allow_negative => 1,
-        default_amount => '',
-        row_count => 10,
-        api_endpoint => '/api/superbless/grant_gp',
-        button_text => 'Enrichify',
-        button_text_loading => 'Enrichifying...',
-        note_text => 'All GP grants are logged. Karma is adjusted based on the direction of the grant.',
-        prefill_username => $prefill_username
-    };
+    # Pure gate: ships only its type. React (AdminBestowTool) owns the flavor text + permission
+    # tier, keyed on this type; the API is the real enforcement boundary (#4509).
+    return { type => 'enrichify' };
 }
 
 __PACKAGE__->meta->make_immutable;

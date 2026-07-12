@@ -15,29 +15,9 @@ sub buildReactData
 {
     my ($self, $REQUEST) = @_;
 
-    my $APP = $self->APP;
-    my $user = $REQUEST->user;
-
-    # Get prefill_username from URL parameter (for user tools modal integration)
-    my $prefill_username = $REQUEST->param('prefill_username') || '';
-
-    return {
-        type => 'admin_bestow_tool',
-        title => 'Bestow Cools',
-        description => 'Grant cools (C!) to users. Users can use cools to highlight excellent writeups.',
-        has_permission => $APP->isAdmin($user->NODEDATA) ? 1 : 0,
-        permission_error => 'Only administrators can bestow cools.',
-        resource_name => 'Cools',
-        show_amount_input => 1,
-        allow_negative => 0,
-        default_amount => '1',
-        row_count => 5,
-        api_endpoint => '/api/superbless/grant_cools',
-        button_text => 'Bestow Cools',
-        button_text_loading => 'Bestowing...',
-        note_text => 'Cools allow users to C! writeups they find excellent.',
-        prefill_username => $prefill_username
-    };
+    # Pure gate: ships only its type. React (AdminBestowTool) owns the flavor text + permission
+    # tier, keyed on this type; the API is the real enforcement boundary (#4509).
+    return { type => 'bestow_cools' };
 }
 
 __PACKAGE__->meta->make_immutable;
