@@ -159,7 +159,8 @@ const COMPONENT_MAP = {
   // Utility tools
   text_formatter: lazy(() => import('./Documents/TextFormatter')),
 
-  // Admin tools - unified AdminBestowTool component
+  // Admin tools - unified AdminBestowTool component. Each tool ships only { type } and this
+  // component owns its flavor text + permission tier, keyed on the type (#4509).
   admin_bestow_tool: lazy(() => import('./Documents/AdminBestowTool')),
   superbless: lazy(() => import('./Documents/AdminBestowTool')),
   xp_superbless: lazy(() => import('./Documents/AdminBestowTool')),
@@ -168,6 +169,8 @@ const COMPONENT_MAP = {
   fiery_teddy_bear_suit: lazy(() => import('./Documents/AdminBestowTool')),
   bestow_easter_eggs: lazy(() => import('./Documents/AdminBestowTool')),
   bestow_cools: lazy(() => import('./Documents/AdminBestowTool')),
+  enrichify: lazy(() => import('./Documents/AdminBestowTool')),
+  the_well_of_cool: lazy(() => import('./Documents/AdminBestowTool')),
 
   // Admin info pages
   suspension_info: lazy(() => import('./Documents/SuspensionInfo')),

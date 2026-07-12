@@ -16,25 +16,9 @@ sub buildReactData
 {
     my ($self, $REQUEST) = @_;
 
-    my $user = $REQUEST->user;
-
-    return {
-        type => 'admin_bestow_tool',
-        title => 'The Well of Cool',
-        description => 'Drink deeply from the well of cool. Grant yourself cools (C!) to highlight excellent writeups.',
-        has_permission => 1,  # All users can use this
-        permission_error => '',
-        resource_name => 'Cools',
-        show_amount_input => 1,
-        allow_negative => 0,
-        default_amount => '1',
-        row_count => 1,  # Only one row needed for self-service
-        api_endpoint => '/api/superbless/grant_cools',
-        button_text => 'Drink deeply from the well of cool',
-        button_text_loading => 'Drinking...',
-        note_text => 'Cools allow you to C! writeups you find excellent.',
-        prefill_username => $user->title  # Pre-fill with current user's name
-    };
+    # Pure gate: ships only its type. React (AdminBestowTool) owns the flavor text and self-service
+    # behavior (any user; row 0 prefilled with the acting user), keyed on this type (#4509).
+    return { type => 'the_well_of_cool' };
 }
 
 __PACKAGE__->meta->make_immutable;
