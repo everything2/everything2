@@ -22,17 +22,19 @@ sub buildReactData
     $error = $form_result->{message} if not defined $error;
   }
 
+  # Return the fields flat: buildNodeInfoStructure already wraps buildReactData's return in
+  # contentData (and adds type). Wrapping them in an extra { contentData => ... } here double-nested
+  # everything under contentData.contentData, so GoldenTrinkets.js (which reads data.karma/forUser)
+  # saw nothing and rendered an empty "karma 0" -- the page looked deprecated (#4516 sibling).
   return {
-    contentData => {
-      type => 'golden_trinkets',
-      karma => $user->karma,
-      forUser => $for_user ? {
-        username => $for_user->title,
-        karma => $for_user->karma,
-        node_id => $for_user->node_id
-      } : undef,
-      error => $error
-    }
+    type => 'golden_trinkets',
+    karma => $user->karma,
+    forUser => $for_user ? {
+      username => $for_user->title,
+      karma => $for_user->karma,
+      node_id => $for_user->node_id
+    } : undef,
+    error => $error
   };
 }
 
