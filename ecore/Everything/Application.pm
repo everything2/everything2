@@ -57,6 +57,7 @@ use Everything::DataStash::newwriteups;
 # Type-normalizes the e2 blob at its single source (buildNodeInfoStructure) so the
 # inline render and /api/pagestate emit the identical, correctly-typed contract.
 use Everything::PageState;
+use Everything::PureGates;
 
 # For parse_timestamp
 use Time::Local;
@@ -8170,6 +8171,13 @@ sub buildNodeInfoStructure
         # Note: newWriteups is loaded unconditionally earlier for all users
         # since it's core to site navigation (mobile bottom nav)
       }
+    } elsif (my $gate_content = Everything::PureGates::registry()->{$page_name}) {
+      # Fall-through pure gate (#4513): no dedicated Everything::Page::$page_name module -- the page
+      # is just a static React payload from the whitelist. type defaults to the page name; the
+      # registry payload overrides it when it differs (e.g. reputation_graph_horizontal reuses the
+      # reputation_graph component with a layout flag).
+      $e2->{reactPageMode} = \1;
+      $e2->{contentData} = { type => $page_name, %$gate_content };
     } elsif ($nodetype eq 'maintenance' || $nodetype eq 'nodelet') {
       # Maintenance and nodelet nodes use generic system_node display
       # They don't have individual Page classes - all nodes of these types

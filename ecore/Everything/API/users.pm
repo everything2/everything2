@@ -38,16 +38,18 @@ sub confirm
   my $expiry   = defined $data->{expiry}   ? $data->{expiry}   : '';
   my $expires  = defined $data->{expires}  ? $data->{expires}  : '';  # "stay logged in" cookie duration
 
+  # This endpoint returns only { success, state } (+ backend-derived profileUrl on activation).
+  # The human-readable copy for each state lives in React (ConfirmPassword STATE_COPY, #4511),
+  # keyed on state -- the same map the server-rendered Page path uses.
+
   # Required parameters
   unless ($token && $action && $username) {
-    return [$self->HTTP_OK, { success => 0, state => 'missing_params',
-      error => 'Missing required parameters.' }];
+    return [$self->HTTP_OK, { success => 0, state => 'missing_params' }];
   }
 
   # Valid action
   unless ($action eq 'activate' || $action eq 'reset') {
-    return [$self->HTTP_OK, { success => 0, state => 'invalid_action',
-      error => 'Invalid action.' }];
+    return [$self->HTTP_OK, { success => 0, state => 'invalid_action' }];
   }
 
   my $user = $DB->getNode($username, 'user');
@@ -56,24 +58,20 @@ sub confirm
   # accounts on the request path -- cleanup is deferred to a safe/phased maintenance job,
   # #4476). Just report the expiry.
   if ($expiry && time() > $expiry) {
-    return [$self->HTTP_OK, { success => 0, state => 'expired',
-      error => 'This link has expired.' }];
+    return [$self->HTTP_OK, { success => 0, state => 'expired' }];
   }
 
   unless ($user) {
-    return [$self->HTTP_OK, { success => 0, state => 'no_user',
-      error => 'The account you are trying to activate does not exist.' }];
+    return [$self->HTTP_OK, { success => 0, state => 'no_user' }];
   }
 
   if ($action eq 'activate' && $user->{acctlock}) {
-    return [$self->HTTP_OK, { success => 0, state => 'locked',
-      error => 'We do not accept new users from the IP address used to create this account.' }];
+    return [$self->HTTP_OK, { success => 0, state => 'locked' }];
   }
 
   # Validate the token + finalize (sets the password, security-logs the action).
   unless ($APP->checkToken($user, $action, $expiry, $passwd, $token)) {
-    return [$self->HTTP_OK, { success => 0, state => 'login_required',
-      error => 'Password or link invalid. Please try again.' }];
+    return [$self->HTTP_OK, { success => 0, state => 'login_required' }];
   }
 
   # Log in with the now-set password (login() adds the response cookie).
@@ -81,15 +79,11 @@ sub confirm
   $login_args{expires} = $expires if $expires;
   $REQUEST->login(%login_args);
   if ($REQUEST->is_guest || $REQUEST->user->title ne $username) {
-    return [$self->HTTP_OK, { success => 0, state => 'login_required',
-      error => 'Password or link invalid. Please try again.' }];
+    return [$self->HTTP_OK, { success => 0, state => 'login_required' }];
   }
 
   if ($action eq 'reset') {
-    return [$self->HTTP_OK, {
-      success => 1, state => 'success_reset',
-      message => 'Password updated. You are logged in.',
-    }];
+    return [$self->HTTP_OK, { success => 1, state => 'success_reset' }];
   }
 
   # Account activation: send the Virgil welcome PM.
@@ -105,7 +99,6 @@ sub confirm
 
   return [$self->HTTP_OK, {
     success => 1, state => 'success_activate',
-    message => 'Your account has been activated and you have been logged in.',
     profileUrl => "/node/" . $REQUEST->user->NODEDATA->{node_id},
   }];
 }
