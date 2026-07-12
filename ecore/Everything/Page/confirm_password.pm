@@ -14,12 +14,16 @@ sub buildReactData {
     my $expiry = $q->param('expiry') // '';
     my $username = $q->param('user') // '';
 
+    # The Page computes the backend-derived STATE (token/action/expiry/user validation); React
+    # (ConfirmPassword) owns the human-readable copy for each state, keyed on it (#4511). We ship
+    # only { type, state } plus genuinely backend-derived data (resolved node links, the login-form
+    # inputs), never the message/error/prompt copy.
+
     # Check for required parameters
     unless ($token && $action && $username) {
         return {
-            type    => 'confirm_password',
-            state   => 'missing_params',
-            message => 'To use this page, please click on or copy and paste the link from the email we sent you. If we didn\'t send you an email, you don\'t need this page.',
+            type  => 'confirm_password',
+            state => 'missing_params',
         };
     }
 
@@ -28,7 +32,6 @@ sub buildReactData {
         return {
             type  => 'confirm_password',
             state => 'invalid_action',
-            error => 'Invalid action.',
         };
     }
 
@@ -43,11 +46,9 @@ sub buildReactData {
         my $link_node = $DB->getNode($link_page, 'superdoc');
 
         return {
-            type       => 'confirm_password',
-            state      => 'expired',
-            message    => 'This link has expired.',
-            renewLink  => $link_node ? "/node/$link_node->{node_id}" : undef,
-            renewLabel => 'get a new one',
+            type      => 'confirm_password',
+            state     => 'expired',
+            renewLink => $link_node ? "/node/$link_node->{node_id}" : undef,
         };
     }
 
@@ -57,7 +58,6 @@ sub buildReactData {
         return {
             type       => 'confirm_password',
             state      => 'no_user',
-            message    => 'The account you are trying to activate does not exist.',
             signupLink => $signup ? "/node/$signup->{node_id}" : undef,
         };
     }
@@ -67,7 +67,6 @@ sub buildReactData {
         return {
             type  => 'confirm_password',
             state => 'locked',
-            error => 'We\'re sorry, but we don\'t accept new users from the IP address you used to create this account. Please get in touch with us if you think this is a mistake.',
         };
     }
 
@@ -80,7 +79,6 @@ sub buildReactData {
     return {
         type     => 'confirm_password',
         state    => 'login_required',
-        prompt   => "Please log in with your username and password to $action your account",
         username => $username,
         action   => $action,
         token    => $token,

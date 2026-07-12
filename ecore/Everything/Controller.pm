@@ -7,13 +7,30 @@ with 'Everything::HTTP';
 use Everything::HTML;
 use Everything::HTMLShell;
 use Everything::PageState;
+use Everything::PureGates;
+use Everything::PureGatePage;
 
 has 'PAGE_TABLE' => (isa => "HashRef", is => "ro", builder => "_build_page_table", lazy => 1);
 
 sub _build_page_table
 {
   my ($self) = @_;
-  return $self->APP->plugin_table("page");
+  my $table = $self->APP->plugin_table("page");
+
+  # Fall-through pure gates (#4513): a whitelisted skinny page that just emits a static React
+  # payload gets a generic Everything::PureGatePage instance instead of a dedicated
+  # Everything::Page::* module. A real module of the same name still wins (checked below), so this
+  # is purely additive -- a page can be migrated by deleting its module + adding a registry entry.
+  my $gates = Everything::PureGates::registry();
+  foreach my $name (keys %$gates)
+  {
+    next if exists $table->{$name};
+    # buildNodeInfoStructure auto-adds type => $name; mirror that here so page_class sees the same
+    # contentData shape the client will (type defaults to the page name, registry payload overrides).
+    $table->{$name} = Everything::PureGatePage->new(content => { type => $name, %{$gates->{$name}} });
+  }
+
+  return $table;
 }
 
 sub display

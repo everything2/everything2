@@ -11,6 +11,24 @@ import { goToRandomNode } from '../../utils/randomNode'
  *
  * Styles in CSS: .confirm-password__*
  */
+// Per-state display copy lives here, keyed on state (#4511): both the server-rendered Page and the
+// /api/users/confirm response now ship only { state } (+ backend-derived links), never the copy.
+const STATE_COPY = {
+  missing_params: "To use this page, please click on or copy and paste the link from the email we sent you. If we didn't send you an email, you don't need this page.",
+  invalid_action: 'Invalid action.',
+  expired: 'This link has expired.',
+  no_user: 'The account you are trying to activate does not exist.',
+  locked: "We're sorry, but we don't accept new users from the IP address you used to create this account. Please get in touch with us if you think this is a mistake.",
+  success_reset: 'Password updated. You are logged in.',
+  success_activate: 'Your account has been activated and you have been logged in.',
+  login_required: {
+    prompt: (action) => `Please log in with your username and password to ${action} your account`,
+    error: 'Password or link invalid. Please try again.',
+  },
+}
+const RENEW_LABEL = 'get a new one'
+const GENERIC_ERROR = 'Something went wrong. Please try again.'
+
 const ConfirmPassword = ({ data }) => {
   const confirmData = data || {}
   const {
@@ -18,29 +36,25 @@ const ConfirmPassword = ({ data }) => {
     action,
     token,
     expiry,
-    prompt,
     renewLink,
-    renewLabel,
     signupLink,
   } = confirmData
 
   const [password, setPassword] = useState('')
   const [stayLoggedIn, setStayLoggedIn] = useState(false)
   const [loading, setLoading] = useState(false)
+  // Error shown inside the login form after a failed submit (the initial view shows the prompt).
+  const [submitError, setSubmitError] = useState(null)
 
   // The displayed view starts from the server-rendered state and is replaced by
   // the /api/users/confirm response after the user submits.
-  const [view, setView] = useState({
-    state: confirmData.state,
-    message: confirmData.message,
-    error: confirmData.error,
-    profileUrl: confirmData.profileUrl,
-  })
+  const [view, setView] = useState({ state: confirmData.state, profileUrl: confirmData.profileUrl })
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
     if (!password.trim()) return
     setLoading(true)
+    setSubmitError(null)
     try {
       const res = await fetch('/api/users/confirm', {
         method: 'POST',
@@ -63,26 +77,28 @@ const ConfirmPassword = ({ data }) => {
         window.location.href = d.profileUrl || '/'
         return
       }
-      if (d && d.state) {
-        setView({ state: d.state, message: d.message, error: d.error, profileUrl: d.profileUrl })
+      if (d && d.state === 'login_required') {
+        setSubmitError(STATE_COPY.login_required.error) // stay on the form, show the failure
+      } else if (d && d.state) {
+        setView({ state: d.state, profileUrl: d.profileUrl }) // token expired/user gone mid-flow
       } else {
-        setView({ state: 'login_required', error: 'Something went wrong. Please try again.' })
+        setSubmitError(GENERIC_ERROR)
       }
     } catch (err) {
-      setView({ state: 'login_required', error: 'Something went wrong. Please try again.' })
+      setSubmitError(GENERIC_ERROR)
     } finally {
       setLoading(false)
     }
   }, [password, username, token, action, expiry, stayLoggedIn])
 
-  const { state, message, error, profileUrl } = view
+  const { state, profileUrl } = view
 
   // Missing parameters
   if (state === 'missing_params') {
     return (
       <div className="confirm-password">
         <div className="confirm-password__message">
-          <p>{message}</p>
+          <p>{STATE_COPY.missing_params}</p>
         </div>
       </div>
     )
@@ -93,7 +109,7 @@ const ConfirmPassword = ({ data }) => {
     return (
       <div className="confirm-password">
         <div className="confirm-password__error">
-          <p>{error}</p>
+          <p>{STATE_COPY.invalid_action}</p>
         </div>
       </div>
     )
@@ -104,9 +120,9 @@ const ConfirmPassword = ({ data }) => {
     return (
       <div className="confirm-password">
         <div className="confirm-password__error">
-          <p>{message}{' '}
+          <p>{STATE_COPY.expired}{' '}
           {renewLink && (
-            <>But you can <a href={renewLink} className="confirm-password__link">{renewLabel}</a>.</>
+            <>But you can <a href={renewLink} className="confirm-password__link">{RENEW_LABEL}</a>.</>
           )}
           </p>
         </div>
@@ -119,7 +135,7 @@ const ConfirmPassword = ({ data }) => {
     return (
       <div className="confirm-password">
         <div className="confirm-password__error">
-          <p>{message}{' '}
+          <p>{STATE_COPY.no_user}{' '}
           {signupLink && (
             <>But you can <a href={signupLink} className="confirm-password__link">create a new one</a>.</>
           )}
@@ -134,7 +150,7 @@ const ConfirmPassword = ({ data }) => {
     return (
       <div className="confirm-password">
         <div className="confirm-password__error">
-          <p>{error}</p>
+          <p>{STATE_COPY.locked}</p>
         </div>
       </div>
     )
@@ -145,7 +161,7 @@ const ConfirmPassword = ({ data }) => {
     return (
       <div className="confirm-password">
         <div className="confirm-password__success">
-          <p>{message}</p>
+          <p>{STATE_COPY.success_reset}</p>
         </div>
       </div>
     )
@@ -156,7 +172,7 @@ const ConfirmPassword = ({ data }) => {
     return (
       <div className="confirm-password">
         <div className="confirm-password__success">
-          <p>{message}</p>
+          <p>{STATE_COPY.success_activate}</p>
           <p>
             Perhaps you'd like to edit{' '}
             <a href={profileUrl} className="confirm-password__link">your profile</a>,
@@ -178,9 +194,9 @@ const ConfirmPassword = ({ data }) => {
           <fieldset className="confirm-password__fieldset">
             <legend className="confirm-password__legend">Log in</legend>
 
-            {error
-              ? <p className="confirm-password__error">{error}</p>
-              : <p className="confirm-password__prompt">{prompt}:</p>}
+            {submitError
+              ? <p className="confirm-password__error">{submitError}</p>
+              : <p className="confirm-password__prompt">{STATE_COPY.login_required.prompt(action)}:</p>}
 
             <div className="confirm-password__form-group">
               <label className="confirm-password__label">

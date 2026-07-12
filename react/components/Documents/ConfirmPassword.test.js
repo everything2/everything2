@@ -21,6 +21,44 @@ describe('ConfirmPassword (real pagestate fixture)', () => {
   })
 })
 
+// #4511: the server (Page + API) ships only { state } (+ backend links); React owns the copy.
+describe('ConfirmPassword state copy (owned by React)', () => {
+  it('login_required: derives the prompt from action, with no server-shipped copy', () => {
+    const { container } = render(<ConfirmPassword data={{ state: 'login_required', username: 'alice', action: 'activate' }} />)
+    expect(container.textContent).toMatch(/Please log in with your username and password to activate your account/)
+    expect(container.querySelector('form')).toBeTruthy()
+  })
+
+  it('missing_params: renders the email guidance', () => {
+    const { container } = render(<ConfirmPassword data={{ state: 'missing_params' }} />)
+    expect(container.textContent).toMatch(/click on or copy and paste the link from the email/i)
+  })
+
+  it('invalid_action: renders the invalid-action copy', () => {
+    const { container } = render(<ConfirmPassword data={{ state: 'invalid_action' }} />)
+    expect(container.textContent).toMatch(/Invalid action\./)
+  })
+
+  it('expired: renders the expired copy plus the backend-supplied renew link', () => {
+    const { container } = render(<ConfirmPassword data={{ state: 'expired', renewLink: '/node/5' }} />)
+    expect(container.textContent).toMatch(/This link has expired/)
+    const a = container.querySelector('a[href="/node/5"]')
+    expect(a).toBeTruthy()
+    expect(a.textContent).toBe('get a new one')
+  })
+
+  it('no_user: renders the no-account copy plus the backend-supplied signup link', () => {
+    const { container } = render(<ConfirmPassword data={{ state: 'no_user', signupLink: '/node/9' }} />)
+    expect(container.textContent).toMatch(/account you are trying to activate does not exist/i)
+    expect(container.querySelector('a[href="/node/9"]')).toBeTruthy()
+  })
+
+  it('locked: renders the IP-lock copy', () => {
+    const { container } = render(<ConfirmPassword data={{ state: 'locked' }} />)
+    expect(container.textContent).toMatch(/don't accept new users from the IP address/i)
+  })
+})
+
 // op=login retired -> POST /api/users/confirm (#4335 Phase 3)
 describe('ConfirmPassword confirm flow (/api/users/confirm)', () => {
   const baseData = {
