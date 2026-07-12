@@ -142,4 +142,25 @@ describe('RandomText', () => {
     expect(spy).toHaveBeenCalled()
     spy.mockRestore()
   })
+
+  // #4522: content now lives in the component (WIT map), keyed on type -- the page ships only { type }.
+  describe('content owned by the component (no server-supplied wit)', () => {
+    it('fezisms renders two selections from the built-in WIT map with type only', () => {
+      const { container } = render(<RandomText data={{ type: 'fezisms_generator' }} />)
+      const parsed = container.querySelectorAll('[data-parsed]')
+      expect(parsed).toHaveLength(2) // one from each of the two fezisms arrays
+      expect(parsed[0].textContent).toMatch(/\|/) // a real E2 link macro from the WIT content
+    })
+
+    it('piercisms renders one selection from the built-in WIT map with type only', () => {
+      const { container } = render(<RandomText data={{ type: 'piercisms_generator' }} />)
+      expect(container.querySelectorAll('[data-parsed]')).toHaveLength(1)
+    })
+
+    it('a server-supplied data.wit is ignored in favor of the built-in content', () => {
+      const { container } = render(<RandomText data={{ type: 'piercisms_generator', wit: [['[only|ONE]']] }} />)
+      // still renders from the built-in 31-entry array, so over many renders it is not always "only"
+      expect(container.querySelector('[data-parsed]')).toBeInTheDocument()
+    })
+  })
 })

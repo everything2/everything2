@@ -40,6 +40,7 @@ my @expected = qw(
     is_it_christmas_yet is_it_halloween_yet is_it_new_year_s_day_yet
     is_it_new_year_s_eve_yet is_it_april_fools_day_yet
     spam_cannon
+    fezisms_generator piercisms_generator permission_denied
 );
 for my $name (@expected) {
     ok(exists $reg->{$name}, "registry has '$name'");
