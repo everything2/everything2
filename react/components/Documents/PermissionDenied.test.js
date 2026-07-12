@@ -20,3 +20,16 @@ describe('PermissionDenied (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+// #4522: the message is owned by the component; the page ships only { type }.
+describe('PermissionDenied message owned by the component', () => {
+  it('renders the default message with no server-supplied copy', () => {
+    const { container } = render(<PermissionDenied data={{ type: 'permission_denied' }} />)
+    expect(container.textContent).toMatch(/don't have access to that node/i)
+  })
+
+  it('does not crash on empty data', () => {
+    const { container } = render(<PermissionDenied data={{}} />)
+    expect(container.textContent).toMatch(/don't have access to that node/i)
+  })
+})

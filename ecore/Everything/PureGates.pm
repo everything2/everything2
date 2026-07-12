@@ -93,6 +93,12 @@ my %REGISTRY = (
 
     # Static config payload (#4520).
     spam_cannon => { max_recipients => 20 },
+
+    # Content generators + permission_denied (#4522): the quote arrays / the message string moved
+    # into their React components (RandomText WIT map, PermissionDenied), leaving pure { type } gates.
+    fezisms_generator   => {},
+    piercisms_generator => {},
+    permission_denied   => {},
 );
 
 sub registry { return \%REGISTRY; }
