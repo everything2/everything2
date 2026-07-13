@@ -6255,8 +6255,12 @@ sub node_by_id
   my ($this, $id) = @_;
   my $node = $this->{db}->getNodeById($id);
 
-  unless ($node) {
-    $this->devLog("node_by_id: getNodeById returned undef for id $id");
+  # getNodeById echoes back the magic sentinels -- e.g. getNodeById(-1) returns
+  # the scalar -1 (the superuser sentinel), not a node hashref. Anything that
+  # isn't a real node hashref resolves to nothing here so callers get a clean
+  # "no such node" instead of a strict-refs die downstream (#4142 bookmark path).
+  unless (ref($node) eq 'HASH') {
+    $this->devLog("node_by_id: getNodeById returned no node hashref for id $id");
     return;
   }
   return $this->get_blessed_node($node);
@@ -6265,6 +6269,14 @@ sub node_by_id
 sub get_blessed_node
 {
   my ($this, $node) = @_;
+
+  # Only real node hashrefs can be blessed. Guard against the getNodeById
+  # sentinels (-1 superuser, etc.) and any other non-hashref reaching here
+  # directly, which would otherwise die under strict refs (#4142).
+  unless (ref($node) eq 'HASH') {
+    $this->devLog("get_blessed_node: called with non-hashref node (" . (defined($node) ? "'$node'" : 'undef') . ")");
+    return;
+  }
 
   # Ensure node has a valid type before looking up the class
   my $type_ref = ref($node->{type});

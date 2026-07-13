@@ -110,6 +110,11 @@ my %REGISTRY = (
     homenode_inspector      => {},
     caja_de_arena           => {},
     everything_s_best_users => {},
+
+    # Node-notes + editor reports (#4528).
+    recent_node_notes    => {},
+    node_notes_by_editor => {},
+    editor_endorsements  => {},
 );
 
 sub registry { return \%REGISTRY; }

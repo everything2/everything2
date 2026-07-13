@@ -392,6 +392,13 @@ sub bookmark_one {
     });
     push @CREATED_NODES, $parent_id, $writeup_id;
 
+    # Wire the writeup into its parent e2node's group, exactly as writeup
+    # creation does on the live site. A bookmark of a writeup redirects to the
+    # parent e2node, and _notify_bookmark notifies the e2node's group authors --
+    # so without this the group is empty and no author is ever found.
+    my $parent_node = $DB->getNodeById($parent_id);
+    $DB->insertIntoNodegroup($parent_node, -1, $writeup_id);
+
     my $api = Everything::API::cool->new();
     my $req = MockRequest4142->new(
         node_id  => $bookmarker_user->{node_id},

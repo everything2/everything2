@@ -773,9 +773,14 @@ sub getGlobalVersion
 
 	if( (not defined $ver) || (not $ver) )
 	{
-		 #The version for this node does not exist.  We need to start it off.
+		# Idempotent insert: a concurrent process may have created this row
+		# between our SELECT above and here. A plain INSERT would then die on a
+		# duplicate 'version' PRIMARY key; ON DUPLICATE KEY UPDATE (a no-op here)
+		# makes the first-version insert race-safe under `prove -j`. See
+		# incrementGlobalVersion for the same fix on the write path.
 		$this->{nodeBase}->sqlInsert('version',
-			{ version_id => $$NODE{node_id}, version => 1 } );
+			{ version_id => $$NODE{node_id}, version => 1 },
+			{ -version_id => 'version_id' } );
 
 		#$ver = 0;
 	}
@@ -848,18 +853,18 @@ sub isSameVersion
 sub incrementGlobalVersion
 {
 	my ($this, $NODE) = @_;
-	my %version;
-	my $rowsAffected;
 
-	$rowsAffected = $this->{nodeBase}->sqlUpdate('version',
-		{ -version => 'version+1' },  "version_id=$$NODE{node_id}");
-
-	if($rowsAffected == 0)
-	{
-		# The version for this node does not exist.  We need to start it off.
-		$this->{nodeBase}->sqlInsert('version',
-			{ version_id => $$NODE{node_id}, version => 1 } );
-	}
+	# Atomic upsert: initialize the row at version 1 on a node's first
+	# versioning, otherwise bump it. The former check-then-insert (UPDATE, and
+	# if 0 rows INSERT) raced two concurrent processes into a duplicate-PK die
+	# on the 'version' PRIMARY key -- both saw no row and both INSERTed
+	# version_id=N. That uncaught die is the systemic cause of random tests
+	# dying in teardown under `prove -j`. ON DUPLICATE KEY UPDATE collapses it
+	# to one race-free statement with identical semantics (absent -> 1,
+	# present -> version+1).
+	$this->{nodeBase}->sqlInsert('version',
+		{ version_id => $$NODE{node_id}, version => 1 },
+		{ -version => 'version + 1' });
 	return $this->{nodeBase}->sqlUpdate('typeversion', {-version => 'version+1'}, "typeversion_id=".$$NODE{type}{node_id}) if $this->{nodeBase}->sqlSelect("version", "typeversion", "typeversion_id=".$$NODE{type}{node_id});
         return;
 }
