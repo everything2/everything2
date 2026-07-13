@@ -1,28 +1,53 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { formatDateTime } from '../../utils/dateFormat'
+
+// Static per-page choices are UI config (owned here); the writeup-type options are DB data (#4524).
+const COUNT_OPTIONS = [10, 25, 50, 75, 100, 150, 200, 250, 500]
 
 /**
  * WriteupsByType - Browse writeups filtered by writeup type
  *
- * Displays a filterable, paginated list of writeups.
- * Users can filter by writeup type (thing, idea, person, etc.)
- * and control how many results to show per page.
+ * Fully client-resolved (#4524): the Page is a pure gate. This reads the wutype/count/page filters
+ * off the URL and fetches GET /api/writeups_by_type, which runs the query and returns the writeups +
+ * the type-filter options + the validated filter state. The filter form + pagination navigate by
+ * query param (full page load), and this reads them back on mount.
  * Styles are in CSS classes (writeups-by-type__*)
  */
-const WriteupsByType = ({ data }) => {
+const WriteupsByType = () => {
+  const initial = useMemo(() => {
+    const qs = new URLSearchParams(window.location.search)
+    return {
+      wutype: parseInt(qs.get('wutype') || '0', 10) || 0,
+      count: parseInt(qs.get('count') || '50', 10) || 50,
+      page: parseInt(qs.get('page') || '0', 10) || 0
+    }
+  }, [])
+
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const params = new URLSearchParams({ wutype: initial.wutype, count: initial.count, page: initial.page })
+    let cancelled = false
+    fetch(`/api/writeups_by_type?${params}`, { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [initial])
+
   const {
     writeups = [],
     type_options = [],
-    count_options = [],
     current_type = 0,
-    current_type_name = 'All',
     current_count = 50,
     current_page = 0
   } = data || {}
+  const count_options = COUNT_OPTIONS
 
   // Form state
-  const [selectedType, setSelectedType] = useState(current_type)
-  const [selectedCount, setSelectedCount] = useState(current_count)
+  const [selectedType, setSelectedType] = useState(initial.wutype)
+  const [selectedCount, setSelectedCount] = useState(initial.count)
 
   // Date validity + UTC-aware formatting delegate to shared utility.
   // MySQL zero-date ("0000-00-00 00:00:00") is rejected explicitly.
@@ -32,13 +57,17 @@ const WriteupsByType = ({ data }) => {
   }
   const formatDate = (dateStr) => isValidDate(dateStr) ? formatDateTime(dateStr) : '—'
 
-  // Build pagination URL
+  // Build pagination URL. Preserve the current URL (pathname + any node identifier in the query)
+  // and only override the filter params -- a bare `?${params}` dropped node_id and could land the
+  // user on the homepage when the page was reached via a node_id URL (same class of bug as #4524's
+  // Nodes of the Year "Get Writeups" fix).
   const buildPageUrl = (pageNum) => {
-    const params = new URLSearchParams()
-    if (current_type) params.set('wutype', current_type)
-    params.set('count', current_count)
-    params.set('page', pageNum)
-    return `?${params.toString()}`
+    const url = new URL(window.location.href)
+    if (current_type) url.searchParams.set('wutype', current_type)
+    else url.searchParams.delete('wutype')
+    url.searchParams.set('count', current_count)
+    url.searchParams.set('page', pageNum)
+    return url.pathname + url.search
   }
 
   // Helper for table cell classes
@@ -56,6 +85,14 @@ const WriteupsByType = ({ data }) => {
   const countNum = Number(current_count) || 0
   const hasPrev  = pageNum > 0
   const hasNext  = countNum > 0 && writeups.length === countNum
+
+  if (loading) {
+    return (
+      <div className="writeups-by-type">
+        <p className="writeups-by-type__empty">Loading writeups...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="writeups-by-type">

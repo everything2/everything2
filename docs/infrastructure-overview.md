@@ -97,10 +97,10 @@ Production (everything2.com)
   - `sitemap.everything2.com` - Sitemap data
 
 **Networking:**
-- Application Load Balancer (ALB)
-- AWS WAF (Web Application Firewall) protecting ALB
-- CloudFront CDN (likely, for static assets)
+- Application Load Balancer (ALB) — terminates client TLS directly
 - Route53 DNS
+
+(No CloudFront and no AWS WAF: both were evaluated and rejected at this scale — the ALB terminates TLS and serves the origin directly, and bot traffic is absorbed rather than filtered by a WAF. See the CloudFront/WAF cost-vs-value decisions.)
 
 **Monitoring:**
 - CloudWatch logs
@@ -428,13 +428,9 @@ The health check diagnostic tool ([tools/diagnose-health-checks.rb](../tools/dia
 
 ### Security Features
 
-- ✅ AWS WAF (Web Application Firewall) protecting ALB with:
-  - IP reputation list blocking (known malicious IPs)
-  - Anonymous IP list blocking (VPNs, proxies, Tor nodes)
-  - Bot control (common bot detection)
-  - Rate limiting (200 requests/minute per IP)
-  - Custom bot blacklist (HTTrack blocker)
-  - CloudWatch metrics and logging
+- No AWS WAF. It was evaluated and rejected on cost-vs-value at this scale (bot floods are datacenter traffic that AdSense already filters and the guest-chrome cache absorbs, so a WAF's per-request cost isn't justified — the decision was to "just eat it"). What remains at the app layer:
+  - Application-level IP blacklist enforcement (see `t/190_ip_blacklist_enforcement`)
+  - CloudWatch metrics/logging on the ALB and app
 
 ### Security Gaps (as of 2026-06)
 
@@ -447,8 +443,8 @@ The previously-flagged SQL injection vulnerabilities and eval'd-in-database code
 
 1. Add Dependabot for dependency updates
 2. Run Snyk or similar for vulnerability scanning
-3. Consider WAF geo-blocking if needed
-4. Consider enabling AWS Shield Advanced for DDoS protection
+
+(WAF geo-blocking and AWS Shield Advanced were considered and set aside — see the "just eat it" bot-traffic decision above; not worth the cost at this scale.)
 
 ## Scaling Considerations
 

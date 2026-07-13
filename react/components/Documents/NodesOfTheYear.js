@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import LinkNode from '../LinkNode'
 import { formatShortDate } from '../../utils/dateFormat'
 
@@ -6,32 +6,60 @@ import { formatShortDate } from '../../utils/dateFormat'
  * Nodes of the Year - Best writeups by year
  * Styles in CSS: .nodes-of-year__*
  *
- * Shows top writeups for a given year with filtering options
+ * Fully client-resolved (#4524): the Page is a pure gate. This reads year/wutype/count/orderby off
+ * the URL and fetches GET /api/nodes_of_the_year (which runs the query + returns the writeups and
+ * type-filter options). The form navigates by query param (full page load); read back on mount.
  */
-const NodesOfTheYear = ({ data }) => {
-  const {
-    year: initialYear,
-    wutype: initialWutype,
-    count: initialCount,
-    orderby: initialOrderby,
-    writeup_types = [],
-    writeups = []
-  } = data
+const NodesOfTheYear = () => {
+  const initial = useMemo(() => {
+    const qs = new URLSearchParams(window.location.search)
+    return {
+      year: qs.get('year') || '',
+      wutype: parseInt(qs.get('wutype') || '0', 10) || 0,
+      count: parseInt(qs.get('count') || '50', 10) || 50,
+      orderby: qs.get('orderby') || 'cooled DESC,reputation DESC'
+    }
+  }, [])
 
-  const [year, setYear] = useState(initialYear || 2014)
-  const [wutype, setWutype] = useState(initialWutype || 0)
-  const [count, setCount] = useState(initialCount || 50)
-  const [orderby, setOrderby] = useState(initialOrderby || 'cooled DESC,reputation DESC')
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const params = new URLSearchParams({ wutype: initial.wutype, count: initial.count, orderby: initial.orderby })
+    if (initial.year) params.set('year', initial.year)
+    let cancelled = false
+    fetch(`/api/nodes_of_the_year?${params}`, { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => {
+        if (cancelled) return
+        setData(j)
+        setLoading(false)
+        // If the URL omitted year, reflect the API's default (last year) in the form field.
+        if (!initial.year && j && j.year) setYear(j.year)
+      })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [initial])
+
+  const { writeup_types = [], writeups = [] } = data || {}
+
+  const [year, setYear] = useState(initial.year || 2014)
+  const [wutype, setWutype] = useState(initial.wutype || 0)
+  const [count, setCount] = useState(initial.count || 50)
+  const [orderby, setOrderby] = useState(initial.orderby || 'cooled DESC,reputation DESC')
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Construct URL with parameters
-    const params = new URLSearchParams()
-    params.set('year', year)
-    params.set('wutype', wutype)
-    params.set('count', count)
-    params.set('orderby', orderby)
-    window.location.href = `?${params.toString()}`
+    // Preserve the current URL -- its pathname AND any node identifier already in the query (e.g.
+    // ?node_id=) -- and only override the filter params. A bare `?${params}` REPLACED the whole
+    // query string, so when the page was reached via a node_id URL it dropped node_id and sent the
+    // user to the homepage. Building from window.location.href keeps the node in every entry shape.
+    const url = new URL(window.location.href)
+    url.searchParams.set('year', year)
+    url.searchParams.set('wutype', wutype)
+    url.searchParams.set('count', count)
+    url.searchParams.set('orderby', orderby)
+    window.location.href = url.toString()
   }
 
   const formatDate = (dateStr) => formatShortDate(dateStr) ?? ''
@@ -44,6 +72,14 @@ const NodesOfTheYear = ({ data }) => {
   ]
 
   const countOptions = [15, 25, 50, 75, 100, 150, 200, 250, 500]
+
+  if (loading) {
+    return (
+      <div className="nodes-of-year">
+        <p className="nodes-of-year__empty-state">Loading writeups...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="nodes-of-year">

@@ -99,6 +99,12 @@ my %REGISTRY = (
     fezisms_generator   => {},
     piercisms_generator => {},
     permission_denied   => {},
+
+    # Report controllers (#4524): the params + queries moved to Everything::API::*; each Page is a
+    # pure gate, React reads the filters off the URL and fetches the API.
+    writeups_by_type    => {},
+    nodes_of_the_year   => {},
+    my_big_writeup_list => {},
 );
 
 sub registry { return \%REGISTRY; }
