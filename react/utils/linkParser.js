@@ -138,11 +138,17 @@ export function parseLinkContent(content, fullMatch) {
     }
   }
 
-  // Check for [title[nodetype]] or [title[123]] syntax (typed link or comment)
-  const typedMatch = trimmedContent.match(/^([^\[\]|]+?)\s*\[\s*([^\[\]]+?)\s*\]$/)
+  // Check for [title[nodetype]] / [title[nodetype]|display] / [title[123]] syntax
+  // (typed link or comment). The optional trailing `|display` covers the
+  // bracket-before-pipe ordering (e.g. [gate[user]|gate's]) — without it that
+  // form fell through to the plain pipe-split below, which left "gate[user]" as
+  // the title and produced a dead /title/gate[user] link (#4532). This mirrors
+  // the optional-pipe the [title[by author]] branch above already has.
+  const typedMatch = trimmedContent.match(/^([^\[\]|]+?)\s*\[\s*([^\[\]]+?)\s*\](?:\s*\|\s*(.*))?$/)
   if (typedMatch) {
     const title = stripHtml(typedMatch[1]).trim()
     const typeSpec = stripHtml(typedMatch[2]).trim()
+    const displayText = typedMatch[3] != null ? stripHtml(typedMatch[3]).trim() : null
 
     if (title && typeSpec) {
       // Check if typeSpec is a numeric comment ID
@@ -151,7 +157,7 @@ export function parseLinkContent(content, fullMatch) {
           type: LINK_TYPE.COMMENT,
           title,
           commentId: typeSpec,
-          display: title,
+          display: displayText || title,
           href: `/title/${encodeURIComponent(title)}`,
           anchor: `debatecomment_${typeSpec}`
         }
@@ -168,7 +174,7 @@ export function parseLinkContent(content, fullMatch) {
         type: LINK_TYPE.TYPED,
         title,
         nodetype,
-        display: title,
+        display: displayText || title,
         href: `/${nodetype}/${encodeURIComponent(title)}`
       }
     }

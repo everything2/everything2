@@ -5,8 +5,16 @@ import LinkNode from './LinkNode'
 
 // Mock LinkNode component
 jest.mock('./LinkNode', () => {
-  return function MockLinkNode({ title, type }) {
-    return <a data-testid="linknode" data-title={title} data-type={type || 'default'}>{title}</a>
+  return function MockLinkNode({ title, type, author, display }) {
+    return (
+      <a
+        data-testid="linknode"
+        data-title={title}
+        data-type={type || 'default'}
+        data-author={author || ''}
+        data-display={display || ''}
+      >{display || title}</a>
+    )
   }
 })
 
@@ -117,6 +125,26 @@ describe('ParseLinks Component', () => {
       expect(links[0]).toHaveAttribute('data-type', 'default')
       expect(links[1]).toHaveAttribute('data-title', 'typed')
       expect(links[1]).toHaveAttribute('data-type', 'user')
+    })
+  })
+
+  // #4532: the two James-reported orderings, end-to-end through ParseLinks -> LinkNode.
+  describe('typed + by-author pipelinks (#4532)', () => {
+    it('parses [title[type]|display] (bracket-before-pipe) as a typed link with display', () => {
+      render(<ParseLinks>{"[gate[user]|gate's]"}</ParseLinks>)
+      const link = screen.getByTestId('linknode')
+      expect(link).toHaveAttribute('data-title', 'gate')
+      expect(link).toHaveAttribute('data-type', 'user')
+      expect(link).toHaveAttribute('data-display', "gate's")
+    })
+
+    it('passes an author (and no bogus type) for [title[by author]] so LinkNode builds /writeups/', () => {
+      render(<ParseLinks>{'[double pipe link[by Serjeant]]'}</ParseLinks>)
+      const link = screen.getByTestId('linknode')
+      expect(link).toHaveAttribute('data-title', 'double pipe link')
+      expect(link).toHaveAttribute('data-author', 'Serjeant')
+      // no explicit type is passed; LinkNode itself defaults it to "writeup"
+      expect(link).toHaveAttribute('data-type', 'default')
     })
   })
 
