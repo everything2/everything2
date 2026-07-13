@@ -105,6 +105,11 @@ my %REGISTRY = (
     writeups_by_type    => {},
     nodes_of_the_year   => {},
     my_big_writeup_list => {},
+
+    # User-activity reports (#4526): params + queries moved to Everything::API::*.
+    homenode_inspector      => {},
+    caja_de_arena           => {},
+    everything_s_best_users => {},
 );
 
 sub registry { return \%REGISTRY; }

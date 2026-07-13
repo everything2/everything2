@@ -1,22 +1,51 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import CajaDeArena from './CajaDeArena'
-import fixture from '../../__fixtures__/pagestate/caja_de_arena.json'
-// Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
-// pinning the int-typed contract (#4152/#4108).
-describe('CajaDeArena (real pagestate fixture)', () => {
-  it('mounts against the captured payload', () => {
-    const { container } = render(<CajaDeArena data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    expect(container).toBeTruthy()
+
+// Fully client-resolved (#4526): the Page is a pure gate. CajaDeArena reads filters off the URL and
+// fetches GET /api/caja_de_arena (admin-gated).
+
+const PAYLOAD = {
+  success: 1, total: 1, per_page: 10, total_pages: 1, page: 1, pole_id: 500,
+  filters: { gonesince: '2 MONTH', showlength: 1000, published: 0, extlinks: 0 },
+  items: [{ node_id: 21, title: 'sandboxspammer', doctext: 'spam', full_length: 4 }]
+}
+const setSearch = (s) => { window.location.search = s }
+const mockFetch = (p) => jest.fn(() => Promise.resolve({ json: () => Promise.resolve(p) }))
+
+beforeEach(() => setSearch(''))
+afterEach(() => { delete global.fetch; jest.restoreAllMocks() })
+
+describe('CajaDeArena (fetch-driven)', () => {
+  it('fetches /api/caja_de_arena with the URL filters and renders the results', async () => {
+    setSearch('?gonesince=' + encodeURIComponent('2 MONTH') + '&published=1')
+    global.fetch = mockFetch(PAYLOAD)
+    const { container } = render(<CajaDeArena />)
+    await waitFor(() => expect(container.textContent).toMatch(/Spam entries: 1 found/))
+    const url = global.fetch.mock.calls[0][0]
+    expect(url).toContain('/api/caja_de_arena?')
+    expect(url).toContain('published=1')
+    expect(container.textContent).toMatch(/sandboxspammer/)
   })
-  it('fixture has integer node_ids, never strings (#4152)', () => {
-    expect(JSON.stringify(fixture).match(/"node_id":"\d/g)).toBeNull()
+
+  it('combines the number + unit controls into a single gonesince hidden field (old form bug)', async () => {
+    setSearch('?gonesince=' + encodeURIComponent('3 WEEK'))
+    global.fetch = mockFetch({ ...PAYLOAD, filters: { ...PAYLOAD.filters, gonesince: '3 WEEK' } })
+    const { container } = render(<CajaDeArena />)
+    await waitFor(() => expect(container.querySelector('.caja__fieldset')).toBeTruthy())
+    const hidden = container.querySelector('input[name="gonesince"]')
+    expect(hidden.value).toBe('3 WEEK')
   })
-  it('no React key warnings', () => {
-    const errs = []
-    const spy = jest.spyOn(console, 'error').mockImplementation((...a) => errs.push(a.join(' ')))
-    render(<CajaDeArena data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    spy.mockRestore()
-    expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
+
+  it('shows the admin gate message on the admin error state', async () => {
+    global.fetch = mockFetch({ success: 0, state: 'admin' })
+    const { container } = render(<CajaDeArena />)
+    await waitFor(() => expect(container.textContent).toMatch(/restricted to administrators/i))
+  })
+
+  it('shows a loading state before the fetch resolves', () => {
+    global.fetch = jest.fn(() => new Promise(() => {}))
+    const { container } = render(<CajaDeArena />)
+    expect(container.textContent).toMatch(/Loading/i)
   })
 })
