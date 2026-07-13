@@ -115,6 +115,11 @@ my %REGISTRY = (
     recent_node_notes    => {},
     node_notes_by_editor => {},
     editor_endorsements  => {},
+
+    # Admin investigation tools (#4530).
+    ip_hunter       => {},
+    who_killed_what => {},
+    voting_data     => {},
 );
 
 sub registry { return \%REGISTRY; }
