@@ -15,6 +15,21 @@ unless($APP->inDevEnvironment())
 my $root = getNode("root","user");
 my $cme  = getNode("Cool Man Eddie", "user");
 
+# This file mutates the shared "debuggers" usergroup (add then remove CME). If a
+# previous run died mid-way it could leave CME in the group, which would fail the
+# "not in group" precondition below and make the file order-dependent under
+# `prove -j`. Establish a known-clean slate up front, and guarantee teardown in
+# the END block, so the file is idempotent regardless of prior state.
+{
+    my $dbg = getNode("debuggers", "usergroup");
+    $DB->removeFromNodegroup($dbg, $cme, -1) if $dbg;
+}
+END {
+    return unless $DB && $cme;
+    my $dbg = getNode("debuggers", "usergroup");
+    $DB->removeFromNodegroup($dbg, $cme, -1) if $dbg;
+}
+
 ok($APP->inUsergroup($root, "edev"));
 ok($APP->inUsergroup($root, getNode("edev","usergroup")));
 ok(!$APP->inUsergroup($root, "edev", "nogods"));

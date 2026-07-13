@@ -1,26 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import LinkNode from '../LinkNode';
 
 /**
- * Editor Endorsements - Shows nodes endorsed (cooled) by editors
+ * Editor Endorsements - Shows nodes endorsed (cooled) by editors.
  * Styles in CSS: .editor-endorsements__*
  *
- * Allows users to select an editor and view all the nodes they've
- * endorsed via the Page of Cool system. Editors include gods,
- * Content Editors, and exeds.
+ * Fully client-resolved (#4528): the Page is a pure gate. This fetches GET /api/editor_endorsements
+ * (which lists the editors + the selected editor's endorsements) on mount, and the picker refetches
+ * IN PLACE -- no full page reload. The URL is kept in sync via history.pushState so a selected
+ * editor is shareable and back/forward work (popstate refetches).
  */
-const EditorEndorsements = ({ data, e2 }) => {
-  const { editors = [], selected_editor, endorsements = [] } = data;
-  const [selectedEditorId, setSelectedEditorId] = useState(
-    selected_editor ? selected_editor.node_id.toString() : ''
-  );
+const editorFromUrl = () =>
+  (new URLSearchParams(window.location.search).get('editor') || '').replace(/[^\d]/g, '');
+
+const EditorEndorsements = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedEditorId, setSelectedEditorId] = useState(editorFromUrl);
+
+  // Fetch the endorsements for an editor id (empty = just the picker) and update
+  // state. When `push` is set, reflect the selection in the URL (pushState) so it's
+  // shareable and back/forward work -- without reloading the page.
+  const load = useCallback((editorId, { push } = {}) => {
+    const params = new URLSearchParams();
+    if (editorId) params.set('editor', editorId);
+
+    if (push) {
+      const url = new URL(window.location.href);
+      if (editorId) url.searchParams.set('editor', editorId);
+      else url.searchParams.delete('editor');
+      window.history.pushState({}, '', url.pathname + url.search);
+    }
+
+    setLoading(true);
+    return fetch(`/api/editor_endorsements?${params}`, { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { setData(j); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    load(editorFromUrl());
+    const onPop = () => {
+      const id = editorFromUrl();
+      setSelectedEditorId(id);
+      load(id);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [load]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedEditorId) {
-      window.location.href = `/title/Editor+Endorsements?editor=${selectedEditorId}`;
+      load(selectedEditorId, { push: true });
     }
   };
+
+  // First paint only: keep the current view during later refetches to avoid a flash.
+  if (loading && !data) {
+    return <div className="editor-endorsements"><p>Loading...</p></div>;
+  }
+
+  const { editors = [], selected_editor, endorsements = [] } = data || {};
 
   return (
     <div className="editor-endorsements">

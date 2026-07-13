@@ -18,6 +18,7 @@ use Test::More;
 use Everything;
 use Everything::API::borgclinic;
 use MockRequest;
+use TestSeed;
 
 initEverything('development-docker');
 ok($DB, 'Database connection established');
@@ -56,10 +57,16 @@ like($r->[1]{error}, qr/not found/i, 'user-not-found error');
 #############################################################################
 # Admin, real set (read-modify-write), negatives, then clean up
 #############################################################################
-my $TARGET = 'normaluser1';
-my $tnode  = $DB->getNode($TARGET, 'user');
+# A DEDICATED user, not the shared normaluser1 seed: this section does a VARS
+# read-modify-write and then asserts an unrelated var ('borg_keepme') survived.
+# getVars/setVars rewrite the whole VARS blob, so any other test concurrently
+# mutating the same user's VARS under `prove -j` would clobber borg_keepme
+# between our set and re-read. A per-process throwaway user (auto-nuked by
+# TestSeed) can't be raced. #4267-style isolation.
+my $tnode  = TestSeed::make_user($DB, $Everything::APP, label => 'borgclinic');
+my $TARGET = $tnode ? $tnode->{title} : 'normaluser1';
 SKIP: {
-    skip "$TARGET seed user not present", 6 unless $tnode;
+    skip "could not create target user", 6 unless $tnode;
 
     my $pre = Everything::getVars($tnode);
     $pre->{borg_keepme} = 'intact';
