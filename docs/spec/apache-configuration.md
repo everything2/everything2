@@ -35,7 +35,7 @@ ListenBacklog 511
 
 **Purpose:** Controls the TCP listen queue depth for incoming connections.
 
-**Note:** The application listens only on port 80 (HTTP). TLS termination is handled by CloudFront and the ALB, which forward HTTP traffic to the containers.
+**Note:** The application listens only on port 80 (HTTP). TLS is terminated at the ALB, which forwards HTTP traffic to the containers.
 
 **Value:** `511` - Maximum pending connections allowed to queue while Apache workers are busy.
 
@@ -167,10 +167,9 @@ TraceEnable Off
 
 ### SSL/TLS Architecture
 
-**Note:** As of December 2025, TLS termination is handled entirely at the edge:
-- **CloudFront** terminates client TLS connections (TLS 1.2+ enforced)
-- **ALB** connects to CloudFront via HTTPS
-- **Containers** receive HTTP traffic from ALB on port 80
+**Note:** TLS termination is handled at the ALB (no CloudFront):
+- **ALB** terminates client TLS connections (TLS 1.2+ enforced)
+- **Containers** receive HTTP traffic from the ALB on port 80
 
 Apache no longer handles TLS directly. The SSL module configuration remains in the template for potential future use but is not active in the current architecture. This simplifies container configuration and reduces CPU overhead.
 
@@ -454,14 +453,14 @@ Ruby script that processes ERB templates at container startup:
    - Monitor CVEs for Apache and OpenSSL
 
 4. **Access Control:**
-   - Use WAF rules (see [infrastructure-overview.md](infrastructure-overview.md))
+   - Application-level IP blacklist enforcement (no WAF — see [infrastructure-overview.md](infrastructure-overview.md))
    - Review `apache_blocks.json` regularly
    - Monitor failed requests in logs
 
 5. **Resource Limits:**
    - Set `LimitRequestBody` for POST requests
    - Use `mod_reqtimeout` to prevent slowloris attacks
-   - Configure rate limiting at WAF level
+   - Rate limiting is handled at the app layer (no WAF tier)
 
 ## Future Improvements
 
@@ -469,7 +468,7 @@ Ruby script that processes ERB templates at container startup:
 
 1. **HTTP/2 Support:**
    - Now unblocked: mod_perl is gone and Apache already runs MPM Event, so the historical "not compatible with mod_perl / requires Prefork→Event switch" obstacle no longer applies.
-   - HTTP/2 is already supported at the CloudFront edge; enabling it origin-side is an optional follow-up.
+   - Enabling HTTP/2 origin-side (or at the ALB) is an optional follow-up.
 
 2. **Request Coalescing:**
    - Implement request queue at application layer

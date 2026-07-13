@@ -1,39 +1,80 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import LinkNode from '../LinkNode'
+
+// Copy for each API error state (#4524): the server ships { state }, React owns the words.
+const ERROR_COPY = {
+  user_not_found: (username) => `User '${username}' doesn't exist. Did you type their name correctly?`,
+  edb: () => 'G r o w l !',
+  webster: () => 'Are you really looking for almost all the words in the English language?',
+  bad_delimiter: () => 'Delimiter must be exactly one character.'
+}
 
 /**
  * MyBigWriteupList - Comprehensive listing of all writeups by a user
  * Styles in CSS: .my-big-writeup-list__*
  *
- * Features:
- * - Multiple sorting options (title, type, C!, reputation, date)
- * - Raw data export mode with custom delimiter
- * - Admins can search for other users
- * - Shows reputation details for user's own writeups or admins
+ * Fully client-resolved (#4524): the Page is a pure gate. This reads usersearch/orderby/raw/delimiter
+ * off the URL and fetches GET /api/my_big_writeup_list, which enforces the NoGuest gate, resolves the
+ * target user, computes per-writeup reputation visibility, and returns the list (or an error state).
+ * The form navigates by query param (full page load); read back on mount.
  */
-const MyBigWriteupList = ({ data, user }) => {
+const MyBigWriteupList = ({ user }) => {
+  const initial = useMemo(() => {
+    const qs = new URLSearchParams(window.location.search)
+    return {
+      usersearch: qs.get('usersearch') || '',
+      orderby: qs.get('orderby') || 'title ASC',
+      raw: qs.get('raw') ? true : false,
+      delimiter: qs.get('delimiter') || '_'
+    }
+  }, [])
+
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const params = new URLSearchParams({ orderby: initial.orderby, delimiter: initial.delimiter })
+    if (initial.usersearch) params.set('usersearch', initial.usersearch)
+    if (initial.raw) params.set('raw', '1')
+    let cancelled = false
+    fetch(`/api/my_big_writeup_list?${params}`, { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [initial])
+
   const {
-    guest,
-    error,
+    state,
     username,
     user_id,
     is_me,
     show_rep,
     total_count,
-    writeups = [],
-    order_by: initialOrderBy = 'title ASC',
-    raw_mode: initialRawMode = false,
-    delimiter: initialDelimiter = '_'
-  } = data
+    writeups = []
+  } = data || {}
 
   const isAdmin = !!user?.admin
 
-  const [usersearch, setUsersearch] = useState(username || '')
-  const [orderBy, setOrderBy] = useState(initialOrderBy)
-  const [rawMode, setRawMode] = useState(initialRawMode)
-  const [delimiter, setDelimiter] = useState(initialDelimiter)
+  const [usersearch, setUsersearch] = useState(initial.usersearch)
+  const [orderBy, setOrderBy] = useState(initial.orderby)
+  const [rawMode, setRawMode] = useState(initial.raw)
+  const [delimiter, setDelimiter] = useState(initial.delimiter)
 
-  if (guest) {
+  // Keep the admin username field in sync with the resolved user once the fetch lands.
+  useEffect(() => {
+    if (data && data.username && !initial.usersearch) setUsersearch(data.username)
+  }, [data, initial.usersearch])
+
+  if (loading) {
+    return (
+      <div className="my-big-writeup-list">
+        <p>Loading writeups...</p>
+      </div>
+    )
+  }
+
+  if (state === 'guest') {
     return (
       <div className="my-big-writeup-list">
         <p>
@@ -46,16 +87,18 @@ const MyBigWriteupList = ({ data, user }) => {
     )
   }
 
-  if (error) {
+  if (state && ERROR_COPY[state]) {
     return (
       <div className="my-big-writeup-list">
         {renderSearchForm()}
-        <div className="my-big-writeup-list__error-box">{error}</div>
+        <div className="my-big-writeup-list__error-box">{ERROR_COPY[state](username)}</div>
       </div>
     )
   }
 
-  const handleSubmit = (e) => {
+  // Function declaration (hoisted) so renderSearchForm can reference it from the early error-state
+  // return above, before this point in source order. The form navigates by GET naturally.
+  function handleSubmit (e) {
     // Let form submit naturally
   }
 
@@ -208,14 +251,15 @@ const MyBigWriteupList = ({ data, user }) => {
         ) : (
           <table className="my-big-writeup-list__table">
             <thead>
+              {/* One label per column (5) so the header reads 1:1 with the data. The rep block used
+                  to be a single colSpan=2 "Rep", which read as off-by-one against the 5 data cells. */}
               <tr>
                 <th className="my-big-writeup-list__th" align="left">
                   Writeup Title (type)
                 </th>
                 <th className="my-big-writeup-list__th">C!</th>
-                <th className="my-big-writeup-list__th" colSpan={2} align="center">
-                  Rep
-                </th>
+                <th className="my-big-writeup-list__th" align="center">Rep</th>
+                <th className="my-big-writeup-list__th" align="center">(+/&minus;)</th>
                 <th className="my-big-writeup-list__th" align="center">
                   Published
                 </th>
@@ -234,7 +278,7 @@ const MyBigWriteupList = ({ data, user }) => {
                       <LinkNode nodeId={wu.parent_e2node} title={wu.title} />
                     </td>
                     <td className="my-big-writeup-list__td">
-                      {wu.cooled ? <strong>{wu.cooled}C!</strong> : ''}
+                      {wu.cooled ? <strong>{wu.cooled}C!</strong> : <span className="my-big-writeup-list__muted">&mdash;</span>}
                     </td>
                     {canSeeRep && wu.reputation !== undefined ? (
                       <>
