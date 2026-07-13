@@ -84,8 +84,11 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params,styl
 
     if(author != undefined)
     {
-      /* Used in the form /user/$username/writeups/$writeupname */
-      prefix = "/user/"+author+"/"+type+"s/"+title
+      /* Used in the form /user/$username/writeups/$writeupname. `type` defaults
+         to "writeup" because the by-author link (from ParseLinks' user_writeup
+         segment) passes an author but no type — without the default, "/"+type+"s/"
+         produced a dead "/user/<author>/undefineds/<title>" URL (#4532). */
+      prefix = "/user/"+author+"/"+(type || "writeup")+"s/"+title
     }else{
       if(id == undefined)
       {

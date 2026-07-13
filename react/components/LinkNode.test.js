@@ -36,6 +36,16 @@ describe('LinkNode Component', () => {
       expect(link).toHaveAttribute('href', '/user/testuser/writeups/Test');
     });
 
+    // #4532: ParseLinks' user_writeup segment passes an author but no `type`.
+    // Without a default, "/"+type+"s/" produced "/user/<author>/undefineds/<title>".
+    it('defaults to /writeups/ when an author is given without a type (no undefineds)', () => {
+      render(<LinkNode title="double pipe link" author="Serjeant's Muse" />);
+      const link = screen.getByRole('link');
+      const href = link.getAttribute('href');
+      expect(href).not.toContain('undefineds');
+      expect(href).toBe("/user/Serjeant's Muse/writeups/double pipe link");
+    });
+
     it('renders a user profile link', () => {
       render(<LinkNode type="user" title="testuser" />);
       const link = screen.getByRole('link');

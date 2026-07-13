@@ -178,6 +178,44 @@ describe('linkParser', () => {
       const result = parseLinkContent('test[User]', '[test[User]]')
       expect(result.nodetype).toBe('user')
     })
+
+    // #4532: the bracket-before-pipe ordering [title[type]|display] used to fall
+    // through to the plain pipe-split, leaving "gate[user]" as the title and
+    // producing a dead /title/gate[user] link. All four orderings must resolve
+    // to the same typed link now.
+    it('parses [title[type]|display] (bracket-before-pipe) — the #4532 regression', () => {
+      const result = parseLinkContent("gate[user]|gate's", "[gate[user]|gate's]")
+      expect(result).toEqual({
+        type: LINK_TYPE.TYPED,
+        title: 'gate',
+        nodetype: 'user',
+        display: "gate's",
+        href: '/user/gate'
+      })
+    })
+
+    it('parses [display|title[type]] (pipe-before-bracket) to the same typed link', () => {
+      const result = parseLinkContent("gate's|gate[user]", "[gate's|gate[user]]")
+      expect(result.type).toBe(LINK_TYPE.TYPED)
+      expect(result.nodetype).toBe('user')
+      expect(result.title).toBe('gate')
+      expect(result.display).toBe("gate's")
+      expect(result.href).toBe('/user/gate')
+    })
+
+    it('[title[type]] with no display still defaults display to the title', () => {
+      const result = parseLinkContent('gate[user]', '[gate[user]]')
+      expect(result.display).toBe('gate')
+      expect(result.href).toBe('/user/gate')
+    })
+
+    it('honors an explicit display on a non-user typed link', () => {
+      const result = parseLinkContent('Some Node[e2node]|see this', '[Some Node[e2node]|see this]')
+      expect(result.type).toBe(LINK_TYPE.TYPED)
+      expect(result.nodetype).toBe('e2node')
+      expect(result.title).toBe('Some Node')
+      expect(result.display).toBe('see this')
+    })
   })
 
   describe('parseLinkContent - Writeup by author', () => {
