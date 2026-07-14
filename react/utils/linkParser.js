@@ -43,6 +43,65 @@ export function stripHtml(str) {
 }
 
 /**
+ * The inline (phrasing-content) tags allowed inside a pipelink's DISPLAY text.
+ * This is the inline subset of E2HtmlSanitizer's APPROVED_TAGS — kept in sync by
+ * hand rather than a 4th independent list (#4534/#4394). Deliberately excludes
+ * `a` (nested anchors break the outer link) and every block tag (invalid nesting
+ * inside an inline <a>).
+ */
+export const INLINE_DISPLAY_TAGS = new Set([
+  'abbr', 'acronym', 'b', 'strong', 'i', 'em', 'u', 's', 'strike', 'del', 'ins',
+  'big', 'small', 'sub', 'sup', 'tt', 'kbd', 'code', 'samp', 'var', 'cite', 'q', 'br'
+])
+
+/**
+ * Keep only the inline-allowlist tags in a display string, unwrapping everything
+ * else (dropping the tag markup but keeping its text content).
+ *
+ * SECURITY CONTRACT: this is NOT a security sanitizer. Its only caller,
+ * parseLinksToHtml, runs exclusively downstream of E2HtmlSanitizer's DOMPurify
+ * pass, which has already removed <script>/<iframe>/javascript: URLs and every
+ * disallowed attribute. This function only enforces inline-only nesting inside
+ * <a> (dropping block tags + nested <a>). As cheap defense-in-depth against a
+ * future caller that skips DOMPurify, event-handler (on*) attributes are also
+ * stripped from the tags we keep.
+ *
+ * @param {string} str - Display string, already DOMPurify-sanitized
+ * @returns {string} - Display with only inline tags preserved
+ */
+export function keepInlineHtml(str) {
+  if (!str) return ''
+  return str.replace(/<(\/?)\s*([a-zA-Z0-9]+)((?:[^>"']|"[^"]*"|'[^']*')*)>/g, (full, slash, name, attrs) => {
+    const tag = name.toLowerCase()
+    if (!INLINE_DISPLAY_TAGS.has(tag)) return ''   // unwrap non-inline tag, keep its text
+    if (slash) return `</${tag}>`
+    // Drop any on*-handler attributes belt-and-suspenders; keep the rest (already
+    // DOMPurify-vetted for these tags — e.g. title/lang on abbr, cite on q).
+    const safeAttrs = attrs.replace(/\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    return `<${tag}${safeAttrs}>`
+  })
+}
+
+/**
+ * Build a link's display fields from a raw (possibly-HTML) display string.
+ * Returns `{ display }` (plain text, for the escaped React/LinkNode path) and,
+ * only when the raw display actually contained preserved inline markup, an extra
+ * `displayHtml` (for parseLinksToHtml, which emits it un-escaped downstream of
+ * DOMPurify — see keepInlineHtml). Omitting displayHtml when there's no HTML
+ * keeps segment objects clean and the string path on its plain-text default.
+ *
+ * @param {string|undefined|null} rawDisplay - the matched display group
+ * @param {string} fallbackTitle - display to use when rawDisplay is empty
+ * @returns {Object} - { display } or { display, displayHtml }
+ */
+export function displayFields(rawDisplay, fallbackTitle) {
+  const plain = rawDisplay != null ? stripHtml(rawDisplay).trim() : ''
+  const html = rawDisplay != null ? keepInlineHtml(rawDisplay).trim() : ''
+  const display = plain || fallbackTitle
+  return (html && html !== plain) ? { display, displayHtml: html } : { display }
+}
+
+/**
  * Decode common HTML entities back to their literal characters. Required
  * inside link bracket content because DOMPurify entity-encodes characters
  * like '&' before parseLinks runs over the sanitized HTML — without this,
@@ -124,15 +183,13 @@ export function parseLinkContent(content, fullMatch) {
   if (byAuthorMatch) {
     const title = stripHtml(byAuthorMatch[1]).trim()
     const author = stripHtml(byAuthorMatch[2]).trim()
-    // Strip HTML from display text as well
-    const displayText = byAuthorMatch[3] ? stripHtml(byAuthorMatch[3]).trim() : null
 
     if (title && author) {
       return {
         type: LINK_TYPE.USER_WRITEUP,
         title,
         author,
-        display: displayText || title,
+        ...displayFields(byAuthorMatch[3], title),
         href: `/user/${encodeURIComponent(author)}/writeups/${encodeURIComponent(title)}`
       }
     }
@@ -148,7 +205,7 @@ export function parseLinkContent(content, fullMatch) {
   if (typedMatch) {
     const title = stripHtml(typedMatch[1]).trim()
     const typeSpec = stripHtml(typedMatch[2]).trim()
-    const displayText = typedMatch[3] != null ? stripHtml(typedMatch[3]).trim() : null
+    const display = displayFields(typedMatch[3], title)
 
     if (title && typeSpec) {
       // Check if typeSpec is a numeric comment ID
@@ -157,7 +214,7 @@ export function parseLinkContent(content, fullMatch) {
           type: LINK_TYPE.COMMENT,
           title,
           commentId: typeSpec,
-          display: displayText || title,
+          ...display,
           href: `/title/${encodeURIComponent(title)}`,
           anchor: `debatecomment_${typeSpec}`
         }
@@ -174,7 +231,7 @@ export function parseLinkContent(content, fullMatch) {
         type: LINK_TYPE.TYPED,
         title,
         nodetype,
-        display: displayText || title,
+        ...display,
         href: `/${nodetype}/${encodeURIComponent(title)}`
       }
     }
@@ -183,7 +240,8 @@ export function parseLinkContent(content, fullMatch) {
   // Check for [display|title[nodetype]] syntax (pipelink with type)
   const pipeAndBracketMatch = trimmedContent.match(/^([^|[\]]+)\|([^[\]]+)\[([^\]|]+)\]$/)
   if (pipeAndBracketMatch) {
-    const display = stripHtml(pipeAndBracketMatch[1]).trim()
+    const df = displayFields(pipeAndBracketMatch[1], '')
+    const display = df.display
     const title = stripHtml(pipeAndBracketMatch[2]).trim()
     const typeSpec = stripHtml(pipeAndBracketMatch[3]).trim()
 
@@ -196,7 +254,7 @@ export function parseLinkContent(content, fullMatch) {
             type: LINK_TYPE.USER_WRITEUP,
             title,
             author,
-            display,
+            ...df,
             href: `/user/${encodeURIComponent(author)}/writeups/${encodeURIComponent(title)}`
           }
         }
@@ -208,7 +266,7 @@ export function parseLinkContent(content, fullMatch) {
           type: LINK_TYPE.COMMENT,
           title,
           commentId: typeSpec,
-          display,
+          ...df,
           href: `/title/${encodeURIComponent(title)}`,
           anchor: `debatecomment_${typeSpec}`
         }
@@ -220,7 +278,7 @@ export function parseLinkContent(content, fullMatch) {
         type: LINK_TYPE.TYPED,
         title,
         nodetype,
-        display,
+        ...df,
         href: `/${nodetype}/${encodeURIComponent(title)}`
       }
     }
@@ -230,13 +288,12 @@ export function parseLinkContent(content, fullMatch) {
   if (trimmedContent.includes('|')) {
     const parts = trimmedContent.split('|')
     const title = stripHtml(parts[0]).trim()
-    const display = stripHtml(parts[1]).trim()
 
     if (title) {
       return {
         type: LINK_TYPE.INTERNAL,
         title,
-        display: display || title,
+        ...displayFields(parts[1], title),
         href: `/title/${encodeURIComponent(title)}`
       }
     }
@@ -341,13 +398,16 @@ export function parseLinksToHtml(text) {
       return segment.content
     }
 
-    // It's a link
-    const escapedDisplay = escapeHtml(segment.display)
+    // It's a link. Prefer displayHtml (a sanitized inline subset preserved from
+    // the pipelink display, e.g. <abbr title="…">) when present — it's emitted
+    // un-escaped because it's already DOMPurify-vetted upstream (#4534). Otherwise
+    // fall back to the escaped plain-text display.
+    const renderedDisplay = segment.displayHtml != null ? segment.displayHtml : escapeHtml(segment.display)
 
     if (segment.type === LINK_TYPE.EXTERNAL) {
       // External link - show URL in hover
       const escapedUrl = escapeHtml(segment.href)
-      return `<a href="${segment.href}" rel="nofollow" class="externalLink" target="_blank" title="${escapedUrl}">${escapedDisplay}</a>`
+      return `<a href="${segment.href}" rel="nofollow" class="externalLink" target="_blank" title="${escapedUrl}">${renderedDisplay}</a>`
     }
 
     // Internal links
@@ -358,14 +418,17 @@ export function parseLinksToHtml(text) {
 
     // Show the link target in hover (useful for pipelinks where display differs from target)
     const escapedTitle = escapeHtml(segment.title)
-    return `<a href="${href}" class="e2-link" title="${escapedTitle}">${escapedDisplay}</a>`
+    return `<a href="${href}" class="e2-link" title="${escapedTitle}">${renderedDisplay}</a>`
   }).join('')
 }
 
 export default {
   LINK_TYPE,
+  INLINE_DISPLAY_TAGS,
   escapeHtml,
   stripHtml,
+  keepInlineHtml,
+  displayFields,
   parseLinkContent,
   parseLinks,
   parseLinksToHtml
