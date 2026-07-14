@@ -490,4 +490,52 @@ describe('linkParser', () => {
       expect(result).toContain('href="/title/X%20%26amp%3B%20Y"')
     })
   })
+
+  // #4534: inline HTML (abbr/acronym/formatting) in a pipelink DISPLAY is preserved
+  // rather than stripped. parseLinksToHtml runs downstream of DOMPurify (which has
+  // already removed script/iframe/on*/<a>), so we keep an inline subset and drop
+  // block tags + nested anchors. Restores James's <abbr>-mouseover easter-eggs.
+  describe('inline HTML in pipelink display (#4534)', () => {
+    it('preserves <abbr> with its title in the display (the reported regression)', () => {
+      const result = parseLinksToHtml('[go|<abbr title="mouseover easter egg">show</abbr>]')
+      expect(result).toBe('<a href="/title/go" class="e2-link" title="go"><abbr title="mouseover easter egg">show</abbr></a>')
+    })
+
+    it('parseLinkContent exposes both plain display and displayHtml', () => {
+      const seg = parseLinkContent('go|<abbr title="egg">show</abbr>', '[go|<abbr title="egg">show</abbr>]')
+      expect(seg.display).toBe('show')                                 // plain text (React/LinkNode path)
+      expect(seg.displayHtml).toBe('<abbr title="egg">show</abbr>')    // inline HTML (string path)
+    })
+
+    it('preserves inline formatting tags (b/i/sup/etc.)', () => {
+      expect(parseLinksToHtml('[go|<b>bold</b>]')).toContain('<b>bold</b>')
+      expect(parseLinksToHtml('[go|H<sub>2</sub>O]')).toContain('H<sub>2</sub>O')
+    })
+
+    it('drops block tags but keeps their text (no block-in-inline)', () => {
+      const result = parseLinksToHtml('[go|<table><tr><td>x</td></tr></table>show]')
+      expect(result).not.toContain('<table')
+      expect(result).toContain('>xshow<')
+    })
+
+    it('drops nested anchors (would break the outer link)', () => {
+      const result = parseLinksToHtml('[go|<a href="http://evil">x</a>click]')
+      // exactly one anchor (the outer e2-link), no nested <a>
+      expect(result.match(/<a /g)).toHaveLength(1)
+      expect(result).toContain('>xclick<')
+    })
+
+    it('strips on*-handler attributes from preserved inline tags (defense-in-depth)', () => {
+      const result = parseLinksToHtml('[go|<abbr title="t" onclick="alert(1)">x</abbr>]')
+      expect(result).toContain('<abbr title="t">x</abbr>')
+      expect(result).not.toContain('onclick')
+    })
+
+    it('leaves a plain-text display untouched (no displayHtml added)', () => {
+      const seg = parseLinkContent('go|just text', '[go|just text]')
+      expect(seg.display).toBe('just text')
+      expect(seg.displayHtml).toBeUndefined()
+      expect(parseLinksToHtml('[go|just text]')).toBe('<a href="/title/go" class="e2-link" title="go">just text</a>')
+    })
+  })
 })

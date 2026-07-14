@@ -193,11 +193,12 @@ describe('E2HtmlSanitizer', () => {
         expect(result).toContain('Node &amp; stuff</a>')
       })
 
-      it('strips HTML from custom display text (legacy behavior)', () => {
-        // Legacy behavior: HTML tags inside brackets are stripped
+      it('preserves inline HTML in custom display text (#4534)', () => {
+        // #4534: inline formatting in the display is kept (was previously stripped).
+        // The link target is still the plain title.
         const result = parseE2Links('[node|<b>bold</b>]')
-        expect(result).toContain('bold</a>')
-        expect(result).not.toContain('<b>')
+        expect(result).toContain('<b>bold</b></a>')
+        expect(result).toContain('href="/title/node"')
       })
 
       it('handles quotes in node names', () => {
@@ -411,12 +412,12 @@ describe('E2HtmlSanitizer', () => {
         expect(result).toContain('/user/user%20name%20with%20spaces/writeups/Some%20Title')
       })
 
-      it('strips HTML in display text (legacy behavior)', () => {
-        // HTML tags inside brackets are stripped for both URL and display
+      it('preserves inline HTML in by-author display text (#4534)', () => {
+        // #4534: inline formatting in the display is kept; the /writeups/ URL is
+        // still built from the plain title + author.
         const result = parseE2Links('[Title[by user]|<b>bold</b> text]')
-        // The <b> tags in display text are stripped
-        expect(result).toContain('bold text</a>')
-        expect(result).not.toContain('<b>')
+        expect(result).toContain('<b>bold</b> text</a>')
+        expect(result).toContain('/user/user/writeups/Title')
       })
 
       it('strips HTML from title used as default display (legacy behavior)', () => {
