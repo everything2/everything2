@@ -120,6 +120,13 @@ my %REGISTRY = (
     ip_hunter       => {},
     who_killed_what => {},
     voting_data     => {},
+
+    # Numbered new-nodes lists -- all served by /api/newnodes, count in React (#4537).
+    25                   => {},
+    everything_new_nodes => {},
+    e2n                  => {},
+    enn                  => {},
+    ekn                  => {},
 );
 
 sub registry { return \%REGISTRY; }

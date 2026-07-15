@@ -1,51 +1,82 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import LinkNode from '../LinkNode'
 
 /**
- * NodeList - Reusable component for displaying lists of recent writeups
- *
- * Used by numbered nodelist pages: 25, Everything New Nodes (100),
- * E2N (200), ENN (300), EKN (1024)
+ * NodeList - the numbered "recent writeups" documents (25 / Everything New Nodes /
+ * E2N / ENN / EKN). All five Pages were identical except a record count and a label;
+ * they're now pure gates shipping only { type }, and this component owns the count +
+ * labels (keyed on type) and fetches GET /api/newnodes?records=N (#4537).
  *
  * Features:
- * - Displays writeups with parent e2node, writeuptype, date, author
- * - Editors see hide/unhide buttons for each writeup
- * - Dropdown selector to switch between different list sizes
- * - Striped row styling for readability
+ * - Writeups with parent e2node, writeuptype, date, author
+ * - Editors see hide/unhide controls per writeup
+ * - Dropdown to switch between the sibling list sizes
  */
 
+// The count that used to live in each Page's `records` attribute now lives here,
+// keyed on document type. `selector` is the sibling node title the size dropdown
+// navigates to. NOTE: EKN historically fetched 1000 while labelling itself 1024 --
+// preserved as-is (cosmetic, predates this change).
+const NEW_NODES_CONFIG = {
+  '25':                 { records: 25,   title: '25 Most Recent Writeups',            selector: '25' },
+  everything_new_nodes: { records: 100,  title: 'Everything New Nodes (100)',         selector: 'Everything New Nodes' },
+  e2n:                  { records: 200,  title: 'E2N - Everything2 New (200)',         selector: 'E2N' },
+  enn:                  { records: 300,  title: 'ENN - Everything New Nodes (300)',    selector: 'ENN' },
+  ekn:                  { records: 1000, title: 'EKN - Everything Killer Nodes (1024)', selector: 'EKN' }
+}
+
+// The size dropdown options (size label -> sibling node title to navigate to).
+const PAGE_SIZE_OPTIONS = [
+  ['25', '25'],
+  ['100', 'Everything New Nodes'],
+  ['200', 'E2N'],
+  ['300', 'ENN'],
+  ['1024', 'EKN']
+]
+
 const NodeList = ({ data, user }) => {
-  const { type, nodelist, records, currentPage } = data
-  const isEditor = user?.isEditor || false
+  const config = NEW_NODES_CONFIG[data.type] || NEW_NODES_CONFIG['25']
+  // e2.user ships the editor flag as `editor` (PageState.pm) -- the dominant prop
+  // across components; the old `isEditor` here never matched, so editors never saw
+  // the hide controls (#4537 follow-up).
+  const isEditor = user?.editor || false
 
-  // Page size options and their display labels
-  const pageSizeOptions = {
-    '25': { label: '25', page: '25' },
-    '100': { label: '100', page: 'Everything New Nodes' },
-    '200': { label: '200', page: 'E2N' },
-    '300': { label: '300', page: 'ENN' },
-    '1024': { label: '1024', page: 'EKN' }
+  const [nodelist, setNodelist] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch(`/api/newnodes?records=${config.records}`, { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setNodelist(j.nodelist || []); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [config.records])
+
+  // Hide/unhide a writeup via the hidewriteups API (was the dead ?op=hidewriteup
+  // dispatch, removed with the opcode system in #4335). Toggles the row in place.
+  const handleToggleHide = async (writeup) => {
+    const action = writeup.notnew ? 'show' : 'hide'
+    try {
+      const res = await fetch(`/api/hidewriteups/${writeup.node_id}/action/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin'
+      })
+      const j = await res.json()
+      if (j.node_id) {
+        setNodelist((prev) => prev.map((w) => (w.node_id === writeup.node_id ? { ...w, notnew: j.notnew } : w)))
+      }
+    } catch (e) { /* leave the row unchanged on failure */ }
   }
-
-  // Page title mapping
-  const pageTitles = {
-    '25': '25 Most Recent Writeups',
-    'everything_new_nodes': 'Everything New Nodes (100)',
-    'e2n': 'E2N - Everything2 New (200)',
-    'enn': 'ENN - Everything New Nodes (300)',
-    'ekn': 'EKN - Everything Killer Nodes (1024)'
-  }
-
-  const pageTitle = pageTitles[type] || `${records} Most Recent Writeups`
 
   return (
     <div className="nodelist">
-      <h2>{pageTitle}</h2>
+      <h2>{config.title}</h2>
 
-      {/* Page size selector */}
+      {/* Page size selector -- navigates on change; no submit button needed */}
       <div className="nodelist__selector-wrapper">
-        <form method="post" className="nodelist__selector-form">
-          <input type="hidden" name="type" value="superdoc" />
+        <div className="nodelist__selector-form">
           <label htmlFor="nodelist-selector">Show: </label>
           <select
             name="node"
@@ -55,16 +86,13 @@ const NodeList = ({ data, user }) => {
                 window.location.href = `/title/${encodeURIComponent(e.target.value)}`
               }
             }}
-            value={currentPage || ''}
+            value={config.selector}
           >
-            {Object.entries(pageSizeOptions).map(([size, { label, page }]) => (
-              <option key={size} value={page}>
-                {label}
-              </option>
+            {PAGE_SIZE_OPTIONS.map(([label, page]) => (
+              <option key={label} value={page}>{label}</option>
             ))}
           </select>
-          <input type="submit" value="go" />
-        </form>
+        </div>
       </div>
 
       {/* Link to Writeups by Type page */}
@@ -73,7 +101,9 @@ const NodeList = ({ data, user }) => {
       </p>
 
       {/* Writeup list table */}
-      {nodelist && nodelist.length > 0 ? (
+      {loading ? (
+        <p>Loading...</p>
+      ) : nodelist && nodelist.length > 0 ? (
         <table className="nodelist__table">
           <tbody>
             {nodelist.map((writeup, index) => {
@@ -81,12 +111,13 @@ const NodeList = ({ data, user }) => {
 
               return (
                 <tr key={writeup.node_id} className={`nodelist__row contentinfo ${isOddRow ? 'nodelist__row--odd' : ''}`}>
-                  {/* Hide/unhide button (editors only) */}
+                  {/* Hide/unhide control (editors only) */}
                   {isEditor && (
                     <td className="nodelist__cell--nowrap">
                       <a
-                        href={`?op=${writeup.notnew ? 'unhidewriteup' : 'hidewriteup'}&hidewriteup=${writeup.node_id}`}
+                        href="#"
                         className="nodelist__hide-link"
+                        onClick={(e) => { e.preventDefault(); handleToggleHide(writeup) }}
                       >
                         {writeup.notnew ? '(un-h!)' : '(h?)'}
                       </a>
