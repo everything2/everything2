@@ -47,6 +47,7 @@ my %serial_tests = (
     "$dirname/021_nodenotes_api.t" => 1,  # Uses shared root user, modifies nodenote table; races with other root-using tests
     "$dirname/058_notification_preferences_isolation.t" => 1, # Reads/writes user VARS; asserts cross-call preservation which races with other VARS-mutating tests
     "$dirname/193_ugma_api.t" => 1,       # Sets root's ugma_resettime VARS and asserts it persisted; root must be an edev admin so it can't use a throwaway user -> races with other root VARS-writers (same class as 058)
+    "$dirname/097_superbless_api.t" => 1, # Self-bestow subtest sets root's VARS and asserts other vars preserved; root must be admin (can't use a throwaway user) -> races with other root VARS-writers (same class as 193)
 );
 
 # Separate serial and parallel tests

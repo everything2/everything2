@@ -383,7 +383,9 @@ const CategoryEdit = ({ data }) => {
         // If title changed, we may need to update the URL
         if (categoryTitle !== title) {
           setTimeout(() => {
-            window.location.href = `/node/${node_id}?op=edit`
+            // ?displaytype=edit is the live edit route (the old ?op=edit opcode
+            // dispatch was removed in #4335); matches CategoryDisplay's Edit link.
+            window.location.href = `/node/${node_id}?displaytype=edit`
           }, 1000)
         }
       } else {

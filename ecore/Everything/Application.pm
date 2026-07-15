@@ -6362,6 +6362,11 @@ sub newnodes
 {
   my ($this, $count, $include_hidden) = @_;
 
+  # int() the count -- it interpolates straight into LIMIT below. Callers (the
+  # /api/newnodes endpoint) already clamp, but this is the last line of defense
+  # against a non-numeric count reaching the query (#4537).
+  $count = int($count || 0);
+
   my $notnew = "";
   $notnew = "notnew=0" unless $include_hidden;
   my $csr = $this->{db}->sqlSelectMany("writeup_id","writeup",$notnew,"ORDER BY publishtime DESC LIMIT $count");

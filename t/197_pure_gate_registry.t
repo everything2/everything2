@@ -45,6 +45,7 @@ my @expected = qw(
     homenode_inspector caja_de_arena everything_s_best_users
     recent_node_notes node_notes_by_editor editor_endorsements
     ip_hunter who_killed_what voting_data
+    25 everything_new_nodes e2n enn ekn
 );
 for my $name (@expected) {
     ok(exists $reg->{$name}, "registry has '$name'");
