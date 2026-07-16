@@ -1,45 +1,92 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 
 /**
- * Noding Speedometer - Calculate user noding speed
+ * Noding Speedometer - a user's noding speed (days per node) + level-up projection.
  * Styles in CSS: .noding-speedometer__*
  *
- * Calculates how fast a user is writing based on their last N writeups,
- * and projects when they'll reach the next level.
+ * Fully client-resolved (#4539): the Page is a pure gate. Fetches GET /api/noding_speedometer
+ * (NoGuest) on mount, reading speedyuser/clocknodes off the URL; the form refetches IN PLACE (no
+ * reload) syncing the URL via history.pushState. The API ships the raw `speed`; the colour/width/
+ * comment tiers are display config owned here.
  */
-const NodingSpeedometer = ({ data, e2 }) => {
-  const {
-    error,
-    username: initialUsername = '',
-    clock_nodes: initialClockNodes = 50,
-    total_writeups,
-    actual_count,
-    days_elapsed,
-    speed,
-    color,
-    width,
-    comment,
-    level_data
-  } = data
 
-  const [username, setUsername] = useState(initialUsername)
-  const [clockNodes, setClockNodes] = useState(initialClockNodes)
+// speed is days-per-node -- lower is faster. First tier whose `max` is >= speed wins.
+const SPEEDOMETER_TIERS = [
+  { max: 0.75,     color: '#6600CC', width: 100, comment: (u) => `${u} has broken the speedometer and is probably not even human...` },
+  { max: 1,        color: 'red',     width: 90,  comment: (u) => `IRON NODER speed! ${u} has been issued a ticket.` },
+  { max: 3,        color: 'orange',  width: 75,  comment: () => 'Pretty fast! A warning and a doughnut bribe may be in order.' },
+  { max: 7,        color: 'yellow',  width: 50,  comment: () => 'Nothing the node police need to worry about just yet.' },
+  { max: 20,       color: 'green',   width: 25,  comment: () => 'We all get there in our own time, even if we cause tailbacks on the way...' },
+  { max: Infinity, color: '#330000', width: 10,  comment: () => 'We politely suggest that you exit your vehicle and get a taxi. Perhaps the conversation will inspire you.' }
+]
+const speedometerFor = (speed, username) => {
+  const tier = SPEEDOMETER_TIERS.find((t) => speed <= t.max)
+  return { color: tier.color, width: tier.width, comment: tier.comment(username) }
+}
 
-  const handleSubmit = (e) => {
+const ERROR_COPY = {
+  guest: () => 'Sorry, but only registered members can use the Noding Speedometer.',
+  user_not_found: (u) => `Your aim is way off. ${u} isn't a user. Try again.`,
+  no_writeups: (u) => `Um, user ${u} has no writeups!`,
+  insufficient_days: () => 'Wait a while, do at least one lap around the track before timing yourself.'
+}
+
+const paramsFromUrl = () => {
+  const qs = new URLSearchParams(window.location.search)
+  return { speedyuser: qs.get('speedyuser') || '', clocknodes: qs.get('clocknodes') || '50' }
+}
+
+const NodingSpeedometer = () => {
+  const initial = useMemo(paramsFromUrl, [])
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [username, setUsername] = useState(initial.speedyuser)
+  const [clockNodes, setClockNodes] = useState(initial.clocknodes)
+
+  const load = useCallback((params, { push } = {}) => {
+    const api = new URLSearchParams({ clocknodes: String(params.clocknodes || 50) })
+    if (params.speedyuser) api.set('speedyuser', params.speedyuser)
+
+    if (push) {
+      const url = new URL(window.location.href)
+      if (params.speedyuser) url.searchParams.set('speedyuser', params.speedyuser)
+      else url.searchParams.delete('speedyuser')
+      url.searchParams.set('clocknodes', String(params.clocknodes || 50))
+      window.history.pushState({}, '', url.pathname + url.search)
+    }
+
+    setLoading(true)
+    return fetch(`/api/noding_speedometer?${api}`, { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { setResult(j); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    load(initial)
+    const onPop = () => {
+      const q = paramsFromUrl()
+      setUsername(q.speedyuser); setClockNodes(q.clocknodes)
+      load(q)
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [load, initial])
+
+  const onSubmit = (e) => {
     e.preventDefault()
-    // Construct the URL with the current path and new parameters
-    const url = new URL(window.location.href)
-    url.searchParams.set('speedyuser', username)
-    url.searchParams.set('clocknodes', clockNodes)
-    window.location.href = url.toString()
+    load({ speedyuser: username, clocknodes: clockNodes }, { push: true })
   }
 
-  const hasResults = speed !== undefined
+  const r = result || {}
+  const { state, username: resultUser = '', clock_nodes = 50, total_writeups, actual_count, days_elapsed, speed, level_data } = r
+  const errorText = state && ERROR_COPY[state] ? ERROR_COPY[state](resultUser) : null
+  const hasResults = !loading && !state && speed !== undefined
+  const gauge = hasResults ? speedometerFor(speed, resultUser) : null
 
   return (
     <div className="noding-speedometer">
-      <form method="POST" className="noding-speedometer__form">
-        <input type="hidden" name="node_id" value={e2?.node_id || ''} />
+      <form onSubmit={onSubmit} className="noding-speedometer__form">
         <table>
           <tbody>
             <tr>
@@ -73,33 +120,33 @@ const NodingSpeedometer = ({ data, e2 }) => {
         </button>
       </form>
 
-      {error && (
-        <div className="noding-speedometer__message">
-          <p>{error}</p>
-        </div>
+      {loading && <p className="noding-speedometer__message">Loading...</p>}
+
+      {errorText && (
+        <div className="noding-speedometer__message"><p>{errorText}</p></div>
       )}
 
-      {!hasResults && !error && (
+      {!loading && !state && !hasResults && (
         <p className="noding-speedometer__message">
-          Okay, the radar gun's ready. Who should we clock?
+          Okay, the radar gun&apos;s ready. Who should we clock?
         </p>
       )}
 
       {hasResults && (
         <div className="noding-speedometer__results">
           <p>
-            {initialUsername} has <strong>{total_writeups}</strong> nodes in total.{' '}
-            {total_writeups < initialClockNodes && (
+            {resultUser} has <strong>{total_writeups}</strong> nodes in total.{' '}
+            {total_writeups < clock_nodes && (
               <>
-                Since it's less than {initialClockNodes}, we'll just clock them for {actual_count}.
+                Since it&apos;s less than {clock_nodes}, we&apos;ll just clock them for {actual_count}.
                 <br />
               </>
             )}
-            To write the last {actual_count} nodes, it took {initialUsername} {days_elapsed} days.
+            To write the last {actual_count} nodes, it took {resultUser} {days_elapsed} days.
             This works out at <strong>{speed.toFixed(2)}</strong> days per node.
           </p>
 
-          {/* Speedometer visualization */}
+          {/* Speedometer visualization (colour/width from the React tier config) */}
           <div className="noding-speedometer__speedometer-container">
             <table className="noding-speedometer__speedometer-table">
               <tbody>
@@ -109,9 +156,7 @@ const NodingSpeedometer = ({ data, e2 }) => {
                       <tbody>
                         <tr>
                           <td className="noding-speedometer__speed-label">
-                            <small>
-                              <strong>NODING SPEED</strong>
-                            </small>
+                            <small><strong>NODING SPEED</strong></small>
                           </td>
                         </tr>
                         <tr>
@@ -120,12 +165,10 @@ const NodingSpeedometer = ({ data, e2 }) => {
                               <tbody>
                                 <tr>
                                   <td className="noding-speedometer__bar-background">
-                                    <table className="noding-speedometer__bar" style={{ width: `${width}%`, backgroundColor: color }}>
+                                    <table className="noding-speedometer__bar" style={{ width: `${gauge.width}%`, backgroundColor: gauge.color }}>
                                       <tbody>
                                         <tr>
-                                          <td>
-                                            <div className="noding-speedometer__bar-content" />
-                                          </td>
+                                          <td><div className="noding-speedometer__bar-content" /></td>
                                         </tr>
                                       </tbody>
                                     </table>
@@ -143,20 +186,17 @@ const NodingSpeedometer = ({ data, e2 }) => {
             </table>
           </div>
 
-          <p className="noding-speedometer__comment">{comment}</p>
+          <p className="noding-speedometer__comment">{gauge.comment}</p>
 
           <hr className="noding-speedometer__hr" />
 
-          {/* Level-up projections */}
           {level_data && (
             <div className="noding-speedometer__projections">
               <p className="noding-speedometer__projections-heading">
-                <big>
-                  <strong>Level-up Projections</strong>
-                </big>
+                <big><strong>Level-up Projections</strong></big>
               </p>
               <p>
-                {initialUsername} needs <strong>{level_data.req_wu}</strong> nodes and{' '}
+                {resultUser} needs <strong>{level_data.req_wu}</strong> nodes and{' '}
                 <strong>{level_data.req_xp}</strong> experience to reach Level {level_data.next_level}.
                 Based on a noding speed of <strong>{speed.toFixed(2)}</strong> days per node
                 {level_data.req_xp > 0 && (

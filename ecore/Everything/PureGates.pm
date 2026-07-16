@@ -127,6 +127,11 @@ my %REGISTRY = (
     e2n                  => {},
     enn                  => {},
     ekn                  => {},
+
+    # Recommendation engines + noding speedometer (#4539).
+    do_you_c_what_i_c  => {},
+    the_recommender    => {},
+    noding_speedometer => {},
 );
 
 sub registry { return \%REGISTRY; }
