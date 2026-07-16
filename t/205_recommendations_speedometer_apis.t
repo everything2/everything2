@@ -21,7 +21,15 @@ use MockRequest;
 initEverything('development-docker');
 ok($DB, 'DB connection established');
 
+my $root = $DB->getNode('root', 'user');
+# Default viewer: a bare mock (user_id 0) so the no-cooluser cases return no_signal
+# without depending on whatever cool data a real user happens to have in dev.
 my $member = sub { MockRequest->new(is_guest_flag => 0, node_id => 1, title => 'mockmember', query_params => { %{$_[0] || {}} }) };
+# A viewer with a REAL NODEDATA, for the case that actually reaches recommendations
+# step 3: it calls hasVoted($node, $user->NODEDATA), and getId() on the bare mock's
+# empty hashref yields undef -> "voter_user=" -> a SQL syntax error. In prod every
+# logged-in user has NODEDATA; only a target that reaches step 3 exercises this.
+my $real_viewer = sub { MockRequest->new(is_guest_flag => 0, node_id => $root->{node_id}, nodedata => $root, query_params => { %{$_[0] || {}} }) };
 my $guest  = sub { MockRequest->new(is_guest_flag => 1, query_params => { %{$_[0] || {}} }) };
 
 #############################################################################
@@ -52,8 +60,9 @@ is($rec->list($member->({ maxcools => 'abc' }))->[1]{maxcools}, 10, 'recommendat
 is($rec->list($member->({ cooluser => 'no_such_user_zzz' }))->[1]{state}, 'user_not_found',
     'recommendations: unknown cooluser -> user_not_found');
 
-# a real user with cools runs the full algorithm (recommendations may be empty on sparse dev data)
-my $real = $rec->list($member->({ signal => 'cool', cooluser => 'normaluser5', maxcools => 100 }));
+# a real user with cools runs the full algorithm through step 3 (recommends "swedish
+# tomatoë" via the #4539 seed fixture). Uses a real-NODEDATA viewer for hasVoted.
+my $real = $rec->list($real_viewer->({ signal => 'cool', cooluser => 'normaluser5', maxcools => 100 }));
 if ($real->[1]{success}) {
     ok($real->[1]{num_signal_sampled} > 0, 'recommendations: real cooler sampled some cools');
     ok(ref($real->[1]{recommendations}) eq 'ARRAY', 'recommendations: recommendations is an array');

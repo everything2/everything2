@@ -3,17 +3,106 @@ package Everything::API::usergroup_message_archive;
 use Moose;
 extends 'Everything::API';
 
-use Everything qw(getId getNode setVars);
+use Everything qw(getId getNode getNodeById setVars);
 
-# POST /api/usergroup_message_archive/copy -- logged-in (#4472, Refs #4298). Mirrors the
-# archive form submit: copy the selected group-archive messages into the caller's own
-# message box, and persist the `ugma_resettime` preference. Re-verifies membership +
-# allow_message_archive server-side, and that each message actually belongs to the named
-# group's archive. Replaces the cpgroupmsg_* / ugma_resettime mutation loop in
-# Everything::Page::usergroup_message_archive's buildReactData.
-
+# GET  /api/usergroup_message_archive       -- the read view (list, #4541)
+# POST /api/usergroup_message_archive/copy  -- the copy mutation (#4472, Refs #4298)
 sub routes {
-    return { 'copy' => 'copy_messages' };
+    return { '/' => 'list', 'copy' => 'copy_messages' };
+}
+
+# GET /api/usergroup_message_archive?viewgroup=<name>&max_show=<n>&startnum=<n>
+# Moved out of Everything::Page::usergroup_message_archive's buildReactData (#4541): the Page is a
+# pure gate, React reads viewgroup/max_show/startnum off the URL and calls this. Logged-in only;
+# error C<state>s ('guest'/'no_such_group'/'not_member'/'no_archive') carry the copy in React.
+sub list {
+    my ($self, $REQUEST) = @_;
+    my $DB  = $self->DB;
+    my $APP = $self->APP;
+    my $user = $REQUEST->user;
+
+    return [$self->HTTP_OK, { success => 0, state => 'guest' }] if $user->is_guest;
+    my $USER = $user->NODEDATA;
+
+    # Groups that archive messages (the picker).
+    my @archive_groups;
+    foreach my $ug_id (@{ $APP->getNodesWithParameter('allow_message_archive') || [] }) {
+        my $ug = getNodeById($ug_id) or next;
+        push @archive_groups, { node_id => int($ug->{node_id}), title => $ug->{title} };
+    }
+
+    my $viewgroup = $REQUEST->param('viewgroup');
+    return [$self->HTTP_OK, { success => 1, archive_groups => \@archive_groups }]
+        unless defined($viewgroup) && $viewgroup ne '';
+
+    my $UG = getNode($viewgroup, 'usergroup');
+    return [$self->HTTP_OK, { success => 0, state => 'no_such_group', archive_groups => \@archive_groups }]
+        unless $UG;
+
+    my $selected = { node_id => int($UG->{node_id}), title => $UG->{title} };
+
+    return [$self->HTTP_OK, { success => 0, state => 'not_member', archive_groups => \@archive_groups, selected_group => $selected }]
+        unless Everything::isApproved($USER, $UG);
+
+    return [$self->HTTP_OK, { success => 0, state => 'no_archive', archive_groups => \@archive_groups, selected_group => $selected }]
+        unless $APP->getParameter($UG, 'allow_message_archive');
+
+    my $ugID = getId($UG);
+    my $VARS = $APP->getVars($USER);
+
+    my $LIMITS = "for_user=$ugID AND for_usergroup=$ugID";   # $ugID is an int -> injection-safe
+    my ($numMsg) = $DB->sqlSelect('COUNT(*)', 'message', $LIMITS);
+    $numMsg ||= 0;
+
+    my $max_show_p = $REQUEST->param('max_show');
+    my $max_show = (defined $max_show_p && $max_show_p =~ /^\d+$/ && $max_show_p > 0) ? int($max_show_p) : 25;
+
+    my $start_default = $numMsg - $max_show;
+    $start_default = 0 if $start_default < 0;
+
+    my $startnum_p = $REQUEST->param('startnum');
+    my $show_start = (defined $startnum_p && $startnum_p =~ /^\d+$/) ? int($startnum_p) : $start_default;
+    $show_start = $start_default if $show_start > $start_default;
+    $show_start = 0 if $show_start < 0;
+
+    my $csr = $DB->sqlSelectMany('*', 'message', $LIMITS, "ORDER BY tstamp,message_id LIMIT $show_start,$max_show");
+
+    my @messages;
+    my $msg_count = $show_start;
+    while (my $row = $csr->fetchrow_hashref) {
+        $msg_count++;
+        my $author = $row->{author_user} ? getNodeById($row->{author_user}) : undef;
+        (my $author_name = $author ? $author->{title} : '') =~ tr/ /_/;
+
+        my $text = $row->{msgtext} || '';
+        $text =~ s/</&lt;/g;
+        $text =~ s/>/&gt;/g;
+        $text =~ s/\s+\\n\s+/<br \/>/g;
+        $text = $APP->parseLinks($text);
+        $text =~ s/\[/&#91;/g;
+
+        push @messages, {
+            message_id   => int($row->{message_id}),
+            number       => $msg_count,
+            author_id    => $author ? int($author->{node_id}) : 0,
+            author_title => $APP->encodeHTML($author_name),
+            timestamp    => $row->{tstamp},
+            text         => $text,
+        };
+    }
+    $csr->finish;
+
+    return [$self->HTTP_OK, {
+        success        => 1,
+        archive_groups => \@archive_groups,
+        selected_group => $selected,
+        messages       => \@messages,
+        total_messages => int($numMsg),
+        show_start     => int($show_start),
+        max_show       => int($max_show),
+        num_show       => scalar(@messages),
+        reset_time     => $VARS->{ugma_resettime} ? \1 : \0,   # JSON boolean (#4108)
+    }];
 }
 
 sub copy_messages {
