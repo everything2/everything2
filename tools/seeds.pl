@@ -1333,8 +1333,13 @@ print STDERR "Hash test fixture (#4132): '$hash_e2node->{title}'\n";
 # C! assignments - normaluser1-20 all cool "good poetry" to test tooltip with many C!s
 my $cools = {
   "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"],
-  "normaluser2" => ["good poetry (poetry)"],
-  "normaluser3" => ["good poetry (poetry)"],
+  # normaluser2 + normaluser3 co-cool "swedish tomatoë" so it's cooled by 3 hub
+  # members (n1/n2/n3). That gives the recommendation engines a writeup cooled by
+  # 2+ "best friends" to actually recommend -- without this the seed cool graph is
+  # a pure star (only "good poetry" is multiply-cooled) and both engines always
+  # return empty. do_you_c_what_i_c for normaluser5 now recommends "swedish tomatoë".
+  "normaluser2" => ["good poetry (poetry)", "swedish tomatoë (essay)"],
+  "normaluser3" => ["good poetry (poetry)", "swedish tomatoë (essay)"],
   "normaluser4" => ["good poetry (poetry)"],
   "normaluser5" => ["good poetry (poetry)", "Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)", "writeup with a broken type (thing)","writeup with no parent (thing)", "writeup with a broken nodegroup (thing)", "writeup with no owner (thing)"],
   "normaluser6" => ["good poetry (poetry)"],
@@ -1371,6 +1376,29 @@ foreach my $chinger (keys %$cools)
       "coolwriteups_id=$writeup_node->{node_id} AND cooledby_user=$chinger_node->{node_id}");
     if (!$existing_cool) {
       $DB->sqlInsert("coolwriteups",{"coolwriteups_id" => $writeup_node->{node_id}, cooledby_user => $chinger_node->{node_id}});
+    }
+  }
+}
+
+# Bookmark fixture for "The Recommender" (the bookmark-seeded engine): normaluser6
+# bookmarks "good poetry", so its coolers become n6's "best friends", who now
+# co-cool "swedish tomatoë" (n1/n2/n3) -- giving the_recommender for normaluser6 a
+# non-empty result the same way the cool fixture above does for do_you_c_what_i_c.
+{
+  my $bookmark_lt = $DB->getNode("bookmark", "linktype");
+  my $n6          = getNode("normaluser6", "user");
+  my $good_poetry = getNode("good poetry (poetry)", "writeup");
+  if ($bookmark_lt && $n6 && $good_poetry) {
+    my $existing_bookmark = $DB->sqlSelect('COUNT(*)', 'links',
+      "from_node=$n6->{node_id} AND to_node=$good_poetry->{node_id} AND linktype=$bookmark_lt->{node_id}");
+    unless ($existing_bookmark) {
+      $DB->sqlInsert("links", {
+        from_node => $n6->{node_id},
+        to_node   => $good_poetry->{node_id},
+        linktype  => $bookmark_lt->{node_id},
+        hits      => 0,
+        food      => 0,
+      });
     }
   }
 }
