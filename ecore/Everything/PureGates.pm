@@ -132,6 +132,10 @@ my %REGISTRY = (
     do_you_c_what_i_c  => {},
     the_recommender    => {},
     noding_speedometer => {},
+
+    # Usergroup content viewers (#4541).
+    usergroup_discussions     => {},
+    usergroup_message_archive => {},
 );
 
 sub registry { return \%REGISTRY; }

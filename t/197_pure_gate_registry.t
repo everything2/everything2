@@ -47,6 +47,7 @@ my @expected = qw(
     ip_hunter who_killed_what voting_data
     25 everything_new_nodes e2n enn ekn
     do_you_c_what_i_c the_recommender noding_speedometer
+    usergroup_discussions usergroup_message_archive
 );
 for my $name (@expected) {
     ok(exists $reg->{$name}, "registry has '$name'");

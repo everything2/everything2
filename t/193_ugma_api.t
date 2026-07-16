@@ -23,7 +23,8 @@ ok($DB, 'Database connection established');
 
 my $api = Everything::API::usergroup_message_archive->new();
 ok($api, 'Created ugma API instance');
-is_deeply($api->routes, {copy => 'copy_messages'}, 'routes: copy -> copy_messages');
+is_deeply($api->routes, {'/' => 'list', copy => 'copy_messages'},
+    'routes: list (#4541) + copy coexist');
 
 # Guest gate
 my $r = $api->copy_messages(MockRequest->new(is_guest_flag => 1, postdata => {group => 'edev'}));

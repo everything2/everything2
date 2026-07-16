@@ -1,58 +1,98 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import LinkNode from '../LinkNode'
 
 /**
  * UsergroupMessageArchive - View archived messages sent to usergroups.
  * Styles in CSS: .usergroup-archive__*
  *
- * Copy-to-inbox + the reset-time preference moved to POST
- * /api/usergroup_message_archive/copy (#4472); the form drives it via fetch and reports
- * the copied count in place. Pagination stays as read-only links (server pure-render).
+ * Fully client-resolved (#4541): the Page is a pure gate. Fetches GET
+ * /api/usergroup_message_archive (list) on mount, reading viewgroup/max_show/startnum off the URL;
+ * the group picker + pagination refetch IN PLACE (no reload) via history.pushState. Copy-to-inbox +
+ * the reset-time preference POST to /api/usergroup_message_archive/copy (#4472), unchanged.
  */
-const UsergroupMessageArchive = ({ data, user, e2 }) => {
-  const node_id = (e2 || (typeof window !== 'undefined' ? window.e2 : undefined))?.node?.node_id
-  const {
-    archive_groups,
-    selected_group,
-    messages,
-    total_messages,
-    show_start,
-    max_show,
-    num_show,
-    reset_time,
-    error
-  } = data
+const GUEST_COPY = 'You must login to use this feature.'
+const ERROR_COPY = {
+  no_such_group: 'There is no such usergroup.',
+  not_member: "You aren't a member of this group, so you can't view the group's messages.",
+  no_archive: "This group doesn't archive messages."
+}
+
+const paramsFromUrl = () => {
+  const qs = new URLSearchParams(window.location.search)
+  return {
+    viewgroup: qs.get('viewgroup') || '',
+    max_show: qs.get('max_show') || '',
+    startnum: qs.get('startnum') || ''
+  }
+}
+
+const UsergroupMessageArchive = ({ user }) => {
+  const nodeId = (typeof window !== 'undefined' && window.e2 && window.e2.node_id) || ''
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  const load = useCallback((params, { push } = {}) => {
+    const api = new URLSearchParams()
+    if (params.viewgroup) api.set('viewgroup', params.viewgroup)
+    if (params.max_show) api.set('max_show', params.max_show)
+    if (params.startnum !== undefined && params.startnum !== '') api.set('startnum', String(params.startnum))
+
+    if (push) {
+      const url = new URL(window.location.href)
+      for (const k of ['viewgroup', 'max_show', 'startnum']) {
+        if (params[k] !== undefined && params[k] !== '') url.searchParams.set(k, String(params[k]))
+        else url.searchParams.delete(k)
+      }
+      window.history.pushState({}, '', url.pathname + url.search)
+    }
+
+    setLoading(true)
+    return fetch(`/api/usergroup_message_archive?${api}`, { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { setData(j); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    load(paramsFromUrl())
+    const onPop = () => load(paramsFromUrl())
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [load])
 
   const isAdmin = !!user?.admin
-  const isGuest = !!user?.guest
 
-  if (isGuest) {
+  if (loading && !data) {
+    return <div className="usergroup-archive"><p>Loading...</p></div>
+  }
+
+  const { state, archive_groups = [], selected_group, messages, total_messages, show_start, max_show, num_show, reset_time } = data || {}
+
+  if (state === 'guest') {
     return (
       <div className="usergroup-archive">
-        <p className="usergroup-archive__see-also">
-          See also <LinkNode title="Usergroup discussions" />
-        </p>
+        <p className="usergroup-archive__see-also">See also <LinkNode title="Usergroup discussions" /></p>
         <p>If you are a member of one of these groups, you can view messages sent to the group.</p>
-        <p>{data.message}</p>
+        <p>{GUEST_COPY}</p>
       </div>
     )
   }
 
+  const errorText = state && ERROR_COPY[state]
+
+  const pickGroup = (title) => (e) => { e.preventDefault(); load({ viewgroup: title }, { push: true }) }
+  const paginate = (startnum) => load({ viewgroup: selected_group.title, startnum }, { push: true })
+
   return (
     <div className="usergroup-archive">
-      <p className="usergroup-archive__see-also">
-        See also <LinkNode title="Usergroup discussions" />
-      </p>
+      <p className="usergroup-archive__see-also">See also <LinkNode title="Usergroup discussions" /></p>
 
       <p>If you are a member of one of these groups, you can view messages sent to the group.</p>
 
       {isAdmin && (
         <p>
           You can edit the usergroups that have messages archived at{' '}
-          <a
-            href="?node=usergroup+message+archive+manager&type=restricted_superdoc"
-            className="usergroup-archive__link"
-          >
+          <a href="?node=usergroup+message+archive+manager&type=restricted_superdoc" className="usergroup-archive__link">
             usergroup message archive manager
           </a>.
         </p>
@@ -66,16 +106,16 @@ const UsergroupMessageArchive = ({ data, user, e2 }) => {
         {archive_groups.map((g, idx) => (
           <span key={g.node_id}>
             {idx > 0 && ', '}
-            <a href={`?node_id=${node_id}&viewgroup=${encodeURIComponent(g.title)}`} className="usergroup-archive__link">
+            <a href={`?node_id=${nodeId}&viewgroup=${encodeURIComponent(g.title)}`} onClick={pickGroup(g.title)} className="usergroup-archive__link">
               {g.title}
             </a>
           </span>
         ))}
       </p>
 
-      {error && <p className="usergroup-archive__error">{error}</p>}
+      {errorText && <p className="usergroup-archive__error">{errorText}</p>}
 
-      {selected_group && !error && messages && (
+      {selected_group && !errorText && messages && (
         <MessageDisplay
           selectedGroup={selected_group}
           messages={messages}
@@ -84,23 +124,14 @@ const UsergroupMessageArchive = ({ data, user, e2 }) => {
           maxShow={max_show}
           numShow={num_show}
           resetTime={reset_time}
-          nodeId={node_id}
+          onPaginate={paginate}
         />
       )}
     </div>
   )
 }
 
-const MessageDisplay = ({
-  selectedGroup,
-  messages,
-  totalMessages,
-  showStart,
-  maxShow,
-  numShow,
-  resetTime: initialResetTime,
-  nodeId
-}) => {
+const MessageDisplay = ({ selectedGroup, messages, totalMessages, showStart, maxShow, numShow, resetTime: initialResetTime, onPaginate }) => {
   const startDefault = Math.max(0, totalMessages - maxShow)
 
   const [checked, setChecked] = useState({})
@@ -121,16 +152,12 @@ const MessageDisplay = ({
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          group: selectedGroup.title,
-          message_ids: messageIds,
-          reset_time: resetTime ? 1 : 0,
-        }),
+        body: JSON.stringify({ group: selectedGroup.title, message_ids: messageIds, reset_time: resetTime ? 1 : 0 })
       })
       const json = res.ok ? await res.json() : null
       if (json && json.success) {
         setCopiedCount(json.copied_count)
-        setChecked({}) // clear selections after a successful copy
+        setChecked({})
       } else {
         setBanner((json && json.error) || 'Copy failed.')
       }
@@ -141,17 +168,15 @@ const MessageDisplay = ({
     }
   }
 
-  // Generate pagination links (read-only; the server renders the chosen page)
+  // Pagination descriptors; inactive ones carry a startnum the caller refetches in place.
   const genPaginationData = () => {
     const links = []
-
     if (showStart !== 0) {
       const limitU = Math.min(maxShow, totalMessages)
       links.push({ label: `first ${maxShow} (1-${limitU})`, startnum: 0, active: false })
     } else {
       links.push({ label: `first ${maxShow}`, active: true })
     }
-
     if (showStart > 0) {
       const limitL = Math.max(1, showStart - maxShow)
       const limitU = Math.min(limitL + maxShow, totalMessages)
@@ -159,9 +184,7 @@ const MessageDisplay = ({
     } else {
       links.push({ label: 'previous', active: true })
     }
-
     links.push({ label: `current (${showStart + 1}-${showStart + numShow})`, active: true, current: true })
-
     if (showStart < startDefault) {
       let limitU = showStart + maxShow + maxShow
       limitU = Math.min(limitU, totalMessages)
@@ -172,13 +195,11 @@ const MessageDisplay = ({
     } else {
       links.push({ label: 'next', active: true })
     }
-
     if (showStart < startDefault) {
       links.push({ label: `last ${maxShow} (${startDefault + 1}-${totalMessages})`, startnum: startDefault, active: false })
     } else {
       links.push({ label: `last ${maxShow}`, active: true })
     }
-
     return links
   }
 
@@ -186,16 +207,10 @@ const MessageDisplay = ({
 
   return (
     <form onSubmit={handleCopy}>
-      <p>
-        Viewing messages for group <LinkNode id={selectedGroup.node_id} display={selectedGroup.title} />:
-      </p>
+      <p>Viewing messages for group <LinkNode id={selectedGroup.node_id} display={selectedGroup.title} />:</p>
 
       <label className="usergroup-archive__checkbox">
-        <input
-          type="checkbox"
-          checked={resetTime}
-          onChange={(e) => setResetTime(e.target.checked)}
-        />
+        <input type="checkbox" checked={resetTime} onChange={(e) => setResetTime(e.target.checked)} />
         Keep original send date (instead of using &quot;now&quot; time)
       </label>
       <br />
@@ -209,9 +224,7 @@ const MessageDisplay = ({
       {banner && <p className="usergroup-archive__error">{banner}</p>}
 
       {numShow > 0 && (
-        <p>
-          Showing {numShow} message{numShow === 1 ? '' : 's'} (number {showStart + 1} to {showStart + numShow}) out of a total of {totalMessages}.
-        </p>
+        <p>Showing {numShow} message{numShow === 1 ? '' : 's'} (number {showStart + 1} to {showStart + numShow}) out of a total of {totalMessages}.</p>
       )}
 
       <table className="usergroup-archive__table">
@@ -228,21 +241,11 @@ const MessageDisplay = ({
           {messages.map((msg) => (
             <tr key={msg.message_id}>
               <td className="usergroup-archive__td--cp">
-                <input
-                  type="checkbox"
-                  checked={!!checked[msg.message_id]}
-                  onChange={() => toggleMsg(msg.message_id)}
-                />
+                <input type="checkbox" checked={!!checked[msg.message_id]} onChange={() => toggleMsg(msg.message_id)} />
               </td>
-              <td className="usergroup-archive__td--num">
-                ({msg.number})
-              </td>
+              <td className="usergroup-archive__td--num">({msg.number})</td>
               <td className="usergroup-archive__td--small">
-                {msg.author_id ? (
-                  <LinkNode id={msg.author_id} display={msg.author_title} />
-                ) : (
-                  '?'
-                )}
+                {msg.author_id ? <LinkNode id={msg.author_id} display={msg.author_title} /> : '?'}
               </td>
               <td className="usergroup-archive__td--time">{msg.timestamp}</td>
               <td className="usergroup-archive__td" dangerouslySetInnerHTML={{ __html: msg.text }} />
@@ -266,10 +269,8 @@ const MessageDisplay = ({
               [ {link.active ? (
                 <span className={link.current ? 'usergroup-archive__current-link' : undefined}>{link.label}</span>
               ) : (
-                <a
-                  href={`?node_id=${nodeId}&viewgroup=${encodeURIComponent(selectedGroup.title)}&startnum=${link.startnum}`}
-                  className="usergroup-archive__link"
-                >
+                <a href="#" className="usergroup-archive__link"
+                   onClick={(e) => { e.preventDefault(); onPaginate(link.startnum) }}>
                   {link.label}
                 </a>
               )} ]

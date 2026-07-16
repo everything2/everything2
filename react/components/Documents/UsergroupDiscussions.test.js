@@ -1,96 +1,80 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, waitFor, fireEvent } from '@testing-library/react'
 import UsergroupDiscussions from './UsergroupDiscussions'
-import fixture from '../../__fixtures__/pagestate/usergroup_discussions.json'
-// Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
-// pinning the int-typed contract (#4152/#4108).
-describe('UsergroupDiscussions (real pagestate fixture)', () => {
-  it('mounts against the captured payload', () => {
-    const { container } = render(<UsergroupDiscussions data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    expect(container).toBeTruthy()
-  })
-  it('fixture has integer node_ids, never strings (#4152)', () => {
-    expect(JSON.stringify(fixture).match(/"node_id":"\d/g)).toBeNull()
-  })
-  it('no React key warnings', () => {
-    const errs = []
-    const spy = jest.spyOn(console, 'error').mockImplementation((...a) => errs.push(a.join(' ')))
-    render(<UsergroupDiscussions data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    spy.mockRestore()
-    expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
-  })
-})
 
-// #4390: viewer guest flag now comes from the global e2.user prop (user.guest),
-// not a duplicated contentData.is_guest key.
-describe('UsergroupDiscussions guest gating (#4390 e2.user dedup)', () => {
-  // The captured fixture is a guest payload (contentData = type/message only).
-  // A logged-in viewer reaches the main branch, which needs the populated arrays.
-  const loggedInData = {
-    type: 'usergroup_discussions',
-    usergroups: [{ node_id: 114, title: 'gods' }],
-    selected_usergroup: 0,
-    discussions: [],
-    total_discussions: 0,
-    offset: 0,
-    limit: 50,
-    node_id: 555
-  }
+// #4541: fetch-driven. GET /api/usergroup_discussions on mount; usergroup selector + pagination
+// refetch in place via history.pushState. Guest/no_usergroups/access_denied copy owned by React.
 
-  it('guest viewer (user.guest=true) sees the logged-out message, not the new-discussion form', () => {
-    const { container } = render(
-      <UsergroupDiscussions data={fixture.contentData} user={{ guest: true }} />
-    )
-    expect(container.textContent).toContain('you would be able to strike up')
-    expect(container.textContent).not.toContain('Start a New Discussion')
+const setLocation = (href) => {
+  const u = new URL(href)
+  window.location.href = href
+  window.location.pathname = u.pathname
+  window.location.search = u.search
+}
+const mockFetch = (payload) => jest.fn(() => Promise.resolve({ json: () => Promise.resolve(payload) }))
+const usergroups = [{ node_id: 100, title: 'edev' }, { node_id: 200, title: 'gods' }]
+const discussion = { node_id: 42, title: 'A Discussion', author_id: 7, author_title: 'alice', usergroup_id: 100, usergroup_title: 'edev', reply_count: 3, unread: true, last_updated: '2026-01-01' }
+
+beforeEach(() => { setLocation('http://localhost/?node_id=500'); window.e2 = { node_id: 500 } })
+afterEach(() => { delete global.fetch; delete window.e2; jest.restoreAllMocks() })
+
+describe('UsergroupDiscussions — fetch + states (#4541)', () => {
+  it('renders the guest copy when the API refuses', async () => {
+    global.fetch = mockFetch({ success: 0, state: 'guest' })
+    const { container } = render(<UsergroupDiscussions user={{ guest: true }} />)
+    await waitFor(() => expect(container.textContent).toMatch(/long-winded conversations/i))
   })
 
-  it('logged-in viewer (user.guest=false) sees the new-discussion form, not the guest message', () => {
-    const { container } = render(
-      <UsergroupDiscussions data={loggedInData} user={{ guest: false }} />
-    )
-    expect(container.textContent).toContain('Start a New Discussion')
-    expect(container.textContent).not.toContain('you would be able to strike up')
+  it('renders the no_usergroups copy', async () => {
+    global.fetch = mockFetch({ success: 0, state: 'no_usergroups' })
+    const { container } = render(<UsergroupDiscussions user={{}} />)
+    await waitFor(() => expect(container.textContent).toMatch(/You have no usergroups/i))
   })
 
-  it('missing user prop does not crash and treats viewer as logged-in', () => {
-    const { container } = render(
-      <UsergroupDiscussions data={loggedInData} user={undefined} />
-    )
-    expect(container).toBeTruthy()
-    expect(container.textContent).toContain('Start a New Discussion')
-    expect(container.textContent).not.toContain('you would be able to strike up')
+  it('renders access_denied with the selector still shown', async () => {
+    setLocation('http://localhost/?node_id=500&show_ug=999')
+    global.fetch = mockFetch({ success: 0, state: 'access_denied', usergroups, selected_usergroup: 999 })
+    const { container } = render(<UsergroupDiscussions user={{}} />)
+    await waitFor(() => expect(container.textContent).toMatch(/not a member of the selected usergroup/i))
+    expect(container.querySelector('.ug-discussions__selector')).toBeTruthy()
+  })
+
+  it('renders the discussions table for a member', async () => {
+    global.fetch = mockFetch({ success: 1, usergroups, selected_usergroup: 0, discussions: [discussion], total_discussions: 1, offset: 0, limit: 50 })
+    const { container } = render(<UsergroupDiscussions user={{}} />)
+    await waitFor(() => expect(container.querySelector('.ug-discussions__table')).toBeTruthy())
+    expect(container.textContent).toMatch(/A Discussion/)
+    expect(container.textContent).toMatch(/alice/)
+    expect(container.textContent).toMatch(/There are 1 discussions total/)
+    // unread boolean renders the × marker
+    expect(container.textContent).toContain('×')
   })
 })
 
-// #4399: the current page node_id now comes from the global e2.node prop,
-// not a duplicated contentData.node_id key.
-describe('UsergroupDiscussions node_id dedup (#4399 e2.node)', () => {
-  const loggedInData = {
-    type: 'usergroup_discussions',
-    usergroups: [{ node_id: 114, title: 'gods' }],
-    selected_usergroup: 0,
-    discussions: [],
-    total_discussions: 0,
-    offset: 0,
-    limit: 50
-  }
+describe('UsergroupDiscussions — in-place selector/pagination (#4541, no reload)', () => {
+  it('selecting a usergroup refetches with show_ug and pushes URL, no reload', async () => {
+    const pushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {})
+    global.fetch = mockFetch({ success: 1, usergroups, selected_usergroup: 0, discussions: [], total_discussions: 0, offset: 0, limit: 50 })
+    const { container } = render(<UsergroupDiscussions user={{}} />)
+    await waitFor(() => expect(container.querySelector('.ug-discussions__usergroup-link')).toBeTruthy())
 
-  it('uses node_id from the e2.node prop in the usergroup-filter links', () => {
-    const { container } = render(
-      <UsergroupDiscussions
-        data={loggedInData}
-        user={{ guest: false }}
-        e2={{ node: { node_id: 987654 } }}
-      />
-    )
-    // The page's own node_id is woven into the filter/show-all hrefs.
-    const showAll = Array.from(container.querySelectorAll('a')).find((a) =>
-      /show_ug=0/.test(a.getAttribute('href') || '')
-    )
-    expect(showAll).toBeTruthy()
-    expect(showAll.getAttribute('href')).toContain('node_id=987654')
-    // Sanity: still renders the logged-in surface.
-    expect(container.textContent).toContain('Start a New Discussion')
+    // the first selector link is edev (node_id 100); "edev" also appears as a form <option>
+    fireEvent.click(container.querySelector('.ug-discussions__usergroup-link'))
+    await waitFor(() => expect(global.fetch.mock.calls.length).toBe(2))
+    expect(window.location.href).toBe('http://localhost/?node_id=500') // no hard navigation
+    expect(global.fetch.mock.calls[1][0]).toContain('show_ug=100')
+    expect(pushSpy.mock.calls[pushSpy.mock.calls.length - 1][2]).toContain('show_ug=100')
+  })
+
+  it('paginates in place', async () => {
+    const pushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {})
+    // 60 total, 50 shown -> a "next" link
+    global.fetch = mockFetch({ success: 1, usergroups, selected_usergroup: 0, discussions: [discussion], total_discussions: 60, offset: 0, limit: 50 })
+    const { getByText } = render(<UsergroupDiscussions user={{}} />)
+    await waitFor(() => expect(getByText(/next/i)).toBeInTheDocument())
+
+    fireEvent.click(getByText(/next/i))
+    await waitFor(() => expect(global.fetch.mock.calls.length).toBe(2))
+    expect(global.fetch.mock.calls[1][0]).toContain('offset=50')
   })
 })

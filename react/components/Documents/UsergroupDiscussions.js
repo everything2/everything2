@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
@@ -12,61 +12,80 @@ import '../Editor/E2Editor.css'
 
 /**
  * UsergroupDiscussions - View and manage usergroup discussions.
- * Allows users to browse and create threaded discussions within their usergroups.
+ *
+ * Fully client-resolved (#4541): the Page is a pure gate. Fetches GET /api/usergroup_discussions on
+ * mount, reading show_ug/offset off the URL; the usergroup selector + pagination refetch IN PLACE
+ * (no reload) via history.pushState. Creating a discussion still POSTs to
+ * /api/debatecomments/action/create (unchanged) and navigates to the new node.
  */
-const UsergroupDiscussions = ({ data, user, e2 }) => {
-  const {
-    no_usergroups,
-    access_denied,
-    message,
-    usergroups,
-    selected_usergroup,
-    discussions,
-    total_discussions,
-    offset,
-    limit
-  } = data
+const GUEST_COPY = 'If you logged in, you would be able to strike up long-winded conversations with your buddies'
+const NO_UG_COPY = 'You have no usergroups! Find some friends first, and then start a discussion with them.'
+const ACCESS_DENIED_COPY = 'You are not a member of the selected usergroup.'
 
-  // #4399: the current page's node_id comes from the global e2.node, not a
-  // duplicated contentData.node_id key.
-  const node_id = (e2 ?? (typeof window !== 'undefined' ? window.e2 : undefined))?.node?.node_id
+const paramsFromUrl = () => {
+  const qs = new URLSearchParams(window.location.search)
+  return { show_ug: qs.get('show_ug') || '', offset: qs.get('offset') || '' }
+}
 
-  const isGuest = !!user?.guest
+const UsergroupDiscussions = ({ user }) => {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  if (isGuest) {
-    return (
-      <div className="ug-discussions">
-        <p className="ug-discussions__see-also">
-          See also <LinkNode title="usergroup message archive" />
-        </p>
-        <p>{message}</p>
-      </div>
-    )
+  const load = useCallback((params, { push } = {}) => {
+    const api = new URLSearchParams()
+    if (params.show_ug) api.set('show_ug', String(params.show_ug))
+    if (params.offset) api.set('offset', String(params.offset))
+
+    if (push) {
+      const url = new URL(window.location.href)
+      for (const k of ['show_ug', 'offset']) {
+        if (params[k] !== undefined && params[k] !== '' && String(params[k]) !== '0') url.searchParams.set(k, String(params[k]))
+        else url.searchParams.delete(k)
+      }
+      // show_ug=0 (all groups) is meaningful; keep it explicit
+      if (String(params.show_ug) === '0') url.searchParams.set('show_ug', '0')
+      window.history.pushState({}, '', url.pathname + url.search)
+    }
+
+    setLoading(true)
+    return fetch(`/api/usergroup_discussions?${api}`, { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { setData(j); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    load(paramsFromUrl())
+    const onPop = () => load(paramsFromUrl())
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [load])
+
+  if (loading && !data) {
+    return <div className="ug-discussions"><p>Loading...</p></div>
   }
 
-  if (no_usergroups) {
-    return (
-      <div className="ug-discussions">
-        <p className="ug-discussions__see-also">
-          See also <LinkNode title="usergroup message archive" />
-        </p>
-        <p>{message}</p>
-      </div>
-    )
-  }
+  const { state, usergroups = [], selected_usergroup, discussions = [], total_discussions = 0, offset = 0, limit = 50 } = data || {}
 
-  if (access_denied) {
+  const selectGroup = (ugId) => load({ show_ug: ugId }, { push: true })
+  const paginate = (newOffset) => load({ show_ug: selected_usergroup, offset: newOffset }, { push: true })
+
+  const seeAlso = (
+    <p className="ug-discussions__see-also">See also <LinkNode title="usergroup message archive" /></p>
+  )
+
+  if (state === 'guest') {
+    return <div className="ug-discussions">{seeAlso}<p>{GUEST_COPY}</p></div>
+  }
+  if (state === 'no_usergroups') {
+    return <div className="ug-discussions">{seeAlso}<p>{NO_UG_COPY}</p></div>
+  }
+  if (state === 'access_denied') {
     return (
       <div className="ug-discussions">
-        <p className="ug-discussions__see-also">
-          See also <LinkNode title="usergroup message archive" />
-        </p>
-        <UsergroupSelector
-          usergroups={usergroups}
-          selectedUsergroup={selected_usergroup}
-          nodeId={node_id}
-        />
-        <p className="ug-discussions__error">{message}</p>
+        {seeAlso}
+        <UsergroupSelector usergroups={usergroups} selectedUsergroup={selected_usergroup} onSelect={selectGroup} />
+        <p className="ug-discussions__error">{ACCESS_DENIED_COPY}</p>
       </div>
     )
   }
@@ -76,15 +95,9 @@ const UsergroupDiscussions = ({ data, user, e2 }) => {
 
   return (
     <div className="ug-discussions">
-      <p className="ug-discussions__see-also">
-        See also <LinkNode title="usergroup message archive" />
-      </p>
+      {seeAlso}
 
-      <UsergroupSelector
-        usergroups={usergroups}
-        selectedUsergroup={selected_usergroup}
-        nodeId={node_id}
-      />
+      <UsergroupSelector usergroups={usergroups} selectedUsergroup={selected_usergroup} onSelect={selectGroup} />
 
       {discussions.length === 0 ? (
         <p className="ug-discussions__no-discussions">There are no discussions!</p>
@@ -108,12 +121,7 @@ const UsergroupDiscussions = ({ data, user, e2 }) => {
                     <LinkNode nodeId={disc.node_id} title={disc.title} />
                   </td>
                   <td className="ug-discussions__td--small">
-                    (<a
-                      href={`?node_id=${disc.node_id}&displaytype=compact`}
-                      className="ug-discussions__link"
-                    >
-                      compact
-                    </a>)
+                    (<a href={`?node_id=${disc.node_id}&displaytype=compact`} className="ug-discussions__link">compact</a>)
                   </td>
                   <td className="ug-discussions__td--small">
                     <LinkNode nodeId={disc.usergroup_id} title={disc.usergroup_title} />
@@ -122,24 +130,19 @@ const UsergroupDiscussions = ({ data, user, e2 }) => {
                     <LinkNode nodeId={disc.author_id} title={disc.author_title} />
                   </td>
                   <td className="ug-discussions__td">{disc.reply_count}</td>
-                  <td className="ug-discussions__td">{disc.unread ? '\u00D7' : ''}</td>
+                  <td className="ug-discussions__td">{disc.unread ? '×' : ''}</td>
                   <td className="ug-discussions__td">{disc.last_updated}</td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <p className="ug-discussions__total-count">
-            There are {total_discussions} discussions total
-          </p>
+          <p className="ug-discussions__total-count">There are {total_discussions} discussions total</p>
 
           {(hasPrev || hasMore) && (
             <div className="ug-discussions__pagination">
               {hasPrev && (
-                <a
-                  href={`?node_id=${node_id}&show_ug=${selected_usergroup}&offset=${offset - limit}`}
-                  className="ug-discussions__link"
-                >
+                <a href="#" className="ug-discussions__link" onClick={(e) => { e.preventDefault(); paginate(offset - limit) }}>
                   prev {offset - limit + 1} &ndash; {offset}
                 </a>
               )}
@@ -147,10 +150,7 @@ const UsergroupDiscussions = ({ data, user, e2 }) => {
               <span>Now: {offset + 1} &ndash; {offset + discussions.length}</span>
               {hasMore && ' | '}
               {hasMore && (
-                <a
-                  href={`?node_id=${node_id}&show_ug=${selected_usergroup}&offset=${offset + limit}`}
-                  className="ug-discussions__link"
-                >
+                <a href="#" className="ug-discussions__link" onClick={(e) => { e.preventDefault(); paginate(offset + limit) }}>
                   next {offset + limit + 1} &ndash; {Math.min(offset + 2 * limit, total_discussions)}
                 </a>
               )}
@@ -159,22 +159,20 @@ const UsergroupDiscussions = ({ data, user, e2 }) => {
         </>
       )}
 
-      <NewDiscussionForm
-        usergroups={usergroups}
-        selectedUsergroup={selected_usergroup}
-      />
+      <NewDiscussionForm usergroups={usergroups} selectedUsergroup={selected_usergroup} />
     </div>
   )
 }
 
-const UsergroupSelector = ({ usergroups, selectedUsergroup, nodeId }) => (
+const UsergroupSelector = ({ usergroups, selectedUsergroup, onSelect }) => (
   <div className="ug-discussions__selector">
     <p>Choose the usergroup to filter by:</p>
     <div className="ug-discussions__usergroup-grid">
       {usergroups.map((ug) => (
         <a
           key={ug.node_id}
-          href={`?node_id=${nodeId}&show_ug=${ug.node_id}`}
+          href={`?show_ug=${ug.node_id}`}
+          onClick={(e) => { e.preventDefault(); onSelect(ug.node_id) }}
           className={`ug-discussions__usergroup-link${Number(selectedUsergroup) === ug.node_id ? ' ug-discussions__usergroup-link--active' : ''}`}
         >
           {ug.title}
@@ -184,7 +182,8 @@ const UsergroupSelector = ({ usergroups, selectedUsergroup, nodeId }) => (
     <p className="ug-discussions__show-all">
       Or{' '}
       <a
-        href={`?node_id=${nodeId}&show_ug=0`}
+        href="?show_ug=0"
+        onClick={(e) => { e.preventDefault(); onSelect(0) }}
         className={`ug-discussions__link${Number(selectedUsergroup) === 0 ? ' ug-discussions__link--active' : ''}`}
       >
         show discussions from all usergroups.
