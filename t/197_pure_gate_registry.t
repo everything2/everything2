@@ -48,6 +48,7 @@ my @expected = qw(
     25 everything_new_nodes e2n enn ekn
     do_you_c_what_i_c the_recommender noding_speedometer
     usergroup_discussions usergroup_message_archive
+    news_for_noders_stuff_that_matters news_archives
 );
 for my $name (@expected) {
     ok(exists $reg->{$name}, "registry has '$name'");

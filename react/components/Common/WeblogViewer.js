@@ -30,6 +30,11 @@ const WeblogViewer = ({
   introContent,
   data = {},
   emptyGroupMessage = 'No entries found for this group.',
+  // Optional in-place navigation (#4543): when provided, the group links + back
+  // link refetch in place instead of doing a full-page navigation to pageUrl.
+  // Callers that omit these (e.g. usergroup_picks) keep the plain <a href> behavior.
+  onSelectGroup,
+  onBack,
 }) => {
   const {
     groups = [],
@@ -109,7 +114,11 @@ const WeblogViewer = ({
             <span className="weblog-viewer__viewing-title">
               Viewing items for <strong><a href={`/node/${viewWeblog}`}>{viewGroupName}</a></strong>
             </span>
-            <a href={pageUrl} className="weblog-viewer__back-link">
+            <a
+              href={pageUrl}
+              onClick={onBack ? (e) => { e.preventDefault(); onBack() } : undefined}
+              className="weblog-viewer__back-link"
+            >
               {backLinkText}
             </a>
           </div>
@@ -177,6 +186,7 @@ const WeblogViewer = ({
             <div key={group.node_id} className="weblog-viewer__group-item">
               <a
                 href={`${pageUrl}?view_weblog=${group.node_id}`}
+                onClick={onSelectGroup ? (e) => { e.preventDefault(); onSelectGroup(group.node_id) } : undefined}
                 className={viewWeblog === group.node_id ? 'weblog-viewer__group-link weblog-viewer__group-link--active' : 'weblog-viewer__group-link'}
               >
                 {group.title}
