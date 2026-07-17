@@ -1,49 +1,59 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, waitFor, fireEvent } from '@testing-library/react'
 import NewsArchives from './NewsArchives'
-import fixture from '../../__fixtures__/pagestate/news_archives.json'
-// Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
-// pinning the int-typed contract (#4152/#4108).
-describe('NewsArchives (real pagestate fixture)', () => {
-  it('mounts against the captured payload', () => {
-    const { container } = render(<NewsArchives data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    expect(container).toBeTruthy()
-  })
-  it('fixture has integer node_ids, never strings (#4152)', () => {
-    expect(JSON.stringify(fixture).match(/"node_id":"\d/g)).toBeNull()
-  })
-  it('no React key warnings', () => {
-    const errs = []
-    const spy = jest.spyOn(console, 'error').mockImplementation((...a) => errs.push(a.join(' ')))
-    render(<NewsArchives data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    spy.mockRestore()
-    expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
+
+// #4543: fetch-driven. GET /api/news_archives on mount; group-select + back refetch in place via
+// WeblogViewer's onSelectGroup/onBack callbacks (history.pushState, no reload).
+
+const setLocation = (href) => {
+  const u = new URL(href)
+  window.location.href = href
+  window.location.pathname = u.pathname
+  window.location.search = u.search
+}
+const listFetch = (payload) => jest.fn(() => Promise.resolve({ json: () => Promise.resolve(payload) }))
+const groups = [{ node_id: 100, title: 'edev', count: 3 }, { node_id: 200, title: 'zebra', count: 0 }]
+
+beforeEach(() => setLocation('http://localhost/?node_id=600'))
+afterEach(() => { delete global.fetch; jest.restoreAllMocks() })
+
+describe('NewsArchives — fetch (#4543)', () => {
+  it('renders the group list from the API', async () => {
+    global.fetch = listFetch({ success: 1, groups, viewWeblog: null })
+    const { container } = render(<NewsArchives user={{}} />)
+    await waitFor(() => expect(container.textContent).toMatch(/edev/))
+    expect(global.fetch.mock.calls[0][0]).toMatch(/^\/api\/news_archives/)
+    expect(container.textContent).toMatch(/zebra/)
   })
 
-  // Admin gating reads from the global user prop (user.admin), not contentData (#4390).
-  const groupData = {
-    type: 'news_archives',
-    groups: [],
-    viewWeblog: 114,
-    viewGroupName: 'Editor Picks',
-    entries: [{ node_id: 42, title: 'Some Node', timestamp: '2026-01-01 00:00:00', linker_id: 113, linker_name: 'root' }],
-    skippedCount: 0,
-  }
-
-  it('shows unlink controls for admins (user.admin === true)', () => {
-    const { container } = render(<NewsArchives data={groupData} user={{ admin: true }} />)
-    expect(container.textContent).toMatch(/Unlink\?/)
-    expect(container.textContent).toMatch(/unlink/)
+  it('renders a viewed group with its entries', async () => {
+    setLocation('http://localhost/?node_id=600&view_weblog=100')
+    global.fetch = listFetch({
+      success: 1, groups, viewWeblog: 100, viewGroupName: 'edev',
+      entries: [{ node_id: 42, title: 'A Pick', timestamp: '2026-01-01', linker_id: 7, linker_name: 'alice' }], skippedCount: 0
+    })
+    const { container } = render(<NewsArchives user={{}} />)
+    await waitFor(() => expect(container.textContent).toMatch(/Viewing items for/))
+    expect(container.textContent).toMatch(/A Pick/)
   })
 
-  it('hides unlink controls for non-admins (user.admin === false)', () => {
-    const { container } = render(<NewsArchives data={groupData} user={{ admin: false }} />)
-    expect(container.textContent).not.toMatch(/Unlink\?/)
+  it('renders the permission error from the state', async () => {
+    setLocation('http://localhost/?node_id=600&view_weblog=114')
+    global.fetch = listFetch({ success: 0, state: 'permission', groups, viewWeblog: null })
+    const { container } = render(<NewsArchives user={{}} />)
+    await waitFor(() => expect(container.textContent).toMatch(/do not have permission/i))
   })
 
-  it('does not crash when user is undefined', () => {
-    const { container } = render(<NewsArchives data={groupData} user={undefined} />)
-    expect(container.textContent).not.toMatch(/Unlink\?/)
-    expect(container).toBeTruthy()
+  it('selects a group in place via WeblogViewer: refetches with view_weblog, no reload', async () => {
+    const pushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {})
+    global.fetch = listFetch({ success: 1, groups, viewWeblog: null })
+    const { getByText } = render(<NewsArchives user={{}} />)
+    await waitFor(() => expect(getByText('edev')).toBeInTheDocument())
+
+    fireEvent.click(getByText('edev'))
+    await waitFor(() => expect(global.fetch.mock.calls.length).toBe(2))
+    expect(window.location.href).toBe('http://localhost/?node_id=600') // no reload
+    expect(global.fetch.mock.calls[1][0]).toContain('view_weblog=100')
+    expect(pushSpy.mock.calls[pushSpy.mock.calls.length - 1][2]).toContain('view_weblog=100')
   })
 })

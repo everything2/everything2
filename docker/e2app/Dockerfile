@@ -8,7 +8,19 @@ ARG ARCH=x64
 # current npm (11.x) in-box -- no separate `npm install -g` step to float-break (#4488, was #4486).
 ARG NODE_VERSION=24.18.0
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libcrypt-dev libssl-dev zlib1g-dev libbrotli-dev libzstd-dev libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 libapache2-mod-evasive mysql-client ruby ruby-dev xz-utils cpanminus perlmagick psmisc cmake unzip && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libcrypt-dev libssl-dev zlib1g-dev libbrotli-dev libzstd-dev libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 libapache2-mod-evasive mysql-client ruby ruby-dev xz-utils cpanminus perlmagick psmisc cmake unzip libarchive-tools && rm -rf /var/lib/apt/lists/*
+# Route tar extraction through bsdtar (libarchive), not GNU tar. Canonical rebuilt the
+# ubuntu:26.04 base on 2026-07-16; its GNU tar 1.35 + glibc 2.41 now set modes with
+# fchmodat2() -- Linux syscall #452, added in kernel 6.6 (Oct 2023) -- for which the old
+# fchmodat has no AT_SYMLINK_NOFOLLOW fallback. CodeBuild's ARM build-host kernel is < 6.6,
+# so fchmodat2 returns ENOSYS and every extraction dies ("Cannot mkdir/open: Function not
+# implemented"), breaking `cpanm --installdeps` and the Node unpack below. This is a host-
+# kernel gap, NOT a Docker-version issue -- it reproduced identically on CodeBuild AL2 3.0,
+# AL2023 3.0, and AL2023 4.0. strace confirms bsdtar never calls fchmodat2 (it sets modes at
+# mkdir time / via fchmod on an fd -- all universal syscalls), so it extracts fine on the old
+# kernel. /usr/local/bin wins on PATH, so cpanm's `tar` and the bare `tar xv` below both
+# resolve to bsdtar; cpanm detects bsdtar via `tar --version` and adjusts flags. (#4544)
+RUN ln -sf /usr/bin/bsdtar /usr/local/bin/tar
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Ruby

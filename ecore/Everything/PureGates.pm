@@ -136,6 +136,12 @@ my %REGISTRY = (
     # Usergroup content viewers (#4541).
     usergroup_discussions     => {},
     usergroup_message_archive => {},
+
+    # News weblogs (#4543). The News-for-Noders node is named
+    # news_for_noders_stuff_that_matters but its React document type is the shorter
+    # 'news_for_noders', so override the emitted type here.
+    news_for_noders_stuff_that_matters => { type => 'news_for_noders' },
+    news_archives                      => {},
 );
 
 sub registry { return \%REGISTRY; }
