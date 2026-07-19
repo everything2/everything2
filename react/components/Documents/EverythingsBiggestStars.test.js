@@ -1,22 +1,25 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import EverythingsBiggestStars from './EverythingsBiggestStars'
-import fixture from '../../__fixtures__/pagestate/everything_s_biggest_stars.json'
-// Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
-// pinning the int-typed contract (#4152/#4108).
-describe('EverythingsBiggestStars (real pagestate fixture)', () => {
-  it('mounts against the captured payload', () => {
-    const { container } = render(<EverythingsBiggestStars data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    expect(container).toBeTruthy()
+
+// Fetch-driven (#4546): the Page is a pure gate; GET /api/everything_s_biggest_stars on mount.
+const jsonFetch = (p) => jest.fn(() => Promise.resolve({ json: () => Promise.resolve(p) }))
+
+describe('EverythingsBiggestStars (fetch-driven #4546)', () => {
+  afterEach(() => { delete global.fetch; jest.restoreAllMocks() })
+
+  it('fetches and renders the starred users', async () => {
+    global.fetch = jsonFetch({ success: 1, limit: 100, users: [{ node_id: 7, title: 'alice', stars: 3 }] })
+    const { container } = render(<EverythingsBiggestStars />)
+    await waitFor(() => expect(container.textContent).toMatch(/100 Most Starred Noders/))
+    expect(global.fetch.mock.calls[0][0]).toMatch(/^\/api\/everything_s_biggest_stars/)
+    expect(container.textContent).toMatch(/alice/)
+    expect(container.textContent).toMatch(/3 stars/)
   })
-  it('fixture has integer node_ids, never strings (#4152)', () => {
-    expect(JSON.stringify(fixture).match(/"node_id":"\d/g)).toBeNull()
-  })
-  it('no React key warnings', () => {
-    const errs = []
-    const spy = jest.spyOn(console, 'error').mockImplementation((...a) => errs.push(a.join(' ')))
-    render(<EverythingsBiggestStars data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    spy.mockRestore()
-    expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
+
+  it('renders the empty state', async () => {
+    global.fetch = jsonFetch({ success: 1, limit: 100, users: [] })
+    const { container } = render(<EverythingsBiggestStars />)
+    await waitFor(() => expect(container.textContent).toMatch(/No users with stars found/))
   })
 })

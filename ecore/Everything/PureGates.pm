@@ -142,6 +142,17 @@ my %REGISTRY = (
     # 'news_for_noders', so override the emitted type here.
     news_for_noders_stuff_that_matters => { type => 'news_for_noders' },
     news_archives                      => {},
+
+    # Statistics + leaderboard reports (#4546): read-only aggregates moved to Everything::API::*.
+    # The source nodes' types carry the access level, and since a pure gate serves the page to
+    # anyone (/api/pagestate bypasses node perms), each API re-asserts it -- the API is the real
+    # boundary: restricted_superdoc -> admin, oppressor_superdoc -> editor, superdoc -> public.
+    everything_statistics       => {},   # restricted_superdoc -> admin
+    user_statistics             => {},   # restricted_superdoc -> admin
+    everything_s_richest_noders => {},   # restricted_superdoc -> admin
+    everything_s_biggest_stars  => {},   # superdoc           -> public
+    level_distribution          => {},   # superdoc           -> public
+    everything_s_best_writeups  => {},   # oppressor_superdoc -> editor
 );
 
 sub registry { return \%REGISTRY; }

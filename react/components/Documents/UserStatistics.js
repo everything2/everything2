@@ -1,19 +1,46 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 /**
  * UserStatistics - Display user activity statistics
  *
- * Shows login activity over various time periods.
+ * Fetch-driven (#4546): the Page is a pure gate; this fetches GET /api/user_statistics.
+ * Admin-only: the restricted-superdoc gate lives in the API, which returns
+ * success:0/state:'permission' to non-admins.
  */
-const UserStatistics = ({ data }) => {
+const UserStatistics = () => {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/user_statistics', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  if (loading) {
+    return <div className="user-statistics"><p>Loading...</p></div>
+  }
+
   const {
+    success = 0,
     total_users = 0,
     users_ever_logged_in = 0,
     users_last_24h = 0,
     users_last_week = 0,
     users_last_2weeks = 0,
     users_last_4weeks = 0
-  } = data
+  } = data || {}
+
+  if (!success) {
+    return (
+      <div className="user-statistics">
+        <p>This page is restricted to administrators.</p>
+      </div>
+    )
+  }
 
   const stats = [
     { value: total_users, label: 'total users registered' },
@@ -31,7 +58,7 @@ const UserStatistics = ({ data }) => {
           {stats.map((stat, idx) => (
             <tr key={idx}>
               <td className="user-statistics__value-cell">
-                <strong>{stat.value.toLocaleString()}</strong>
+                <strong>{Number(stat.value).toLocaleString()}</strong>
               </td>
               <td>{stat.label}</td>
             </tr>

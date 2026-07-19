@@ -1,7 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'
 
-export default function EverythingsBiggestStars({ data }) {
-  const { users = [], limit = 100 } = data;
+/**
+ * Everything's Biggest Stars - top users by star count.
+ *
+ * Fetch-driven (#4546): the Page is a pure gate; this fetches GET /api/everything_s_biggest_stars.
+ */
+export default function EverythingsBiggestStars() {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/everything_s_biggest_stars', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  if (loading) {
+    return <div className="biggest-stars"><p>Loading...</p></div>
+  }
+
+  const { users = [], limit = 100 } = data || {}
 
   return (
     <div className="biggest-stars">
@@ -24,5 +45,5 @@ export default function EverythingsBiggestStars({ data }) {
         </ol>
       )}
     </div>
-  );
+  )
 }

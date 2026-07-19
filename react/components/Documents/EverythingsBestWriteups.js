@@ -1,11 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'
 
 /**
- * Everything's Best Writeups - 50 most cooled writeups (staff only)
+ * Everything's Best Writeups - 50 most cooled writeups (editor only)
  * Styles in CSS: .best-writeups__*
+ *
+ * Fetch-driven (#4546): the Page is a pure gate; the editor gate now lives in
+ * GET /api/everything_s_best_writeups (the real boundary). Non-editors get success:0/state:'permission'.
  */
-export default function EverythingsBestWriteups({ data }) {
-  const { writeups = [] } = data;
+export default function EverythingsBestWriteups() {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/everything_s_best_writeups', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  if (loading) {
+    return <div className="best-writeups"><p>Loading...</p></div>
+  }
+
+  const { success = 0, writeups = [] } = data || {}
+
+  if (!success) {
+    return (
+      <div className="best-writeups">
+        <p className="best-writeups__empty">
+          This page is visible only to staff members.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="best-writeups">
@@ -56,5 +85,5 @@ export default function EverythingsBestWriteups({ data }) {
         </table>
       )}
     </div>
-  );
+  )
 }

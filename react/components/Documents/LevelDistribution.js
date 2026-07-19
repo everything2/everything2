@@ -1,11 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'
 
 /**
  * Level Distribution - Active users at each level
  * Styles in CSS: .level-distribution__*
+ *
+ * Fetch-driven (#4546): the Page is a pure gate; this fetches GET /api/level_distribution.
  */
-export default function LevelDistribution({ data }) {
-  const { levels = [] } = data;
+export default function LevelDistribution() {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/level_distribution', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  if (loading) {
+    return <div className="level-distribution"><p>Loading...</p></div>
+  }
+
+  const { levels = [] } = data || {}
 
   return (
     <div className="level-distribution">
@@ -53,5 +71,5 @@ export default function LevelDistribution({ data }) {
         </table>
       )}
     </div>
-  );
+  )
 }
