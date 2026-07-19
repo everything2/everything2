@@ -153,6 +153,12 @@ my %REGISTRY = (
     everything_s_biggest_stars  => {},   # superdoc           -> public
     level_distribution          => {},   # superdoc           -> public
     everything_s_best_writeups  => {},   # oppressor_superdoc -> editor
+
+    # Registries reports (#4548): login-required (NoGuest) superdocs; each API returns state:'guest'
+    # for guests. include_empty is read off the URL in React and passed to /api/the_registries.
+    the_registries          => {},
+    registry_information    => {},
+    recent_registry_entries => {},
 );
 
 sub registry { return \%REGISTRY; }
