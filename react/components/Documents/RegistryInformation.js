@@ -1,33 +1,38 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import RegistryFooter from '../shared/RegistryFooter'
 
 /**
- * RegistryInformation - Show user's own registry entries
+ * RegistryInformation - Show the current user's own registry entries
  * Styles in CSS: .registry-info__*
  *
- * Displays all registries the current user has submitted data to
+ * Fetch-driven (#4548): the Page is a pure gate; this fetches GET /api/registry_information.
+ * Login-required: the API returns state:'guest' for guests.
  */
-const RegistryInformation = ({ data }) => {
-  const { entries = [], has_entries, is_guest, error } = data
+const RegistryInformation = () => {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  // Guest message
-  if (is_guest) {
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/registry_information', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  if (loading) {
+    return <div className="registry-info"><p>Loading...</p></div>
+  }
+
+  const { state, entries = [], has_entries } = data || {}
+
+  if (state === 'guest') {
     return (
       <div className="registry-info">
         <p className="registry-info__guest-message">
           ...would be shown here if you logged in.
         </p>
-      </div>
-    )
-  }
-
-  // Error message
-  if (error) {
-    return (
-      <div className="registry-info">
-        <div className="registry-info__error">
-          <p>{error}</p>
-        </div>
       </div>
     )
   }

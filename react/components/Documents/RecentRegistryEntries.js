@@ -1,33 +1,38 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import RegistryFooter from '../shared/RegistryFooter'
 
 /**
  * RecentRegistryEntries - Show recent entries across all registries
  * Styles in CSS: .recent-registry-entries__*
  *
- * Displays the last 100 registry entries from all registries
+ * Fetch-driven (#4548): the Page is a pure gate; this fetches GET /api/recent_registry_entries.
+ * Login-required: the API returns state:'guest' for guests.
  */
-const RecentRegistryEntries = ({ data }) => {
-  const { entries = [], is_guest, error } = data
+const RecentRegistryEntries = () => {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  // Guest message
-  if (is_guest) {
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/recent_registry_entries', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  if (loading) {
+    return <div className="recent-registry-entries"><p>Loading...</p></div>
+  }
+
+  const { state, entries = [] } = data || {}
+
+  if (state === 'guest') {
     return (
       <div className="recent-registry-entries">
         <p className="recent-registry-entries__guest-message">
           ...would be shown here if you logged in.
         </p>
-      </div>
-    )
-  }
-
-  // Error message
-  if (error) {
-    return (
-      <div className="recent-registry-entries">
-        <div className="recent-registry-entries__error">
-          <p>{error}</p>
-        </div>
       </div>
     )
   }
