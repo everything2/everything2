@@ -1,22 +1,30 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import EverythingsBestWriteups from './EverythingsBestWriteups'
-import fixture from '../../__fixtures__/pagestate/everything_s_best_writeups.json'
-// Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
-// pinning the int-typed contract (#4152/#4108).
-describe('EverythingsBestWriteups (real pagestate fixture)', () => {
-  it('mounts against the captured payload', () => {
-    const { container } = render(<EverythingsBestWriteups data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    expect(container).toBeTruthy()
+
+// Fetch-driven (#4546): the Page is a pure gate; the editor gate lives in
+// GET /api/everything_s_best_writeups (the real boundary). Non-editors get success:0/state:'permission'.
+const jsonFetch = (p) => jest.fn(() => Promise.resolve({ json: () => Promise.resolve(p) }))
+
+describe('EverythingsBestWriteups (fetch-driven #4546)', () => {
+  afterEach(() => { delete global.fetch; jest.restoreAllMocks() })
+
+  it('renders the writeups for an editor', async () => {
+    global.fetch = jsonFetch({
+      success: 1,
+      writeups: [{ writeup_id: 1, writeup_title: 'A WU', parent_id: 2, parent_title: 'A node', author_id: 3, author_title: 'alice', cooled: 9 }]
+    })
+    const { container } = render(<EverythingsBestWriteups />)
+    await waitFor(() => expect(container.textContent).toMatch(/Most Cooled/))
+    expect(global.fetch.mock.calls[0][0]).toMatch(/^\/api\/everything_s_best_writeups/)
+    expect(container.textContent).toMatch(/A WU/)
+    expect(container.textContent).toMatch(/9C!/)
   })
-  it('fixture has integer node_ids, never strings (#4152)', () => {
-    expect(JSON.stringify(fixture).match(/"node_id":"\d/g)).toBeNull()
-  })
-  it('no React key warnings', () => {
-    const errs = []
-    const spy = jest.spyOn(console, 'error').mockImplementation((...a) => errs.push(a.join(' ')))
-    render(<EverythingsBestWriteups data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    spy.mockRestore()
-    expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
+
+  it('shows a staff-only message on permission denied', async () => {
+    global.fetch = jsonFetch({ success: 0, state: 'permission' })
+    const { container } = render(<EverythingsBestWriteups />)
+    await waitFor(() => expect(container.textContent).toMatch(/visible only to staff members/i))
+    expect(container.textContent).not.toMatch(/Most Cooled/)
   })
 })

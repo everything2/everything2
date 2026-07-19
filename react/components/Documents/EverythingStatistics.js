@@ -1,24 +1,49 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import LinkNode from '../LinkNode'
 
 /**
  * EverythingStatistics - Site-wide statistics display
  * Styles in CSS: .everything-statistics__*
  *
- * Shows total counts for nodes, writeups, users, and links
+ * Fetch-driven (#4546): the Page is a pure gate; this fetches GET /api/everything_statistics.
+ * Admin-only: the restricted-superdoc gate lives in the API, which returns
+ * success:0/state:'permission' to non-admins.
  */
-const EverythingStatistics = ({ data }) => {
+const EverythingStatistics = () => {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/everything_statistics', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  const formatNumber = (num) => Number(num || 0).toLocaleString()
+
+  if (loading) {
+    return <div className="everything-statistics"><p>Loading...</p></div>
+  }
+
   const {
+    success = 0,
     total_nodes,
     total_writeups,
     total_users,
     total_links,
     finger_node_id,
     news_node_id
-  } = data
+  } = data || {}
 
-  const formatNumber = (num) => {
-    return Number(num).toLocaleString()
+  if (!success) {
+    return (
+      <div className="everything-statistics">
+        <p>This page is restricted to administrators.</p>
+      </div>
+    )
   }
 
   return (

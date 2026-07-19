@@ -1,22 +1,25 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import LevelDistribution from './LevelDistribution'
-import fixture from '../../__fixtures__/pagestate/level_distribution.json'
-// Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
-// pinning the int-typed contract (#4152/#4108).
-describe('LevelDistribution (real pagestate fixture)', () => {
-  it('mounts against the captured payload', () => {
-    const { container } = render(<LevelDistribution data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    expect(container).toBeTruthy()
+
+// Fetch-driven (#4546): the Page is a pure gate; GET /api/level_distribution on mount.
+const jsonFetch = (p) => jest.fn(() => Promise.resolve({ json: () => Promise.resolve(p) }))
+
+describe('LevelDistribution (fetch-driven #4546)', () => {
+  afterEach(() => { delete global.fetch; jest.restoreAllMocks() })
+
+  it('fetches and renders the level rows', async () => {
+    global.fetch = jsonFetch({ success: 1, levels: [{ level: 5, title: 'Guru', count: 12 }] })
+    const { container } = render(<LevelDistribution />)
+    await waitFor(() => expect(container.textContent).toMatch(/active E2 users at each level/))
+    expect(global.fetch.mock.calls[0][0]).toMatch(/^\/api\/level_distribution/)
+    expect(container.textContent).toMatch(/Guru/)
+    expect(container.textContent).toMatch(/12/)
   })
-  it('fixture has integer node_ids, never strings (#4152)', () => {
-    expect(JSON.stringify(fixture).match(/"node_id":"\d/g)).toBeNull()
-  })
-  it('no React key warnings', () => {
-    const errs = []
-    const spy = jest.spyOn(console, 'error').mockImplementation((...a) => errs.push(a.join(' ')))
-    render(<LevelDistribution data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    spy.mockRestore()
-    expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
+
+  it('renders the empty state', async () => {
+    global.fetch = jsonFetch({ success: 1, levels: [] })
+    const { container } = render(<LevelDistribution />)
+    await waitFor(() => expect(container.textContent).toMatch(/No active users found/))
   })
 })
