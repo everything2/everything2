@@ -413,6 +413,48 @@ subtest 'UTF-8 emoji storage in chatter' => sub {
     is($data->{chatter}->[0]->{msgtext}, $emoji_message, "Emoji message in API response is correct");
 };
 
+# message.tstamp is a 1-second-granularity TIMESTAMP, so chatter sent within the same second used to
+# come back in an arbitrary order -- getRecentChatter ordered on tstamp alone. That made this file
+# fail intermittently (the emoji subtest above asserts its own message is chatter->[0], which loses
+# the coin flip whenever a neighbouring test posts in the same second) and, in production, let two
+# simultaneous chatter lines render out of order. getRecentChatter now tie-breaks on the
+# message_id PK. Force the collision explicitly so this is deterministic rather than a race. #4554
+subtest 'same-second chatter is ordered deterministically by message_id' => sub {
+    plan tests => 3;
+
+    my $stamp = $DB->sqlSelect("DATE_SUB(NOW(), INTERVAL 5 SECOND)");
+    my @ids;
+    for my $n (1 .. 3) {
+        $DB->sqlInsert('message', {
+            msgtext     => "same-second ordering probe $n",
+            author_user => $test_user->{node_id},
+            for_user    => 0,
+            room        => 0,
+            tstamp      => $stamp,
+        });
+        push @ids, $DB->sqlSelect('LAST_INSERT_ID()');
+    }
+
+    # Sanity: the three really do collide on one tstamp, so only the tie-break can order them.
+    my $distinct = $DB->sqlSelect('COUNT(DISTINCT tstamp)', 'message',
+        "message_id in (" . join(',', @ids) . ")");
+    is($distinct, 1, 'the three probe messages share one tstamp (collision forced)');
+
+    # All three share that tstamp, so their relative order is decided purely by message_id.
+    my $rows = $APP->getRecentChatter({ limit => 100 });
+    my %pos;
+    $pos{ $rows->[$_]{message_id} } = $_ for 0 .. $#$rows;
+
+    my @seen = map { $pos{$_} } @ids;
+    is(scalar(grep { defined } @seen), 3, 'all three same-second messages came back');
+
+    # Newest-first: ids ascend with insertion, so the last-inserted must sit at the lowest index.
+    ok($seen[0] > $seen[1] && $seen[1] > $seen[2],
+        'same-second messages are returned newest message_id first');
+
+    $DB->sqlDelete('message', "message_id in (" . join(',', @ids) . ")");
+};
+
 #############################################################################
 # flushChatter - backs the unified /api/chatter/clear endpoint.
 #   room scope: a chanop clears ONLY their current room

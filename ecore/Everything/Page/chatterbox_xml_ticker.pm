@@ -45,7 +45,9 @@ sub display {
         $oldUA = 0;
     }
 
-    my $csr = $self->DB->sqlSelectMany('*', 'message', "for_user=0 and room=$room and tstamp > date_sub(now(), interval 500 second)", 'order by tstamp');
+    # tstamp is 1-second granularity, so tie-break on the message_id PK or same-second messages
+    # come back to the ticker's clients in an arbitrary order (#4554).
+    my $csr = $self->DB->sqlSelectMany('*', 'message', "for_user=0 and room=$room and tstamp > date_sub(now(), interval 500 second)", 'order by tstamp, message_id');
 
     my @msgs = ();
     while (my $MSG = $csr->fetchrow_hashref) {

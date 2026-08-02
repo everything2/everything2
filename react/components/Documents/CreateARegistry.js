@@ -1,51 +1,67 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import RegistryFooter from '../shared/RegistryFooter'
 
 /**
  * CreateARegistry - Form to create a new registry
  * Styles in CSS: .create-registry__*
- * Requires level 8+ to create registries
+ *
+ * Fetch-driven (#4550): the Page is a pure gate; this fetches GET /api/create_a_registry for the
+ * can-create/level gate (state:'guest' for guests). Creation POSTs to
+ * /api/create_a_registry/create, which sets the registry's own fields -- the generic
+ * /api/node/create could only take type+title (#4554). The answer-style options are display config
+ * here, not server-shipped.
  */
-const CreateARegistry = ({ data, user }) => {
-  const {
-    can_create,
-    level_required,
-    current_level,
-    input_styles = ['text', 'yes/no', 'date']
-  } = data
+const INPUT_STYLES = ['text', 'yes/no', 'date']
 
-  // Viewer guest flag comes from the global e2.user prop (#4390 contentData dedup).
-  const isGuest = !!user?.guest
+const CreateARegistry = () => {
+  const [gate, setGate] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  const [title, setTitle] = React.useState('')
-  const [description, setDescription] = React.useState('')
-  const [inputStyle, setInputStyle] = React.useState('text')
-  const [error, setError] = React.useState('')
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [inputStyle, setInputStyle] = useState('text')
+  const [error, setError] = useState('')
 
-  // Create via the generic node API (was op=new). #4340 Phase 2.
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/create_a_registry', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setGate(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  // Create via the registry API, which sets the registry-specific fields. The generic
+  // /api/node/create takes only type+title, so it silently dropped the description and the answer
+  // style -- every registry came back free-text whatever you picked (#4554).
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     try {
-      const res = await fetch('/api/node/create', {
+      const res = await fetch('/api/create_a_registry/create', {
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ type: 'registry', title }),
+        body: JSON.stringify({ title, description, input_style: inputStyle }),
       })
-      const data = res.ok ? await res.json() : null
-      if (data && data.success && data.node_id) {
-        window.location.href = `/node/${data.node_id}`
+      const created = res.ok ? await res.json() : null
+      if (created && created.success && created.node_id) {
+        window.location.href = `/node/${created.node_id}`
         return
       }
-      setError((data && data.error) || 'Could not create the registry')
+      setError((created && created.error) || 'Could not create the registry')
     } catch (err) {
       setError('Network error: ' + err.message)
     }
   }
 
-  // Guest message
-  if (isGuest) {
+  if (loading) {
+    return <div className="create-registry"><p>Loading...</p></div>
+  }
+
+  const { state, can_create, level_required, current_level } = gate || {}
+
+  if (state === 'guest') {
     return (
       <div className="create-registry">
         <p className="create-registry__guest-message">
@@ -55,8 +71,7 @@ const CreateARegistry = ({ data, user }) => {
     )
   }
 
-  // Level requirement not met
-  if (level_required) {
+  if (!can_create) {
     return (
       <div className="create-registry">
         <div className="create-registry__intro">
@@ -73,7 +88,6 @@ const CreateARegistry = ({ data, user }) => {
     )
   }
 
-  // Can create registry - show form
   return (
     <div className="create-registry">
       <div className="create-registry__intro">
@@ -119,7 +133,7 @@ const CreateARegistry = ({ data, user }) => {
                   onChange={(e) => setInputStyle(e.target.value)}
                   className="create-registry__select"
                 >
-                  {input_styles.map((style) => (
+                  {INPUT_STYLES.map((style) => (
                     <option key={style} value={style}>{style}</option>
                   ))}
                 </select>

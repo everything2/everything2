@@ -159,6 +159,11 @@ my %REGISTRY = (
     the_registries          => {},
     registry_information    => {},
     recent_registry_entries => {},
+
+    # Rest of the registry family (#4550): popular_registries (public report) + create_a_registry
+    # (the level-8 create gate; input-style options are React config, creation is /api/node/create).
+    popular_registries => {},
+    create_a_registry  => {},
 );
 
 sub registry { return \%REGISTRY; }
