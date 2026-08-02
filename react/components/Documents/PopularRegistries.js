@@ -1,13 +1,30 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import RegistryFooter from '../shared/RegistryFooter'
 
 /**
  * PopularRegistries - Show most popular registries by submission count
  * Styles in CSS: .popular-registries__*
- * Displays a table of registries sorted by number of entries
+ *
+ * Fetch-driven (#4550): the Page is a pure gate; this fetches GET /api/popular_registries.
  */
-const PopularRegistries = ({ data }) => {
-  const { registries = [], limit = 25 } = data
+const PopularRegistries = () => {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/popular_registries', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  if (loading) {
+    return <div className="popular-registries"><p>Loading...</p></div>
+  }
+
+  const { registries = [], limit = 25 } = data || {}
 
   return (
     <div className="popular-registries">

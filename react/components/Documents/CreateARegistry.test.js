@@ -1,82 +1,63 @@
 import React from 'react'
-import { render, fireEvent } from '@testing-library/react'
+import { render, waitFor, fireEvent } from '@testing-library/react'
 import CreateARegistry from './CreateARegistry'
-import fixture from '../../__fixtures__/pagestate/create_a_registry.json'
-// Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
-// pinning the int-typed contract (#4152/#4108).
-describe('CreateARegistry (real pagestate fixture)', () => {
-  it('mounts against the captured payload', () => {
-    const { container } = render(<CreateARegistry data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    expect(container).toBeTruthy()
-  })
-  it('fixture has integer node_ids, never strings (#4152)', () => {
-    expect(JSON.stringify(fixture).match(/"node_id":"\d/g)).toBeNull()
-  })
-  it('no React key warnings', () => {
-    const errs = []
-    const spy = jest.spyOn(console, 'error').mockImplementation((...a) => errs.push(a.join(' ')))
-    render(<CreateARegistry data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    spy.mockRestore()
-    expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
-  })
-})
 
-// Viewer guest flag now sourced from the global e2.user prop (#4390 contentData dedup).
-describe('CreateARegistry guest gating via user prop', () => {
-  it('shows the guest message when user.guest is true', () => {
-    const { container } = render(<CreateARegistry data={{}} user={{ guest: true }} />)
-    expect(container.textContent).toContain('You must be logged in to create a registry.')
+// Fetch-driven (#4550): the Page is a pure gate; GET /api/create_a_registry gates the form.
+// state:'guest' for guests; can_create false shows the level warning; creation POSTs /api/node/create.
+const jsonFetch = (p) => jest.fn(() => Promise.resolve({ json: () => Promise.resolve(p) }))
+afterEach(() => { delete global.fetch; jest.restoreAllMocks() })
+
+describe('CreateARegistry (fetch-driven #4550)', () => {
+  it('shows the form when can_create', async () => {
+    global.fetch = jsonFetch({ success: 1, can_create: true, current_level: 12, level_required: 8 })
+    const { container } = render(<CreateARegistry />)
+    await waitFor(() => expect(container.querySelector('.create-registry__form')).toBeTruthy())
+    expect(global.fetch.mock.calls[0][0]).toMatch(/^\/api\/create_a_registry/)
+    expect(container.textContent).toMatch(/Answer style/) // input styles are React config
   })
 
-  it('does not show the guest message when user.guest is false', () => {
-    const { container } = render(<CreateARegistry data={{ can_create: 1 }} user={{ guest: false }} />)
-    expect(container.textContent).not.toContain('You must be logged in to create a registry.')
+  it('shows the level warning when not can_create', async () => {
+    global.fetch = jsonFetch({ success: 1, can_create: false, current_level: 3, level_required: 8 })
+    const { container } = render(<CreateARegistry />)
+    await waitFor(() => expect(container.textContent).toMatch(/would need to be/i))
+    expect(container.textContent).toMatch(/level 8/)
+    expect(container.textContent).toMatch(/Your current level: 3/)
+    expect(container.querySelector('.create-registry__form')).toBeFalsy()
   })
 
-  it('does not crash when user prop is undefined', () => {
-    const { container } = render(<CreateARegistry data={{ can_create: 1 }} user={undefined} />)
-    expect(container.textContent).not.toContain('You must be logged in to create a registry.')
-  })
-})
-
-// Generic create API migration (was op=new). #4340 Phase 2.
-describe('CreateARegistry submit -> /api/node/create', () => {
-  const origLocation = window.location
-
-  beforeEach(() => {
-    delete window.location
-    window.location = { href: '' }
+  it('shows the guest message on state:guest', async () => {
+    global.fetch = jsonFetch({ success: 0, state: 'guest' })
+    const { container } = render(<CreateARegistry />)
+    await waitFor(() => expect(container.textContent).toMatch(/must be logged in to create a registry/i))
   })
 
-  afterEach(() => {
-    window.location = origLocation
-    jest.restoreAllMocks()
-  })
-
-  it('POSTs to /api/node/create and redirects on success', async () => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({ ok: true, json: async () => ({ success: 1, node_id: 999 }) })
+  // #4554: the chosen answer style + description must reach the server. The old submit posted
+  // {type,title} to the generic /api/node/create, which dropped both -- every registry came out
+  // free-text no matter what you picked.
+  it('submits the selected answer style and description, not just the title', async () => {
+    global.fetch = jest.fn((url) =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(
+          String(url).endsWith('/create_a_registry/create')
+            ? { success: 1, node_id: 42, input_style: 'yes/no' }
+            : { success: 1, can_create: true, current_level: 12, level_required: 8 }
+        )
+      })
     )
+    const { container } = render(<CreateARegistry />)
+    await waitFor(() => expect(container.querySelector('.create-registry__form')).toBeTruthy())
 
-    const { container } = render(<CreateARegistry data={{ can_create: 1 }} />)
+    fireEvent.change(container.querySelector('.create-registry__text-input'), { target: { value: 'My Registry' } })
+    fireEvent.change(container.querySelector('.create-registry__textarea'), { target: { value: 'Pick one' } })
+    fireEvent.change(container.querySelector('.create-registry__select'), { target: { value: 'yes/no' } })
+    fireEvent.submit(container.querySelector('.create-registry__form'))
 
-    const titleInput = container.querySelector('input[name="node"]')
-    expect(titleInput).toBeTruthy()
-    fireEvent.change(titleInput, { target: { value: 'My Registry' } })
-
-    const form = container.querySelector('form')
-    fireEvent.submit(form)
-
-    // allow the async handler microtasks to resolve
-    await Promise.resolve()
-    await Promise.resolve()
-
-    expect(global.fetch).toHaveBeenCalledWith(
-      '/api/node/create',
-      expect.objectContaining({ method: 'POST' })
-    )
-    const body = JSON.parse(global.fetch.mock.calls[0][1].body)
-    expect(body).toEqual({ type: 'registry', title: 'My Registry' })
-    expect(window.location.href).toBe('/node/999')
+    await waitFor(() => expect(global.fetch.mock.calls.length).toBe(2))
+    const [url, opts] = global.fetch.mock.calls[1]
+    expect(url).toBe('/api/create_a_registry/create')
+    expect(JSON.parse(opts.body)).toEqual({
+      title: 'My Registry', description: 'Pick one', input_style: 'yes/no'
+    })
   })
 })

@@ -2501,6 +2501,71 @@ if ($registry) {
   print STDERR "  - Created: Test Registry Entry (registry)\n";
 }
 
+# Registry entries for QA (#4550): the registry report pages (the_registries,
+# registry_information, recent_registry_entries, popular_registries) render nothing without
+# registration rows -- prod has plenty, the QA DB had zero. Seed a handful of registries plus
+# user registrations so those pages have something real to render/QA against.
+print STDERR "Creating QA registries + registrations\n";
+# One registry per input_style so all three render paths (free text, yes/no dropdown, date picker)
+# have QA data -- Everything::Controller::registry switches its widget on input_style.
+my %qa_registries = (
+  "Noders by Location"            => { description => "Where in the world are you?",     input_style => "text" },
+  "Favorite Programming Language" => { description => "What's your language of choice?",  input_style => "text" },
+  "Coffee or Tea"                 => { description => "Coffee or tea?",                   input_style => "yes/no" },
+  "Noder Birthdays"               => { description => "When should we bake you a cake?",  input_style => "date" },
+);
+my %reg_node;
+foreach my $rtitle (sort keys %qa_registries) {
+  my $r = getNode($rtitle, "registry");
+  if (!$r) {
+    $DB->insertNode($rtitle, "registry", $DB->getNode("root", "user"), {});
+    $r = getNode($rtitle, "registry");
+  }
+  if ($r) {
+    # doctext, not question: Everything::Controller::registry displays doctext as the registry's
+    # description -- nothing reads registry.question (that column is the poll types' idiom).
+    $r->{doctext}     = $qa_registries{$rtitle}{description};
+    $r->{input_style} = $qa_registries{$rtitle}{input_style};
+    $r->{public}      = 1;
+    $DB->updateNode($r, -1);
+    $reg_node{$rtitle} = $r;
+  }
+}
+
+# [ user, registry, data, comments, in_user_profile ] -- varied counts so popular_registries
+# has a real ranking; root registers to all three so registry_information has data for root.
+my @qa_registrations = (
+  [ "normaluser1", "Noders by Location",            "Seattle, WA",  "rainy but nice", 1 ],
+  [ "normaluser2", "Noders by Location",            "London, UK",   "",               1 ],
+  [ "normaluser3", "Noders by Location",            "Tokyo, JP",    "konnichiwa",     0 ],
+  [ "root",        "Noders by Location",            "The Internet", "everywhere",     1 ],
+  [ "normaluser1", "Favorite Programming Language", "Perl",         "naturally",      1 ],
+  [ "normaluser2", "Favorite Programming Language", "Rust",         "",               0 ],
+  [ "root",        "Favorite Programming Language", "C",            "the classics",   1 ],
+  [ "normaluser4", "Coffee or Tea",                 "Coffee",       "",               1 ],
+  [ "root",        "Coffee or Tea",                 "Tea",          "earl grey, hot", 1 ],
+  # date input_style: "YYYY-MM-DD" is a full date, "MM-DD" is the secret-year form -- seed both,
+  # since Registry.js parses them down different branches.
+  [ "normaluser1", "Noder Birthdays",               "1998-03-23",   "E2's birthday",  1 ],
+  [ "root",        "Noder Birthdays",               "11-13",        "secret year",    0 ],
+);
+foreach my $entry (@qa_registrations) {
+  my ($uname, $rtitle, $data, $comments, $in_profile) = @$entry;
+  my $u = $DB->getNode($uname, "user");
+  my $r = $reg_node{$rtitle};
+  next unless $u && $r;
+  # composite PK (from_user, for_registry) -- delete-then-insert keeps reseed idempotent.
+  $DB->sqlDelete("registration", "from_user=$u->{node_id} AND for_registry=$r->{node_id}");
+  $DB->sqlInsert("registration", {
+    from_user       => $u->{node_id},
+    for_registry    => $r->{node_id},
+    data            => $data,
+    comments        => $comments,
+    in_user_profile => $in_profile,
+  });
+}
+print STDERR "  - Created " . scalar(@qa_registrations) . " registrations across " . scalar(keys %reg_node) . " registries\n";
+
 # podcast - owned by podpeople group
 print STDERR "Creating podcast test node\n";
 my $podpeople = $DB->getNode("podpeople","usergroup");

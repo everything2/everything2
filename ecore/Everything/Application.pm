@@ -5800,8 +5800,12 @@ sub getRecentChatter
     $where .= " and tstamp > '$time_ago'";
   }
 
-  # Fetch recent chatter
-  my $csr = $this->{db}->sqlSelectMany("*", "message", $where, "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
+  # Fetch recent chatter. Tie-break on message_id: message.tstamp is a 1-second-granularity
+  # TIMESTAMP, so ordering on it alone leaves messages sent in the same second in an arbitrary
+  # order -- two people chattering at once could render out of order, and a paged fetch could
+  # repeat or skip a row across pages. message_id is the auto-increment PK, so it restores a
+  # total order. (Same tie-break usergroup_message_archive already applies.) #4554
+  my $csr = $this->{db}->sqlSelectMany("*", "message", $where, "ORDER BY tstamp DESC, message_id DESC LIMIT $limit OFFSET $offset");
   my $records = [];
 
   # Get list of users this user has blocked (if user provided)

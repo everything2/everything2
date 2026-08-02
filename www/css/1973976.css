@@ -29484,6 +29484,20 @@ a.node-toolset__btn {
   vertical-align: top;
 }
 
+/* The Data and Comments cells hold parsed E2 content, which arrives wrapped in a block element
+   (renderE2Content emits <p>), while User / As of / Profile? are bare text. The default
+   `p { margin: 10px 0 }` then pushed those two cells' first line 10px below its neighbours in the
+   same row -- the row's cells were aligned, but their contents were not. Drop the leading and
+   trailing margin so every cell's first line shares a baseline; spacing *between* paragraphs in
+   multi-paragraph entries is preserved. (#4554) */
+.registry__td > :first-child {
+  margin-top: 0;
+}
+
+.registry__td > :last-child {
+  margin-bottom: 0;
+}
+
 .registry__admin-delete-button {
   background: none;
   border: none;

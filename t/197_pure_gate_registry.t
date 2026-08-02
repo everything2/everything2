@@ -52,6 +52,7 @@ my @expected = qw(
     everything_statistics user_statistics everything_s_richest_noders
     everything_s_biggest_stars level_distribution everything_s_best_writeups
     the_registries registry_information recent_registry_entries
+    popular_registries create_a_registry
 );
 for my $name (@expected) {
     ok(exists $reg->{$name}, "registry has '$name'");
