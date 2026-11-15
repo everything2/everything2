@@ -42,58 +42,6 @@ jest.mock('../Editor/useE2Editor', () => ({
   getE2EditorExtensions: jest.fn(() => []),
 }))
 
-// Mock StarterKit and other Tiptap extensions
-jest.mock('@tiptap/starter-kit', () => ({
-  __esModule: true,
-  default: {
-    configure: jest.fn(() => ({})),
-  },
-}))
-
-jest.mock('@tiptap/extension-underline', () => ({
-  __esModule: true,
-  default: {},
-}))
-
-jest.mock('@tiptap/extension-subscript', () => ({
-  __esModule: true,
-  default: {},
-}))
-
-jest.mock('@tiptap/extension-superscript', () => ({
-  __esModule: true,
-  default: {},
-}))
-
-jest.mock('@tiptap/extension-table', () => ({
-  __esModule: true,
-  default: {
-    configure: jest.fn(() => ({})),
-  },
-}))
-
-jest.mock('@tiptap/extension-table-row', () => ({
-  __esModule: true,
-  default: {},
-}))
-
-jest.mock('@tiptap/extension-table-cell', () => ({
-  __esModule: true,
-  default: {},
-}))
-
-jest.mock('@tiptap/extension-table-header', () => ({
-  __esModule: true,
-  default: {},
-}))
-
-jest.mock('@tiptap/extension-text-align', () => ({
-  __esModule: true,
-  default: {
-    configure: jest.fn(() => ({})),
-  },
-}))
-
 // Mock fetch for API calls
 global.fetch = jest.fn(() =>
   Promise.resolve({

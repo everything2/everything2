@@ -369,7 +369,7 @@ const DocumentEditor = ({
       // Switching to Rich mode - update Tiptap with HTML content
       // First apply breakTags to convert plain-text newlines to proper HTML paragraphs
       const withBreaks = normalizeEditorHtml(htmlContent)
-      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks))
+      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks), { emitUpdate: false })
     }
 
     setEditorMode(newMode)

@@ -168,7 +168,7 @@ const UserEdit = ({ data, e2 }) => {
       // Set editor content (both rich and HTML modes)
       if (editor) {
         const withBrackets = convertEntitiesToRawBrackets(doctext)
-        editor.commands.setContent(withBrackets)
+        editor.commands.setContent(withBrackets, { emitUpdate: false })
         // Mark editor as initialized after content is set (so onUpdate events are tracked as user edits)
         setTimeout(() => {
           editorInitialized.current = true
@@ -265,7 +265,7 @@ const UserEdit = ({ data, e2 }) => {
     } else if (editorMode === 'html' && editor) {
       // Switching to rich mode - load HTML content into editor
       const withBrackets = convertEntitiesToRawBrackets(htmlContent)
-      editor.commands.setContent(withBrackets)
+      editor.commands.setContent(withBrackets, { emitUpdate: false })
     }
 
     setEditorMode(newMode)

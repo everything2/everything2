@@ -261,7 +261,7 @@ function Settings({ data, user }) {
   useEffect(() => {
     if (bioEditor && data.profileData?.doctext) {
       const withBrackets = convertEntitiesToRawBrackets(data.profileData.doctext)
-      bioEditor.commands.setContent(withBrackets)
+      bioEditor.commands.setContent(withBrackets, { emitUpdate: false })
     }
   }, [bioEditor, data.profileData?.doctext])
 
@@ -409,7 +409,7 @@ function Settings({ data, user }) {
     } else if (editorMode === 'html' && bioEditor) {
       // Switching to rich mode - load HTML content into editor
       const withBrackets = convertEntitiesToRawBrackets(htmlContent)
-      bioEditor.commands.setContent(withBrackets)
+      bioEditor.commands.setContent(withBrackets, { emitUpdate: false })
     }
 
     setEditorMode(newMode)

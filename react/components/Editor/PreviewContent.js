@@ -22,7 +22,9 @@ const PreviewContent = ({ editor, editorMode, htmlContent, previewTrigger }) => 
     if (editorMode === 'html') {
       return htmlContent;
     }
-    if (editor) {
+    // useEditor() can briefly hand a render the editor it just destroyed; TipTap v3's
+    // destroy() nulls the schema, so getHTML() on it would throw.
+    if (editor && !editor.isDestroyed) {
       const html = editor.getHTML();
       const withEntities = convertRawBracketsToEntities(html);
       return convertToE2Syntax(withEntities);

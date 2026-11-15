@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useEditorState } from '@tiptap/react';
 import { FaAlignLeft, FaAlignCenter, FaAlignRight } from 'react-icons/fa';
 
 /**
@@ -76,6 +77,26 @@ const LiteralCharDropdown = ({ editor }) => {
   );
 };
 
+// Toolbar state read from the editor. TipTap v3 no longer re-renders the component that
+// owns the editor on every transaction, so the toolbar subscribes to just the values it
+// shows via useEditorState and re-renders only when one of them changes.
+const MARKS = ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'code'];
+const NODES = ['bulletList', 'orderedList', 'blockquote', 'codeBlock', 'e2link', 'table'];
+const ALIGNMENTS = ['left', 'center', 'right'];
+
+const selectToolbarState = ({ editor }) => {
+  // useEditor() can briefly hand a render the editor it just destroyed, and can() on a
+  // destroyed v3 editor throws.
+  if (!editor || editor.isDestroyed) return null;
+  const state = {};
+  for (const name of [...MARKS, ...NODES]) state[name] = editor.isActive(name);
+  state.headingLevel = [1, 2, 3, 4, 5, 6].find(level => editor.isActive('heading', { level })) || 0;
+  for (const align of ALIGNMENTS) state[`align_${align}`] = editor.isActive({ textAlign: align });
+  state.canUndo = editor.can().undo();
+  state.canRedo = editor.can().redo();
+  return state;
+};
+
 /**
  * MenuBar - Toolbar for the Tiptap editor
  *
@@ -86,6 +107,7 @@ const MenuBar = ({ editor }) => {
   const [showLinkDialog, setShowLinkDialog] = useState(false);
   const [linkTitle, setLinkTitle] = useState('');
   const [linkDisplay, setLinkDisplay] = useState('');
+  const active = useEditorState({ editor, selector: selectToolbarState });
 
   // Listen for Cmd+K to open link dialog
   React.useEffect(() => {
@@ -106,7 +128,7 @@ const MenuBar = ({ editor }) => {
     }
   }, [editor, linkTitle, linkDisplay]);
 
-  if (!editor) {
+  if (!editor || !active) {
     return null;
   }
 
@@ -125,7 +147,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={btnClass(editor.isActive('bold'))}
+          className={btnClass(active.bold)}
           title="Bold (Ctrl+B)"
         >
           <strong>B</strong>
@@ -133,7 +155,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={btnClass(editor.isActive('italic'))}
+          className={btnClass(active.italic)}
           title="Italic (Ctrl+I)"
         >
           <em>I</em>
@@ -141,7 +163,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className={btnClass(editor.isActive('underline'))}
+          className={btnClass(active.underline)}
           title="Underline (Ctrl+U)"
         >
           <u>U</u>
@@ -149,7 +171,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleStrike().run()}
-          className={btnClass(editor.isActive('strike'))}
+          className={btnClass(active.strike)}
           title="Strikethrough"
         >
           <s>S</s>
@@ -157,7 +179,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleSubscript().run()}
-          className={btnClass(editor.isActive('subscript'))}
+          className={btnClass(active.subscript)}
           title="Subscript"
         >
           X<sub>2</sub>
@@ -165,7 +187,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleSuperscript().run()}
-          className={btnClass(editor.isActive('superscript'))}
+          className={btnClass(active.superscript)}
           title="Superscript"
         >
           X<sup>2</sup>
@@ -183,14 +205,7 @@ const MenuBar = ({ editor }) => {
               editor.chain().focus().toggleHeading({ level }).run();
             }
           }}
-          value={
-            editor.isActive('heading', { level: 1 }) ? '1' :
-            editor.isActive('heading', { level: 2 }) ? '2' :
-            editor.isActive('heading', { level: 3 }) ? '3' :
-            editor.isActive('heading', { level: 4 }) ? '4' :
-            editor.isActive('heading', { level: 5 }) ? '5' :
-            editor.isActive('heading', { level: 6 }) ? '6' : '0'
-          }
+          value={String(active.headingLevel)}
           className="editor-menubar__select"
         >
           <option value="0">Paragraph</option>
@@ -208,7 +223,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={btnClass(editor.isActive('bulletList'))}
+          className={btnClass(active.bulletList)}
           title="Bullet List"
         >
           •
@@ -216,7 +231,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={btnClass(editor.isActive('orderedList'))}
+          className={btnClass(active.orderedList)}
           title="Numbered List"
         >
           1.
@@ -228,7 +243,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={btnClass(editor.isActive('blockquote'))}
+          className={btnClass(active.blockquote)}
           title="Blockquote"
         >
           "
@@ -236,7 +251,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleCode().run()}
-          className={btnClass(editor.isActive('code'))}
+          className={btnClass(active.code)}
           title="Inline Code"
         >
           {'</>'}
@@ -244,7 +259,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          className={btnClass(editor.isActive('codeBlock'))}
+          className={btnClass(active.codeBlock)}
           title="Code Block"
         >
           {'{ }'}
@@ -264,7 +279,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign('left').run()}
-          className={btnClass(editor.isActive({ textAlign: 'left' }))}
+          className={btnClass(active.align_left)}
           title="Align Left"
         >
           <FaAlignLeft className="editor-menubar__icon" />
@@ -272,7 +287,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
-          className={btnClass(editor.isActive({ textAlign: 'center' }))}
+          className={btnClass(active.align_center)}
           title="Align Center"
         >
           <FaAlignCenter className="editor-menubar__icon" />
@@ -280,7 +295,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
-          className={btnClass(editor.isActive({ textAlign: 'right' }))}
+          className={btnClass(active.align_right)}
           title="Align Right"
         >
           <FaAlignRight className="editor-menubar__icon" />
@@ -299,7 +314,7 @@ const MenuBar = ({ editor }) => {
             setLinkDisplay(selectedText);
             setShowLinkDialog(true);
           }}
-          className={btnClass(editor.isActive('e2link'))}
+          className={btnClass(active.e2link)}
           title="Insert E2 Link (Ctrl+K)"
         >
           [link]
@@ -321,7 +336,7 @@ const MenuBar = ({ editor }) => {
         >
           ⊞
         </button>
-        {editor.isActive('table') && (
+        {active.table && (
           <>
             <button
               type="button"
@@ -356,8 +371,8 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
-          className={btnClass(false, !editor.can().undo())}
+          disabled={!active.canUndo}
+          className={btnClass(false, !active.canUndo)}
           title="Undo (Ctrl+Z)"
         >
           ↩
@@ -365,8 +380,8 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
-          className={btnClass(false, !editor.can().redo())}
+          disabled={!active.canRedo}
+          className={btnClass(false, !active.canRedo)}
           title="Redo (Ctrl+Y)"
         >
           ↪

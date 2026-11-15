@@ -185,7 +185,7 @@ const CategoryEdit = ({ data }) => {
     } else {
       // Apply breakTags to convert plain-text newlines to proper HTML paragraphs
       const withBreaks = normalizeEditorHtml(htmlContent)
-      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks))
+      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks), { emitUpdate: false })
     }
 
     setEditorMode(newMode)

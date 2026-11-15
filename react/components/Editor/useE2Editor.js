@@ -1,16 +1,33 @@
 import { useState, useCallback } from 'react'
-import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import Subscript from '@tiptap/extension-subscript'
-import Superscript from '@tiptap/extension-superscript'
-import Table from '@tiptap/extension-table'
-import TableRow from '@tiptap/extension-table-row'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
+import { StarterKit } from '@tiptap/starter-kit'
+import { Subscript } from '@tiptap/extension-subscript'
+import { Superscript } from '@tiptap/extension-superscript'
+import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
 import { E2Link, convertToE2Syntax } from './E2LinkExtension'
 import { E2TextAlign } from './E2TextAlignExtension'
 import { RawBracket, convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './RawBracketExtension'
 import { normalizeEditorHtml } from './E2HtmlSanitizer'
+
+// TipTap v3 table cells keep their alignment, but render it as style="text-align: …".
+// E2's sanitizer doesn't allow the style attribute (see E2TextAlignExtension), but it does
+// allow align= on <td>/<th>, so write cell alignment out as align= instead.
+const CELL_ALIGNMENTS = ['left', 'center', 'right']
+const cellAlignAttribute = {
+  align: {
+    default: null,
+    parseHTML: (element) => {
+      const value = (element.getAttribute('align') || element.style.textAlign || '').trim().toLowerCase()
+      return CELL_ALIGNMENTS.includes(value) ? value : null
+    },
+    renderHTML: (attributes) => (CELL_ALIGNMENTS.includes(attributes.align) ? { align: attributes.align } : {})
+  }
+}
+const E2TableCell = TableCell.extend({
+  addAttributes() { return { ...this.parent?.(), ...cellAlignAttribute } }
+})
+const E2TableHeader = TableHeader.extend({
+  addAttributes() { return { ...this.parent?.(), ...cellAlignAttribute } }
+})
 
 /**
  * Shared TipTap editor configuration for Everything2
@@ -38,14 +55,19 @@ export const getE2EditorExtensions = (options = {}) => {
   } = options
 
   return [
-    StarterKit.configure(starterKit),
-    Underline,
+    // StarterKit v3 also bundles Underline, Link, ListKeymap and TrailingNode.
+    // - Underline: used as bundled (it used to be a separate extension here).
+    // - Link: off. E2 links are the custom E2Link node, which parses <a href> itself and
+    //   saves as [bracket] syntax; a Link mark would claim those anchors first.
+    // - TrailingNode: off. It appends an empty paragraph after a trailing table/heading/list,
+    //   which would change the HTML saved for existing writeups.
+    StarterKit.configure({ link: false, trailingNode: false, ...starterKit }),
     Subscript,
     Superscript,
     Table.configure(table),
     TableRow,
-    TableCell,
-    TableHeader,
+    E2TableCell,
+    E2TableHeader,
     E2Link,
     E2TextAlign.configure(textAlign),
     RawBracket
@@ -104,7 +126,7 @@ export const useEditorMode = ({
         // whitespace) prevents mixed content from round-tripping into a stray
         // leading space, and convertEntitiesToRawBrackets restores literal
         // bracket/angle spans for TipTap — matching the per-component editors.
-        editor.commands.setContent(convertEntitiesToRawBrackets(normalizeEditorHtml(htmlContent)))
+        editor.commands.setContent(convertEntitiesToRawBrackets(normalizeEditorHtml(htmlContent)), { emitUpdate: false })
       }
     }
 

@@ -337,7 +337,7 @@ const EditorBeta = ({ data, user = {} }) => {
       // leading space). Then convert &#91;/&#93; back to spans for TipTap.
       if (editor) {
         const withBreaks = normalizeEditorHtml(rawHtmlContent);
-        editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks));
+        editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks), { emitUpdate: false });
       }
     }
 
@@ -424,7 +424,7 @@ const EditorBeta = ({ data, user = {} }) => {
       // whitespace (see mode-toggle above). Then entities → spans for TipTap.
       if (editor) {
         const withBreaks = normalizeEditorHtml(content);
-        editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks));
+        editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks), { emitUpdate: false });
       }
       setRawHtmlContent(content);
 
@@ -440,7 +440,7 @@ const EditorBeta = ({ data, user = {} }) => {
   // Clear editor and start new
   const clearEditor = useCallback(() => {
     if (editor) {
-      editor.commands.setContent(defaultContent);
+      editor.commands.setContent(defaultContent, { emitUpdate: false });
     }
     setRawHtmlContent(defaultContent);
     setSelectedDraft(null);
@@ -544,7 +544,7 @@ const EditorBeta = ({ data, user = {} }) => {
         // Update both editor and raw HTML state. Normalize so a restored
         // plain-text version doesn't collapse / leak leading spaces.
         if (editor) {
-          editor.commands.setContent(convertEntitiesToRawBrackets(normalizeEditorHtml(content)));
+          editor.commands.setContent(convertEntitiesToRawBrackets(normalizeEditorHtml(content)), { emitUpdate: false });
         }
         setRawHtmlContent(content);
 
