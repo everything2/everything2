@@ -1,14 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 /**
  * EdevDocumentationIndex - Developer documentation index page
  *
  * Shows list of edev documentation and allows developers to create new docs.
  * Styles are in CSS classes (edev-docs__*)
+ *
+ * Fetch-driven (#4557): the Page is a pure gate; this fetches GET /api/edev_documentation_index.
  */
-export default function EdevDocumentationIndex({ data }) {
-  const { docs = [], is_developer } = data;
+export default function EdevDocumentationIndex() {
+  const [payload, setPayload] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [newDocTitle, setNewDocTitle] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/edev_documentation_index', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setPayload(j); setLoading(false); } })
+      .catch(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const { docs = [], is_developer } = payload || {};
 
   // Create via the generic node API (was op=new). #4340 Phase 2.
   const handleCreateDoc = async (e) => {
@@ -32,6 +46,10 @@ export default function EdevDocumentationIndex({ data }) {
       // Swallow network errors; the form stays editable for retry.
     }
   };
+
+  if (loading) {
+    return <div className="edev-docs"><p>Loading...</p></div>;
+  }
 
   return (
     <div className="edev-docs">

@@ -1,37 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { formatShortDate } from '../../utils/dateFormat';
+
+const FILTER_KEYS = ['filter_user', 'filter_nodetype', 'edd_limit'];
+
+const readFilters = () => {
+  const q = new URLSearchParams(window.location.search);
+  return {
+    filter_user: q.get('filter_user') || '',
+    filter_nodetype: q.get('filter_nodetype') || '',
+    edd_limit: q.get('edd_limit') || ''
+  };
+};
 
 /**
  * EverythingDocumentDirectory - Document listing and filtering
  * Styles in CSS: .doc-directory__*
+ *
+ * Fetch-driven (#4557): the Page is a pure gate; this reads the filters off the URL and fetches
+ * GET /api/everything_document_directory. Filtering refetches in place (history.pushState) instead
+ * of POSTing the page. Login-required: the API returns state:'guest' for guests.
  */
-const EverythingDocumentDirectory = ({ data, e2, user }) => {
+const EverythingDocumentDirectory = ({ e2, user }) => {
+  // NB: every hook runs before any early return -- the previous version returned for guests above
+  // its useState calls, which is a Rules-of-Hooks violation.
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState('0');
+  const [filterUsername, setFilterUsername] = useState('');
+  const [filterNodetype, setFilterNodetype] = useState('');
+
+  const load = useCallback((params, { push } = {}) => {
+    setLoading(true);
+    const qs = new URLSearchParams();
+    FILTER_KEYS.forEach((k) => { if (params[k]) qs.set(k, params[k]); });
+    if (push) {
+      const url = new URL(window.location.href);
+      FILTER_KEYS.forEach((k) => {
+        if (params[k]) url.searchParams.set(k, params[k]);
+        else url.searchParams.delete(k);
+      });
+      window.history.pushState({}, '', url.pathname + url.search);
+    }
+    return fetch(`/api/everything_document_directory?${qs}`, { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => {
+        setData(j);
+        // Sort lives in the viewer's stored pref, so it comes back from the server.
+        if (j && j.current_sort) setSortOrder(j.current_sort);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const apply = (p) => {
+      setFilterUsername(p.filter_user);
+      setFilterNodetype(p.filter_nodetype);
+      load(p);
+    };
+    apply(readFilters());
+    const onPop = () => apply(readFilters());
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [load]);
+
   const {
     documents = [],
     total_count,
     shown_count,
     limit,
-    current_sort = '0',
-    filter_user = '',
-    filter_nodetype = '',
     available_nodetypes = [],
-    permissions = {},
-    error,
-    message
-  } = data;
-
-  // Handle guest user error
-  if (error === 'guest') {
-    return (
-      <div className="doc-directory">
-        <p>{message}</p>
-      </div>
-    );
-  }
-
-  const [sortOrder, setSortOrder] = useState(current_sort);
-  const [filterUsername, setFilterUsername] = useState(filter_user);
-  const [filterNodetype, setFilterNodetype] = useState(filter_nodetype);
+    is_developer,
+    state
+  } = data || {};
 
   const sortOptions = [
     { value: '0', label: 'whatever the database feels like' },
@@ -47,10 +88,9 @@ const EverythingDocumentDirectory = ({ data, e2, user }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const form = e.target;
     // Persist the sort pref via the API first (it used to be a render-time
-    // $VARS->{EDD_Sort}= side-effect in the controller, #4416), then submit the
-    // filter form. The server re-renders sorted by the now-stored pref.
+    // $VARS->{EDD_Sort}= side-effect in the controller, #4416), then refetch -- the API reads the
+    // now-stored pref. No page POST: the list reloads in place.
     try {
       await fetch('/api/preferences/set', {
         method: 'POST',
@@ -61,25 +101,38 @@ const EverythingDocumentDirectory = ({ data, e2, user }) => {
     } catch (err) {
       // best-effort: still show the requested view even if the pref didn't save
     }
-    form.submit();
+    load({ filter_user: filterUsername, filter_nodetype: filterNodetype, edd_limit: '' }, { push: true });
   };
 
   const handleShowAll = () => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('edd_limit', total_count.toString());
-    window.location.href = url.toString();
+    load(
+      { filter_user: filterUsername, filter_nodetype: filterNodetype, edd_limit: String(total_count) },
+      { push: true }
+    );
   };
 
   // Format timestamp to readable date
   const formatDate = (timestamp) => formatShortDate(timestamp) ?? '';
 
   // is_admin / is_editor read from the global e2.user prop (#4390);
-  // is_developer stays on contentData (PageState user.developer is always-true).
+  // is_developer comes from the API (PageState user.developer is always-true).
   const isAdmin = !!user?.admin;
   const isEditor = !!user?.editor;
 
-  const showNodeId = permissions.is_developer || isAdmin;
-  const showListNodesLink = permissions.is_developer || isEditor;
+  const showNodeId = is_developer || isAdmin;
+  const showListNodesLink = is_developer || isEditor;
+
+  if (loading && !data) {
+    return <div className="doc-directory"><p>Loading...</p></div>;
+  }
+
+  if (state === 'guest') {
+    return (
+      <div className="doc-directory">
+        <p>Please log in first.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="doc-directory">

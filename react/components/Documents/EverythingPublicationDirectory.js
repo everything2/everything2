@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import LinkNode from '../LinkNode'
 
 /**
@@ -6,17 +6,42 @@ import LinkNode from '../LinkNode'
  * Styles in CSS: .e2-pub-directory__*
  *
  * Shows debates for E2 Publications, sorted by most recent comment.
- * Restricted to thepub usergroup members.
+ *
+ * Fetch-driven (#4557): the Page is a pure gate; this fetches
+ * GET /api/everything_publication_directory, which is the real gate -- thepub usergroup or admin.
+ * Non-members get success:0/state:'permission'.
  */
-const EverythingPublicationDirectory = ({ data }) => {
-  const { error, debates = [], can_create = false } = data
-
+const EverythingPublicationDirectory = () => {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [title, setTitle] = useState('')
 
-  if (error) {
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/everything_publication_directory', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  // Reaching success:1 means the API let this viewer in (thepub or admin), which is exactly
+  // the group that may open a debate -- so the create form is gated on that, not on a
+  // hardcoded can_create flag the server used to ship.
+  const { success = 0, state, debates = [] } = data || {}
+
+  if (loading) {
+    return <div className="e2-pub-directory"><p>Loading...</p></div>
+  }
+
+  if (!success) {
     return (
       <div className="e2-pub-directory">
-        <p className="e2-pub-directory__error">{error}</p>
+        <p className="e2-pub-directory__error">
+          {state === 'guest'
+            ? 'Please log in first.'
+            : 'Access denied. This page is restricted to thepub usergroup members and admins.'}
+        </p>
       </div>
     )
   }
@@ -100,34 +125,32 @@ const EverythingPublicationDirectory = ({ data }) => {
         </tbody>
       </table>
 
-      {can_create && (
-        <div className="e2-pub-directory__create-form">
-          <p className="e2-pub-directory__create-heading">
-            <strong>Create a New Discussion:</strong>
-          </p>
+      <div className="e2-pub-directory__create-form">
+        <p className="e2-pub-directory__create-heading">
+          <strong>Create a New Discussion:</strong>
+        </p>
 
-          <form onSubmit={handleCreateDebate}>
-            <div className="e2-pub-directory__form-group">
-              <input
-                type="text"
-                name="node"
-                size="50"
-                maxLength="64"
-                placeholder="Enter discussion title..."
-                className="e2-pub-directory__input"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-              <br />
-              <input
-                type="submit"
-                value="Create Debate"
-                className="e2-pub-directory__submit-button"
-              />
-            </div>
-          </form>
-        </div>
-      )}
+        <form onSubmit={handleCreateDebate}>
+          <div className="e2-pub-directory__form-group">
+            <input
+              type="text"
+              name="node"
+              size="50"
+              maxLength="64"
+              placeholder="Enter discussion title..."
+              className="e2-pub-directory__input"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <br />
+            <input
+              type="submit"
+              value="Create Debate"
+              className="e2-pub-directory__submit-button"
+            />
+          </div>
+        </form>
+      </div>
     </div>
   )
 }

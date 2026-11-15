@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import LinkNode from '../LinkNode';
 
 /**
@@ -8,9 +8,27 @@ import LinkNode from '../LinkNode';
  * Displays available data feeds for client developers:
  * - Fullpage endpoints (interactive data interfaces)
  * - Ticker endpoints (XML/Atom/RSS feeds)
+ *
+ * Fetch-driven (#4557): the Page is a pure gate; this fetches GET /api/everything_data_pages.
  */
-const EverythingDataPages = ({ data }) => {
-  const { fullpages = [], tickers = [] } = data;
+const EverythingDataPages = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/everything_data_pages', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setData(j); setLoading(false); } })
+      .catch(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (loading) {
+    return <div className="e2-data-pages"><p>Loading...</p></div>;
+  }
+
+  const { fullpages = [], tickers = [] } = data || {};
 
   return (
     <div className="e2-data-pages">

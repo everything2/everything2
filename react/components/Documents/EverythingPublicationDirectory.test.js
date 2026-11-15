@@ -1,72 +1,73 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, waitFor, fireEvent } from '@testing-library/react'
 import EverythingPublicationDirectory from './EverythingPublicationDirectory'
-import fixture from '../../__fixtures__/pagestate/everything_publication_directory.json'
-// Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
-// pinning the int-typed contract (#4152/#4108).
-// Renders LinkNode, which is a plain anchor helper (no react-router), so no router provider needed.
-describe('EverythingPublicationDirectory (real pagestate fixture)', () => {
-  it('mounts against the captured payload', () => {
-    const { container } = render(<EverythingPublicationDirectory data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    expect(container).toBeTruthy()
-  })
-  it('fixture has integer node_ids, never strings (#4152)', () => {
-    expect(JSON.stringify(fixture).match(/"node_id":"\d/g)).toBeNull()
-  })
-  it('no React key warnings', () => {
-    const errs = []
-    const spy = jest.spyOn(console, 'error').mockImplementation((...a) => errs.push(a.join(' ')))
-    render(<EverythingPublicationDirectory data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    spy.mockRestore()
-    expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
-  })
-})
 
-// Migration from op=new to POST /api/node/create (#4340).
-describe('EverythingPublicationDirectory create-debate API migration', () => {
-  let originalLocation
+// Fetch-driven (#4557): the Page is a pure gate; the thepub||admin gate lives in
+// GET /api/everything_publication_directory.
+const jsonFetch = (p) => jest.fn(() => Promise.resolve({ json: () => Promise.resolve(p) }))
+afterEach(() => { delete global.fetch; jest.restoreAllMocks() })
 
-  beforeEach(() => {
-    originalLocation = window.location
+describe('EverythingPublicationDirectory (fetch-driven #4557)', () => {
+  it('renders debates for a permitted member', async () => {
+    global.fetch = jsonFetch({
+      success: 1,
+      debates: [{ node_id: 5, title: 'A Debate', author_id: 7, author_title: 'alice',
+                  created: '1/2/2026', latest_time: '3/4/2026', restricted_id: 1797556, restricted_title: 'thepub' }]
+    })
+    const { container } = render(<EverythingPublicationDirectory />)
+    await waitFor(() => expect(container.textContent).toMatch(/A Debate/))
+    expect(global.fetch.mock.calls[0][0]).toMatch(/^\/api\/everything_publication_directory/)
+    expect(container.textContent).toMatch(/alice/)
+  })
+
+  it('shows the restriction message on permission denied', async () => {
+    global.fetch = jsonFetch({ success: 0, state: 'permission' })
+    const { container } = render(<EverythingPublicationDirectory />)
+    await waitFor(() => expect(container.textContent).toMatch(/restricted to thepub/i))
+    expect(container.textContent).not.toMatch(/A Debate/)
+  })
+
+  it('shows the login message for guests', async () => {
+    global.fetch = jsonFetch({ success: 0, state: 'guest' })
+    const { container } = render(<EverythingPublicationDirectory />)
+    await waitFor(() => expect(container.textContent).toMatch(/log in first/i))
+  })
+
+  // Debate creation still goes through the generic node API (#4340) — unchanged by #4557, kept covered.
+  it('creates a debate via /api/node/create and redirects to /node/<id>', async () => {
     delete window.location
     window.location = { href: '' }
-    global.fetch = jest.fn(() =>
-      Promise.resolve({ ok: true, json: async () => ({ success: 1, node_id: 999 }) })
+    global.fetch = jest.fn((url) =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(
+          String(url).includes('/api/node/create')
+            ? { success: 1, node_id: 777 }
+            : { success: 1, debates: [] }
+        )
+      })
     )
+    const { container } = render(<EverythingPublicationDirectory />)
+    await waitFor(() => expect(container.querySelector('.e2-pub-directory__input')).toBeTruthy())
+
+    fireEvent.change(container.querySelector('.e2-pub-directory__input'), { target: { value: 'New Debate' } })
+    fireEvent.submit(container.querySelector('.e2-pub-directory__create-form form'))
+
+    await waitFor(() => expect(window.location.href).toBe('/node/777'))
+    const create = global.fetch.mock.calls.find((c) => String(c[0]).includes('/api/node/create'))
+    expect(JSON.parse(create[1].body)).toEqual({ type: 'debate', title: 'New Debate' })
   })
 
-  afterEach(() => {
-    window.location = originalLocation
-    jest.restoreAllMocks()
-  })
-
-  const parseBody = (call) => JSON.parse(call[1].body)
-
-  it('creates a debate via /api/node/create and redirects to /node/<id>', async () => {
-    render(<EverythingPublicationDirectory data={{ debates: [], can_create: true }} />)
-
-    fireEvent.change(screen.getByPlaceholderText('Enter discussion title...'), {
-      target: { value: 'My Discussion' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Create Debate' }))
-
-    await waitFor(() => expect(global.fetch).toHaveBeenCalled())
-    const call = global.fetch.mock.calls[0]
-    expect(call[0]).toBe('/api/node/create')
-    expect(parseBody(call)).toMatchObject({ type: 'debate', title: 'My Discussion' })
-
-    await waitFor(() => expect(window.location.href).toBe('/node/999'))
-  })
-
-  it('does not call the API when the title is empty', () => {
+  it('does not call the API when the title is empty', async () => {
     jest.spyOn(window, 'alert').mockImplementation(() => {})
-    render(<EverythingPublicationDirectory data={{ debates: [], can_create: true }} />)
+    global.fetch = jsonFetch({ success: 1, debates: [] })
+    const { container } = render(<EverythingPublicationDirectory />)
+    await waitFor(() => expect(container.querySelector('.e2-pub-directory__input')).toBeTruthy())
 
-    fireEvent.change(screen.getByPlaceholderText('Enter discussion title...'), {
-      target: { value: '   ' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Create Debate' }))
+    fireEvent.change(container.querySelector('.e2-pub-directory__input'), { target: { value: '  ' } })
+    fireEvent.submit(container.querySelector('.e2-pub-directory__create-form form'))
 
-    expect(global.fetch).not.toHaveBeenCalled()
+    await waitFor(() => expect(window.alert).toHaveBeenCalled())
+    expect(global.fetch.mock.calls.some((c) => String(c[0]).includes('/api/node/create'))).toBe(false)
   })
 })
