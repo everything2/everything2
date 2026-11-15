@@ -1,5 +1,10 @@
 version: 0.2
 
+env:
+  variables:
+    # puppeteer's postinstall would download Chrome on every build; nothing here uses it (#4601).
+    PUPPETEER_SKIP_DOWNLOAD: "true"
+
 phases:
   pre_build:
     commands:
@@ -22,7 +27,7 @@ phases:
       - n "$NODE_VERSION"
       - npm install
       - echo Installing ruby sdk elements
-      - gem install aws-sdk-s3 brotli zstd-ruby
+      - gem install --no-document aws-sdk-s3 brotli zstd-ruby
   build:
     commands:
       - echo Build started on `date` in `pwd`

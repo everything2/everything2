@@ -132,6 +132,11 @@ sub _can_manage_usergroup
     return [1, $group, $user];
   }
 
+  # Staff groups are managed by admins only, whoever the editor or owner is.
+  if ($self->APP->is_admin_managed_usergroup($group->title)) {
+    return [0, $self->HTTP_FORBIDDEN];
+  }
+
   # Editors can manage
   if ($user->is_editor) {
     return [1, $group, $user];

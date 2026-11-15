@@ -3,7 +3,7 @@
 # Smoke test: Accept-Encoding -> correct compression type -> correct S3 asset link.
 #
 # S3 can't content-negotiate, so the app must bake the pre-compressed variant
-# (/zstd/, /br/, /deflate/, /gzip/, or none) into the CSS/JS *shell links* based
+# (/zstd/, /br/, /gzip/, or none) into the CSS/JS *shell links* based
 # on the request's Accept-Encoding. This is the half of the compression story
 # that survived the PSGI offload: the app no longer compresses the response
 # *body* (Apache does that at the edge), but it still must KNOW the encoding to
@@ -24,12 +24,13 @@ use Everything;
 initEverything('development-docker');
 
 # [ Accept-Encoding header, expected compression type ]. best_compression_type
-# prefers zstd > br > deflate > gzip and takes the first token PRESENT in the
+# prefers zstd > br > gzip and takes the first token PRESENT in the
 # header (no q-value weighting -- that's the existing contract, pinned here).
 my @cases = (
     [ 'gzip, deflate, br, zstd', 'zstd' ],
     [ 'gzip, deflate, br',       'br' ],
-    [ 'gzip, deflate',           'deflate' ],
+    [ 'gzip, deflate',           'gzip' ],     # no deflate copy is uploaded (#4602)
+    [ 'deflate',                 undef ],
     [ 'gzip',                    'gzip' ],
     [ 'br',                      'br' ],
     [ 'zstd',                    'zstd' ],
