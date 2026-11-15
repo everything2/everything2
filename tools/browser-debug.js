@@ -157,7 +157,8 @@ async function monitorConsole(url = BASE_URL) {
   await page.goto(url, { waitUntil: 'networkidle2' });
 
   // Wait a bit to capture any delayed logs
-  await page.waitForTimeout(2000);
+  // page.waitForTimeout() was removed in puppeteer v22; a plain timer does the same job.
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   await browser.close();
 }
