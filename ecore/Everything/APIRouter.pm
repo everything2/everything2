@@ -1,12 +1,13 @@
 package Everything::APIRouter;
 
-use diagnostics;
 use Moose;
 use Scalar::Util qw(blessed);
 use Everything::Response;
 extends 'Everything::Router';
 
 has 'CONTROLLER_TYPE' => (is => 'ro', isa => 'Str', default => 'API');
+
+my %ALLOWED_METHODS = map { $_ => 1 } qw(get put post delete patch);
 
 sub dispatcher
 {
@@ -15,9 +16,14 @@ sub dispatcher
   my $urlform = $REQUEST->url(-absolute=>1);
   my $method = lc($REQUEST->request_method());
 
-  if(not grep {$method} ("get","put","post","delete","patch"))
+  unless($ALLOWED_METHODS{$method})
   {
-    return $self->output($REQUEST, [$self->HTTP_METHOD_NOT_ALLOWED]);
+    return $self->output($REQUEST, [$self->HTTP_UNIMPLEMENTED]);   # 405
+  }
+
+  unless($self->is_site_api_request($REQUEST))
+  {
+    return $self->output($REQUEST, [$self->HTTP_OK, {success => 0, error => 'API requests must be made by the site itself'}]);
   }
 
   if($self->CONF->maintenance_message)
@@ -38,6 +44,27 @@ sub dispatcher
     # Request fell through to catchall after form check
     return $self->output($REQUEST, $self->CONTROLLER_TABLE->{catchall}->$method($REQUEST));
   }
+}
+
+# Browsers label every request with Fetch Metadata (Sec-Fetch-Site/-Mode/-Dest). The site's
+# own pages call the API with fetch()/XHR (mode cors or same-origin) or sendBeacon (no-cors,
+# dest empty), always from the same origin. Anything else a browser sends here isn't the site
+# calling its API: following a link, submitting a form, loading an image or script, or a
+# request from another origin, other everything2.com hosts included. Those are refused.
+# Requests without Fetch Metadata (scripts, curl, API clients, older browsers) are unaffected.
+sub is_site_api_request
+{
+  my ($self, $REQUEST) = @_;
+  my $req  = $REQUEST->req;
+  my $site = lc( $req->header('Sec-Fetch-Site') // '' );
+  my $mode = lc( $req->header('Sec-Fetch-Mode') // '' );
+  my $dest = lc( $req->header('Sec-Fetch-Dest') // '' );
+
+  return 1 unless length $site or length $mode;
+  return 0 if length $site and $site ne 'same-origin' and $site ne 'none';
+  return 0 if $mode eq 'navigate' or $mode eq 'nested-navigate';
+  return 0 if $mode eq 'no-cors' and length $dest and $dest ne 'empty';
+  return 1;
 }
 
 # Return-based emission (replaces the page path's print-into-capture for the API).
