@@ -40,7 +40,7 @@ if File.exist?(blocks_config)
   ip_blocks += "\t# IP address block bans\n"
   if blocks['banned_ipblocks']
     blocks['banned_ipblocks'].each do |block|
-      ip_blocks += "\tSetEnvIf X-FORWARDED-FOR ^#{block.gsub(".", "\\.")} denyip\n"
+      ip_blocks += "\tSetEnvIf X-FORWARDED-FOR ^#{Regexp.escape(block)} denyip\n"
     end
   end
 

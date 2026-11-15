@@ -89,9 +89,8 @@ class SmokeTest
       end
 
       # Check for Perl errors
-      if body =~ /at \/.*?\.pm line \d+/
-        error_match = body.match(/(.{0,100}at \/.*?\.pm line \d+.{0,100})/)
-        @errors << "Perl error on homepage: #{error_match[0]}" if error_match
+      if (error = perl_error(body, before: 100, after: 100))
+        @errors << "Perl error on homepage: #{error}"
       end
 
     rescue => e
@@ -395,10 +394,9 @@ class SmokeTest
           end
 
           # Check for Perl errors
-          if body =~ /at \/.*?\.pm line \d+/
+          if (error = perl_error(body))
             print_mutex.synchronize { puts "  #{name}... ✗ Perl error" }
-            error_match = body.match(/(.{0,150}at \/.*?\.pm line \d+.{0,50})/)
-            @errors << "#{name}: Perl error - #{error_match[0]}" if error_match
+            @errors << "#{name}: Perl error - #{error}"
             return :error
           end
 
@@ -498,10 +496,9 @@ class SmokeTest
         end
 
         # Check for Perl errors
-        if body =~ /at \/.*?\.pm line \d+/
+        if (error = perl_error(body))
           puts "✗ Perl error"
-          error_match = body.match(/(.{0,150}at \/.*?\.pm line \d+.{0,50})/)
-          @errors << "#{name}: Perl error - #{error_match[0]}" if error_match
+          @errors << "#{name}: Perl error - #{error}"
           return :error
         end
 
@@ -764,7 +761,7 @@ class SmokeTest
         end
 
         # Check for Perl errors
-        if body.include?('at /var/everything') || body =~ /at .*?\.pm line \d+/
+        if body.include?('at /var/everything') || body =~ /at \S*?\.pm line \d+/
           @errors << "#{test[:name]}: Contains Perl error"
           failed += 1
           next
@@ -817,6 +814,16 @@ class SmokeTest
       puts "✗ Exception"
       @errors << "node_forward test failed: #{e.message}"
     end
+  end
+
+  # Perl's "at /path/Module.pm line N" error location. \S keeps the path from
+  # spanning spaces, so a long response line can't make the match backtrack badly.
+  PERL_ERROR_LOCATION = %r{at /\S*?\.pm line \d+}
+
+  # The first Perl error location in body with some surrounding context, or nil.
+  def perl_error(body, before: 150, after: 50)
+    match = PERL_ERROR_LOCATION.match(body.to_s) or return nil
+    body[[match.begin(0) - before, 0].max...(match.end(0) + after)]
   end
 
   def http_get(path, follow_redirects: true)

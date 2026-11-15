@@ -78,3 +78,31 @@ describe('NoteletEditor interaction (#4479)', () => {
     await waitFor(() => expect(screen.getByText('nope')).toBeInTheDocument())
   })
 })
+
+describe('NoteletEditor script stripping on load', () => {
+  const loaded = (notelet_raw) => {
+    const { container } = render(<NoteletEditor data={{ notelet_raw, notelet_screened: '', char_count: 0, max_length: 2000, user_level: 5, notelet_enabled: true }} />)
+    return container.querySelector('textarea[name="notelet_source"]').value
+  }
+
+  it('removes script blocks and keeps the rest', () => {
+    expect(loaded('a<script>alert(1)</script>b')).toBe('ab')
+  })
+
+  it('removes closing tags with whitespace, attributes or other casing', () => {
+    expect(loaded('a<script>x</script >b<SCRIPT src="y"></Script foo>c')).toBe('abc')
+  })
+
+  it('removes stray opening and closing tags', () => {
+    expect(loaded('a<script src="x">b</script>c</script>')).toBe('ac')
+    expect(loaded('a<script type="text/javascript">b')).toBe('ab')
+  })
+
+  it('removes tags formed by joining what is left after a removal', () => {
+    expect(loaded('a<scr<script>x</script>ipt>b')).toBe('ab')
+  })
+
+  it('leaves notelets without scripts untouched', () => {
+    expect(loaded('<p>hi</p><scripture>x</scripture>')).toBe('<p>hi</p><scripture>x</scripture>')
+  })
+})

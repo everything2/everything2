@@ -1,6 +1,7 @@
 import {
   escapeHtml,
   stripHtml,
+  decodeHtmlEntities,
   parseLinkContent,
   parseLinks,
   parseLinksToHtml,
@@ -50,6 +51,28 @@ describe('linkParser', () => {
 
     it('handles empty string', () => {
       expect(stripHtml('')).toBe('')
+    })
+  })
+
+  describe('decodeHtmlEntities', () => {
+    it('decodes the common entities', () => {
+      expect(decodeHtmlEntities('&lt;b&gt; &amp; &quot;q&quot; &#39;s&#039;')).toBe('<b> & "q" \'s\'')
+    })
+
+    it('decodes each entity once, so an escaped entity stays literal text', () => {
+      expect(decodeHtmlEntities('&amp;lt;b&amp;gt;')).toBe('&lt;b&gt;')
+      expect(decodeHtmlEntities('&amp;amp;')).toBe('&amp;')
+    })
+
+    it('leaves bracket entities alone', () => {
+      expect(decodeHtmlEntities('&#91;x&#93;')).toBe('&#91;x&#93;')
+    })
+
+    it('keeps a literal entity in a link title as text', () => {
+      // "&amp;lt;" is a user's literal "&lt;"; decoding twice would turn it into "<"
+      // and stripHtml would then eat the rest of the title.
+      const [segment] = parseLinks('[a &amp;lt;b&amp;gt; c]')
+      expect(segment.title).toBe('a &lt;b&gt; c')
     })
   })
 

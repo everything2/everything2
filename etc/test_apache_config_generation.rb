@@ -27,7 +27,7 @@ end
 coreconfig += "\t# IP address block bans\n"
 if blocks['banned_ipblocks']
   blocks['banned_ipblocks'].each do |block|
-    coreconfig += "\tSetEnvIf X-FORWARDED-FOR ^#{block.gsub(".", "\\.")} denyip\n"
+    coreconfig += "\tSetEnvIf X-FORWARDED-FOR ^#{Regexp.escape(block)} denyip\n"
   end
 end
 

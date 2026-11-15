@@ -39,7 +39,14 @@ export function escapeHtml(text) {
  */
 export function stripHtml(str) {
   if (!str) return ''
-  return str.replace(/<[^>]*>/g, '')
+  // Repeat until stable: removing one tag can join the pieces around it into another.
+  let out = str
+  let prev
+  do {
+    prev = out
+    out = out.replace(/<[^>]*>/g, '')
+  } while (out !== prev)
+  return out
 }
 
 /**
@@ -77,7 +84,12 @@ export function keepInlineHtml(str) {
     if (slash) return `</${tag}>`
     // Drop any on*-handler attributes belt-and-suspenders; keep the rest (already
     // DOMPurify-vetted for these tags — e.g. title/lang on abbr, cite on q).
-    const safeAttrs = attrs.replace(/\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    let safeAttrs = attrs
+    let prevAttrs
+    do {
+      prevAttrs = safeAttrs
+      safeAttrs = safeAttrs.replace(/\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    } while (safeAttrs !== prevAttrs)
     return `<${tag}${safeAttrs}>`
   })
 }
@@ -101,6 +113,8 @@ export function displayFields(rawDisplay, fallbackTitle) {
   return (html && html !== plain) ? { display, displayHtml: html } : { display }
 }
 
+const ENTITY_CHARS = { amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'", '#039': "'" }
+
 /**
  * Decode common HTML entities back to their literal characters. Required
  * inside link bracket content because DOMPurify entity-encodes characters
@@ -118,13 +132,9 @@ export function displayFields(rawDisplay, fallbackTitle) {
  */
 export function decodeHtmlEntities(text) {
   if (!text) return ''
-  return text
-    // &amp; must run first — otherwise &amp;lt; would decode to &lt; → < (wrong)
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#0?39;/g, "'")
+  // One pass, so a decoded '&' is never decoded again: &amp;lt; must become the
+  // literal text &lt;, not <.
+  return text.replace(/&(amp|lt|gt|quot|#39|#039);/g, (match, name) => ENTITY_CHARS[name])
 }
 
 /**
