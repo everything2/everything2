@@ -5,7 +5,7 @@ extends 'Everything::Page';
 
 sub buildReactData
 {
-  my ($self, $REQUEST, $node) = @_;
+  my ($self, $REQUEST) = @_;
 
   my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
   $year+=1900;
@@ -20,13 +20,15 @@ sub buildReactData
 
   my $previous = $self->APP->previous_years_nodes($yearsago, $startat);
 
+  # int(): yearsago/startat come off the URL as strings, and JSON would ship them that way --
+  # React then concatenated ("50" + 50 = "5050") and never matched yearsago === 1 (#4579).
+  # The unused `node` field is gone; React never read it, and a blessed node there would 500 too.
   return {
-    current_year => $year,
-    count => $previous->{count},
-    yearsago => $yearsago,
+    current_year => int($year),
+    count => int($previous->{count} || 0),
+    yearsago => int($yearsago),
     nodes => $previous->{nodes},
-    startat => $startat,
-    node => $node
+    startat => int($startat),
   };
 }
 

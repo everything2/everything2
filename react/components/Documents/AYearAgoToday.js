@@ -1,5 +1,6 @@
 import React from 'react'
 import LinkNode from '../LinkNode'
+import { formatShortDate } from '../../utils/dateFormat'
 
 /**
  * A Year Ago Today - Shows writeups from previous years on this date
@@ -7,7 +8,7 @@ import LinkNode from '../LinkNode'
  * Supports pagination and year selection
  */
 const AYearAgoToday = ({ data }) => {
-  const { nodes = [], current_year, count, yearsago, startat, node } = data
+  const { nodes = [], current_year, count, yearsago, startat } = data
 
   // Calculate pagination
   const perPage = 50
@@ -23,13 +24,13 @@ const AYearAgoToday = ({ data }) => {
   }
   years.reverse()
 
-  const buildUrl = (params) => {
-    const query = new URLSearchParams()
-    if (params.yearsago) query.set('yearsago', params.yearsago)
-    if (params.startat) query.set('startat', params.startat)
-    // Use title-based URL (relative to current page) instead of node ID
-    return `?${query.toString()}`
-  }
+  // Year and page links go through LinkNode, which always emits a path-absolute URL. These used to
+  // be bare "?yearsago=2" hrefs, which resolve against prod's guest <base href> -- so for guests every
+  // one of them went to the homepage (#4579). startat 0 is dropped from the query, as before.
+  const PAGE_TITLE = 'A Year Ago Today'
+  const pageLink = (display, { yearsago: ya, startat: sa }) => (
+    <LinkNode title={PAGE_TITLE} display={display} params={sa ? { yearsago: ya, startat: sa } : { yearsago: ya }} />
+  )
 
   return (
     <div className="document">
@@ -40,10 +41,13 @@ const AYearAgoToday = ({ data }) => {
         {nodes.map((writeup, idx) => (
           <li key={idx}>
             ({writeup.parent && <LinkNode nodeId={writeup.parent.node_id} title="full" />}) -{' '}
-            <LinkNode nodeId={writeup.node_id} title={writeup.parent?.title} /> by{' '}
-            <LinkNode nodeId={writeup.author?.node_id} title={writeup.author?.title} />{' '}
+            <LinkNode nodeId={writeup.node_id} title={writeup.parent?.title ?? '(untitled)'} /> by{' '}
+            {writeup.author
+              ? <LinkNode nodeId={writeup.author.node_id} title={writeup.author.title} />
+              : 'unknown'}{' '}
             <small>
-              entered on {writeup.createtime && new Date(writeup.createtime).toLocaleDateString()}
+              {/* UTC via dateFormat.js -- toLocaleDateString shifted late-UTC dates a day */}
+              entered on {formatShortDate(writeup.createtime) ?? ''}
             </small>
           </li>
         ))}
@@ -59,18 +63,14 @@ const AYearAgoToday = ({ data }) => {
             <tr>
               <td width="50%" className="year-ago-today__pagination-cell">
                 {hasPrev ? (
-                  <a href={buildUrl({ yearsago, startat: startat - perPage })}>
-                    {startat - perPage}-{startat}
-                  </a>
+                  pageLink(`${startat - perPage}-${startat}`, { yearsago, startat: startat - perPage })
                 ) : (
                   <span>{startat - perPage}-{startat}</span>
                 )}
               </td>
               <td width="50%" className="year-ago-today__pagination-cell">
                 {hasNext ? (
-                  <a href={buildUrl({ yearsago, startat: startat + perPage })}>
-                    {startat + perPage}-{Math.min(startat + perPage * 2, count)}
-                  </a>
+                  pageLink(`${startat + perPage}-${Math.min(startat + perPage * 2, count)}`, { yearsago, startat: startat + perPage })
                 ) : (
                   <span>(end of list)</span>
                 )}
@@ -91,7 +91,7 @@ const AYearAgoToday = ({ data }) => {
             {y.isCurrent ? (
               <strong>{y.year}</strong>
             ) : (
-              <a href={buildUrl({ yearsago: y.yearsAgo })}>{y.year}</a>
+              pageLink(String(y.year), { yearsago: y.yearsAgo })
             )}
           </React.Fragment>
         ))}
