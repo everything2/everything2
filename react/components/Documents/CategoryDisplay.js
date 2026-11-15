@@ -1,13 +1,15 @@
 import React from 'react'
 import LinkNode from '../LinkNode'
 import TimeDistance from '../TimeDistance'
+import { renderE2Content } from '../Editor/E2HtmlSanitizer'
 import { FaEdit, FaFolder, FaUser, FaGlobe, FaUsers, FaClock } from 'react-icons/fa'
 
 /**
  * CategoryDisplay - Display component for category nodes
  * Styles in CSS: .category-display__*
  *
- * Shows category metadata, parsed description, and list of member nodes.
+ * Shows category metadata, the description (rendered client-side with renderE2Content), and
+ * the list of member nodes.
  * Provides edit button for users with permission.
  */
 const CategoryDisplay = ({ data }) => {
@@ -24,7 +26,7 @@ const CategoryDisplay = ({ data }) => {
   const {
     node_id,
     title,
-    description,
+    raw_description: description,
     author,
     author_id,
     is_public,
@@ -95,7 +97,7 @@ const CategoryDisplay = ({ data }) => {
       {description && (
         <div className="category-display__description-section">
           <h2 className="category-display__section-title">Description</h2>
-          <div className="category-display__description-box" dangerouslySetInnerHTML={{ __html: description }} />
+          <div className="category-display__description-box" dangerouslySetInnerHTML={{ __html: renderE2Content(description).html }} />
         </div>
       )}
 

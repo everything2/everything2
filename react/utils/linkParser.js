@@ -69,9 +69,8 @@ export const INLINE_DISPLAY_TAGS = new Set([
  * parseLinksToHtml, runs exclusively downstream of E2HtmlSanitizer's DOMPurify
  * pass, which has already removed <script>/<iframe>/javascript: URLs and every
  * disallowed attribute. This function only enforces inline-only nesting inside
- * <a> (dropping block tags + nested <a>). As cheap defense-in-depth against a
- * future caller that skips DOMPurify, event-handler (on*) attributes are also
- * stripped from the tags we keep.
+ * <a> (dropping block tags + nested <a>). The tags it keeps carry only an
+ * allowlist of attributes (see INLINE_DISPLAY_ATTRS), re-quoted and escaped.
  *
  * @param {string} str - Display string, already DOMPurify-sanitized
  * @returns {string} - Display with only inline tags preserved
@@ -82,16 +81,26 @@ export function keepInlineHtml(str) {
     const tag = name.toLowerCase()
     if (!INLINE_DISPLAY_TAGS.has(tag)) return ''   // unwrap non-inline tag, keep its text
     if (slash) return `</${tag}>`
-    // Drop any on*-handler attributes belt-and-suspenders; keep the rest (already
-    // DOMPurify-vetted for these tags — e.g. title/lang on abbr, cite on q).
-    let safeAttrs = attrs
-    let prevAttrs
-    do {
-      prevAttrs = safeAttrs
-      safeAttrs = safeAttrs.replace(/\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
-    } while (safeAttrs !== prevAttrs)
-    return `<${tag}${safeAttrs}>`
+    return `<${tag}${inlineAttributes(attrs)}>`
   })
+}
+
+// The attributes an inline display tag may keep (title/lang on abbr and acronym, cite on
+// q). Everything else is dropped, and kept values are re-quoted and escaped, so the
+// output never depends on how the input's attributes were written.
+const INLINE_DISPLAY_ATTRS = new Set(['title', 'lang', 'cite'])
+
+function inlineAttributes(attrs) {
+  const kept = []
+  const re = /([^\s"'<>\/=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g
+  let m
+  while ((m = re.exec(attrs))) {
+    const name = m[1].toLowerCase()
+    if (!INLINE_DISPLAY_ATTRS.has(name)) continue
+    const value = m[2] ?? m[3] ?? m[4] ?? ''
+    kept.push(` ${name}="${escapeHtml(decodeHtmlEntities(value))}"`)
+  }
+  return kept.join('')
 }
 
 /**
@@ -136,6 +145,10 @@ export function decodeHtmlEntities(text) {
   // literal text &lt;, not <.
   return text.replace(/&(amp|lt|gt|quot|#39|#039);/g, (match, name) => ENTITY_CHARS[name])
 }
+
+// Every E2 nodetype name is lowercase letters, digits and underscores (e2node, user,
+// oppressor_superdoc, ...). Anything else in [title[type]] isn't a typed link.
+const NODETYPE_NAME = /^[a-z0-9_]+$/
 
 /**
  * Link types returned by the parser
@@ -237,12 +250,13 @@ export function parseLinkContent(content, fullMatch) {
 
       // Regular typed link
       const nodetype = typeSpec.toLowerCase()
+      if (!NODETYPE_NAME.test(nodetype)) return null
       return {
         type: LINK_TYPE.TYPED,
         title,
         nodetype,
         ...display,
-        href: `/${nodetype}/${encodeURIComponent(title)}`
+        href: `/${encodeURIComponent(nodetype)}/${encodeURIComponent(title)}`
       }
     }
   }
@@ -284,12 +298,13 @@ export function parseLinkContent(content, fullMatch) {
 
       // Regular typed link
       const nodetype = typeSpec.toLowerCase()
+      if (!NODETYPE_NAME.test(nodetype)) return null
       return {
         type: LINK_TYPE.TYPED,
         title,
         nodetype,
         ...df,
-        href: `/${nodetype}/${encodeURIComponent(title)}`
+        href: `/${encodeURIComponent(nodetype)}/${encodeURIComponent(title)}`
       }
     }
   }
@@ -417,7 +432,7 @@ export function parseLinksToHtml(text) {
     if (segment.type === LINK_TYPE.EXTERNAL) {
       // External link - show URL in hover
       const escapedUrl = escapeHtml(segment.href)
-      return `<a href="${segment.href}" rel="nofollow" class="externalLink" target="_blank" title="${escapedUrl}">${renderedDisplay}</a>`
+      return `<a href="${escapedUrl}" rel="nofollow" class="externalLink" target="_blank" title="${escapedUrl}">${renderedDisplay}</a>`
     }
 
     // Internal links
@@ -428,7 +443,7 @@ export function parseLinksToHtml(text) {
 
     // Show the link target in hover (useful for pipelinks where display differs from target)
     const escapedTitle = escapeHtml(segment.title)
-    return `<a href="${href}" class="e2-link" title="${escapedTitle}">${renderedDisplay}</a>`
+    return `<a href="${escapeHtml(href)}" class="e2-link" title="${escapedTitle}">${renderedDisplay}</a>`
   }).join('')
 }
 

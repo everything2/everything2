@@ -1,29 +1,12 @@
 #!/usr/bin/env ruby
 
 require 'aws-sdk-s3'
-require 'zlib'
 require 'getoptlong'
 require 'open3'
-require 'stringio'
-require 'brotli'
+require 'tmpdir'
 
 # Unbuffered, so CodeBuild log timestamps reflect when each line actually happened.
 $stdout.sync = true
-
-# Zstd support is optional - only load if gem is available
-begin
-  require 'zstd-ruby'
-  ZSTD_AVAILABLE = true
-rescue LoadError
-  ZSTD_AVAILABLE = false
-  puts "Warning: zstd-ruby gem not available, skipping zstd compression"
-end
-
-def mem_gzip(data)
-  gz = Zlib::GzipWriter.new(StringIO.new)
-  gz << data
-  gz.close.string
-end
 
 # S3 requests are the slow part of this script and they're independent, so run them on a
 # fixed pool of threads (#4602). The AWS SDK client is thread-safe. The first exception in
@@ -156,15 +139,32 @@ compress_start = now
       assets[asset_type][basefile]['min'] = File.open(f).read
     end
 
-    assets[asset_type][basefile]['gzip'] = mem_gzip(assets[asset_type][basefile]['min'])
-    assets[asset_type][basefile]['br'] = Brotli.deflate(assets[asset_type][basefile]['min'])
-
-    # Add zstd compression if available
-    if ZSTD_AVAILABLE
-      assets[asset_type][basefile]['zstd'] = Zstd.compress(assets[asset_type][basefile]['min'], level: 19)
-    end
-
     puts "Minified #{basefile}"
+  end
+end
+
+# Compress every minified asset in one Node process (tools/compress_assets.mjs): gzip, Brotli
+# quality 11 and zstd level 19, each verified to round-trip. Node's zlib has all three built
+# in, so the build host doesn't compile native Ruby gems for them (#4623).
+COMPRESSED_ENCODINGS = %w[gzip br zstd].freeze
+Dir.mktmpdir('e2-assets') do |tmp|
+  index = []
+  assets.each_value do |files|
+    files.each_value do |encoded|
+      name = "a#{index.size}"
+      File.binwrite(File.join(tmp, "#{name}.min"), encoded['min'])
+      index << [name, encoded]
+    end
+  end
+  out, status = Open3.capture2e('node', File.join(everydir, 'tools', 'compress_assets.mjs'), tmp)
+  puts out
+  abort "Asset compression failed (exit #{status.exitstatus})" unless status.success?
+  index.each do |name, encoded|
+    COMPRESSED_ENCODINGS.each do |encoding|
+      file = File.join(tmp, "#{name}.#{encoding}")
+      abort "Asset compression produced no #{encoding} copy for an asset" unless File.exist?(file)
+      encoded[encoding] = File.binread(file)
+    end
   end
 end
 
@@ -203,8 +203,7 @@ puts "Uploading to: #{current_rev}"
 
 # Encoded copies, and the key prefix each is stored under. There is no deflate copy:
 # Application::best_compression_type never picks it (#4602).
-ENCODING_PATHS = { 'min' => nil, 'gzip' => 'gzip', 'br' => 'br' }
-ENCODING_PATHS['zstd'] = 'zstd' if ZSTD_AVAILABLE
+ENCODING_PATHS = { 'min' => nil, 'gzip' => 'gzip', 'br' => 'br', 'zstd' => 'zstd' }
 
 uploads = []
 

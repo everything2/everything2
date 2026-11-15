@@ -61,34 +61,37 @@ COPY package.json package-lock.json ./
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 RUN /usr/bin/npm install
 
-# Stage 2: Final image with application code
-FROM deps AS final
-
+# Commit id for /etc/everything/last_commit, written in a tiny separate stage so the final
+# stage needs no RUN after copying the application in (see below). Local builds overwrite it
+# from git in the dev stage.
+FROM ubuntu:26.04 AS commit
 ARG CODEBUILD_RESOLVED_SOURCE_VERSION
+RUN printf '%s\n' "${CODEBUILD_RESOLVED_SOURCE_VERSION:-unknown}" > /last_commit
+
+# Stage 2: Final image with application code. This is what CodeBuild ships (--target final).
+FROM deps AS final
 
 # mod_perl is enabled by default in the base image (libapache2-mod-perl2); under
 # PSGI Apache runs no Perl handlers, so unload it -- no redundant interpreter and
 # no thread-safety concern under mpm_event. (#4234)
 RUN rm -f /etc/apache2/mods-enabled/perl.load /etc/apache2/mods-enabled/perl.conf
 
-COPY ./etc/templates/* /var/bootstrap/etc/
-
-COPY docker/e2app/apache2_wrapper.rb /etc/everything
-RUN chmod +x /etc/everything/apache2_wrapper.rb
-
-# Copy application code
-COPY ./ /var/everything
-RUN rm -rf /var/everything/local
-
-# Build assets for local builds. CodeBuild builds the production bundles on the host
-# (buildspec.yml) and serves them from S3, so it skips this step. Locally this is the only
-# bundle build, so a webpack failure must fail the image build (#4599).
-RUN if [ -z "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then \
-      /usr/bin/npx webpack --config etc/webpack.config.js --mode=development; \
-    fi
-
-RUN if [ -n "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then echo "$CODEBUILD_RESOLVED_SOURCE_VERSION"; else git -C /var/everything rev-parse HEAD; fi > /etc/everything/last_commit
+# Everything below is COPY --link and nothing runs after it. --link layers don't depend on
+# the filesystem underneath, so a fresh BuildKit builder working from the registry cache can
+# push them without downloading and unpacking the ~1 GB of cached deps layers (#4623).
+# local/ is kept out by .dockerignore rather than deleted here for the same reason.
+COPY --link ./etc/templates/* /var/bootstrap/etc/
+COPY --link --chmod=755 docker/e2app/apache2_wrapper.rb /etc/everything/
+COPY --link ./ /var/everything
+COPY --link --from=commit /last_commit /etc/everything/last_commit
 
 EXPOSE 80
 
 CMD ["/etc/everything/apache2_wrapper.rb"]
+
+# Stage 3: local development image -- the default target, so ./docker/devbuild.sh is
+# unchanged. CodeBuild builds the production bundles on the host and serves them from S3,
+# so only local builds run webpack here; a failure must fail the build (#4599).
+FROM final AS dev
+RUN /usr/bin/npx webpack --config etc/webpack.config.js --mode=development
+RUN git -C /var/everything rev-parse HEAD > /etc/everything/last_commit

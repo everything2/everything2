@@ -19,3 +19,20 @@ describe('CategoryDisplay (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+describe('CategoryDisplay description', () => {
+  const withDescription = (raw) => ({
+    ...fixture.contentData,
+    category: { ...fixture.contentData.category, raw_description: raw },
+  })
+
+  it('renders the description through the content sanitizer, links included', () => {
+    const { container } = render(
+      <CategoryDisplay data={withDescription('<p>Try [Coffee] and <form><input name="q"></form><span data-x="1">this</span></p>')} />
+    )
+    const box = container.querySelector('.category-display__description-box')
+    expect(box.querySelector('a[href="/title/Coffee"]')).not.toBeNull()
+    expect(box.querySelector('form, input, [data-x]')).toBeNull()
+    expect(box.textContent).toContain('this')
+  })
+})

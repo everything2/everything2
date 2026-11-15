@@ -22,7 +22,9 @@ phases:
       - n "$NODE_VERSION"
       - npm install
       - echo Installing ruby sdk elements
-      - gem install --no-document aws-sdk-s3 brotli zstd-ruby
+      # Asset compression runs in Node (tools/compress_assets.mjs), so the host needs only the
+      # pure-Ruby S3 SDK -- no brotli/zstd native extensions to compile every build (#4623).
+      - gem install --no-document aws-sdk-s3
   build:
     commands:
       - echo Build started on `date` in `pwd`
@@ -42,7 +44,7 @@ phases:
            && docker buildx build --push --provenance=false --sbom=false \
                 --cache-from type=registry,ref=$REPO_URI:buildcache \
                 --cache-to type=registry,ref=$REPO_URI:buildcache,mode=max,image-manifest=true,oci-mediatypes=true \
-                -t $REPO_URI:$IMAGE_TAG \
+                --target final -t $REPO_URI:$IMAGE_TAG \
                 --build-arg="ARCH=$NODEJS_ARCH" --build-arg="NODE_VERSION=$NODE_VERSION" \
                 --build-arg="CODEBUILD_RESOLVED_SOURCE_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION" \
                 -f docker/e2app/Dockerfile . ; then
@@ -53,7 +55,7 @@ phases:
           docker pull $REPO_URI:deps || echo "No deps cache available"
           docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --target deps --cache-from $REPO_URI:deps -t $REPO_URI:deps --build-arg="ARCH=$NODEJS_ARCH" --build-arg="NODE_VERSION=$NODE_VERSION" -f docker/e2app/Dockerfile . \
             && { docker push $REPO_URI:deps || true; } \
-            && docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $REPO_URI:deps -t $REPO_URI:$IMAGE_TAG --build-arg="ARCH=$NODEJS_ARCH" --build-arg="NODE_VERSION=$NODE_VERSION" --build-arg="CODEBUILD_RESOLVED_SOURCE_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION" -f docker/e2app/Dockerfile . \
+            && docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $REPO_URI:deps --target final -t $REPO_URI:$IMAGE_TAG --build-arg="ARCH=$NODEJS_ARCH" --build-arg="NODE_VERSION=$NODE_VERSION" --build-arg="CODEBUILD_RESOLVED_SOURCE_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION" -f docker/e2app/Dockerfile . \
             && docker push $REPO_URI:$IMAGE_TAG \
             || exit 1
         fi
