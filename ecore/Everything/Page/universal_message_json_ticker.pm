@@ -35,7 +35,7 @@ sub display {
     my $DB = $self->DB;
     my $APP = $self->APP;
     my $USER = $REQUEST->user;
-    my $VARS = $APP->getVars($USER);
+    my $VARS = $APP->getVars($USER->NODEDATA);   # getVars wants the hashref; a blessed node has no {vars}
     my $query = $REQUEST->cgi;
 
     # Sanitize msglimit to prevent SQL injection

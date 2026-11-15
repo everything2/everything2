@@ -385,7 +385,10 @@ sub make_login_cookie
   # IMPORTANT: Always set path=/ so cookie works site-wide and matches opLogout
   # SameSite=Lax is explicit to prevent privacy extensions from stripping cookies
   # without clear SameSite attributes (browsers default to Lax but extensions may not)
-  return $self->cookie(-name => $self->CONF->cookiepass, -value => $user->title."|".$user->passwd, -expires => $expires, -path => '/', -samesite => 'Lax');
+  # HttpOnly + Secure on the login cookie. Secure is off in development, which serves plain HTTP:
+  # a Secure cookie would never be sent back there and login would silently fail.
+  my $secure = $self->CONF->environment eq 'development' ? 0 : 1;
+  return $self->cookie(-name => $self->CONF->cookiepass, -value => $user->title."|".$user->passwd, -expires => $expires, -path => '/', -samesite => 'Lax', -httponly => 1, -secure => $secure);
 }
 
 sub truncated_params
