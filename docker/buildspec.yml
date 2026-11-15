@@ -13,12 +13,7 @@ phases:
       - aws s3 cp s3://$SECRETS_BUCKET/docker_hub_password - | docker login -u everything2 --password-stdin
       - export DOCKER_BUILDKIT=1
       - export BUILDKIT_PROGRESS=plain
-      - docker images
-      - echo Pulling cached images for layer reuse...
-      - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps || echo "No deps cache available"
-      - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG || echo "No previous image tag cache available"
-      - echo "Cache verification:"
-      - docker images | grep $ECR_REPOSITORY_NAME || echo "No cache images available"
+      - export REPO_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME
       - echo Installing node elements
       # Single source of truth: /.nvmrc. The image build reads the same value via
       # --build-arg NODE_VERSION below, so host toolchain == image. Node 24 (Krypton LTS)
@@ -34,14 +29,34 @@ phases:
       - echo Building asset pipeline...
       - npx webpack --config etc/webpack.config.js
       - ./tools/asset_pipeline.rb --assets=$ASSETS_BUCKET
-      - echo Building deps stage with layer caching...
-      - docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --target deps --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps --build-arg="ARCH=$NODEJS_ARCH" --build-arg="NODE_VERSION=$NODE_VERSION" -f docker/e2app/Dockerfile . ;
-      - echo Pushing deps cache image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps || true
-      - echo Building final image with layer caching...
-      - docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG --build-arg="ARCH=$NODEJS_ARCH" --build-arg="NODE_VERSION=$NODE_VERSION" --build-arg="CODEBUILD_RESOLVED_SOURCE_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION" -f docker/e2app/Dockerfile . ;
-      - echo Pushing the final Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG ;
+      # Image build (#4602). CodeBuild hosts often start with no local Docker layer cache,
+      # and inline cache pulled from :deps produced no hits, so those builds rebuilt every
+      # layer (~13-16 min). BuildKit's registry cache is made for ephemeral builders: it
+      # stores every layer, intermediate stages included (mode=max), as a cache manifest in
+      # ECR (image-manifest + OCI media types are what ECR accepts), and BuildKit fetches only
+      # the layers it needs. The image is pushed straight from the builder.
+      # If anything in that path fails (buildx missing, the registry refusing the cache), fall
+      # back to the previous inline-cache build so a cache problem can never block a deploy.
+      - |
+        if { docker buildx use e2builder 2>/dev/null || docker buildx create --name e2builder --driver docker-container --use; } \
+           && docker buildx build --push --provenance=false --sbom=false \
+                --cache-from type=registry,ref=$REPO_URI:buildcache \
+                --cache-to type=registry,ref=$REPO_URI:buildcache,mode=max,image-manifest=true,oci-mediatypes=true \
+                -t $REPO_URI:$IMAGE_TAG \
+                --build-arg="ARCH=$NODEJS_ARCH" --build-arg="NODE_VERSION=$NODE_VERSION" \
+                --build-arg="CODEBUILD_RESOLVED_SOURCE_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION" \
+                -f docker/e2app/Dockerfile . ; then
+          echo "Built and pushed with the registry cache"
+        else
+          echo "Registry-cache build failed; falling back to the inline-cache build"
+          docker buildx use default || true
+          docker pull $REPO_URI:deps || echo "No deps cache available"
+          docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --target deps --cache-from $REPO_URI:deps -t $REPO_URI:deps --build-arg="ARCH=$NODEJS_ARCH" --build-arg="NODE_VERSION=$NODE_VERSION" -f docker/e2app/Dockerfile . \
+            && { docker push $REPO_URI:deps || true; } \
+            && docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $REPO_URI:deps -t $REPO_URI:$IMAGE_TAG --build-arg="ARCH=$NODEJS_ARCH" --build-arg="NODE_VERSION=$NODE_VERSION" --build-arg="CODEBUILD_RESOLVED_SOURCE_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION" -f docker/e2app/Dockerfile . \
+            && docker push $REPO_URI:$IMAGE_TAG \
+            || exit 1
+        fi
   post_build:
     commands:
       - echo Build completed on `date`
