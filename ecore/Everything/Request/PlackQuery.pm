@@ -11,6 +11,7 @@ use namespace::autoclean;
 
 use Plack::Request;
 use URI::Escape qw(uri_escape);
+use Encode ();
 use Everything::Response;   # the response authority: header/redirect/cookie-gen.
                             # No CGI dependency remains in the request layer.
 
@@ -52,14 +53,27 @@ has 'req' => (is => 'ro', isa => 'Plack::Request', required => 1);
 has '_params' => (is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_params');
 has '_order'  => (is => 'rw', isa => 'ArrayRef', lazy => 1, default => sub { [] });
 
+# Plack::Request hands back parameter names and values as raw UTF-8 bytes. Decode
+# them to Perl character strings here, once, at the input edge -- the contract
+# CGI qw(-utf8) gave us from 2022 (#2989) until CGI.pm was removed. Everything
+# read from the utf8mb4 database is already characters; mixing a byte string
+# into that output encodes it twice, so "Café" shows as "CafÃ©" (#4570).
+# Invalid UTF-8 decodes to U+FFFD rather than dying, as CGI's -utf8 did.
+sub _utf8_param
+{
+    my $s = shift;
+    return $s unless defined $s;
+    return Encode::decode('UTF-8', $s);
+}
+
 sub _build_params
 {
     my $self = shift;
     my @flat = $self->req->parameters->flatten;   # k,v,k,v... order preserved
     my (%tbl, @order);
     while (@flat) {
-        my $k = shift @flat;
-        my $v = shift @flat;
+        my $k = _utf8_param(shift @flat);
+        my $v = _utf8_param(shift @flat);
         push @order, $k unless exists $tbl{$k};
         push @{ $tbl{$k} }, $v;
     }

@@ -44,11 +44,37 @@ subtest 'param scalar = FIRST value of a multi-value key (CGI-compat rule)' => s
     is_deeply( [ sort $q->param ], [qw(a b empty)], 'param() with no args lists names' );
 };
 
-subtest 'decoding: UTF-8 bytes, encoded ampersand, plus-as-space' => sub {
+subtest 'decoding: UTF-8 characters, encoded ampersand, plus-as-space' => sub {
     my $q = pq('t=caf%C3%A9&amp=a%26b&plus=a+b');
-    is( $q->param('t'),    "caf\xc3\xa9", 'UTF-8 decodes to raw bytes' );
-    is( $q->param('amp'),  'a&b',         'encoded ampersand' );
-    is( $q->param('plus'), 'a b',         'plus decodes to space' );
+    is( $q->param('t'),    "caf\x{e9}", 'UTF-8 decodes to characters, not raw bytes (#4570)' );
+    is( length( $q->param('t') ), 4,   'one character per code point' );
+    is( $q->param('amp'),  'a&b',      'encoded ampersand' );
+    is( $q->param('plus'), 'a b',      'plus decodes to space' );
+};
+
+subtest 'decoding: non-ASCII params are Perl character strings (#4570)' => sub {
+    # The utf8mb4 database returns characters; params must match or output that mixes
+    # the two double-encodes them. This is the contract CGI qw(-utf8) provided.
+    my $q = pq('a=Zzqx%E2%80%99s&e=%F0%9F%90%95&cjk=%E7%BE%8E%E5%9B%BD&%C3%A9t%C3%A9=x');
+    is( $q->param('a'),   "Zzqx\x{2019}s", 'curly apostrophe' );
+    is( $q->param('e'),   "\x{1F415}",     '4-byte emoji' );
+    is( $q->param('cjk'), "\x{7F8E}\x{56FD}", 'CJK' );
+    is( $q->param("\x{e9}t\x{e9}"), 'x', 'parameter names are decoded too' );
+    is_deeply( [ $q->multi_param('a') ], ["Zzqx\x{2019}s"], 'multi_param values are decoded' );
+    is( $q->Vars->{a},    "Zzqx\x{2019}s", 'Vars values are decoded' );
+
+    my $bad = pq('b=%FF%FEok');
+    is( $bad->param('b'), "\x{FFFD}\x{FFFD}ok", 'invalid UTF-8 becomes U+FFFD instead of dying' );
+
+    my $post = do {
+        my $body = 't=caf%C3%A9';
+        open my $in, '<', \$body or die $!;
+        Everything::Request::PlackQuery->new( req => Plack::Request->new( {
+            QUERY_STRING => '', REQUEST_METHOD => 'POST', 'psgi.input' => $in, 'psgi.url_scheme' => 'http',
+            CONTENT_TYPE => 'application/x-www-form-urlencoded', CONTENT_LENGTH => length $body,
+        } ) );
+    };
+    is( $post->param('t'), "caf\x{e9}", 'form POST bodies are decoded the same way' );
 };
 
 subtest 'Vars joins multi-values with NUL' => sub {

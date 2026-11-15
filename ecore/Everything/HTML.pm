@@ -866,12 +866,16 @@ sub _recover_route_params_from_request_uri
 	#
 	# Order matters: transliterate '+' before %XX decoding so an encoded
 	# '%2B' survives as a literal '+' in the result.
+	#
+	# %XX decoding yields UTF-8 bytes; decode those to characters so recovered
+	# params match the rest of the param table (see PlackQuery::_utf8_param) and
+	# the utf8mb4 database (#4570).
 	my $decode = sub {
 		my $s = shift;
 		return '' unless defined $s;
 		$s =~ tr/+/ /;
 		$s =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
-		return $s;
+		return Encode::decode('UTF-8', $s);
 	};
 
 	# Order matters: more-specific patterns first so /user/X/writeups/Y
