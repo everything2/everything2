@@ -106,12 +106,30 @@ sub get_by_name {
 sub _render_pagestate {
     my ( $self, $node, $REQUEST ) = @_;
 
+    # Same node-level access rules as the page path (Everything::HTML::gotoNode): a node the
+    # user can't read renders as Permission Denied, and a draft they can't see as not found.
+    $node = $self->_readable_node( $node, $REQUEST );
+
     $REQUEST->node($node);
     my $displaytype = $REQUEST->param('displaytype') || 'display';
 
     $REQUEST->pagestate_e2(undef);
+    $REQUEST->response(undef);
     eval { $Everything::ROUTER->route_node( $node->NODEDATA, $displaytype, $REQUEST ); 1 }
         or $self->devLog( "pagestate route_node failed for node " . $node->node_id . " ($displaytype): " . ( $@ || 'unknown' ) );
+
+    # A controller that answers with anything but 200 (a page-level permission redirect, a
+    # forward) has declined to render this page for this user. Pass that on; never build the
+    # page data some other way.
+    my $response = $REQUEST->response;
+    if ( $response && $response->res->status != 200 ) {
+        return [ $self->HTTP_OK, {
+            success  => 0,
+            error    => 'not available',
+            status   => $response->res->status + 0,
+            redirect => $response->res->header('Location'),
+        } ];
+    }
 
     my $e2 = $REQUEST->pagestate_e2;
     if ( ref $e2 eq 'HASH' && %$e2 ) {
@@ -136,6 +154,21 @@ sub _render_pagestate {
     # ?lite= -- documented future seam: Everything::PageState->from_blob($e2b)->{chrome} for a
     # chrome-only subset once a consumer needs it. See docs/pagestate-design.md.
     return [ $self->HTTP_OK, $e2b ];
+}
+
+sub _readable_node {
+    my ( $self, $node, $REQUEST ) = @_;
+
+    my $user = $REQUEST->user->NODEDATA;
+    my $data = $node->NODEDATA;
+
+    unless ( $self->DB->canReadNode( $user, $data ) ) {
+        return $self->APP->node_by_id( $self->CONF->permission_denied );
+    }
+    if ( $data->{type}{title} eq 'draft' && !$self->APP->canSeeDraft( $user, $data ) ) {
+        return $self->APP->node_by_id( $self->CONF->not_found_node );
+    }
+    return $node;
 }
 
 __PACKAGE__->meta->make_immutable;
