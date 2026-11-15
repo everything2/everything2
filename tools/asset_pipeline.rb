@@ -7,6 +7,9 @@ require 'open3'
 require 'stringio'
 require 'brotli'
 
+# Unbuffered, so CodeBuild log timestamps reflect when each line actually happened.
+$stdout.sync = true
+
 # Zstd support is optional - only load if gem is available
 begin
   require 'zstd-ruby'
@@ -55,6 +58,16 @@ def log(line)
   $stdout.write("#{line}\n")
 end
 
+def now
+  Process.clock_gettime(Process::CLOCK_MONOTONIC)
+end
+
+def elapsed(since)
+  format('%.1fs', now - since)
+end
+
+PIPELINE_START = now
+
 opts = GetoptLong.new(
   [ '--assets', GetoptLong::REQUIRED_ARGUMENT],
   [ '--region', GetoptLong::REQUIRED_ARGUMENT],
@@ -80,7 +93,8 @@ opts.each do |opt, arg|
   end
 end
 
-s3client = Aws::S3::Client.new(region: region)
+# Adaptive retries back off and rate-limit client-side when S3 answers SlowDown.
+s3client = Aws::S3::Client.new(region: region, retry_mode: 'adaptive', max_attempts: 10)
 
 puts "Using asset bucket: #{asset_bucket}"
 
@@ -113,6 +127,7 @@ STATIC_MIME_TYPES = {
   '.swf' => 'application/x-shockwave-flash'
 }.freeze
 
+compress_start = now
 ['js','css','react'].each do |asset_type|
   Dir["#{everydir}/www/#{asset_type}/**/**"].each do |f|
     puts "Evaluating #{f}"
@@ -173,6 +188,7 @@ Dir["#{everydir}/www/static/**/*"].each do |f|
 end
 
 puts "Found #{static_assets.size} static assets"
+puts "Minified and compressed in #{elapsed(compress_start)}"
 
 git_history = []
 
@@ -217,34 +233,65 @@ end
 
 if testonly.nil?
   puts "Uploading #{uploads.size} files with #{UPLOAD_THREADS} threads..."
+  upload_start = now
   in_parallel(uploads) do |args|
     result = s3client.put_object(args.merge(bucket: asset_bucket, cache_control: "max-age=31536000"))
     raise "File upload failed: #{args[:key]}" if result.etag.nil?
     log "Uploaded: #{args[:key]}"
   end
-  puts "Upload complete (#{uploads.size} files, #{static_assets.size} static)"
+  puts "Upload complete (#{uploads.size} files, #{static_assets.size} static) in #{elapsed(upload_start)}"
 else
   uploads.each { |args| puts "Test only: would upload #{args[:key]} (#{args[:content_type]})" }
 end
 
-# Expire assets from commits older than the last 9. list_objects_v2 returns at most 1000
-# keys per call, so walk every page; deleting from only the first page left most old
-# assets in the bucket.
+# Expire assets from commits older than the last 9. Each commit's assets live under a
+# "<sha>/" prefix, so list the top-level prefixes first (one cheap call), then delete the
+# stale ones a batch at a time. Expiry is housekeeping: a failure or a slow bucket must
+# never fail the deploy, so errors are warnings and the work stops after a time budget.
+# Whatever is left is expired by a later build.
+EXPIRE_SECONDS = 60
+
 if testonly.nil?
+  expire_start = now
   keep = git_history.map { |rev| "#{rev}/" }
-  expired = []
-  s3client.list_objects_v2(bucket: asset_bucket).each do |page|
-    page.contents.each do |file|
-      expired << file.key unless keep.any? { |prefix| file.key.start_with?(prefix) }
+  expired = 0
+
+  begin
+    prefixes = []
+    stray_keys = []
+    s3client.list_objects_v2(bucket: asset_bucket, delimiter: '/').each do |page|
+      prefixes.concat(page.common_prefixes.map(&:prefix))
+      stray_keys.concat(page.contents.map(&:key))
     end
+    stale = prefixes - keep
+    puts "Found #{prefixes.size} commit prefixes; #{stale.size} are older than the last #{keep.size} commits"
+
+    delete_keys = lambda do |keys|
+      result = s3client.delete_objects(bucket: asset_bucket, delete: { objects: keys.map { |key| { key: key } }, quiet: true })
+      result.errors.first(5).each { |err| puts "Warning: could not expire #{err.key}: #{err.code}" }
+      expired += keys.size - result.errors.size
+    end
+
+    delete_keys.call(stray_keys) unless stray_keys.empty?
+
+    stale.each do |prefix|
+      if now - expire_start > EXPIRE_SECONDS
+        puts "Expiry time budget (#{EXPIRE_SECONDS}s) reached; remaining old assets will be expired on a later build"
+        break
+      end
+      s3client.list_objects_v2(bucket: asset_bucket, prefix: prefix).each do |page|
+        keys = page.contents.map(&:key)
+        delete_keys.call(keys) unless keys.empty?
+      end
+      log "Expired #{prefix}"
+    end
+  rescue Aws::Errors::ServiceError, Seahorse::Client::NetworkingError => e
+    puts "Warning: asset expiry stopped early (#{e.class}: #{e.message}); remaining old assets will be expired on a later build"
   end
 
-  puts "Expiring #{expired.size} old assets..."
-  in_parallel(expired.each_slice(1000).to_a) do |batch|
-    result = s3client.delete_objects(bucket: asset_bucket, delete: { objects: batch.map { |key| { key: key } }, quiet: true })
-    raise "Failed to expire: #{result.errors.map(&:key).first(5).join(', ')}" unless result.errors.empty?
-    log "Expired #{batch.size} assets"
-  end
+  puts "Expired #{expired} old assets in #{elapsed(expire_start)}"
 else
   puts "Test only, not expiring old assets"
 end
+
+puts "Asset pipeline finished in #{elapsed(PIPELINE_START)}"
