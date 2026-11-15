@@ -1457,6 +1457,11 @@ sub isGuest
   if(ref $user eq "")
   {
     $userid = $user;
+  }elsif(blessed($user) && $user->isa('Everything::Node')){
+    # A blessed Everything::Node is hashref-based but has no {node_id} key (its hash holds Moose
+    # attributes), so resolve the id through the object. Limited to Everything::Node so a blessed
+    # non-node hashref that does carry {node_id} keeps the hashref path below.
+    $userid = $user->node_id;
   }else{
     $userid = $user->{node_id};
   }

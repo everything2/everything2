@@ -19,6 +19,7 @@ use Everything::Delegation::maintenance;
 use Test::Deep::NoTest;
 use JSON;
 use Try::Tiny;
+use Scalar::Util ();   # called fully-qualified: Test::Deep::NoTest already exports a `blessed`
 
 ## no critic (ProhibitAutomaticExportation,RequireUseWarnings)
 
@@ -2286,6 +2287,16 @@ sub nodeMaintenance
 sub getId
 {
 	my ($this, $arg) = @_;
+
+	# A blessed Everything::Node is hashref-based, so it satisfies the HASH branch below, but its
+	# underlying hash holds Moose attributes (NODEDATA, author, is_group, notes), not node_id.
+	# Resolve the id through the object instead; plain hashrefs keep the historical behaviour.
+	#
+	# Deliberately isa('Everything::Node'), not can('node_id'): every node class roots at
+	# Everything::Node, whereas can() would also capture unrelated objects that happen to expose a
+	# node_id method. Anything else falls through to the hashref branch exactly as before,
+	# including blessed non-node hashrefs that carry a {node_id} key.
+	if (Scalar::Util::blessed($arg) && $arg->isa('Everything::Node')) { return $arg->node_id; }
 
 	if (UNIVERSAL::isa($arg, 'HASH')) {$arg = $$arg{node_id};}
 	return $arg;
