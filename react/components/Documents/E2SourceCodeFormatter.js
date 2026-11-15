@@ -1,27 +1,15 @@
 import React, { useState } from 'react';
 
+const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '[': '&#91;', ']': '&#93;' };
+const UNESCAPES = { amp: '&', lt: '<', gt: '>', '#91': '[', '#93': ']' };
+
 export default function E2SourceCodeFormatter() {
   const [code, setCode] = useState('');
 
-  const fixBrackets = (str) => {
-    let result = str;
-    result = result.replace(/&/g, '&amp;');
-    result = result.replace(/</g, '&lt;');
-    result = result.replace(/>/g, '&gt;');
-    result = result.replace(/\[/g, '&#91;');
-    result = result.replace(/\]/g, '&#93;');
-    return result;
-  };
+  const fixBrackets = (str) => str.replace(/[&<>[\]]/g, (ch) => ESCAPES[ch]);
 
-  const restoreBrackets = (str) => {
-    let result = str;
-    result = result.replace(/&lt;/g, '<');
-    result = result.replace(/&gt;/g, '>');
-    result = result.replace(/&amp;/g, '&');
-    result = result.replace(/&#91;/g, '[');
-    result = result.replace(/&#93;/g, ']');
-    return result;
-  };
+  // One pass, so &amp;lt; deformats to the literal text &lt; rather than to <.
+  const restoreBrackets = (str) => str.replace(/&(amp|lt|gt|#91|#93);/g, (match, name) => UNESCAPES[name]);
 
   const handleReformat = () => {
     setCode(fixBrackets(code));

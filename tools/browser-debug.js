@@ -73,10 +73,13 @@ function normalizeUrlForAuth(url) {
  * Otherwise use BASE_URL
  */
 function getBaseUrlForAuth(targetUrl) {
-  if (targetUrl && targetUrl.includes('development.everything2.com')) {
-    return DEV_URL;
+  let hostname = '';
+  try {
+    hostname = new URL(targetUrl).hostname;
+  } catch {
+    // Not an absolute URL (or none given): use BASE_URL
   }
-  return BASE_URL;
+  return hostname === 'development.everything2.com' ? DEV_URL : BASE_URL;
 }
 
 // Test user credentials from tools/seeds.pl

@@ -1,5 +1,20 @@
 import React, { useState } from 'react'
 
+// Strip script blocks and stray script tags on load so users can clear out legacy scripts.
+// Display convenience only: the server screens notelets before they are rendered.
+// Repeats until stable, since removing one tag can join its neighbours into another.
+const stripScriptTags = (text) => {
+  let out = text || ''
+  let prev
+  do {
+    prev = out
+    out = out
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi, '')
+      .replace(/<\/?script\b[^>]*>/gi, '')
+  } while (out !== prev)
+  return out
+}
+
 /**
  * Notelet Editor - Manage user notelet content
  * Styles in CSS: .notelet-editor__*
@@ -19,14 +34,6 @@ const NoteletEditor = ({ data, e2 }) => {
     success_message = '',
     error = ''
   } = data
-
-  // Strip script tags on initial load to allow users to remove legacy scripts
-  const stripScriptTags = (text) => {
-    return (text || '')
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-      .replace(/<script[^>]*>/gi, '')
-      .replace(/<\/script>/gi, '')  // Also catch stray closing tags
-  }
 
   const [noteletRaw, setNoteletRaw] = useState(stripScriptTags(initialNoteletRaw))
   const [keepComments, setKeepComments] = useState(initialKeepComments)
