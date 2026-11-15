@@ -14,6 +14,9 @@
 #   3. Output MUST round-trip through the helper back to the original
 #      title across every route the helper recognizes.
 #
+# Titles here are Perl character strings (`use utf8`), as they arrive from
+# the utf8mb4 database, and the helper returns character strings (#4570).
+#
 # This file pins each piece of that contract loudly. If any of these
 # break, every URL on the site with a special character in its title
 # either 404s, infinite-loops on the redirect-to-canonical path, or
@@ -21,12 +24,14 @@
 
 use strict;
 use warnings;
+use utf8;
 
 use FindBin;
 use lib "$FindBin::Bin/../ecore";
 use lib "/var/libraries/lib/perl5";
 
 use Test::More;
+binmode( Test::More->builder->$_, ':encoding(UTF-8)' ) for qw(output failure_output todo_output);
 use Everything;
 use Everything::Application;
 use Everything::HTML;

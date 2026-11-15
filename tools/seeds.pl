@@ -402,6 +402,14 @@ my $datanodes = {
       ["music notes ♪♫", "thing", "Musical symbols: ♩ ♪ ♫ ♬ ♭ ♮ ♯ 𝄞"],
       ['quotes "test"', "idea", 'Different quote styles: "English" „German" «French» 『Japanese』'],
       ["unicode spaces", "thing", "Various whitespace: em\u2003space, en\u2002space, thin\u2009space"],
+      # Apostrophes and non-ASCII titles in links (#4570). "Don’t panic" uses a curly
+      # apostrophe (U+2019), like ~100 e2node titles on prod; "Don't panic" is its
+      # straight-apostrophe twin. "apostrophe links" links to both, plus two non-ASCII
+      # titles that don't exist: clicking those lands on Findings, which echoes the title
+      # back, which is where the request-param encoding bug showed up ("Nobodyâ€™s").
+      ["Don’t panic", "idea", "A title with a curly apostrophe. Its straight-apostrophe twin is [Don't panic]."],
+      ["Don't panic", "thing", "A title with a straight apostrophe. Its curly-apostrophe twin is [Don’t panic]."],
+      ["apostrophe links", "thing", "<p>These exist: [Don’t panic], [Don't panic], [café ☕].</p><p>These don't, so each should land on Findings showing the title exactly as written: [Nobody’s written this yet], [Café nobody has written], [日本語 nobody has written].</p>"],
       # AdSense dirty word filtering test data
       # Titles with dirty words (should be filtered from Findings for guests)
       ["sexual content test", "thing", "<p>This is a clean writeup about content moderation and internet safety.</p>"],
@@ -2323,6 +2331,9 @@ my @unicode_nodes = (
   "music notes ♪♫",
   'quotes "test"',
   "unicode spaces",
+  "Don’t panic",
+  "Don't panic",
+  "apostrophe links",
   "weather symbols ☀☁",
   "zodiac signs ♈♉",
   "hearts and flowers ❤🌸",

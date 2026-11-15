@@ -93,16 +93,20 @@ for my $c (@cases) {
         or diag( "  URI: $uri\n  got: " . join( ', ', map {"$_=$got->{$_}"} sort keys %$got ) );
 }
 
-# UTF-8 emoji: %XX decode yields the raw UTF-8 BYTES of the title (chr(hex)).
-# Compare via a hex dump so the assertion is independent of Perl's internal
-# utf8 flag (which CGI param storage can toggle) -- what matters is the bytes.
-{
-    my $got = recover('/title/animals%20%F0%9F%90%95');  # "animals 🐕"
-    my $node = $got->{node};
-    utf8::encode($node) if utf8::is_utf8($node);   # normalize to bytes
-    is( unpack( 'H*', $node ), unpack( 'H*', "animals \xF0\x9F\x90\x95" ),
-        'emoji title decodes to the right raw UTF-8 bytes' );
-}
+# Non-ASCII titles: %XX decoding yields UTF-8 bytes, which the helper must decode to
+# characters so the recovered param matches the rest of the param table and the
+# utf8mb4 database. A byte string here is double-encoded wherever the title is
+# echoed back, e.g. the Findings page (#4570).
+is( recover('/title/animals%20%F0%9F%90%95')->{node}, "animals \x{1F415}",
+    'emoji title decodes to characters' );
+is( recover('/title/Don%E2%80%99t%20give%20up')->{node}, "Don\x{2019}t give up",
+    'curly apostrophe title decodes to characters' );
+is( recover('/title/Caf%C3%A9+au+lait')->{node}, "Caf\x{e9} au lait",
+    'Latin-1-range character decodes to one character' );
+is( recover('/user/Zo%C3%AB/writeups/Caf%C3%A9')->{author}, "Zo\x{eb}",
+    'author segment decodes to characters' );
+is( recover("/title/Caf\xC3\xA9")->{node}, "Caf\x{e9}",
+    'raw (unescaped) UTF-8 bytes in the URI decode to characters' );
 
 # --- explicit node/node_id is authoritative (PSGI SCRIPT_NAME regression) -----
 # Master Control's node-search form POSTs node=... back to its own (node-bearing)
