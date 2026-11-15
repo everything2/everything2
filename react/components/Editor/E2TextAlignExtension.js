@@ -48,11 +48,17 @@ export const E2TextAlign = Extension.create({
           return false;
         }
 
-        return this.options.types.every(type => commands.updateAttributes(type, { textAlign: alignment }));
+        // map().some(), not every(): TipTap v3's updateAttributes returns false for a type that
+        // isn't in the selection, and every() would stop before reaching the type that is.
+        return this.options.types
+          .map(type => commands.updateAttributes(type, { textAlign: alignment }))
+          .some(Boolean);
       },
 
       unsetTextAlign: () => ({ commands }) => {
-        return this.options.types.every(type => commands.resetAttributes(type, 'textAlign'));
+        return this.options.types
+          .map(type => commands.resetAttributes(type, 'textAlign'))
+          .some(Boolean);
       },
     };
   },

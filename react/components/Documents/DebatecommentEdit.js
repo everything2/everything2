@@ -74,7 +74,7 @@ const DebatecommentEdit = ({ data }) => {
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
         // Switching to rich - load HTML into editor
-        editor.commands.setContent(normalizeEditorHtml(htmlContent))
+        editor.commands.setContent(normalizeEditorHtml(htmlContent), { emitUpdate: false })
       }
     }
 

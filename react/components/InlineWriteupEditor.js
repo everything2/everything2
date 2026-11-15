@@ -600,7 +600,7 @@ const InlineWriteupEditor = ({
       // (stray leading space). Then convert &#91;/&#93; entities back to
       // parseable spans for TipTap.
       const withBreaks = normalizeEditorHtml(htmlContent);
-      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks));
+      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks), { emitUpdate: false });
     }
 
     setEditorMode(newMode);
@@ -676,7 +676,7 @@ const InlineWriteupEditor = ({
         setDraftId(null);
         setHtmlContent('');
         if (editor) {
-          editor.commands.setContent('');
+          editor.commands.setContent('', { emitUpdate: false });
         }
         setSaveStatus('saved');
         setShowDeleteConfirm(false);
