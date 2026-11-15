@@ -1358,4 +1358,39 @@ And some [links] too.`
       expect(html).not.toContain('<your-name-here>')
     })
   })
+
+  describe('rendered links', () => {
+    const LINK_ATTRS = ['href', 'class', 'title', 'rel', 'target']
+    const render = (input) => {
+      const div = document.createElement('div')
+      div.innerHTML = renderE2Content(input).html
+      return div
+    }
+
+    it('links carry only the attributes the link parser writes, with safe URLs', () => {
+      const inputs = [
+        '<p>[thing[a&quot;b]] and [a b[user]]</p>',
+        '<p>[shown|target[e2node]] [gate[user]|it&#039;s]</p>',
+        '<p>[target|<abbr/x="1"/title="T">A</abbr>]</p>',
+        '<p>[https://example.com/?a=1&amp;b=2|ext] [javascript:void(0)|x]</p>',
+      ]
+      for (const input of inputs) {
+        for (const a of render(input).querySelectorAll('a')) {
+          for (const { name } of a.attributes) expect(LINK_ATTRS).toContain(name)
+          expect(a.getAttribute('href') || '').toMatch(/^(\/|https?:\/\/)/)
+        }
+      }
+    })
+
+    it('display tags inside links keep only their allowed attributes', () => {
+      const abbr = render('<p>[target|<abbr/x="1"/title="T">A</abbr>]</p>').querySelector('a abbr')
+      expect([...abbr.attributes].map((a) => a.name)).toEqual(['title'])
+    })
+
+    it('still renders ordinary links unchanged', () => {
+      expect(renderE2Content('<p>see [Some Node] and [root[user]]</p>').html).toBe(
+        '<p>see <a href="/title/Some%20Node" class="e2-link" title="Some Node">Some Node</a> and <a href="/user/root" class="e2-link" title="root">root</a></p>'
+      )
+    })
+  })
 })

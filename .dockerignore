@@ -13,3 +13,5 @@ coverage/react/
 test-results/
 playwright-report/
 playwright/.cache/
+# Untracked local-only directory; excluded here instead of deleted in the image (#4623).
+local

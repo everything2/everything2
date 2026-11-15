@@ -473,7 +473,11 @@ describe('linkParser', () => {
 
     it('handles complex URL with special characters', () => {
       const result = parseLinksToHtml('[https://example.com/search?q=hello+world&lang=en]')
-      expect(result).toContain('href="https://example.com/search?q=hello+world&lang=en"')
+      // The attribute is HTML-escaped; the browser resolves it to the original URL.
+      expect(result).toContain('href="https://example.com/search?q=hello+world&amp;lang=en"')
+      const div = document.createElement('div')
+      div.innerHTML = result
+      expect(div.querySelector('a').getAttribute('href')).toBe('https://example.com/search?q=hello+world&lang=en')
     })
 
     it('preserves unmatched brackets', () => {
@@ -559,6 +563,56 @@ describe('linkParser', () => {
       expect(seg.display).toBe('just text')
       expect(seg.displayHtml).toBeUndefined()
       expect(parseLinksToHtml('[go|just text]')).toBe('<a href="/title/go" class="e2-link" title="go">just text</a>')
+    })
+  })
+
+  describe('generated markup', () => {
+    const LINK_ATTRS = ['href', 'class', 'title', 'rel', 'target']
+    const anchors = (html) => {
+      const div = document.createElement('div')
+      div.innerHTML = html
+      return [...div.querySelectorAll('a')]
+    }
+    const attrNames = (el) => [...el.attributes].map((a) => a.name).sort()
+
+    it('only nodetype names make typed links', () => {
+      expect(parseLinksToHtml('[root[user]]')).toContain('href="/user/root"')
+      expect(parseLinksToHtml('[some node[oppressor_superdoc]]')).toContain('href="/oppressor_superdoc/some%20node"')
+      for (const input of ['[thing[not a type!]]', '[thing[a/b]]', '[thing[a&quot;b]]', '[shown|thing[a.b]]']) {
+        expect(anchors(parseLinksToHtml(input)).filter((a) => /^\/(?!title\/)/.test(a.getAttribute('href') || ''))).toEqual([])
+      }
+    })
+
+    it('links carry only the attributes the parser writes', () => {
+      const inputs = [
+        '[thing[a&quot;b]]',
+        '[a&quot; b[user]]',
+        '[shown &quot;x|target]',
+        '[https://example.com/a?b=1&c=2|ext]',
+        '[gate[user]|it&#039;s]',
+      ]
+      for (const input of inputs) {
+        for (const a of anchors(parseLinksToHtml(input))) {
+          for (const name of attrNames(a)) expect(LINK_ATTRS).toContain(name)
+        }
+      }
+    })
+
+    it('display tags keep only their allowed attributes, however they are written', () => {
+      for (const display of ['<abbr title="T" x="1">A</abbr>', '<abbr/x="1"/title="T">A</abbr>', "<abbr title='T'\tx=1>A</abbr>"]) {
+        const [a] = anchors(parseLinksToHtml(`[target|${display}]`))
+        const abbr = a.querySelector('abbr')
+        expect(attrNames(abbr)).toEqual(['title'])
+        expect(abbr.getAttribute('title')).toBe('T')
+        expect(attrNames(a).every((n) => LINK_ATTRS.includes(n))).toBe(true)
+      }
+    })
+
+    it('escapes attribute values it keeps', () => {
+      const html = parseLinksToHtml('[target|<abbr title="a &amp; &lt;b&gt;">x</abbr>]')
+      expect(html).toContain('title="a &amp; &lt;b&gt;"')
+      const [a] = anchors(html)
+      expect(a.querySelector('abbr').getAttribute('title')).toBe('a & <b>')
     })
   })
 })

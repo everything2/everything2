@@ -3,7 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
 import { convertRawBracketsToEntities } from '../Editor/RawBracketExtension'
-import { normalizeEditorHtml } from '../Editor/E2HtmlSanitizer'
+import { normalizeEditorHtml, renderE2Content } from '../Editor/E2HtmlSanitizer'
 import MenuBar from '../Editor/MenuBar'
 import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
@@ -227,7 +227,7 @@ const DebatecommentEdit = ({ data }) => {
           {parent.doctext && (
             <div
               className="dc-edit__parent-content"
-              dangerouslySetInnerHTML={{ __html: parent.doctext }}
+              dangerouslySetInnerHTML={{ __html: renderE2Content(parent.doctext).html }}
             />
           )}
         </div>

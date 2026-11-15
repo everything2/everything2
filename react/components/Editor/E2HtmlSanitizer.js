@@ -84,6 +84,21 @@ const ALLOWED_TAGS = Object.keys(APPROVED_TAGS)
 // Include 'class' for user-h1 styling on converted h1→h2
 const ALLOWED_ATTR = [...new Set([...Object.values(APPROVED_TAGS).flat(), 'class'])]
 
+// Configuration for the second pass over the finished HTML, after [link] parsing has
+// added anchors: the same tags plus the <a> attributes the link parser writes. DOMPurify
+// also checks href values, so only safe URL schemes survive.
+const LINKED_DOMPURIFY_CONFIG = {
+  ALLOWED_TAGS: [...ALLOWED_TAGS, 'a'],
+  ALLOWED_ATTR: [...new Set([...ALLOWED_ATTR, 'href', 'title', 'rel', 'target'])],
+  ALLOW_DATA_ATTR: false,
+  ALLOW_UNKNOWN_PROTOCOLS: false,
+  RETURN_DOM: false,
+  RETURN_DOM_FRAGMENT: false,
+  RETURN_TRUSTED_TYPE: false,
+  WHOLE_DOCUMENT: false,
+  SANITIZE_DOM: true,
+}
+
 // DOMPurify configuration for E2 content
 const DOMPURIFY_CONFIG = {
   ALLOWED_TAGS,
@@ -319,9 +334,10 @@ export function sanitizeHtml(html, options = {}) {
     DOMPurify.removeAllHooks()
   }
 
-  // Parse E2 links if requested
+  // Parse E2 links if requested. Link parsing builds markup from user text, so the
+  // finished HTML goes through DOMPurify once more before it's returned.
   if (parseLinks) {
-    sanitized = parseE2Links(sanitized)
+    sanitized = DOMPurify.sanitize(parseE2Links(sanitized), LINKED_DOMPURIFY_CONFIG)
   }
 
   // Restore raw-literal placeholders. See the RAW_*_PLACEHOLDER comment block

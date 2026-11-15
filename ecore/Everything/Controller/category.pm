@@ -76,9 +76,9 @@ sub display {
         }
     }
 
-    # Parse the description text through the link parser
+    # The description ships raw; CategoryDisplay renders it with renderE2Content, the same
+    # sanitizing renderer the other content pages use.
     my $doctext = $node->NODEDATA->{doctext} || '';
-    my $parsed_description = $APP->parseLinks( $doctext, $user->NODEDATA, $node->NODEDATA );
 
     # Build viewer data
     my $viewer_data = {
@@ -98,7 +98,6 @@ sub display {
         category    => {
             node_id     => $node->node_id,
             title       => $node->title,
-            description => $parsed_description,
             raw_description => $doctext,
             author      => $author_name,
             author_id   => $node->NODEDATA->{author_user},

@@ -31,3 +31,20 @@ describe.each([
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+describe('DebatecommentEdit reply view', () => {
+  const replyFixture = require('../../__fixtures__/pagestate/debatecommentReplyto.json')
+
+  it('renders the parent comment through the content sanitizer', () => {
+    const data = {
+      ...replyFixture.contentData,
+      mode: 'replyto',
+      parent: { ...(replyFixture.contentData.parent || {}), doctext: '<p>See [Coffee] <form><input name="q"></form><span data-x="1">here</span></p>' },
+    }
+    const { container } = render(<DebatecommentEdit data={data} e2={replyFixture} user={replyFixture.user || {}} />)
+    const parent = container.querySelector('.dc-edit__parent-content')
+    expect(parent.querySelector('a[href="/title/Coffee"]')).not.toBeNull()
+    expect(parent.querySelector('form, input, [data-x]')).toBeNull()
+    expect(parent.textContent).toContain('here')
+  })
+})
