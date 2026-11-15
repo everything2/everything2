@@ -968,6 +968,17 @@ sub isAdmin
 	return $this->{db}->isGod($user);
 }
 
+# Usergroups whose membership carries site-wide staff powers. Only admins change their
+# membership or settings; editors and group owners manage every other usergroup. Shared
+# by the usergroups API and the Simple Usergroup Editor page so the two can't drift.
+my %ADMIN_MANAGED_USERGROUPS = map { $_ => 1 } ('gods', 'e2gods', 'content editors');
+
+sub is_admin_managed_usergroup
+{
+	my ($this, $title) = @_;
+	return $ADMIN_MANAGED_USERGROUPS{ lc( $title // '' ) } ? 1 : 0;
+}
+
 sub isChanop
 {
 	my ($this, $user, $nogods) = @_;
@@ -6990,7 +7001,9 @@ sub best_compression_type
 {
   my ($this) = @_;
 
-  foreach my $encoding ("zstd","br","deflate","gzip")
+  # No deflate: the asset pipeline no longer uploads a deflate copy (#4602). Clients that
+  # offer deflate offer gzip too in practice, and gzip serves them just as well.
+  foreach my $encoding ("zstd","br","gzip")
   {
     if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /$encoding/)
     {

@@ -56,6 +56,9 @@ RUN curl -L "https://nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_V
 # Node dependencies (only changes when package.json/package-lock.json changes)
 WORKDIR /var/everything
 COPY package.json package-lock.json ./
+# puppeteer's postinstall downloads Chrome (~600 MB) into /root/.cache/puppeteer. Only the
+# developer tools in tools/ use it, and they run on the host, so keep it out of the image (#4601).
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 RUN /usr/bin/npm install
 
 # Stage 2: Final image with application code
@@ -77,8 +80,12 @@ RUN chmod +x /etc/everything/apache2_wrapper.rb
 COPY ./ /var/everything
 RUN rm -rf /var/everything/local
 
-# Build assets (done in buildspec.yml for CodeBuild, or here for local builds)
-RUN /usr/bin/npx webpack --config etc/webpack.config.js --mode=development || true
+# Build assets for local builds. CodeBuild builds the production bundles on the host
+# (buildspec.yml) and serves them from S3, so it skips this step. Locally this is the only
+# bundle build, so a webpack failure must fail the image build (#4599).
+RUN if [ -z "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then \
+      /usr/bin/npx webpack --config etc/webpack.config.js --mode=development; \
+    fi
 
 RUN if [ -n "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then echo "$CODEBUILD_RESOLVED_SOURCE_VERSION"; else git -C /var/everything rev-parse HEAD; fi > /etc/everything/last_commit
 

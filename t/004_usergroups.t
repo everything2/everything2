@@ -1027,6 +1027,61 @@ for my $uname (qw(normaluser1 normaluser2 normaluser3)) {
   Everything::setVars($u, $uvars);
 }
 
+#############################################################################
+# Staff groups (gods, e2gods, Content Editors) are managed by admins only
+#############################################################################
+
+subtest 'staff usergroups are admin-only; editors manage the rest' => sub {
+  my $nm3 = $DB->getNode("normaluser3", "user");
+  my $request_as = sub {
+    my ($user, %flags) = @_;
+    return MockRequest->new(
+      node_id => $user->{node_id}, title => $user->{title}, nodedata => $user,
+      is_guest_flag => 0, is_admin_flag => 0, is_editor_flag => 0, %flags,
+      postdata => [$nm3->{node_id}],
+    );
+  };
+  my $members = sub {
+    my ($group) = @_;
+    return { map { $_ => 1 } @{ $DB->{dbh}->selectcol_arrayref('SELECT node_id FROM nodegroup WHERE nodegroup_id = ?', undef, $group->{node_id}) } };
+  };
+
+  my $editor = $request_as->($nm2, is_editor_flag => 1);
+  for my $name ('gods', 'e2gods', 'Content Editors') {
+    my $group = $DB->getNode($name, 'usergroup');
+    ok($group, "found $name") or next;
+    ok($APP->is_admin_managed_usergroup($name), "$name is admin-managed");
+    is($api->adduser($editor, $group->{node_id})->[0], 403, "editor cannot add members to $name");
+    is($api->removeuser($editor, $group->{node_id})->[0], 403, "editor cannot remove members from $name");
+    ok(!$members->($group)->{ $nm3->{node_id} }, "$name membership unchanged");
+  }
+
+  # The owner of a staff group gets no extra rights over it either.
+  my $gods = $DB->getNode('gods', 'usergroup');
+  $APP->setParameter($gods, $root_user, 'usergroup_owner', $nm2->{node_id});
+  is($api->adduser($request_as->($nm2), $gods->{node_id})->[0], 403, "an owner of gods cannot add members");
+  $APP->delParameter($gods, $root_user, 'usergroup_owner');
+
+  # Editors still manage ordinary usergroups.
+  ok(!$APP->is_admin_managed_usergroup('edev'), 'ordinary groups are not admin-managed');
+  my $created = $api->create(MockRequest->new(
+    node_id => $root_user->{node_id}, title => $root_user->{title}, nodedata => $root_user,
+    is_guest_flag => 0, is_admin_flag => 1,
+    postdata => { title => "Ordinary group " . time(), doctext => 'x', type => 'usergroup' },
+  ));
+  my $ordinary_id = $created->[1]{node_id};
+  ok($ordinary_id, 'created an ordinary usergroup');
+  is($api->adduser($editor, $ordinary_id)->[0], 200, "editor can add members to an ordinary usergroup");
+  ok($members->({ node_id => $ordinary_id })->{ $nm3->{node_id} }, "member added");
+  is($api->removeuser($editor, $ordinary_id)->[0], 200, "editor can remove members from an ordinary usergroup");
+  $DB->nukeNode($DB->getNodeById($ordinary_id), $root_user);
+
+  # Admins keep full control (exercise the gate without changing gods).
+  my $admin = $request_as->($root_user, is_admin_flag => 1);
+  my $gate = $api->_can_manage_usergroup($admin, $gods->{node_id});
+  ok($gate->[0], "admin can manage gods");
+};
+
 done_testing();
 
 =head1 NAME

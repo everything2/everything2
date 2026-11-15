@@ -23,12 +23,8 @@ sub buildReactData
     my $is_admin  = $APP->isAdmin( $USER->NODEDATA );
     my $is_editor = $APP->isEditor( $USER->NODEDATA );
 
-    # Forbidden groups for editors (only admins can edit these)
-    my $forbidden_for_editors = {
-        'content editors' => 1,
-        'gods'            => 1,
-        'e2gods'          => 1
-    };
+    # Staff groups (gods, e2gods, Content Editors) are admin-only: see
+    # Everything::Application::is_admin_managed_usergroup.
     my $editor_only = $is_editor && !$is_admin;
 
     # Membership add/remove moved to the usergroups API
@@ -50,7 +46,7 @@ sub buildReactData
         );
         while ( my $row = $csr->fetchrow_hashref ) {
             # Skip forbidden groups for non-admin editors
-            next if $editor_only && exists $forbidden_for_editors->{ lc( $row->{title} ) };
+            next if $editor_only && $APP->is_admin_managed_usergroup( $row->{title} );
             push @usergroups, {
                 node_id => $row->{node_id},
                 title   => $row->{title}
@@ -92,7 +88,7 @@ sub buildReactData
 
         if ( $usergroup && $can_edit ) {
             # Check forbidden groups again
-            if ( $editor_only && exists $forbidden_for_editors->{ lc( $usergroup->{title} ) } ) {
+            if ( $editor_only && $APP->is_admin_managed_usergroup( $usergroup->{title} ) ) {
                 $can_edit = 0;
             }
 

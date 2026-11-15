@@ -6,7 +6,6 @@ require 'getoptlong'
 require 'open3'
 require 'stringio'
 require 'brotli'
-require 'zlib'
 
 # Zstd support is optional - only load if gem is available
 begin
@@ -21,6 +20,39 @@ def mem_gzip(data)
   gz = Zlib::GzipWriter.new(StringIO.new)
   gz << data
   gz.close.string
+end
+
+# S3 requests are the slow part of this script and they're independent, so run them on a
+# fixed pool of threads (#4602). The AWS SDK client is thread-safe. The first exception in
+# any worker is re-raised once all workers finish, which fails the build.
+UPLOAD_THREADS = 16
+
+def in_parallel(items, threads: UPLOAD_THREADS)
+  queue = Queue.new
+  items.each { |item| queue << item }
+  errors = Queue.new
+  workers = Array.new([threads, items.size].min) do
+    Thread.new do
+      loop do
+        item = begin
+          queue.pop(true)
+        rescue ThreadError
+          break
+        end
+        begin
+          yield item
+        rescue StandardError => e
+          errors << e
+        end
+      end
+    end
+  end
+  workers.each(&:join)
+  raise errors.pop unless errors.empty?
+end
+
+def log(line)
+  $stdout.write("#{line}\n")
 end
 
 opts = GetoptLong.new(
@@ -111,7 +143,6 @@ STATIC_MIME_TYPES = {
 
     assets[asset_type][basefile]['gzip'] = mem_gzip(assets[asset_type][basefile]['min'])
     assets[asset_type][basefile]['br'] = Brotli.deflate(assets[asset_type][basefile]['min'])
-    assets[asset_type][basefile]['deflate'] = Zlib::Deflate.deflate(assets[asset_type][basefile]['min'])
 
     # Add zstd compression if available
     if ZSTD_AVAILABLE
@@ -154,104 +185,65 @@ current_rev = git_history[0]
 
 puts "Uploading to: #{current_rev}"
 
-assets.keys.each do |asset_type|
-  assets[asset_type].keys.each do |filename|
+# Encoded copies, and the key prefix each is stored under. There is no deflate copy:
+# Application::best_compression_type never picks it (#4602).
+ENCODING_PATHS = { 'min' => nil, 'gzip' => 'gzip', 'br' => 'br' }
+ENCODING_PATHS['zstd'] = 'zstd' if ZSTD_AVAILABLE
+
+uploads = []
+
+assets.each_value do |files|
+  files.each do |filename, encoded|
     content_type = "application/javascript"
+    content_type = "text/css" if filename.match(/\.css$/)
+    content_type = "image/x-icon" if filename.match(/\.ico$/)
 
-    if filename.match(/\.css$/)
-      content_type = "text/css"
-    end
-
-    if filename.match(/\.ico$/)
-      content_type = "image/x-icon" 
-    end
-
-    upload_types = ['min','gzip','br','deflate']
-    upload_types.push('zstd') if ZSTD_AVAILABLE
-
-    upload_types.each do |upload_type|
-      content_encoding = {}
-      encodingpath = ""
-      if(upload_type.eql? 'gzip')
-        content_encoding = {content_encoding: 'gzip'}
-        encodingpath = "gzip/"
-      end
-
-      if(upload_type.eql? 'br')
-        content_encoding = {content_encoding: 'br'}
-        encodingpath = "br/"
-      end
-
-      if(upload_type.eql? 'deflate')
-        content_encoding = {content_encoding: 'deflate'}
-        encodingpath = "deflate/"
-      end
-
-      if(upload_type.eql? 'zstd')
-        content_encoding = {content_encoding: 'zstd'}
-        encodingpath = "zstd/"
-      end
-
-      if testonly.nil?
-        ["#{current_rev}/#{encodingpath}#{filename}"].each do |to_upload|
-          s3args = {bucket: asset_bucket, key: to_upload, content_type: content_type, body: assets[asset_type][filename][upload_type], cache_control: "max-age=31536000"}
-          s3args.merge!(content_encoding)
-          upload_result = s3client.put_object(s3args)
-          if upload_result.etag.nil?
-            puts "File upload failed: #{to_upload}"
-            exit 1
-          else
-            puts "Uploaded: #{to_upload}"
-          end
-        end
-      else
-        puts "Test only, not uploading for real"
-      end
+    ENCODING_PATHS.each do |upload_type, encoding|
+      args = {
+        key: "#{current_rev}/#{encoding ? "#{encoding}/" : ''}#{filename}",
+        content_type: content_type,
+        body: encoded[upload_type],
+      }
+      args[:content_encoding] = encoding if encoding
+      uploads << args
     end
   end
 end
 
-# Upload static assets (fonts, images) - no compression variants
-# These go to [commit]/static/[path]
-puts "\nUploading static assets..."
+# Static assets (fonts, images) go to [commit]/static/[path] with no compression variants.
 static_assets.each do |filename, data|
-  to_upload = "#{current_rev}/static/#{filename}"
-
-  if testonly.nil?
-    s3args = {
-      bucket: asset_bucket,
-      key: to_upload,
-      content_type: data['content_type'],
-      body: data['content'],
-      cache_control: "max-age=31536000"
-    }
-    upload_result = s3client.put_object(s3args)
-    if upload_result.etag.nil?
-      puts "File upload failed: #{to_upload}"
-      exit 1
-    else
-      puts "Uploaded: #{to_upload}"
-    end
-  else
-    puts "Test only: would upload #{to_upload} (#{data['content_type']})"
-  end
+  uploads << { key: "#{current_rev}/static/#{filename}", content_type: data['content_type'], body: data['content'] }
 end
-
-puts "Static asset upload complete (#{static_assets.size} files)"
 
 if testonly.nil?
-  s3client.list_objects_v2(bucket: asset_bucket).contents.each do |file|
-    matched = nil
-    git_history.each do |rev|
-      if file.key.match(/^#{rev}\//)
-        matched = true
-      end
-    end
+  puts "Uploading #{uploads.size} files with #{UPLOAD_THREADS} threads..."
+  in_parallel(uploads) do |args|
+    result = s3client.put_object(args.merge(bucket: asset_bucket, cache_control: "max-age=31536000"))
+    raise "File upload failed: #{args[:key]}" if result.etag.nil?
+    log "Uploaded: #{args[:key]}"
+  end
+  puts "Upload complete (#{uploads.size} files, #{static_assets.size} static)"
+else
+  uploads.each { |args| puts "Test only: would upload #{args[:key]} (#{args[:content_type]})" }
+end
 
-    if matched.nil?
-      s3client.delete_object(bucket: asset_bucket, key: file.key)
-      puts "Expired asset: #{file.key}"
+# Expire assets from commits older than the last 9. list_objects_v2 returns at most 1000
+# keys per call, so walk every page; deleting from only the first page left most old
+# assets in the bucket.
+if testonly.nil?
+  keep = git_history.map { |rev| "#{rev}/" }
+  expired = []
+  s3client.list_objects_v2(bucket: asset_bucket).each do |page|
+    page.contents.each do |file|
+      expired << file.key unless keep.any? { |prefix| file.key.start_with?(prefix) }
     end
+  end
+
+  puts "Expiring #{expired.size} old assets..."
+  in_parallel(expired.each_slice(1000).to_a) do |batch|
+    result = s3client.delete_objects(bucket: asset_bucket, delete: { objects: batch.map { |key| { key: key } }, quiet: true })
+    raise "Failed to expire: #{result.errors.map(&:key).first(5).join(', ')}" unless result.errors.empty?
+    log "Expired #{batch.size} assets"
   end
 else
   puts "Test only, not expiring old assets"

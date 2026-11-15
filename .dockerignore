@@ -3,3 +3,13 @@ node_modules
 *.md
 .vscode
 .idea
+# Generated local output (gitignored, but Docker doesn't read .gitignore). CodeBuild clones
+# a clean checkout, so this only affects local devbuild context size (#4599). Keep coverage/
+# itself: it holds tracked summary files, and coverage runs write cover_db inside the container.
+screenshots/
+coverage/cover_db/
+coverage/html/
+coverage/react/
+test-results/
+playwright-report/
+playwright/.cache/
