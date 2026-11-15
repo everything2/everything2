@@ -46,7 +46,7 @@ Status legend: ✅ already API-driven · 🟡 mutates via API but React still do
 | usergroup_discussions | yes | create a usergroup discussion; save the editor-mode pref | ✅ `POST /api/debatecomments/action/create`, `POST /api/preferences/set` |
 | macro_faq | — | (read-only documentation page) | — n/a |
 
-| everything_document_directory | yes | save the viewer's sort pref (`EDD_Sort`) | ❌ **side-effect in buildReactData** (POST param → `setVars`), no API (mild) |
+| everything_document_directory | yes | save the viewer's sort pref (`EDD_Sort`) | ✅ `POST /api/preferences/set` (#4416 removed the render-time write); page is a pure gate, listing via `GET /api/everything_document_directory` (#4557) |
 | mark_all_discussions_as_read | yes | mark CE/admin debates read (`lastreaddebate`) | ❌ **side-effect in buildReactData** (GET `?mark_*_read` → `sqlUpdate`/`sqlInsert`), no API |
 | settings | yes | save all user settings / prefs / profile | ✅ `/api/preferences/*`, `/api/user/edit`, `/api/nodelets` |
 | show_user_vars | — | (read-only inspection; admin GET lookup) | — n/a |

@@ -2637,15 +2637,27 @@ if (!$seed_collab) {
 
 my $seed_debate = getNode("Seed Debate for PageState", "debate");
 if (!$seed_debate) {
-  # Mirrors Everything::API::debatecomments::create_debate; the debate_create
-  # maintenance fills root_debatecomment. restricted=114 (gods usergroup).
+  # Mirrors Everything::API::debatecomments::create_debate. restricted=114 (gods usergroup).
+  # Do NOT pass root_debatecomment here: a value in the insert nodedata defeats the
+  # debate_create maintenance hook and leaves it 0, and every listing that getNodeById()s the
+  # root then silently drops the debate (see the NB in create_debate).
   $DB->insertNode("Seed Debate for PageState", "debate", $DB->getNode("root","user"), {
     doctext              => "Seed debate body for fixture capture.",
     parent_debatecomment => 0,
-    root_debatecomment   => 0,
     restricted           => 114,
   });
   print STDERR "  - Created: Seed Debate for PageState (debate)\n";
+  $seed_debate = getNode("Seed Debate for PageState", "debate");
+}
+# A top-level debate is its own root. Set it explicitly, as create_debate does, rather than
+# trusting the hook -- and repair DBs seeded before this fix, which carry root_debatecomment=0.
+if ($seed_debate) {
+  my $sd = $DB->getNodeById($seed_debate->{node_id}, 'force');
+  if ($sd && ($sd->{root_debatecomment} // 0) != $sd->{node_id}) {
+    $sd->{root_debatecomment} = $sd->{node_id};
+    $DB->updateNode($sd, -1);
+    print STDERR "  - Set root_debatecomment on Seed Debate for PageState\n";
+  }
 }
 
 print STDERR "\n=== Additional nodetype test data complete ===\n";

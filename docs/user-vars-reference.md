@@ -223,7 +223,7 @@ $user->set_vars($VARS);
 | `alphabetizer_format` | Boolean | Convert to E2 links | 0 | document.pm |
 | `sqlprompt_wrap` | 0-3 | SQL output format | 0 | document.pm |
 | `sqlprompt_nocount` | Boolean | Hide row count in SQL | 0 | document.pm |
-| `EDD_Sort` | String | Sort order for Everything Document Directory (0=default, idA/idD, nameA/nameD, authorA/authorD, createA/createD) | 0 | Page/everything_document_directory.pm |
+| `EDD_Sort` | String | Sort order for Everything Document Directory (0=default, idA/idD, nameA/nameD, authorA/authorD, createA/createD) | 0 | API/everything_document_directory.pm (read); written via /api/preferences/set |
 | `ListNodesOfType_Type` | Integer | Last selected node type ID in List Nodes of Type tool | - | Page/list_nodes_of_type.pm |
 
 ### Modern Settings (JSON)

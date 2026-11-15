@@ -1,117 +1,110 @@
 import React from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { render, waitFor, fireEvent } from '@testing-library/react'
 import EverythingDocumentDirectory from './EverythingDocumentDirectory'
-import fixture from '../../__fixtures__/pagestate/everything_document_directory.json'
-// Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
-// pinning the int-typed contract (#4152/#4108).
-describe('EverythingDocumentDirectory (real pagestate fixture)', () => {
-  it('mounts against the captured payload', () => {
-    const { container } = render(<EverythingDocumentDirectory data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    expect(container).toBeTruthy()
-  })
-  it('fixture has integer node_ids, never strings (#4152)', () => {
-    expect(JSON.stringify(fixture).match(/"node_id":"\d/g)).toBeNull()
-  })
-  it('no React key warnings', () => {
-    const errs = []
-    const spy = jest.spyOn(console, 'error').mockImplementation((...a) => errs.push(a.join(' ')))
-    render(<EverythingDocumentDirectory data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
-    spy.mockRestore()
-    expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
-  })
+
+// Fetch-driven (#4557): the Page is a pure gate. Filters are read off the URL and sent to
+// GET /api/everything_document_directory; applying them refetches in place (pushState) rather than
+// POSTing the page. Login-required -> state:'guest'.
+
+const setLocation = (href) => {
+  const u = new URL(href)
+  window.location.href = href
+  window.location.pathname = u.pathname
+  window.location.search = u.search
+}
+const jsonFetch = (p) => jest.fn(() => Promise.resolve({ json: () => Promise.resolve(p) }))
+
+const payload = (over = {}) => ({
+  success: 1,
+  documents: [{ node_id: 11, title: 'A Doc', author: 'alice', type: 'superdoc', createtime: '2026-01-02 03:04:05' }],
+  total_count: 2, shown_count: 1, limit: 60, current_sort: '0',
+  filter_user: '', filter_nodetype: '', available_nodetypes: ['superdoc', 'document'],
+  is_developer: false, ...over
 })
 
-// Role gating now reads admin/editor from the global e2.user prop (#4390),
-// not from contentData.permissions. is_developer stays on contentData.
-describe('EverythingDocumentDirectory role gating via user prop (#4390)', () => {
-  const baseData = {
-    type: 'everything_document_directory',
-    documents: [],
-    total_count: 0,
-    shown_count: 0,
-    limit: 60,
-    current_sort: '0',
-    filter_user: '',
-    filter_nodetype: '',
-    available_nodetypes: ['superdoc', 'document', 'superdocnolinks'],
-    permissions: { is_developer: 0 }
-  }
+beforeEach(() => setLocation('http://localhost/?node_id=800'))
+afterEach(() => { delete global.fetch; jest.restoreAllMocks() })
 
-  // "node_id" also appears in the sort-dropdown labels ("node_id, ascending"),
-  // so gate on the standalone <th>node_id</th> column-header text, which only
-  // renders for admins. Count occurrences of the bare-header form to be robust.
-  const nodeIdHeaderCount = (text) => (text.match(/node_id(?!,)/g) || []).length
+describe('EverythingDocumentDirectory (fetch-driven #4557)', () => {
+  it('fetches and renders the document list', async () => {
+    global.fetch = jsonFetch(payload())
+    const { container } = render(<EverythingDocumentDirectory user={{}} e2={{}} />)
+    await waitFor(() => expect(container.textContent).toMatch(/A Doc/))
+    expect(global.fetch.mock.calls[0][0]).toMatch(/^\/api\/everything_document_directory/)
+  })
 
-  it('admin + editor user sees node_id column and List Nodes link', () => {
-    const { container } = render(
-      <EverythingDocumentDirectory data={baseData} e2={{}} user={{ admin: true, editor: true }} />
-    )
-    expect(nodeIdHeaderCount(container.textContent)).toBeGreaterThan(0)
+  it('shows the login message on state:guest', async () => {
+    global.fetch = jsonFetch({ success: 0, state: 'guest' })
+    const { container } = render(<EverythingDocumentDirectory user={{}} e2={{}} />)
+    await waitFor(() => expect(container.textContent).toMatch(/log in first/i))
+  })
+
+  it('sends filters from the URL on mount', async () => {
+    setLocation('http://localhost/?node_id=800&filter_nodetype=superdoc&filter_user=alice')
+    global.fetch = jsonFetch(payload({ filter_nodetype: 'superdoc', filter_user: 'alice' }))
+    render(<EverythingDocumentDirectory user={{}} e2={{}} />)
+    await waitFor(() => expect(global.fetch.mock.calls.length).toBe(1))
+    const url = global.fetch.mock.calls[0][0]
+    expect(url).toContain('filter_nodetype=superdoc')
+    expect(url).toContain('filter_user=alice')
+  })
+
+  it('applying a filter refetches in place and pushes the URL — no page POST', async () => {
+    const pushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {})
+    global.fetch = jsonFetch(payload())
+    const { container } = render(<EverythingDocumentDirectory user={{}} e2={{}} />)
+    await waitFor(() => expect(container.querySelector('.doc-directory__form')).toBeTruthy())
+
+    fireEvent.change(container.querySelector('input[name="filter_user"]'), { target: { value: 'bob' } })
+    fireEvent.submit(container.querySelector('.doc-directory__form'))
+
+    // one preference POST + the refetch
+    await waitFor(() => expect(global.fetch.mock.calls.length).toBeGreaterThanOrEqual(3))
+    expect(window.location.href).toBe('http://localhost/?node_id=800') // no reload
+    const prefCall = global.fetch.mock.calls.find((c) => String(c[0]).includes('/api/preferences/set'))
+    expect(prefCall).toBeTruthy()
+    const last = global.fetch.mock.calls[global.fetch.mock.calls.length - 1][0]
+    expect(last).toContain('filter_user=bob')
+    expect(pushSpy.mock.calls[pushSpy.mock.calls.length - 1][2]).toContain('filter_user=bob')
+  })
+
+  // is_admin/is_editor come from the global e2.user prop (#4390); is_developer from the API.
+  it('admin + editor user sees the node_id column and the List Nodes link', async () => {
+    global.fetch = jsonFetch(payload())
+    const { container } = render(<EverythingDocumentDirectory user={{ admin: true, editor: true }} e2={{}} />)
+    await waitFor(() => expect(container.textContent).toMatch(/A Doc/))
     expect(container.textContent).toMatch(/List Nodes of Type/)
   })
 
-  it('non-admin non-editor user hides node_id column and List Nodes link', () => {
-    const { container } = render(
-      <EverythingDocumentDirectory data={baseData} e2={{}} user={{ admin: false, editor: false }} />
-    )
-    expect(nodeIdHeaderCount(container.textContent)).toBe(0)
+  it('non-admin non-editor user hides the List Nodes link', async () => {
+    global.fetch = jsonFetch(payload())
+    const { container } = render(<EverythingDocumentDirectory user={{ admin: false, editor: false }} e2={{}} />)
+    await waitFor(() => expect(container.textContent).toMatch(/A Doc/))
     expect(container.textContent).not.toMatch(/List Nodes of Type/)
   })
 
-  it('undefined user prop does not crash and gates off both', () => {
-    const { container } = render(
-      <EverythingDocumentDirectory data={baseData} e2={{}} user={undefined} />
-    )
-    expect(container).toBeTruthy()
-    expect(nodeIdHeaderCount(container.textContent)).toBe(0)
+  it('undefined user prop does not crash and gates off the privileged bits', async () => {
+    global.fetch = jsonFetch(payload())
+    const { container } = render(<EverythingDocumentDirectory e2={{}} />)
+    await waitFor(() => expect(container.textContent).toMatch(/A Doc/))
     expect(container.textContent).not.toMatch(/List Nodes of Type/)
   })
-})
 
-// The sort pref no longer POSTs as a page param (was a render-time
-// $VARS->{EDD_Sort}= side-effect, #4416). On submit the component persists it
-// via /api/preferences/set, then submits the filter form.
-describe('EverythingDocumentDirectory sort pref -> /api/preferences/set (#4416)', () => {
-  const baseData = {
-    type: 'everything_document_directory',
-    documents: [],
-    total_count: 0,
-    shown_count: 0,
-    limit: 60,
-    current_sort: '0',
-    filter_user: '',
-    filter_nodetype: '',
-    available_nodetypes: ['superdoc', 'document', 'superdocnolinks'],
-    permissions: { is_developer: 0 }
-  }
-
-  it('the sort <select> carries no form name (not POSTed as a page param)', () => {
-    const { container } = render(
-      <EverythingDocumentDirectory data={baseData} e2={{ node: { node_id: 7 } }} user={{ admin: true }} />
-    )
-    expect(container.querySelector('select[name="EDD_Sort"]')).toBeNull()
+  it('the sort <select> carries no form name (not POSTed as a page param, #4416)', async () => {
+    global.fetch = jsonFetch(payload())
+    const { container } = render(<EverythingDocumentDirectory user={{}} e2={{}} />)
+    await waitFor(() => expect(container.querySelector('.doc-directory__select')).toBeTruthy())
+    expect(container.querySelector('.doc-directory__select').getAttribute('name')).toBeNull()
   })
 
-  it('submitting persists EDD_Sort to the preferences API, then submits the form', async () => {
-    const submitSpy = jest.spyOn(HTMLFormElement.prototype, 'submit').mockImplementation(() => {})
-    global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({}) })
-    try {
-      const { container } = render(
-        <EverythingDocumentDirectory data={baseData} e2={{ node: { node_id: 7 } }} user={{ admin: true }} />
-      )
-      const sortSelect = container.querySelectorAll('.doc-directory__select')[0] // sort is first
-      fireEvent.change(sortSelect, { target: { value: 'nameA' } })
-      fireEvent.submit(container.querySelector('form'))
+  it('"show all" refetches with edd_limit set to the total', async () => {
+    jest.spyOn(window.history, 'pushState').mockImplementation(() => {})
+    global.fetch = jsonFetch(payload({ total_count: 42, shown_count: 1 }))
+    const { container, getByText } = render(<EverythingDocumentDirectory user={{}} e2={{}} />)
+    await waitFor(() => expect(container.textContent).toMatch(/A Doc/))
 
-      await waitFor(() =>
-        expect(global.fetch).toHaveBeenCalledWith('/api/preferences/set', expect.objectContaining({ method: 'POST' }))
-      )
-      const body = JSON.parse(global.fetch.mock.calls[0][1].body)
-      expect(body).toEqual({ EDD_Sort: 'nameA' })
-      await waitFor(() => expect(submitSpy).toHaveBeenCalled()) // form still submitted for the filtered view
-    } finally {
-      global.fetch && delete global.fetch
-      submitSpy.mockRestore()
-    }
+    fireEvent.click(getByText('42'))
+    await waitFor(() => expect(global.fetch.mock.calls.length).toBe(2))
+    expect(global.fetch.mock.calls[1][0]).toContain('edd_limit=42')
   })
 })

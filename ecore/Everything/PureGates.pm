@@ -164,6 +164,14 @@ my %REGISTRY = (
     # (the level-8 create gate; input-style options are React config, creation is /api/node/create).
     popular_registries => {},
     create_a_registry  => {},
+
+    # Directory / index report pages (#4557). everything_publication_directory is an
+    # oppressor_superdoc, but it has always carried its own narrower gate in code (thepub usergroup
+    # OR admin), which the API preserves -- an explicit gate beats the type default.
+    everything_data_pages            => {},   # superdoc           -> public
+    edev_documentation_index         => {},   # superdoc           -> public listing
+    everything_document_directory    => {},   # superdoc           -> NoGuest, perms scope the types
+    everything_publication_directory => {},   # oppressor_superdoc -> thepub || admin (in-code gate)
 );
 
 sub registry { return \%REGISTRY; }
