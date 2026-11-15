@@ -6560,10 +6560,32 @@ sub previous_years_nodes
     my $n = $this->node_by_id($row->[0]);
     next unless $n;
 
-    push @$nodes, $this->node_by_id($row->[0]);
+    push @$nodes, $this->previous_years_entry($n);
   }
 
-  return {"count" => $cnt, "nodes" => $nodes};
+  return {"count" => int($cnt || 0), "nodes" => $nodes};
+}
+
+# Plain-data listing entry for one writeup on A Year Ago Today. node_by_id() returns a blessed
+# Everything::Node, which the page's JSON encoder refuses (no convert_blessed) -- shipping those
+# 500'd the page on any day with a match (#4579). So emit only the fields the page renders. A
+# missing parent or author comes back as an Everything::Node::null object; send null for those.
+sub previous_years_entry
+{
+  my ($this, $writeup) = @_;
+
+  my $ref = sub {
+    my ($n) = @_;
+    # Ask is_null() rather than can('is_null'): every Everything::Node defines it (returning 0).
+    return (!$n || $n->is_null) ? undef : { node_id => int($n->node_id), title => $n->title };
+  };
+
+  return {
+    node_id    => int($writeup->node_id),
+    createtime => $this->iso_date_format($writeup->createtime),
+    parent     => $ref->($writeup->parent),
+    author     => $ref->($writeup->author),
+  };
 }
 
 sub sns_notify
