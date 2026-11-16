@@ -31,7 +31,7 @@ sub buildReactData {
             id        => int($user_id),
             userId    => int($user_id),
             userName  => $user_node->title,
-            imageUrl  => $imgsrc ? "https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com$imgsrc" : '',
+            imageUrl  => $self->APP->homenode_image_url($imgsrc),
             timestamp => $row->{tstamp},
         };
     }

@@ -334,6 +334,7 @@ sub buildReactData
     email => $user_node->{email} || '',
     doctext => $user_node->{doctext} || '',
     imgsrc => $user_node->{imgsrc} || '',
+    imgsrc_url => $APP->homenode_image_url( $user_node->{imgsrc} ),
     mission => $user_vars->{mission} || '',
     specialties => $user_vars->{specialties} || '',
     employment => $user_vars->{employment} || '',

@@ -42,6 +42,7 @@ sub upload_data
 	{
           @ct = (ContentType => $properties->{content_type});
 	}
+	push @ct, (CacheControl => $properties->{cache_control}) if exists($properties->{cache_control});
 	# Suppress DIE handler for Paws calls
 	local $SIG{__DIE__} = sub { };
 	my $result = eval { $this->{s3}->PutObject(Bucket => $this->{bucket}, Key => $name, Body => $data, @ct) };

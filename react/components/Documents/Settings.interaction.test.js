@@ -110,6 +110,12 @@ describe('Settings save contract', () => {
     expect(screen.queryByText(/saved successfully/i)).toBeNull()
   })
 
+  it('profile tab shows the current image from the URL the server builds (#4643)', () => {
+    const url = 'https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/tester?v=1731772640'
+    const { container } = render(<Settings data={baseData({ defaultTab: 'profile', profileData: { email: 'a@b.c', imgsrc: '/tester?v=1731772640', imgsrc_url: url } })} user={user} />)
+    expect(container.querySelector('img.settings-profile-image')).toHaveAttribute('src', url)
+  })
+
   describe('profile tab: current password and unsaved state (#4637)', () => {
     const profileData = { realname: 'Real Name', email: 'a@b.c', doctext: '', mission: '', specialties: '', employment: '', motto: '' }
     const renderProfile = () => render(<Settings data={baseData({ defaultTab: 'profile', profileData })} user={user} />)

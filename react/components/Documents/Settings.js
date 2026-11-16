@@ -1687,7 +1687,7 @@ function Settings({ data, user }) {
             <fieldset className="settings-fieldset">
               <legend>Profile Image</legend>
               <img
-                src={`/${data.profileData.imgsrc}`}
+                src={data.profileData.imgsrc_url}
                 alt={`${currentUser?.title}'s image`}
                 className="settings-profile-image"
               />

@@ -504,7 +504,9 @@ sub upload_image {
   $basename =~ s/\W/_/gs;
 
   # Upload to S3
-  unless ($s3->upload_data($basename, $processed->{data}, { content_type => $processed->{content_type} })) {
+  # The stored URL carries the upload time, so each upload is a new URL and can be cached hard.
+  unless ($s3->upload_data($basename, $processed->{data},
+      { content_type => $processed->{content_type}, cache_control => 'public, max-age=604800' })) {
     $self->_upload_log(outcome => 'storage_failed');
     return [$self->HTTP_OK, {
       success => 0,
@@ -512,8 +514,8 @@ sub upload_image {
     }];
   }
 
-  # Update user node with image path
-  $nodedata->{imgsrc} = "/$basename";
+  # Update user node with image path (versioned: see Application::homenode_image_url)
+  $nodedata->{imgsrc} = "/$basename?v=" . time();
   $DB->updateNode($nodedata, $nodedata);
 
   # Queue for moderator approval (skip for admin actions - trust the admin)
@@ -538,7 +540,8 @@ sub upload_image {
   return [$self->HTTP_OK, {
     success => 1,
     message => $message,
-    imgsrc => "/$basename"
+    imgsrc => $nodedata->{imgsrc},
+    imgsrc_url => $APP->homenode_image_url($nodedata->{imgsrc}),
   }];
 }
 

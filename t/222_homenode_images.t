@@ -154,6 +154,15 @@ is( $HI->detect_format('short'),                   undef,  'too short to tell: r
     ok( !-e '/usr/bin/gs', 'no unneeded interpreters in the image' );
 }
 
+# --- image URLs ----------------------------------------------------------------------------------
+{
+    my $host = $Everything::CONF->homenode_image_host;
+    is( $APP->homenode_image_url('/jaybonci?v=123'), "https://s3-us-west-2.amazonaws.com/$host/jaybonci?v=123", 'a versioned imgsrc keeps its version' );
+    is( $APP->homenode_image_url('/old_user'), "https://s3-us-west-2.amazonaws.com/$host/old_user", 'an unversioned one still works' );
+    is( $APP->homenode_image_url('no_slash'), "https://s3-us-west-2.amazonaws.com/$host/no_slash", 'a missing slash is added' );
+    is( $APP->homenode_image_url(''), '', 'no image, no URL' );
+}
+
 # --- S3 write failures are reported, not just written to a file in the container ---------------
 {
     require Everything::S3;
@@ -205,7 +214,10 @@ SKIP: {
     is( $stored[0]{ContentType} // $stored[0]{content_type}, 'image/jpeg', 'with the content type of what was stored' );
     my ( $w, $h ) = @stored ? dims( $stored[0]{data}, 'jpeg' ) : ( 0, 0 );
     ok( $w <= 400 && $h <= 800, "and it was resized (${w}x$h)" );
-    is( $DB->sqlSelect( 'imgsrc', 'user', "user_id = $user->{node_id}" ), "/$stored[0]{key}", 'the homenode points at it' )
+    like( $DB->sqlSelect( 'imgsrc', 'user', "user_id = $user->{node_id}" ), qr{^/\Q$stored[0]{key}\E\?v=\d+$},
+        'the homenode points at it, with a version so browsers fetch the new image' ) if @stored;
+    is( $stored[0] && $stored[0]{cache_control}, 'public, max-age=604800', 'stored with a cache lifetime' );
+    like( $json->{imgsrc_url} // '', qr{^https://s3-us-west-2\.amazonaws\.com/[^/]+/\Q$stored[0]{key}\E\?v=\d+$}, 'the response has the new URL' )
         if @stored;
     ok( $DB->sqlSelect( 'newuserimage_id', 'newuserimage', "newuserimage_id = $user->{node_id}" ), 'it is queued for moderation' );
 
