@@ -76,12 +76,18 @@ FROM deps AS final
 # no thread-safety concern under mpm_event. (#4234)
 RUN rm -f /etc/apache2/mods-enabled/perl.load /etc/apache2/mods-enabled/perl.conf
 
+# ImageMagick only handles homenode image uploads. Ghostscript comes in as a mere Recommends of
+# libmagickcore and nothing uses it, so remove it; the policy below limits ImageMagick to the
+# image formats we accept. Done here, not in the deps stage, so the cached deps layers survive.
+RUN apt-get purge -y ghostscript libgs10 libgs10-common libgs-common
+
 # Everything below is COPY --link and nothing runs after it. --link layers don't depend on
 # the filesystem underneath, so a fresh BuildKit builder working from the registry cache can
 # push them without downloading and unpacking the ~1 GB of cached deps layers (#4623).
 # local/ is kept out by .dockerignore rather than deleted here for the same reason.
 COPY --link ./etc/templates/* /var/bootstrap/etc/
 COPY --link --chmod=755 docker/e2app/apache2_wrapper.rb /etc/everything/
+COPY --link docker/e2app/imagemagick-policy.xml /etc/ImageMagick-7/policy.xml
 COPY --link ./ /var/everything
 COPY --link --from=commit /last_commit /etc/everything/last_commit
 

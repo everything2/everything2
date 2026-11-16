@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ImageMagick policy for the app image (installed as /etc/ImageMagick-7/policy.xml).
+
+  The app only uses ImageMagick for homenode image uploads (Everything::HomenodeImage), so it
+  may read and write the formats we accept and nothing else: every other coder and every
+  external delegate is off, and resources are capped so one upload can't exhaust the task.
+  Ghostscript is also removed from the image (see the Dockerfile).
+-->
+<!DOCTYPE policymap [
+  <!ELEMENT policymap (policy)*>
+  <!ATTLIST policymap xmlns CDATA #FIXED "">
+  <!ELEMENT policy EMPTY>
+  <!ATTLIST policy xmlns CDATA #FIXED "">
+  <!ATTLIST policy domain NMTOKEN #REQUIRED>
+  <!ATTLIST policy name NMTOKEN #IMPLIED>
+  <!ATTLIST policy pattern CDATA #IMPLIED>
+  <!ATTLIST policy rights NMTOKEN #IMPLIED>
+  <!ATTLIST policy stealth NMTOKEN #IMPLIED>
+  <!ATTLIST policy value CDATA #IMPLIED>
+]>
+<policymap>
+  <!-- Resources: well above what a 48 MP phone photo needs, well below the task's memory. -->
+  <policy domain="resource" name="memory" value="256MiB"/>
+  <policy domain="resource" name="map" value="512MiB"/>
+  <policy domain="resource" name="disk" value="1GiB"/>
+  <policy domain="resource" name="width" value="16KP"/>
+  <policy domain="resource" name="height" value="16KP"/>
+  <policy domain="resource" name="area" value="128MP"/>
+  <policy domain="resource" name="list-length" value="300"/>
+  <policy domain="resource" name="time" value="60"/>
+
+  <!-- No external programs, no indirect reads (@file lists). -->
+  <policy domain="delegate" rights="none" pattern="*"/>
+  <policy domain="path" rights="none" pattern="@*"/>
+
+  <!-- Only the formats homenode uploads accept (input) and store (output). -->
+  <policy domain="coder" rights="none" pattern="*"/>
+  <policy domain="coder" rights="read|write" pattern="{JPEG,JPG,PNG,GIF,WEBP,HEIC,HEIF,AVIF}"/>
+</policymap>

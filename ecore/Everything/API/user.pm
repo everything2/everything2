@@ -3,6 +3,8 @@ package Everything::API::user;
 use Moose;
 extends 'Everything::API';
 
+use Scalar::Util ();
+
 sub route {
   my ($self, $REQUEST, $extra) = @_;
   my $method = lc($REQUEST->request_method());
@@ -338,14 +340,15 @@ sub edit_profile {
 =head2 POST /api/user/upload-image
 
 Upload a homenode image. Accepts multipart/form-data with:
-- imgsrc_file: The image file (JPEG, GIF, or PNG)
+- imgsrc_file: The image file (JPEG, PNG, GIF, WebP or HEIC; up to 12MB)
 
-The image is:
-- Validated for type (JPEG, GIF, PNG only)
-- Checked against size limits (800KB normal, 1.6MB for gods)
+The image is processed by Everything::HomenodeImage:
+- Format identified from the file's contents (not its name or claimed type)
+- Auto-oriented, metadata stripped
 - Resized if exceeding dimension limits (200x400 normal, 400x800 for level>4 or gods)
-- Uploaded to S3
-- Queued for moderator approval
+- Re-encoded (JPEG, PNG or GIF; WebP becomes PNG, HEIC becomes JPEG)
+- Uploaded to S3 with the content type of what was stored
+- Queued for moderator approval (except admin uploads for another user)
 
 Response:
 {
@@ -369,14 +372,6 @@ sub upload_image {
     return [$self->HTTP_OK, {
       success => 0,
       error => 'You must be logged in to upload an image'
-    }];
-  }
-
-  # Production only - S3 uploads require AWS credentials
-  unless ($self->CONF->environment eq 'production') {
-    return [$self->HTTP_OK, {
-      success => 0,
-      error => 'Image uploads are only available in production'
     }];
   }
 
@@ -433,16 +428,6 @@ sub upload_image {
     }
   }
 
-  # Initialize S3
-  require Everything::S3;
-  my $s3 = Everything::S3->new('homenodeimages');
-  unless ($s3) {
-    return [$self->HTTP_OK, {
-      success => 0,
-      error => 'Could not connect to image storage'
-    }];
-  }
-
   # Get uploaded file
   my $fname = $query->upload('imgsrc_file');
   unless ($fname) {
@@ -452,35 +437,8 @@ sub upload_image {
     }];
   }
 
-  # Validate content type
-  my $upload_info = $query->uploadInfo($fname);
-  unless (UNIVERSAL::isa($upload_info, 'HASH')) {
-    return [$self->HTTP_OK, {
-      success => 0,
-      error => 'Image upload failed. Please try again.'
-    }];
-  }
-
-  my $content_type = $upload_info->{'Content-Type'} || '';
-  unless ($content_type =~ /(jpeg|jpg|gif|png)$/i) {
-    return [$self->HTTP_OK, {
-      success => 0,
-      error => 'Only JPEG, GIF, and PNG images are allowed'
-    }];
-  }
-  my $extension = lc($1);
-  $extension = 'jpg' if $extension eq 'jpeg';
-
-  # Size limits - use admin limits if admin is uploading for someone else
-  my $is_god = $is_admin_action || $APP->isAdmin($nodedata);
-  my $user_level = $APP->getLevel($nodedata);
-  my $sizelimit = $is_god ? 1_600_000 : 800_000;
-  my $max_width = ($user_level > 4 || $is_god) ? 400 : 200;
-  my $max_height = ($user_level > 4 || $is_god) ? 800 : 400;
-
-  # Read file data. Under the Plack request backing (#4129), $fname is a
-  # Plack::Request::Upload (spooled to a temp file); read its path. The legacy
-  # branch (a CGI upload filehandle) is kept defensively.
+  # Read the upload. Under the Plack request backing (#4129) it's a Plack::Request::Upload
+  # spooled to a temp file; a legacy CGI filehandle is handled defensively.
   my $buf;
   if (ref($fname) && eval { $fname->can('path') }) {
     if (open(my $ufh, '<', $fname->path)) {
@@ -490,76 +448,64 @@ sub upload_image {
       close($ufh);
     }
   } else {
-    $buf = join('', <$fname>);
+    binmode($fname);
+    local $/ = undef;
+    $buf = <$fname>;
   }
-  $buf //= '';
-  my $size = length($buf);
 
-  if ($size > $sizelimit) {
-    my $limit_kb = int($sizelimit / 1000);
+  my $is_upload = Scalar::Util::blessed($fname) ? 1 : 0;
+  my $client_name = ($is_upload && $fname->can('filename')) ? ($fname->filename // '') : '';
+  my ($client_ext) = $client_name =~ /\.(\w{1,8})$/;
+  $self->_upload_log(
+    bytes       => length($buf // ''),
+    client_type => ($is_upload && $fname->can('content_type')) ? $fname->content_type : undef,
+    client_ext  => lc($client_ext // ''),
+  );
+
+  # Identify, decode, orient, strip, resize and re-encode (Everything::HomenodeImage). The
+  # browser's file name and claimed type are ignored; the format comes from the bytes.
+  my $is_god = $is_admin_action || $APP->isAdmin($nodedata);
+  my $user_level = $APP->getLevel($nodedata);
+  require Everything::HomenodeImage;
+  my $processed = Everything::HomenodeImage->process($buf,
+    max_width  => ($user_level > 4 || $is_god) ? 400 : 200,
+    max_height => ($user_level > 4 || $is_god) ? 800 : 400,
+  );
+  unless ($processed->{ok}) {
+    return [$self->HTTP_OK, { success => 0, error => $processed->{error} }];
+  }
+  $self->_upload_log(
+    detected => $processed->{format},
+    stored_type => $processed->{content_type},
+    width => $processed->{width}, height => $processed->{height}, resized => $processed->{resized},
+  );
+
+  # Storing needs the production S3 bucket. Elsewhere, report what processing produced so the
+  # whole pipeline can still be exercised by hand.
+  unless ($self->CONF->environment eq 'production') {
     return [$self->HTTP_OK, {
       success => 0,
-      error => "Image is too large. Maximum size is ${limit_kb}KB"
+      error => "This image is fine ($processed->{width}x$processed->{height} $processed->{content_type}), "
+        . 'but uploads are only stored in production.'
     }];
   }
 
-  # Write to temp file for ImageMagick
-  my $tmpfile = '/tmp/everythingimage' . $$ . int(rand(10000)) . '.' . $extension;
-  my $outfile;
-  unless (open($outfile, '>', $tmpfile)) {
+  require Everything::S3;
+  my $s3 = Everything::S3->new('homenodeimages');
+  unless ($s3) {
     return [$self->HTTP_OK, {
       success => 0,
-      error => 'Failed to process image'
+      error => 'Could not connect to image storage'
     }];
   }
-  binmode($outfile);
-  print $outfile $buf;
-  close($outfile);
-
-  # Process with ImageMagick
-  require Image::Magick;
-  my $image = Image::Magick->new();
-  my $read_error = $image->Read($tmpfile);
-  if ($read_error) {
-    unlink($tmpfile);
-    return [$self->HTTP_OK, {
-      success => 0,
-      error => 'Failed to read image file'
-    }];
-  }
-
-  my ($width, $height) = $image->Get('width', 'height');
-  my $proportion = 1;
-  my $resizing = 0;
-
-  if ($width > $max_width) {
-    $proportion = $max_width / $width;
-    $resizing = 1;
-  }
-
-  if ($height > $max_height) {
-    my $height_proportion = $max_height / $height;
-    if ($height_proportion < $proportion) {
-      $proportion = $height_proportion;
-    }
-    $resizing = 1;
-  }
-
-  if ($resizing) {
-    $width = int($width * $proportion);
-    $height = int($height * $proportion);
-    $image->Resize(width => $width, height => $height, filter => 'Lanczos');
-    $image->Write($tmpfile);
-  }
-  undef $image;
 
   # Build S3 key name from target user's username
   my $basename = $target_user->title;
   $basename =~ s/\W/_/gs;
 
   # Upload to S3
-  unless ($s3->upload_file($basename, $tmpfile, { content_type => $content_type })) {
-    unlink($tmpfile);
+  unless ($s3->upload_data($basename, $processed->{data}, { content_type => $processed->{content_type} })) {
+    $self->_upload_log(outcome => 'storage_failed');
     return [$self->HTTP_OK, {
       success => 0,
       error => 'Failed to upload image. Please try again.'
@@ -579,12 +525,9 @@ sub upload_image {
     );
   }
 
-  # Clean up temp file
-  unlink($tmpfile);
-
-  my $message = "$size bytes received!";
-  if ($resizing) {
-    $message .= " Image was resized to ${width}x${height}.";
+  my $message = 'Image saved.';
+  if ($processed->{resized}) {
+    $message = "Image saved, resized to $processed->{width}x$processed->{height}.";
   }
   if ($is_admin_action) {
     $message .= " Image uploaded for " . $target_user->title . ".";
@@ -620,6 +563,33 @@ Response:
 }
 
 =cut
+
+# Every upload attempt leaves one log line (Application::log_event): who, what came in, what
+# happened. Refusals are HTTP 200 with success 0, so nothing else would record them.
+around 'upload_image' => sub {
+  my ($orig, $self, $REQUEST) = @_;
+  local $self->{upload_log} = {};
+  my $response = $self->$orig($REQUEST);
+
+  my $body = (ref($response) eq 'ARRAY' && ref($response->[1]) eq 'HASH') ? $response->[1] : {};
+  my %fields = (
+    user    => ($REQUEST->user ? $REQUEST->user->title : undef),
+    outcome => $body->{success} ? 'stored' : 'refused',
+    ($body->{success} ? () : (reason => $body->{error})),
+    %{ $self->{upload_log} },
+  );
+  my $target = eval { $REQUEST->cgi->param('target_user_id') };
+  $fields{target_user_id} = int($target) if $target;
+  $self->APP->log_event('homenode_image_upload', \%fields);
+
+  return $response;
+};
+
+sub _upload_log {
+  my ($self, %fields) = @_;
+  $self->{upload_log} = { %{ $self->{upload_log} || {} }, %fields };
+  return;
+}
 
 sub cure_infection {
   my ($self, $REQUEST) = @_;

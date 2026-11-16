@@ -6749,6 +6749,18 @@ sub writeup_edittime
   return $edittime;
 }
 
+# One JSON line on stderr for an operational event worth seeing later (not an error):
+# CloudWatch in production (Starman's stderr), /tmp/development.log in development. Keys are
+# sorted so lines are greppable. Use warn (-> e2-app-errors) for real failures instead.
+sub log_event
+{
+  my ($this, $event, $fields) = @_;
+  my $entry = { event => $event, time => scalar(gmtime()) . ' UTC', %{ $fields || {} } };
+  my $line = eval { JSON->new->canonical->utf8->encode($entry) } // qq({"event":"$event","error":"unencodable"});
+  print STDERR "E2EVENT $line\n";
+  return;
+}
+
 sub global_warn_handler
 {
   my ($this, $warning) = @_;
