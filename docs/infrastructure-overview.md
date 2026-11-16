@@ -297,10 +297,30 @@ CloudWatch Logs
 
 ### Rollback Strategy
 
-- Keep previous image tags in ECR
-- Can manually rollback via ECS console
-- Update service to use previous task definition
-- No automated rollback currently
+Every deploy reuses the same task definition (`e2app-family`) with the image tag `:latest`;
+what changes is the image digest. Each ECS deployment records the digest it resolved, so
+"the previous version" means the previous digest, not a previous task definition.
+
+- **Automatic (#4565):** the service has the ECS deployment circuit breaker on with rollback.
+  If a new deployment's tasks never pass health checks (crash, failed `/health`), ECS marks it
+  FAILED after a few failed tasks and rolls back to the last completed deployment's digest.
+  The `e2-ecs-deployment-failed` EventBridge rule emails `e2-alerts` when that happens; until
+  then, a rolled-back deploy just looks like "my change isn't live".
+- The breaker only catches tasks that fail to come up healthy. A build that starts and passes
+  `/health` but is broken in other ways rolls out normally; roll that back by hand.
+- **Manual:** point `:latest` back at the previous good digest and redeploy:
+  ```bash
+  REPO=everything2/e2app-arm
+  aws ecs list-service-deployments --cluster E2-App-ECS-Cluster --service E2-App-Fargate-Service  # find the good deployment
+  aws ecs describe-service-revisions --service-revision-arns <its targetServiceRevisionArn> \
+    --query 'serviceRevisions[0].containerImages[0].imageDigest'
+  MANIFEST=$(aws ecr batch-get-image --repository-name $REPO --image-ids imageDigest=<digest> \
+    --query 'images[0].imageManifest' --output text)
+  aws ecr put-image --repository-name $REPO --image-tag latest --image-manifest "$MANIFEST"
+  aws ecs update-service --cluster E2-App-ECS-Cluster --service E2-App-Fargate-Service --force-new-deployment
+  ```
+- The ECR lifecycle policy keeps the 10 most recent untagged images, so the last several
+  deploys' digests are always available to roll back to.
 
 ## Monitoring & Logging
 

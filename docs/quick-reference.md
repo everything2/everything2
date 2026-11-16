@@ -171,7 +171,7 @@ See [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md) and run `git log` for current o
 1. Check CloudWatch logs in AWS Console
 2. Check ECS service status
 3. Check RDS database status
-4. Rollback: Update ECS service to previous task definition
+4. Rollback: a deploy whose tasks never get healthy is rolled back automatically (circuit breaker, emails e2-alerts). Otherwise point `:latest` back at the previous good image digest and force a new deployment; see "Rollback Strategy" in [infrastructure-overview.md](infrastructure-overview.md)
 
 ### Database Issues
 1. Check RDS status in AWS Console

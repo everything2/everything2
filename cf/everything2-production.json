@@ -1252,7 +1252,7 @@
       "Properties": {
         "RepositoryName": "everything2/e2app-arm",
         "LifecyclePolicy": {
-          "LifecyclePolicyText": "{\"rules\": [{\"rulePriority\": 1, \"description\": \"Expire images older than 3 days\", \"selection\": {\"tagStatus\": \"untagged\", \"countType\": \"sinceImagePushed\",\"countUnit\": \"days\", \"countNumber\": 3 }, \"action\": {\"type\": \"expire\"}}]}"
+          "LifecyclePolicyText": "{\"rules\": [{\"rulePriority\": 1, \"description\": \"Keep the 10 most recent untagged images: earlier deploys' digests, so the ECS circuit breaker (and manual rollbacks) can roll back to them\", \"selection\": {\"tagStatus\": \"untagged\", \"countType\": \"imageCountMoreThan\", \"countNumber\": 10 }, \"action\": {\"type\": \"expire\"}}]}"
         }
       }
     },
@@ -1760,7 +1760,11 @@
         },
         "DeploymentConfiguration": {
           "MaximumPercent": 200,
-          "MinimumHealthyPercent": 100
+          "MinimumHealthyPercent": 100,
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true
+          }
         },
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
@@ -2100,6 +2104,55 @@
         "Subscription": [
           {"Protocol": "email", "Endpoint": "jay@bonci.net"}
         ]
+      }
+    },
+    "E2AlertsTopicPolicy": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "Topics": [{"Ref": "E2AlertsTopic"}],
+        "PolicyDocument": {
+          "Version": "2008-10-17",
+          "Statement": [
+            {
+              "Sid": "__default_statement_ID",
+              "Effect": "Allow",
+              "Principal": {"AWS": "*"},
+              "Action": ["SNS:GetTopicAttributes", "SNS:SetTopicAttributes", "SNS:AddPermission", "SNS:RemovePermission", "SNS:DeleteTopic", "SNS:Subscribe", "SNS:ListSubscriptionsByTopic", "SNS:Publish"],
+              "Resource": {"Ref": "E2AlertsTopic"},
+              "Condition": {"StringEquals": {"AWS:SourceOwner": {"Ref": "AWS::AccountId"}}}
+            },
+            {
+              "Sid": "AllowDeploymentFailedRule",
+              "Effect": "Allow",
+              "Principal": {"Service": "events.amazonaws.com"},
+              "Action": "sns:Publish",
+              "Resource": {"Ref": "E2AlertsTopic"},
+              "Condition": {"ArnEquals": {"aws:SourceArn": {"Fn::GetAtt": ["ECSDeploymentFailedRule", "Arn"]}}}
+            }
+          ]
+        }
+      }
+    },
+    "ECSDeploymentFailedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "e2-ecs-deployment-failed",
+        "Description": "Emails e2-alerts when an app deployment fails. With the circuit breaker on, a deploy whose tasks never get healthy is rolled back to the previous image automatically, so without this a failed deploy just looks like 'my change isn't live'.",
+        "State": "ENABLED",
+        "EventPattern": {
+          "source": ["aws.ecs"],
+          "detail-type": ["ECS Deployment State Change"],
+          "resources": [{"Ref": "ECSFargateAppService"}],
+          "detail": {"eventName": ["SERVICE_DEPLOYMENT_FAILED"]}
+        },
+        "Targets": [{
+          "Id": "e2-alerts",
+          "Arn": {"Ref": "E2AlertsTopic"},
+          "InputTransformer": {
+            "InputPathsMap": {"time": "$.time", "reason": "$.detail.reason", "deployment": "$.detail.deploymentId"},
+            "InputTemplate": "\"E2 app deployment <deployment> FAILED at <time>: <reason>. The circuit breaker rolls back to the previous image, so the site should still be serving the last good build -- check the ECS service events and the CodeBuild log before redeploying.\""
+          }
+        }]
       }
     },
     "AppHighLatencyAlarm": {
