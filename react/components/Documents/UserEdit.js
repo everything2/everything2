@@ -665,7 +665,7 @@ const UserEdit = ({ data, e2 }) => {
             {user.imgsrc && (
               <div className="user-edit-image-current">
                 <img
-                  src={`https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/${user.title.replace(/\W/g, '_')}`}
+                  src={user.imgsrc_url}
                   alt={`${user.title}'s image`}
                   className="user-edit-image-preview"
                 />

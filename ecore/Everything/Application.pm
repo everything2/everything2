@@ -6749,6 +6749,16 @@ sub writeup_edittime
   return $edittime;
 }
 
+# Public URL of a homenode image from the user's imgsrc ("/name", or "/name?v=<upload time>"
+# since #4643: the version changes the URL on each upload so browsers don't keep the old one).
+sub homenode_image_url
+{
+  my ($this, $imgsrc) = @_;
+  return '' unless defined $imgsrc && length $imgsrc;
+  $imgsrc = "/$imgsrc" unless $imgsrc =~ m{^/};
+  return 'https://s3-us-west-2.amazonaws.com/' . $this->{conf}->homenode_image_host . $imgsrc;
+}
+
 # One JSON line on stderr for an operational event worth seeing later (not an error):
 # CloudWatch in production (Starman's stderr), /tmp/development.log in development. Keys are
 # sorted so lines are greppable. Use warn (-> e2-app-errors) for real failures instead.

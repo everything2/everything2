@@ -104,6 +104,12 @@ describe('UserEdit', () => {
     expect(global.fetch).not.toHaveBeenCalled()
   })
 
+  it('shows the current image from the URL the server builds', () => {
+    const url = 'https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/tester?v=1731772640'
+    const { container } = render(<UserEdit data={makeData({ user: { ...makeData().user, title: 'tester', imgsrc: '/tester?v=1731772640', imgsrc_url: url } })} />)
+    expect(container.querySelector('img.user-edit-image-preview')).toHaveAttribute('src', url)
+  })
+
   describe('image upload limits (#4643)', () => {
     // A File whose reported size we control without allocating megabytes.
     const sizedFile = (name, type, size) => {

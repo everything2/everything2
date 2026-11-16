@@ -39,17 +39,11 @@ sub display {
     if ( $node->NODEDATA->{imgsrc} ) {
         $profile->{imgsrc} = $node->NODEDATA->{imgsrc};
 
-        my $imgsrc_path = $node->NODEDATA->{imgsrc};
-        $imgsrc_path = "/$imgsrc_path" unless $imgsrc_path =~ m{^/};
-
         my $is_dev = $Everything::CONF->environment eq 'development';
         if ( $is_dev && $node->title eq 'root' ) {
             $profile->{imgsrc_url} = '/static/homenode-stub.png';
         } else {
-            $profile->{imgsrc_url} =
-                'https://s3-us-west-2.amazonaws.com/'
-              . $Everything::CONF->homenode_image_host
-              . $imgsrc_path;
+            $profile->{imgsrc_url} = $self->APP->homenode_image_url( $node->NODEDATA->{imgsrc} );
         }
     }
 
@@ -268,6 +262,7 @@ sub edit {
 
     # Add editable fields
     $profile->{imgsrc}   = $node->NODEDATA->{imgsrc} || '';
+    $profile->{imgsrc_url} = $self->APP->homenode_image_url( $profile->{imgsrc} );
     $profile->{realname} = $node->NODEDATA->{realname} || '';
     $profile->{email}    = $node->NODEDATA->{email} || '';
     $profile->{doctext}  = $node->NODEDATA->{doctext} || '';
