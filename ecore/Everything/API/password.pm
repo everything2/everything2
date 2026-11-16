@@ -54,9 +54,13 @@ sub reset_request {
     # Reset tokens are derived from the salt, so a pre-salt account gets its migrated form
     # first (never a hash of its stored value as if that were a password, which for an
     # account with no password would make the no-password marker itself work as one).
+    # Only the password columns are written: never the rest of the row (lasttime is a memorial
+    # for some accounts).
     unless ($user->{salt}) {
         ($user->{passwd}, $user->{salt}) = $APP->migrated_legacy_password($user);
-        $DB->updateNode($user, -1);
+        $DB->sqlUpdate('user', { passwd => $user->{passwd}, salt => $user->{salt} }, 'user_id=' . int($user->{node_id}));
+        $DB->sqlInsert('version', { version_id => int($user->{node_id}), version => 1 }, { -version => 'version + 1' });
+        $DB->{cache}->cacheNode($user) if $DB->{cache};
     }
 
     my $valid_for_minutes = 20;
