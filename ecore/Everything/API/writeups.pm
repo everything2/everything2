@@ -66,6 +66,19 @@ around 'update' => sub
   my $postdata = $REQUEST->JSON_POSTDATA;
   my ($new_writeuptype, $type_is_changing);
 
+  # A writeup's parent e2node is set when it's published; moving it is the reparent tool's
+  # job, not an edit. Resending the current parent is harmless.
+  if(ref($postdata) eq "HASH" and exists($postdata->{parent_e2node}))
+  {
+    my $writeup = $self->APP->node_by_id(int($id));
+    if($writeup and $writeup->type and $writeup->type->title eq "writeup"
+       and int($postdata->{parent_e2node} // 0) != int($writeup->NODEDATA->{parent_e2node} // 0))
+    {
+      return [$self->HTTP_OK, {success => 0, error => "parent_change_not_allowed",
+        message => "A writeup can't be moved by editing it."}];
+    }
+  }
+
   if(ref($postdata) eq "HASH" and defined($postdata->{wrtype_writeuptype}))
   {
     my $writeup = $self->APP->node_by_id(int($id));

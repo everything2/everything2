@@ -646,6 +646,6 @@ $admin_user->{in_room} = 0;
 $DB->updateNode($admin_user, -1);
 
 # Clean up test data
-$DB->sqlDelete('node', "node_id=$test_room->{node_id}");
+$DB->nukeNode($DB->getNodeById($test_room->{node_id}), -1);    # node + roomdata + document rows
 
 done_testing();

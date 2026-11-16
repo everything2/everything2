@@ -43,13 +43,15 @@ ok($guest_user, "Got guest user");
 # Create a test document node that the user can edit
 # Use admin to create, then transfer ownership to normal_user
 my $test_node_title = "Test Autosave Node " . time();
+my $private_status = $DB->getNode('private', 'publication_status');
 my $test_node_id = $DB->insertNode(
     $test_node_title,
-    'document',
+    'draft',
     $admin_user,
     {
         doctext => 'Initial content for autosave testing.',
-        author_user => $normal_user->{node_id}
+        author_user => $normal_user->{node_id},
+        publication_status => $private_status->{node_id}
     }
 );
 
@@ -57,7 +59,7 @@ my $test_node_id = $DB->insertNode(
 if ($test_node_id) {
     $DB->sqlUpdate('node', { author_user => $normal_user->{node_id} }, "node_id = $test_node_id");
 }
-ok($test_node_id, "Created test document node");
+ok($test_node_id, "Created test draft node");
 
 # Create autosave table entries for cleanup later
 my @autosave_ids;

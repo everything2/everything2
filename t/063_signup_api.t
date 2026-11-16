@@ -325,15 +325,19 @@ subtest 'a failed verification records why' => sub {
   is($result->[1]{error}, 'recaptcha_failed', 'signup is refused');
 
   my ($details) = $DB->sqlSelect('seclog_details', 'seclog',
-    "seclog_id > $before AND seclog_event = " . Everything::SecurityLog::SECLOG_USER_SIGNUP(), 'ORDER BY seclog_id DESC LIMIT 1');
+    "seclog_id > $before AND seclog_event = " . Everything::SecurityLog::SECLOG_USER_SIGNUP()
+    . " AND seclog_details LIKE " . $DB->{dbh}->quote("%$name%"), 'ORDER BY seclog_id DESC LIMIT 1');
   like($details // '', qr/reCAPTCHA verification failed for \Q$name\E: invalid token: EXPIRED/, 'the security log says why');
 };
 
 subtest 'security log details longer than the column are truncated, not lost' => sub {
   my $root = $DB->getNode('root', 'user');
   my ($before) = $DB->sqlSelect('MAX(seclog_id)', 'seclog');
-  $APP->securityLog(Everything::SecurityLog::SECLOG_USER_SIGNUP(), $root, 'x' x 400);
-  my ($len) = $DB->sqlSelect('LENGTH(seclog_details)', 'seclog', "seclog_id > $before", 'ORDER BY seclog_id DESC LIMIT 1');
+  # A marker no other test writes, so a parallel test's log entry can't be picked up instead.
+  my $marker = 'truncation_check_' . $$ . '_' . time() . '_';
+  $APP->securityLog(Everything::SecurityLog::SECLOG_USER_SIGNUP(), $root, $marker . ('x' x 400));
+  my ($len) = $DB->sqlSelect('LENGTH(seclog_details)', 'seclog',
+    "seclog_id > $before AND seclog_details LIKE " . $DB->{dbh}->quote("$marker%"), 'ORDER BY seclog_id DESC LIMIT 1');
   is($len, 255, 'stored, truncated to 255');
 };
 

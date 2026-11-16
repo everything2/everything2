@@ -148,17 +148,8 @@ sub create {
         }];
     }
 
-    # Check if user can edit this node
-    my $can_edit = 0;
-    if ($node->{author_user} == $user_id) {
-        $can_edit = 1;
-    } elsif ($self->APP->isEditor($REQUEST->user->NODEDATA)) {
-        $can_edit = 1;
-    } elsif ($REQUEST->user->is_admin) {
-        $can_edit = 1;
-    }
-
-    unless ($can_edit) {
+    # Autosave is for the draft editor: only your own drafts (same rule as updating a draft).
+    unless ($self->_is_own_draft($node, $user_id)) {
         return [$self->HTTP_FORBIDDEN, {
             success => 0,
             error => 'permission_denied',
@@ -374,6 +365,15 @@ sub restore_version {
     my $node_id = $version->{node_id};
     my $restore_content = $version->{doctext};
 
+    # Only back into a draft you still own
+    unless ($self->_is_own_draft($self->DB->getNodeById($node_id), $user_id)) {
+        return [$self->HTTP_FORBIDDEN, {
+            success => 0,
+            error => 'permission_denied',
+            message => 'You can only restore versions of your own drafts'
+        }];
+    }
+
     # Stash current content before restoring (as manual save)
     my $current_doctext = $dbh->selectrow_array(
         'SELECT doctext FROM document WHERE document_id = ?',
@@ -446,6 +446,12 @@ sub delete_autosave {
         success => 1,
         deleted => $autosave_id
     }];
+}
+
+sub _is_own_draft {
+    my ($self, $node, $user_id) = @_;
+    return 0 unless $node && $node->{type} && ($node->{type}{title} // '') eq 'draft';
+    return ($node->{author_user} // 0) == $user_id ? 1 : 0;
 }
 
 sub _prune_old_autosaves {
