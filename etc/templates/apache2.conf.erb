@@ -230,6 +230,19 @@ ListenBacklog 511
 ##### MAIN VIRTUALHOST (HTTP ONLY) #####
 <VirtualHost _default_:80>
 	ServerName everything2.com
+
+	# Response headers on everything this host serves, error responses included ("always").
+	# - Other sites may not frame these pages (clickjacking): X-Frame-Options for older
+	#   browsers, CSP frame-ancestors for current ones. E2 never frames itself.
+	# - HSTS: browsers stick to HTTPS. It only takes effect when received over HTTPS (TLS ends
+	#   at the load balancer), so it's inert on the plain-HTTP dev host. No includeSubDomains:
+	#   hnimagew.everything2.com (S3 website hosting) and the dev host are HTTP-only. Starts at
+	#   one day; raise max-age once it has been live for a while.
+	<IfModule mod_headers.c>
+		Header always set X-Frame-Options "DENY"
+		Header always set Content-Security-Policy "frame-ancestors 'none'"
+		Header always set Strict-Transport-Security "max-age=86400"
+	</IfModule>
 	ServerAdmin e2webmaster@everything2.com
 	DocumentRoot /var/everything/www
 
