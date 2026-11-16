@@ -319,7 +319,22 @@ sub updatePassword
 	my ($this, $user, $pass) = @_;
 
 	($user->{passwd}, $user->{salt}) = $this -> saltNewPassword($pass);
-	return $this->{db}->updateNode($user, $user);
+
+	# Write just these two columns. updateNode rewrites every column from the cached copy, so a
+	# stale cached value (lasttime, say) would overwrite the database -- or, under a strict
+	# sql_mode, fail the write and with it the login or reset.
+	my $user_id = int($user->{user_id} || $user->{node_id} || 0);
+	return 0 unless $user_id;
+	my $db = $this->{db};
+	my $updated = $db->sqlUpdate('user', { passwd => $user->{passwd}, salt => $user->{salt} }, "user_id=$user_id");
+	return 0 unless $updated;
+	if (ref($user->{type}) eq 'HASH' && $db->{cache}) {
+		$db->{cache}->incrementGlobalVersion($user);
+		$db->{cache}->cacheNode($user);
+	} else {
+		$db->sqlInsert('version', { version_id => $user_id, version => 1 }, { -version => 'version + 1' });
+	}
+	return 1;
 }
 
 #############################################################################
@@ -340,14 +355,110 @@ sub saltNewPassword
 {
 	my ($this, $pass) = @_;
 
+	my $salt = $this->new_password_salt;
+	my $pwhash = $this -> hashString($pass, $salt);
+	return ($pwhash, $salt);
+}
+
+sub new_password_salt
+{
+	my ($this) = @_;
+
 	my $shaPrefix = '$6$';
 	my $saltLength = 20;
 
 	my @base64 = ('A' .. 'Z', 'a' .. 'z', 0 .. 9, '.', '/');
-	my $salt = $shaPrefix.join('', @base64[ map { rand 64 } ( 1 .. $saltLength ) ]);
+	return $shaPrefix.join('', @base64[ map { rand 64 } ( 1 .. $saltLength ) ]);
+}
 
-	my $pwhash = $this -> hashString($pass, $salt);
-	return ($pwhash, $salt);
+#############################################################################
+# Password storage: user.passwd + user.salt.
+#
+#   hashed     salt "$6$...", passwd = hashString(password, salt). The normal form.
+#   legacy     salt "$6$...", passwd = LEGACY_PASSWD_PREFIX . hashString(old stored value, salt):
+#              a migrated pre-salt password. Those logins compared only the first 10
+#              characters, so the first 10 typed characters (or all of them) are accepted, and a
+#              successful login re-hashes the full password into the normal form.
+#   none       NO_PASSWORD, empty or NULL: no usable password. Nothing authenticates against
+#              it; a password reset still sets one. (A stand-in until "locked / no password"
+#              is part of the user model.)
+#   plaintext  no salt: pre-salt storage not yet migrated.
+#
+# Accounts awaiting activation store "token|expiry" with a real salt; they read as hashed and
+# match no password, which is right.
+#############################################################################
+
+sub LEGACY_PASSWD_PREFIX { return 'legacy10:' }
+sub NO_PASSWORD          { return '!no-password' }
+
+sub password_kind
+{
+	my ($this, $user) = @_;
+	my $passwd = $user->{passwd};
+	return 'none' if !defined($passwd) || $passwd eq '' || $passwd eq NO_PASSWORD();
+	return 'plaintext' unless defined($user->{salt}) && length($user->{salt});
+	return 'legacy' if index($passwd, LEGACY_PASSWD_PREFIX()) == 0;
+	return 'hashed';
+}
+
+# Does $cleartext (typed at login) match the user's stored password?
+sub check_password
+{
+	my ($this, $user, $cleartext) = @_;
+	return 0 unless defined($cleartext) && length($cleartext);
+
+	my $kind = $this->password_kind($user);
+	return 0 if $kind eq 'none';
+
+	my ($passwd, $salt) = ($user->{passwd}, $user->{salt});
+	my @candidates = (substr($cleartext, 0, 10), $cleartext);
+	if ($kind eq 'plaintext')
+	{
+		return (grep { $_ eq $passwd } @candidates) ? 1 : 0;
+	}
+	if ($kind eq 'legacy')
+	{
+		return (grep { LEGACY_PASSWD_PREFIX() . $this->hashString($_, $salt) eq $passwd } @candidates) ? 1 : 0;
+	}
+	return $this->hashString($cleartext, $salt) eq $passwd ? 1 : 0;
+}
+
+# Does a login cookie ("title|<passwd column>", already split) authenticate this user?
+sub check_password_cookie
+{
+	my ($this, $user, $cookie_pass, $raw_cookie) = @_;
+
+	my $kind = $this->password_kind($user);
+	return 0 if $kind eq 'none';
+	return 1 if defined($cookie_pass) && length($cookie_pass) && $cookie_pass eq $user->{passwd};
+
+	# Very old cookies carried title|crypt(plaintext, title)
+	return 1 if $kind eq 'plaintext' && defined($raw_cookie)
+		&& $this->urlDecode($raw_cookie) eq $user->{title} . '|' . crypt($user->{passwd}, $user->{title});
+	return 0;
+}
+
+# Stored in an older form that a login with the full password should replace?
+sub password_needs_upgrade
+{
+	my ($this, $user) = @_;
+	my $kind = $this->password_kind($user);
+	return ($kind eq 'plaintext' || $kind eq 'legacy') ? 1 : 0;
+}
+
+# What a pre-salt (unsalted) account's (passwd, salt) become: a legacy hash of the stored
+# password, or NO_PASSWORD when there is none. Returns an empty list for anything else.
+# Always sets a salt, so nothing later mistakes the account for unmigrated.
+sub migrated_legacy_password
+{
+	my ($this, $user) = @_;
+	my $kind = $this->password_kind($user);
+	my $unsalted = !(defined($user->{salt}) && length($user->{salt}));
+	return unless $unsalted;
+
+	my $salt = $this->new_password_salt;
+	return (NO_PASSWORD(), $salt) if $kind eq 'none';
+	return (LEGACY_PASSWD_PREFIX() . $this->hashString($user->{passwd}, $salt), $salt);
 }
 
 #############################################################################

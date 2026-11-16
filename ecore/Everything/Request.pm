@@ -261,44 +261,26 @@ sub get_current_user
             $self->APP->checkToken($user->NODEDATA, $self->param('action'),
               $self->param('expiry'), $self->param('passwd'), $self->param('token'));
           }
-
-          if($pass)
-          {
-            $pass = $self->APP->hashString($pass, $user->salt);
-          }
        }
       if($username && ($pass || $originalpass))
       {
-        if($pass eq $user->passwd)
+        # The password rules (formats, legacy and no-password accounts) live in
+        # Application::check_password / check_password_cookie.
+        if($cookie)
         {
-          # Salted password accepted
-          unless($cookie)
-          {
-            my $login_cookie = $self->make_login_cookie($user, $expires);
-            $self->add_response_cookie($login_cookie);  # folded into the Response by APIRouter::output
-          }
-        }else{
-          # Salted password not accepted by default for user
-          if($user->salt)
-          {
-            # User has salt available, therefore bad login
-            $user = undef;
-          }else{
-            # No salt available, therefore legacy password method
-            if(substr($originalpass, 0, 10) ne $user->passwd && $self->APP->urlDecode($cookie) ne $user->title.'|'.crypt($user->passwd, $user->title))
-            {
-                # Could not verify password with legacy method
-                $user = undef;
-            }else{
-                $self->APP->updatePassword($user->NODEDATA, $user->passwd);
-                unless($cookie)
-                {
-                  my $login_cookie = $self->make_login_cookie($user, $expires);
-                  $self->add_response_cookie($login_cookie);  # folded into the Response by APIRouter::output
-                }
-                # Successfully updated password and logged in
-            }
-          }
+          $user = undef unless $self->APP->check_password_cookie($user->NODEDATA, $pass, $cookie);
+        }
+        elsif($self->APP->check_password($user->NODEDATA, $originalpass))
+        {
+          # Stored in an older form: we have the full password now, so store it properly.
+          $self->APP->updatePassword($user->NODEDATA, $originalpass)
+            if $self->APP->password_needs_upgrade($user->NODEDATA);
+          my $login_cookie = $self->make_login_cookie($user, $expires);
+          $self->add_response_cookie($login_cookie);  # folded into the Response by APIRouter::output
+        }
+        else
+        {
+          $user = undef;
         }
       }else{
         # Username and password not present, could not go any further.
