@@ -273,6 +273,13 @@ sub cgi {
     }, 'MockRequest::CGI';
 }
 
+# The login cookie a real Everything::Request would issue (make_login_cookie); the real
+# formatting is exercised end to end in t/219.
+sub make_login_cookie {
+    my ($self, $user) = @_;
+    return 'userpass=' . ($user ? $user->title . '|' . $user->passwd : '') . '; path=/; HttpOnly';
+}
+
 package MockRequest::CGI;
 
 sub cookie {

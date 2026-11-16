@@ -1,5 +1,6 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import Modal from 'react-modal'
 import Settings from './Settings'
 
 // Settings is the preferences hub: one "Save Changes" button whose handleSave fires a POST
@@ -107,5 +108,115 @@ describe('Settings save contract', () => {
 
     await waitFor(() => expect(screen.getByText(/invalid preference value/i)).toBeInTheDocument())
     expect(screen.queryByText(/saved successfully/i)).toBeNull()
+  })
+
+  describe('profile tab: current password and unsaved state (#4637)', () => {
+    const profileData = { realname: 'Real Name', email: 'a@b.c', doctext: '', mission: '', specialties: '', employment: '', motto: '' }
+    const renderProfile = () => render(<Settings data={baseData({ defaultTab: 'profile', profileData })} user={user} />)
+    const field = (container, name) => container.querySelector(`input[name="${name}"]`)
+    const setField = (container, name, value) => fireEvent.change(field(container, name), { target: { name, value } })
+    const leaveWarns = () => {
+      const event = new Event('beforeunload', { cancelable: true })
+      window.dispatchEvent(event)
+      return event.defaultPrevented
+    }
+    // The prompt is a react-modal dialog, rendered in a portal outside the component's container.
+    const dialog = () => screen.queryByRole('dialog')
+    const confirmWith = (password) => {
+      fireEvent.change(screen.getByLabelText('Current password'), { target: { value: password } })
+      fireEvent.click(screen.getByRole('button', { name: /^confirm$/i }))
+    }
+    const setConfirm = (value) => fireEvent.change(screen.getByPlaceholderText(/re-enter new password/i), { target: { value } })
+    const editCalls = () => global.fetch.mock.calls.filter(([url]) => url === '/api/user/edit')
+
+    beforeAll(() => Modal.setAppElement(document.createElement('div')))
+
+    it('saves other profile fields without asking for the current password', async () => {
+      global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true }) })
+      const { container } = renderProfile()
+      setField(container, 'realname', 'Only The Name')
+      fireEvent.click(saveBtn())
+      await waitFor(() => expect(editCalls()).toHaveLength(1))
+      expect(dialog()).toBeNull()
+      expect(JSON.parse(editCalls()[0][1].body)).not.toHaveProperty('current_password')
+    })
+
+    it('an email change asks for the current password in a modal, then sends it', async () => {
+      global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true }) })
+      const { container } = renderProfile()
+      expect(field(container, 'current_password')).toBeNull() // no inline field on the form
+
+      setField(container, 'email', 'new@example.com')
+      fireEvent.click(saveBtn())
+      expect(dialog()).not.toBeNull()
+      expect(screen.getByText(/to change your email, enter your current password/i)).toBeInTheDocument()
+      expect(global.fetch).not.toHaveBeenCalled()
+
+      confirmWith('my-current-pass')
+      await waitFor(() => expect(editCalls()).toHaveLength(1))
+      expect(JSON.parse(editCalls()[0][1].body)).toMatchObject({ email: 'new@example.com', current_password: 'my-current-pass' })
+      await waitFor(() => expect(dialog()).toBeNull())
+      expect(screen.getByText(/settings saved successfully/i)).toBeInTheDocument()
+    })
+
+    it('a wrong current password keeps the modal open with the error, and a retry succeeds', async () => {
+      global.fetch = jest.fn()
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: 0, code: 'current_password_incorrect', error: 'Your current password is incorrect.' }) })
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true }) })
+      const { container } = renderProfile()
+      setField(container, 'passwd', 'new-pass')
+      setConfirm('new-pass')
+      fireEvent.click(saveBtn())
+      expect(screen.getByText(/to change your password, enter your current password/i)).toBeInTheDocument()
+
+      confirmWith('wrong-pass')
+      await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/current password is incorrect/i))
+      expect(dialog()).not.toBeNull()
+      expect(screen.queryByText(/settings saved successfully/i)).toBeNull()
+
+      confirmWith('right-pass')
+      await waitFor(() => expect(dialog()).toBeNull())
+      expect(JSON.parse(editCalls()[1][1].body)).toMatchObject({ passwd: 'new-pass', current_password: 'right-pass' })
+      expect(field(container, 'passwd').value).toBe('')
+    })
+
+    it('cancelling the modal saves nothing and keeps the changes', () => {
+      global.fetch = jest.fn()
+      const { container } = renderProfile()
+      setField(container, 'email', 'new@example.com')
+      fireEvent.click(saveBtn())
+      fireEvent.click(screen.getByRole('button', { name: /cancel/i }))
+      expect(dialog()).toBeNull()
+      expect(global.fetch).not.toHaveBeenCalled()
+      expect(field(container, 'email').value).toBe('new@example.com')
+      expect(leaveWarns()).toBe(true)
+    })
+
+    it('mismatched new passwords are reported without opening the modal', () => {
+      global.fetch = jest.fn()
+      const { container } = renderProfile()
+      setField(container, 'passwd', 'new-pass')
+      setConfirm('different')
+      fireEvent.click(saveBtn())
+      expect(dialog()).toBeNull()
+      expect(screen.getByText(/error: passwords do not match/i)).toBeInTheDocument()
+      expect(global.fetch).not.toHaveBeenCalled()
+    })
+
+    it('is clean after a successful save, and dirty again after the next edit', async () => {
+      global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true }) })
+      const { container } = renderProfile()
+
+      setField(container, 'realname', 'Saved Name')
+      expect(leaveWarns()).toBe(true)
+      fireEvent.click(saveBtn())
+      await waitFor(() => expect(global.fetch).toHaveBeenCalled())
+      await waitFor(() => expect(saveBtn()).toBeDisabled())
+      expect(leaveWarns()).toBe(false)
+      expect(screen.queryByText(/unsaved changes/i)).toBeNull()
+
+      setField(container, 'motto', 'a new motto')
+      await waitFor(() => expect(leaveWarns()).toBe(true))
+    })
   })
 })

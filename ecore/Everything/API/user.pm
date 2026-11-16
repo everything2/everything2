@@ -205,6 +205,31 @@ sub edit_profile {
     }];
   }
 
+  # Changing your own password or email needs your current password, so a session alone
+  # can't take the account over. Admins editing someone else's profile aren't asked.
+  if ($user->node_id == $node_id) {
+    my $changing_password = defined $data->{passwd} && length $data->{passwd};
+    my $changing_email = exists $data->{email}
+      && ($data->{email} // '') ne ($target_user->NODEDATA->{email} // '');
+    if ($changing_password || $changing_email) {
+      my $current = $data->{current_password} // '';
+      unless (length $current) {
+        return [$self->HTTP_OK, {
+          success => 0,
+          code => 'current_password_required',
+          error => 'Enter your current password to change your password or email.'
+        }];
+      }
+      unless ($target_user->password_matches($current)) {
+        return [$self->HTTP_OK, {
+          success => 0,
+          code => 'current_password_incorrect',
+          error => 'Your current password is incorrect.'
+        }];
+      }
+    }
+  }
+
   my $nodedata = $target_user->NODEDATA;
   my $vars = $target_user->VARS || {};
   my @changes = ();

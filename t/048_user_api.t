@@ -433,4 +433,59 @@ subtest "json_display: cools_spent only, no numcools duplicate (#3957)" => sub {
         "json_display does NOT include numcools (deduped against cools_spent)");
 };
 
+#############################################################################
+# Changing your own password or email requires your current password (#4637)
+#############################################################################
+subtest "edit_profile: current password required for password/email changes" => sub {
+    my $u = $DB->getNode('normaluser28', 'user');
+    ok($u, 'got normaluser28') or return;
+    my %saved = map { $_ => $u->{$_} } qw(passwd salt email realname);
+
+    my $as = sub {
+        my ($actor, $admin, %post) = @_;
+        return $api->edit_profile(MockRequest->new(
+            node_id => $actor->{node_id}, title => $actor->{title}, nodedata => $actor,
+            is_guest_flag => 0, is_admin_flag => $admin, request_method => 'POST',
+            postdata => { node_id => $u->{node_id}, %post },
+        ))->[1];
+    };
+    my $stored_hash = sub { $APP->node_by_id($u->{node_id})->cache_refresh; return $DB->sqlSelect('passwd', 'user', "user_id = $u->{node_id}") };
+    my $stored_email = sub { return $DB->sqlSelect('email', 'user', "user_id = $u->{node_id}") };
+
+    my $r = $as->($u, 0, passwd => 'brand-new-pass');
+    is($r->{success}, 0, 'password change without current password is refused');
+    is($r->{code}, 'current_password_required', 'with current_password_required');
+    is($stored_hash->(), $saved{passwd}, 'password unchanged');
+
+    $r = $as->($u, 0, passwd => 'brand-new-pass', current_password => 'not-the-password');
+    is($r->{code}, 'current_password_incorrect', 'wrong current password is refused');
+    is($stored_hash->(), $saved{passwd}, 'password still unchanged');
+
+    $r = $as->($u, 0, email => 'changed@example.com');
+    is($r->{code}, 'current_password_required', 'email change without current password is refused');
+    is($stored_email->() // '', $saved{email} // '', 'email unchanged');
+
+    $r = $as->($u, 0, email => $saved{email} // '', realname => 'Re Auth Test');
+    is($r->{success}, 1, 'unchanged email and other fields save without it');
+
+    $r = $as->($u, 0, passwd => 'brand-new-pass', current_password => 'blah');
+    is($r->{success}, 1, 'correct current password allows the change');
+    isnt($stored_hash->(), $saved{passwd}, 'password changed');
+
+    my $root = $DB->getNode('root', 'user');
+    $r = $as->($root, 1, email => 'admin-set@example.com');
+    is($r->{success}, 1, "an admin editing someone else's email isn't asked for a password");
+
+    # Restore the seeded account.
+    $DB->sqlUpdate('user', { passwd => $saved{passwd}, salt => $saved{salt}, email => $saved{email}, realname => $saved{realname} }, "user_id = $u->{node_id}");
+    $APP->node_by_id($u->{node_id})->cache_refresh;
+};
+
+subtest "password_matches" => sub {
+    my $u = $APP->node_by_id($DB->getNode('normaluser27', 'user')->{node_id});
+    ok($u->password_matches('blah'), 'the right password matches');
+    ok(!$u->password_matches('blah2'), 'a wrong one does not');
+    ok(!$u->password_matches(''), 'an empty one does not');
+};
+
 done_testing();

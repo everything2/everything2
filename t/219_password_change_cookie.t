@@ -31,7 +31,7 @@ my $res = $test->request( HTTP::Request::Common::POST(
     '/api/user/edit',
     Cookie         => $old_cookie,
     'Content-Type' => 'application/json',
-    Content        => encode_json( { node_id => $user->{node_id}, passwd => 'changed-pass-219' } ),
+    Content        => encode_json( { node_id => $user->{node_id}, passwd => 'changed-pass-219', current_password => 'blah' } ),
 ) );
 my $json = eval { decode_json( $res->content ) } || {};
 is( $json->{success}, 1, 'password change accepted' );
