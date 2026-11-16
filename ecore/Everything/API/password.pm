@@ -2,6 +2,7 @@ package Everything::API::password;
 
 use utf8;
 use Moose;
+use Everything::SecurityLog qw(SECLOG_ACCOUNT_LINK_REQUEST);
 extends 'Everything::API';
 
 sub routes {
@@ -89,7 +90,9 @@ sub reset_request {
     # - HTML entity guillemets: &#171;name&#187;
     # - Angle brackets: <name> (stored as &lt;name&gt; in XML)
     my $name = $user->{realname} || $user->{title};
-    my $server_name = $ENV{SERVER_NAME} || 'everything2.com';
+    # The site's public host, from configuration. Not $ENV{SERVER_NAME}: under Starman that's
+    # the listen address (127.0.0.1), whatever Host the request came in on (#4614).
+    my $server_name = $self->CONF->canonical_web_server;
 
     # Unicode guillemets format
     $mail_data{doctext} =~ s/«name»/$name/g;
@@ -112,7 +115,7 @@ sub reset_request {
     # Log the action
     my $email_display = $user->{email} // '(no email)';
     $APP->securityLog(
-        undef,
+        SECLOG_ACCOUNT_LINK_REQUEST,
         $user,
         "$action link requested for [$user->{title}\[user]] ($email_display)"
     );

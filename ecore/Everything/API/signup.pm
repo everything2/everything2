@@ -229,8 +229,9 @@ sub create_account {
     }
 
     $recaptcha_response = $self->verify_recaptcha_token($recaptcha_token);
-    if (!$recaptcha_response) {
-      $self->security_log("reCAPTCHA verification failed for $username");
+    if (!$recaptcha_response->{success}) {
+      # Record why: Google's verdict was discarded before, which hid a total signup outage.
+      $self->security_log("reCAPTCHA verification failed for $username: $recaptcha_response->{reason}");
       return [$self->HTTP_OK, {
         success => 0,
         error => 'recaptcha_failed',
@@ -279,7 +280,9 @@ sub create_account {
 
     $mail->{doctext} =~ s/<name>/$username/;
     $mail->{doctext} =~ s/<link>/$link/g;
-    $mail->{doctext} =~ s/<servername>/$ENV{SERVER_NAME}/g;
+    # Public host from configuration, not $ENV{SERVER_NAME} (127.0.0.1 under Starman) (#4614).
+    my $server_name = $CONF->canonical_web_server;
+    $mail->{doctext} =~ s/<servername>/$server_name/g;
 
     $APP->node2mail($email, $mail, 1);
   }
@@ -311,11 +314,15 @@ sub is_infected {
   return 0;
 }
 
+# Returns { success => 1, score, action, hostname } for a valid token, or
+# { success => 0, reason => '...' } explaining the failure. The reason carries Google's
+# verdict (HTTP status and error, or the token's invalidReason / hostname / action) but
+# never the API key, the request URL or the token.
 sub verify_recaptcha_token {
   my ($self, $token) = @_;
 
   my $CONF = $self->CONF;
-  my $ua = LWP::UserAgent->new;
+  my $ua = LWP::UserAgent->new(timeout => 15);
   my ($remote_ip) = $self->APP->getIp();
 
   my $api_key = $CONF->recaptcha_enterprise_api_key;
@@ -330,7 +337,17 @@ sub verify_recaptcha_token {
   }
 
   $self->devLog("reCAPTCHA not configured");
-  return 0;
+  return { success => 0, reason => 'not configured' };
+}
+
+# A short, single-line summary of a failed HTTP call to Google.
+sub _recaptcha_http_failure {
+  my ($self, $resp) = @_;
+  my $message = '';
+  my $json = eval { JSON::decode_json($resp->decoded_content // '') };
+  $message = $json->{error}{message} // '' if ref $json eq 'HASH' && ref $json->{error} eq 'HASH';
+  $message =~ s/\s+/ /g;
+  return 'http ' . $resp->code . ($message ne '' ? ': ' . substr($message, 0, 100) : '');
 }
 
 sub _verify_recaptcha_legacy {
@@ -343,14 +360,12 @@ sub _verify_recaptcha_legacy {
     remoteip => $remote_ip
   ]);
 
-  if ($resp->is_success) {
-    my $json = JSON::decode_json($resp->decoded_content);
-    if ($json->{success}) {
-      return $json;
-    }
-  }
+  return { success => 0, reason => $self->_recaptcha_http_failure($resp) } unless $resp->is_success;
 
-  return 0;
+  my $json = eval { JSON::decode_json($resp->decoded_content) };
+  return { success => 0, reason => 'unreadable response' } unless ref $json eq 'HASH';
+  return { %$json, success => 1 } if $json->{success};
+  return { success => 0, reason => 'legacy: ' . join(',', @{ $json->{'error-codes'} || ['no error codes'] }) };
 }
 
 sub _verify_recaptcha_enterprise {
@@ -373,22 +388,28 @@ sub _verify_recaptcha_enterprise {
     Content => $request_body
   );
 
-  if ($resp->is_success) {
-    my $json = JSON::decode_json($resp->decoded_content);
-    my $token_valid = $json->{tokenProperties}{valid};
-    my $score = $json->{riskAnalysis}{score};
+  return { success => 0, reason => $self->_recaptcha_http_failure($resp) } unless $resp->is_success;
 
-    if ($token_valid) {
-      return {
-        success => 1,
-        score => $score,
-        action => $json->{tokenProperties}{action},
-        hostname => $json->{tokenProperties}{hostname}
-      };
-    }
+  my $json = eval { JSON::decode_json($resp->decoded_content) };
+  return { success => 0, reason => 'unreadable response' } unless ref $json eq 'HASH';
+
+  my $props = $json->{tokenProperties} || {};
+  my $score = $json->{riskAnalysis}{score};
+
+  if ($props->{valid}) {
+    return {
+      success => 1,
+      score => $score,
+      action => $props->{action},
+      hostname => $props->{hostname}
+    };
   }
 
-  return 0;
+  return {
+    success => 0,
+    reason => sprintf('invalid token: %s; hostname=%s; action=%s',
+      $props->{invalidReason} // 'unknown', $props->{hostname} // '', $props->{action} // ''),
+  };
 }
 
 __PACKAGE__->meta->make_immutable;
