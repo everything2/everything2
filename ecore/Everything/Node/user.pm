@@ -789,21 +789,12 @@ sub gp_optout
 }
 
 # True when $cleartext is this user's current password, by the same rules as login
-# (Everything::Request): salted accounts compare hashString($cleartext, salt) with the stored
-# hash; legacy unsalted accounts compare the first 10 characters with the stored value.
+# (Application::check_password).
 sub password_matches
 {
   my ($self, $cleartext) = @_;
 
-  return 0 unless defined $cleartext && length $cleartext;
-  my $stored = $self->NODEDATA->{passwd};
-  return 0 unless defined $stored && length $stored;
-
-  my $salt = $self->NODEDATA->{salt};
-  if (defined $salt && length $salt) {
-    return $self->APP->hashString($cleartext, $salt) eq $stored ? 1 : 0;
-  }
-  return substr($cleartext, 0, 10) eq $stored ? 1 : 0;
+  return $self->APP->check_password($self->NODEDATA, $cleartext);
 }
 
 sub set_password

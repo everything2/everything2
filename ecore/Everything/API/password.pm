@@ -47,8 +47,17 @@ sub reset_request {
     return [$self->HTTP_OK, {success => 0, error => 'Unknown user or email address'}]
         unless $user;
 
-    # Ensure user has salt (update password hash if needed)
-    $APP->updatePassword($user, $user->{passwd}) unless $user->{salt};
+    # Guest User is not an account anyone can take over by setting a password.
+    return [$self->HTTP_OK, {success => 0, error => 'Unknown user or email address'}]
+        if $user->{node_id} == $self->CONF->guest_user;
+
+    # Reset tokens are derived from the salt, so a pre-salt account gets its migrated form
+    # first (never a hash of its stored value as if that were a password, which for an
+    # account with no password would make the no-password marker itself work as one).
+    unless ($user->{salt}) {
+        ($user->{passwd}, $user->{salt}) = $APP->migrated_legacy_password($user);
+        $DB->updateNode($user, -1);
+    }
 
     my $valid_for_minutes = 20;
     my ($action, $expiry, $mail_title, $blurb);
