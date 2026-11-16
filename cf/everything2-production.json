@@ -483,6 +483,30 @@
         "AmazonProvidedIpv6CidrBlock": true
       }
     },
+    "AppVPCDefaultAclIPv6Ingress": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "DependsOn": "AppVPCIPv6CidrBlock",
+      "Properties": {
+        "NetworkAclId": {"Fn::GetAtt": ["AppVPC", "DefaultNetworkAcl"]},
+        "RuleNumber": 101,
+        "Egress": false,
+        "Protocol": -1,
+        "RuleAction": "allow",
+        "Ipv6CidrBlock": "::/0"
+      }
+    },
+    "AppVPCDefaultAclIPv6Egress": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "DependsOn": "AppVPCIPv6CidrBlock",
+      "Properties": {
+        "NetworkAclId": {"Fn::GetAtt": ["AppVPC", "DefaultNetworkAcl"]},
+        "RuleNumber": 101,
+        "Egress": true,
+        "Protocol": -1,
+        "RuleAction": "allow",
+        "Ipv6CidrBlock": "::/0"
+      }
+    },
     "AppVPCIGW": {
       "Type": "AWS::EC2::InternetGateway",
       "DeletionPolicy": "Retain"
