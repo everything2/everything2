@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import Modal from 'react-modal'
-import UserEdit from './UserEdit'
+import UserEdit, { MAX_UPLOAD_BYTES } from './UserEdit'
 
 // UserEdit is account mutation: the profile form POSTs to /api/user/edit (node_id + the field
 // values + the bio doctext), and the avatar uploader POSTs a multipart body to
@@ -100,8 +100,55 @@ describe('UserEdit', () => {
     fireEvent.change(container.querySelector('input[type="file"]'), { target: { files: [bad] } })
     // the rejection surfaces in the upload-status banner (same wording also appears as a static hint),
     // clears the selection, and never hits the network
-    expect(container.querySelector('.user-edit-upload-status--error')).toHaveTextContent(/only jpeg, gif, and png/i)
+    expect(container.querySelector('.user-edit-upload-status--error')).toHaveTextContent(/only jpeg, png, gif, webp and heic/i)
     expect(global.fetch).not.toHaveBeenCalled()
+  })
+
+  describe('image upload limits (#4643)', () => {
+    // A File whose reported size we control without allocating megabytes.
+    const sizedFile = (name, type, size) => {
+      const file = new File(['x'], name, { type })
+      Object.defineProperty(file, 'size', { value: size })
+      return file
+    }
+    const pick = (container, file) => fireEvent.change(container.querySelector('input[type="file"]'), { target: { files: [file] } })
+    const uploadButton = () => screen.queryByRole('button', { name: /upload image/i })
+    const uploadError = (container) => container.querySelector('.user-edit-upload-status--error')
+
+    it('accepts a full-size phone photo (the old 800KB cap refused these)', () => {
+      const { container } = render(<UserEdit data={makeData()} />)
+      pick(container, sizedFile('IMG_1234.jpg', 'image/jpeg', 4 * 1024 * 1024))
+      expect(uploadError(container)).toBeNull()
+      expect(uploadButton()).not.toBeNull()
+    })
+
+    it('accepts WebP and HEIC, including HEIC reported with no type', () => {
+      const { container } = render(<UserEdit data={makeData()} />)
+      for (const file of [
+        sizedFile('saved.webp', 'image/webp', 50000),
+        sizedFile('IMG_1.HEIC', 'image/heic', 2000000),
+        sizedFile('IMG_2.heic', '', 2000000),
+      ]) {
+        pick(container, file)
+        expect(uploadError(container)).toBeNull()
+        expect(uploadButton()).not.toBeNull()
+      }
+    })
+
+    it('refuses a file over the upload limit before uploading', () => {
+      global.fetch = jest.fn()
+      const { container } = render(<UserEdit data={makeData()} />)
+      pick(container, sizedFile('huge.jpg', 'image/jpeg', MAX_UPLOAD_BYTES + 1))
+      expect(uploadError(container)).toHaveTextContent(/maximum size is 12MB/i)
+      expect(uploadButton()).toBeNull()
+      expect(global.fetch).not.toHaveBeenCalled()
+    })
+
+    it('tells people the real limits', () => {
+      render(<UserEdit data={makeData()} />)
+      expect(screen.getByText(/JPEG, PNG, GIF, WebP or HEIC, up to 12MB/)).toBeInTheDocument()
+      expect(screen.queryByText(/800KB/)).toBeNull()
+    })
   })
 
   describe('current password (#4637)', () => {

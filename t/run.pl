@@ -49,6 +49,7 @@ my %serial_tests = (
     "$dirname/193_ugma_api.t" => 1,       # Sets root's ugma_resettime VARS and asserts it persisted; root must be an edev admin so it can't use a throwaway user -> races with other root VARS-writers (same class as 058)
     "$dirname/097_superbless_api.t" => 1, # Self-bestow subtest sets root's VARS and asserts other vars preserved; root must be admin (can't use a throwaway user) -> races with other root VARS-writers (same class as 193)
     "$dirname/221_api_access_rules.t" => 1, # Inserts public chatter rows (same class as 038) and uses normaluser1's drafts (same class as 065)
+    "$dirname/222_homenode_images.t" => 1, # Sets normaluser1's imgsrc + moderation queue row and asserts them (same class as 065)
 );
 
 # Separate serial and parallel tests

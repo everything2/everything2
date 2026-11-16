@@ -50,7 +50,10 @@ sub upload_data
 		# Surface the failure instead of swallowing it silently -- a swallowed PutObject
 		# error is exactly how a broken sitemap/export job reports success while writing
 		# nothing. The caller still receives undef and decides whether to fail.
-		Everything::printLog("Everything::S3::upload_data failed: bucket=".($this->{bucket}//'?')." key=".($name//'?').": ".($@||'unknown error'));
+		my $failure = "Everything::S3::upload_data failed: bucket=".($this->{bucket}//'?')." key=".($name//'?').": ".($@||'unknown error');
+		Everything::printLog($failure);
+		# printLog is a file inside the container; warn reaches e2-app-errors in production.
+		warn "$failure\n";
 	}
 	return $result;
 }

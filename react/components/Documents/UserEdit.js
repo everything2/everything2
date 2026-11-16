@@ -27,6 +27,14 @@ import LinkNode from '../LinkNode'
 import CurrentPasswordModal, { describeCredentialChange } from '../CurrentPasswordModal'
 import '../Editor/E2Editor.css'
 
+// Homenode image uploads: keep in sync with Everything::HomenodeImage ($MAX_UPLOAD_BYTES and
+// the accepted formats). The server is the authority; these only give quick feedback.
+export const MAX_UPLOAD_BYTES = 12 * 1024 * 1024
+const IMAGE_ACCEPT = 'image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif,.heic,.heif'
+const ACCEPTED_IMAGE_TYPES = /^image\/(jpeg|jpg|pjpeg|png|gif|webp|heic|heif|avif)$/i
+export const isAcceptedImageFile = (file) =>
+  ACCEPTED_IMAGE_TYPES.test(file.type || '') || (!file.type && /\.(heic|heif)$/i.test(file.name || ''))
+
 /**
  * SortableBookmarkItem - Draggable bookmark item with remove button
  */
@@ -322,20 +330,19 @@ const UserEdit = ({ data, e2 }) => {
     }
   }, [])
 
-  // Handle file selection for image upload
+  // Handle file selection for image upload. The server identifies the real format from the
+  // file's contents and resizes everything, so this is just quick feedback: an image type (or a
+  // HEIC/HEIF file, which some browsers report with no type) under the upload limit.
   const handleFileSelect = useCallback((e) => {
     const file = e.target.files[0]
     if (file) {
-      // Validate file type
-      if (!file.type.match(/^image\/(jpeg|jpg|gif|png)$/i)) {
-        setUploadStatus({ type: 'error', message: 'Only JPEG, GIF, and PNG images are allowed' })
+      if (!isAcceptedImageFile(file)) {
+        setUploadStatus({ type: 'error', message: 'Only JPEG, PNG, GIF, WebP and HEIC images are allowed' })
         setSelectedFile(null)
         return
       }
-      // Validate file size (800KB for regular users)
-      const maxSize = 800 * 1024
-      if (file.size > maxSize) {
-        setUploadStatus({ type: 'error', message: `Image is too large. Maximum size is ${maxSize / 1024}KB` })
+      if (file.size > MAX_UPLOAD_BYTES) {
+        setUploadStatus({ type: 'error', message: `Image is too large. Maximum size is ${MAX_UPLOAD_BYTES / (1024 * 1024)}MB` })
         setSelectedFile(null)
         return
       }
@@ -680,15 +687,15 @@ const UserEdit = ({ data, e2 }) => {
                   {!isOwnProfile && viewer?.is_admin ? (
                     <>Upload an image for <strong>{user.title}</strong>. Admin uploads skip moderator review.</>
                   ) : (
-                    <>Upload a new image. Only JPEG, GIF, and PNG files are allowed (max 800KB).
-                    Large images will be automatically resized.</>
+                    <>Upload a new image: JPEG, PNG, GIF, WebP or HEIC, up to {MAX_UPLOAD_BYTES / (1024 * 1024)}MB.
+                    It will be resized to fit automatically.</>
                   )}
                 </p>
 
                 <div className="user-edit-image-upload-row">
                   <input
                     type="file"
-                    accept="image/jpeg,image/jpg,image/gif,image/png"
+                    accept={IMAGE_ACCEPT}
                     onChange={handleFileSelect}
                     className="user-edit-file-input"
                   />
