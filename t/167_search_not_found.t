@@ -23,7 +23,8 @@ SKIP: {
     isnt( $resp->code, 500, 'no-match search does NOT 500 (#4382)' );
     is(   $resp->code, 200, 'no-match search returns 200' );
     unlike( $resp->content, qr/NO NODE/,      'no "NO NODE!" die in the response' );
-    unlike( $resp->content, qr/caught a die/, 'no PSGI-wrapper die message' );
+    unlike( $resp->content, qr/caught a die|Something went wrong on our end|Internal server error/,
+            'no PSGI-wrapper error page' );
     like(   $resp->content, qr/"type":\s*"findings"/,
             'routed to the Findings page (contentData type=findings), not a phantom node' );
 

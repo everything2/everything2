@@ -19,6 +19,7 @@ use Everything::HTML;
 use Everything::APIRouter;
 use Everything::HealthCheck;
 use Plack::Builder;
+use JSON ();
 
 # Preload once per worker (mirrors mod_perl's persistent interpreter). The API
 # router builds its controller table at construction -- do it at load, not per
@@ -139,9 +140,8 @@ my $app = sub {
         # re-throws while inside this eval, $^S true) to here. Build a fresh 500 -- the
         # error response never depended on captured bytes.
         my $err = $@ || 'unknown error';
-        return [ 500, [ 'Content-Type' => 'text/plain' ],
-                 [ "PSGI wrapper caught a die from " .
-                   ($is_api ? 'APIRouter' : 'mod_perlInit') . ":\n$err" ] ];
+        warn "app.psgi: request failed (path=$path, is_api=$is_api): $err";
+        return error_response( $is_api, $err );
     }
 
     # Both the API and page paths return an Everything::Response; finalize it.
@@ -159,6 +159,20 @@ my $app = sub {
 # Serve the file-backed static assets (/css, /react, /images, /static, favicon)
 # so Starman is self-sufficient when run standalone. In the real deployment Apache
 # serves these and proxies only dynamic requests here -- belt-and-suspenders.
+# The 500 a client sees when a request dies. Outside development it says nothing about the
+# code -- the details are in the logs (the warn above and the global __DIE__ handler).
+# Development keeps the full error, which is what you want while working on the app.
+sub error_response {
+    my ( $is_api, $err ) = @_;
+    my $detail = ( $Everything::CONF && eval { $Everything::CONF->environment eq 'development' } ) ? $err : undef;
+    if ($is_api) {
+        return [ 500, [ 'Content-Type' => 'application/json; charset=utf-8' ],
+                 [ JSON::encode_json( { success => 0, error => 'Internal server error', ( defined $detail ? ( detail => "$detail" ) : () ) } ) ] ];
+    }
+    return [ 500, [ 'Content-Type' => 'text/plain; charset=utf-8' ],
+             [ 'Something went wrong on our end. Please try again in a moment.' . ( defined $detail ? "\n\n$detail" : '' ) ] ];
+}
+
 builder {
     enable 'Static',
         path => qr{^/(?:css|react|images|static|js|sound|fonts)/|^/favicon\.ico$},

@@ -39,7 +39,7 @@ RUN rm -rf /etc/apache2/sites-enabled /etc/apache2/sites-available /etc/apache2/
 # mpm_event (the base-image default) instead of mpm_prefork. prefork was only
 # mandated by mod_perl's lack of thread-safety; event handles proxy connections
 # with threads at far lower per-connection cost. (#4234, full PSGI commit)
-RUN for i in deflate brotli rewrite authz_core proxy proxy_http mpm_event status evasive remoteip; do ln -sf ../mods-available/$i.load /etc/apache2/mods-enabled/$i.load; done
+RUN for i in deflate brotli rewrite authz_core proxy proxy_http mpm_event status evasive remoteip headers; do ln -sf ../mods-available/$i.load /etc/apache2/mods-enabled/$i.load; done
 RUN chown root:root /etc/everything
 RUN chown www-data:www-data /var/mason /var/log/everything /etc/apache2/logs
 RUN chmod 0755 /var/mason
