@@ -1282,6 +1282,9 @@ sub securityLog
     $subject_id = ref $subject ? $subject->{node_id} : $subject;
   }
 
+  # seclog_details is char(255); a longer value would fail the insert and lose the entry.
+  $details = substr($details, 0, 255) if defined $details && length($details) > 255;
+
   return $db->sqlInsert('seclog', {
     'seclog_event'   => $event_id,
     'seclog_subject' => $subject_id,

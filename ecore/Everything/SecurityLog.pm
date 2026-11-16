@@ -73,6 +73,7 @@ my @EVENTS = (
   { id => 35, key => 'PUNCH_THYSELF',         desc => 'Self-punches (GP sink)',group => 'xp'       },
   { id => 36, key => 'NODE_EDIT',             desc => 'Node edits (admin)',    group => 'system'   },
   { id => 37, key => 'USER_IMAGE_MODERATION', desc => 'User image moderation', group => 'content'  },
+  { id => 38, key => 'ACCOUNT_LINK_REQUEST',  desc => 'Reset/activation link requests', group => 'accounts' },
 );
 
 my (%BY_ID, %BY_KEY);

@@ -12,6 +12,7 @@ use Test::More;
 use Everything;
 use Everything::Application;
 use Everything::API::signup;
+use Everything::SecurityLog;
 use MockRequest;
 
 # Initialize Everything
@@ -255,6 +256,86 @@ for my $email (@valid_emails) {
 #############################################################################
 # Summary
 #############################################################################
+
+#############################################################################
+# reCAPTCHA verdicts are reported, not discarded (#4614 follow-up)
+#############################################################################
+
+{
+  package FakeUA;
+  use HTTP::Response;
+  sub new  { my ($class, @responses) = @_; return bless { responses => [@responses], calls => [] }, $class }
+  sub post { my ($self, @args) = @_; push @{ $self->{calls} }, [@args]; return shift @{ $self->{responses} } }
+}
+
+sub http_response {
+  my ($code, $body) = @_;
+  my $r = HTTP::Response->new($code);
+  $r->content($body);
+  $r->header('Content-Type' => 'application/json');
+  return $r;
+}
+
+my $secret_key = 'TEST-SECRET-KEY-DO-NOT-LOG';
+my $enterprise = sub {
+  my ($response) = @_;
+  return $api->_verify_recaptcha_enterprise(FakeUA->new($response), 'tok', $secret_key, 'proj', 'site', '203.0.113.7');
+};
+
+subtest 'enterprise verdicts' => sub {
+  my $ok = $enterprise->(http_response(200, '{"tokenProperties":{"valid":true,"action":"signup","hostname":"everything2.com"},"riskAnalysis":{"score":0.9}}'));
+  is($ok->{success}, 1, 'valid token succeeds');
+  is($ok->{score}, 0.9, 'with its score');
+
+  my $bad = $enterprise->(http_response(200, '{"tokenProperties":{"valid":false,"invalidReason":"BROWSER_ERROR","hostname":"everything2.com","action":"signup"},"riskAnalysis":{"score":0}}'));
+  is($bad->{success}, 0, 'invalid token fails');
+  is($bad->{reason}, 'invalid token: BROWSER_ERROR; hostname=everything2.com; action=signup', 'reason names the verdict');
+
+  my $http = $enterprise->(http_response(400, '{"error":{"code":400,"message":"API key not valid. Please pass a valid API key.","status":"INVALID_ARGUMENT"}}'));
+  is($http->{success}, 0, 'HTTP error fails');
+  is($http->{reason}, 'http 400: API key not valid. Please pass a valid API key.', 'reason has status and message');
+
+  my $junk = $enterprise->(http_response(200, 'not json'));
+  is($junk->{reason}, 'unreadable response', 'unparseable body is reported');
+
+  for my $r ($bad, $http, $junk) {
+    unlike($r->{reason}, qr/\Q$secret_key\E|tok\b/, 'reason never contains the key or the token');
+  }
+};
+
+subtest 'legacy verdicts' => sub {
+  my $fail = $api->_verify_recaptcha_legacy(FakeUA->new(http_response(200, '{"success":false,"error-codes":["invalid-input-response"]}')), 'tok', $secret_key, '203.0.113.7');
+  is($fail->{reason}, 'legacy: invalid-input-response', 'error codes are reported');
+  my $pass = $api->_verify_recaptcha_legacy(FakeUA->new(http_response(200, '{"success":true,"score":0.7}')), 'tok', $secret_key, '203.0.113.7');
+  is($pass->{success}, 1, 'success passes through');
+  is($pass->{score}, 0.7, 'with its score');
+};
+
+subtest 'a failed verification records why' => sub {
+  no warnings 'redefine';
+  local *Everything::API::signup::verify_recaptcha_token = sub { return { success => 0, reason => 'invalid token: EXPIRED; hostname=everything2.com; action=signup' } };
+  local $ENV{HTTP_HOST} = 'development.everything2.com';    # turns reCAPTCHA on outside production
+
+  my $name = 'recaptcha_reason_' . time();
+  my ($before) = $DB->sqlSelect('MAX(seclog_id)', 'seclog');
+  my $result = $api->create_account(MockRequest->new(
+    node_id => 0, title => 'Guest User', is_guest_flag => 1, request_method => 'POST',
+    postdata => qq({"username": "$name", "password": "testpass123", "email": "$name\@example.com", "recaptcha_token": "tok"}),
+  ));
+  is($result->[1]{error}, 'recaptcha_failed', 'signup is refused');
+
+  my ($details) = $DB->sqlSelect('seclog_details', 'seclog',
+    "seclog_id > $before AND seclog_event = " . Everything::SecurityLog::SECLOG_USER_SIGNUP(), 'ORDER BY seclog_id DESC LIMIT 1');
+  like($details // '', qr/reCAPTCHA verification failed for \Q$name\E: invalid token: EXPIRED/, 'the security log says why');
+};
+
+subtest 'security log details longer than the column are truncated, not lost' => sub {
+  my $root = $DB->getNode('root', 'user');
+  my ($before) = $DB->sqlSelect('MAX(seclog_id)', 'seclog');
+  $APP->securityLog(Everything::SecurityLog::SECLOG_USER_SIGNUP(), $root, 'x' x 400);
+  my ($len) = $DB->sqlSelect('LENGTH(seclog_details)', 'seclog', "seclog_id > $before", 'ORDER BY seclog_id DESC LIMIT 1');
+  is($len, 255, 'stored, truncated to 255');
+};
 
 done_testing();
 
