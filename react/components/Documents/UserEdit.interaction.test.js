@@ -1,5 +1,6 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import Modal from 'react-modal'
 import UserEdit from './UserEdit'
 
 // UserEdit is account mutation: the profile form POSTs to /api/user/edit (node_id + the field
@@ -28,6 +29,14 @@ const makeData = (overrides = {}) => ({
 const setField = (container, name, value) =>
   fireEvent.change(container.querySelector(`input[name="${name}"]`), { target: { name, value } })
 const submit = (container) => fireEvent.submit(container.querySelector('#profile-form'))
+// The current-password prompt is a react-modal dialog, rendered in a portal.
+const dialog = () => screen.queryByRole('dialog')
+const confirmWith = (password) => {
+  fireEvent.change(screen.getByLabelText('Current password'), { target: { value: password } })
+  fireEvent.click(screen.getByRole('button', { name: /^confirm$/i }))
+}
+
+beforeAll(() => Modal.setAppElement(document.createElement('div')))
 
 describe('UserEdit', () => {
   afterEach(() => {
@@ -47,10 +56,11 @@ describe('UserEdit', () => {
     setField(container, 'realname', 'New Name')
     setField(container, 'email', 'new@example.com')
     submit(container)
+    confirmWith('my-current-pass')
 
     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/user/edit', expect.objectContaining({ method: 'POST' })))
     const body = JSON.parse(global.fetch.mock.calls[0][1].body)
-    expect(body).toMatchObject({ node_id: 100, realname: 'New Name', email: 'new@example.com' })
+    expect(body).toMatchObject({ node_id: 100, realname: 'New Name', email: 'new@example.com', current_password: 'my-current-pass' })
     expect(body).toHaveProperty('user_doctext') // bio always included
     await waitFor(() => expect(screen.getByText(/profile updated successfully/i)).toBeInTheDocument())
   })
@@ -92,5 +102,113 @@ describe('UserEdit', () => {
     // clears the selection, and never hits the network
     expect(container.querySelector('.user-edit-upload-status--error')).toHaveTextContent(/only jpeg, gif, and png/i)
     expect(global.fetch).not.toHaveBeenCalled()
+  })
+
+  describe('current password (#4637)', () => {
+    it('is asked for in a modal only when the password or email changes', () => {
+      global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true }) })
+      const { container } = render(<UserEdit data={makeData()} />)
+      expect(container.querySelector('input[name="current_password"]')).toBeNull() // no inline field
+
+      setField(container, 'email', 'new@example.com')
+      submit(container)
+      expect(dialog()).not.toBeNull()
+      expect(screen.getByText(/to change your email, enter your current password/i)).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: /cancel/i }))
+      expect(dialog()).toBeNull()
+
+      setField(container, 'email', 'a@b.c')
+      setField(container, 'passwd', 'new-pass')
+      setField(container, 'email', 'new@example.com')
+      fireEvent.change(screen.getByPlaceholderText(/re-enter new password/i), { target: { value: 'new-pass' } })
+      submit(container)
+      expect(screen.getByText(/to change your password and email, enter your current password/i)).toBeInTheDocument()
+    })
+
+    it('does not send an email change until it is confirmed', () => {
+      global.fetch = jest.fn()
+      const { container } = render(<UserEdit data={makeData()} />)
+      setField(container, 'email', 'new@example.com')
+      submit(container)
+      fireEvent.click(screen.getByRole('button', { name: /cancel/i }))
+      expect(global.fetch).not.toHaveBeenCalled()
+      expect(container.querySelector('input[name="email"]').value).toBe('new@example.com')
+    })
+
+    it('a wrong current password keeps the modal open with the error, and a retry succeeds', async () => {
+      global.fetch = jest.fn()
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: 0, code: 'current_password_incorrect', error: 'Your current password is incorrect.' }) })
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true }) })
+      const { container } = render(<UserEdit data={makeData()} />)
+      setField(container, 'email', 'new@example.com')
+      submit(container)
+
+      confirmWith('wrong-pass')
+      await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/current password is incorrect/i))
+      expect(dialog()).not.toBeNull()
+      expect(screen.queryByText(/profile updated successfully/i)).toBeNull()
+
+      confirmWith('right-pass')
+      await waitFor(() => expect(screen.getByText(/profile updated successfully/i)).toBeInTheDocument())
+      expect(dialog()).toBeNull()
+      expect(JSON.parse(global.fetch.mock.calls[1][1].body)).toMatchObject({ email: 'new@example.com', current_password: 'right-pass' })
+    })
+
+    it('other API errors close the modal and show on the page', async () => {
+      global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: false, error: 'email already in use' }) })
+      const { container } = render(<UserEdit data={makeData()} />)
+      setField(container, 'email', 'taken@example.com')
+      submit(container)
+      confirmWith('right-pass')
+      await waitFor(() => expect(screen.getByText(/email already in use/i)).toBeInTheDocument())
+      expect(dialog()).toBeNull()
+    })
+
+    it('saves other fields without it', async () => {
+      global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true }) })
+      const { container } = render(<UserEdit data={makeData()} />)
+      setField(container, 'realname', 'Only The Name')
+      submit(container)
+      expect(dialog()).toBeNull()
+      await waitFor(() => expect(global.fetch).toHaveBeenCalled())
+      expect(JSON.parse(global.fetch.mock.calls[0][1].body)).not.toHaveProperty('current_password')
+    })
+  })
+
+  describe('unsaved-changes state after saving (#4637)', () => {
+    const leaveWarns = () => {
+      const event = new Event('beforeunload', { cancelable: true })
+      window.dispatchEvent(event)
+      return event.defaultPrevented
+    }
+
+    it('is clean after a successful save, and dirty again after the next edit', async () => {
+      global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true }) })
+      const { container } = render(<UserEdit data={makeData()} />)
+
+      setField(container, 'realname', 'Saved Name')
+      expect(leaveWarns()).toBe(true)
+
+      submit(container)
+      await waitFor(() => expect(screen.getByText(/profile updated successfully/i)).toBeInTheDocument())
+      expect(leaveWarns()).toBe(false)
+
+      setField(container, 'motto', 'a new motto')
+      await waitFor(() => expect(leaveWarns()).toBe(true))
+    })
+
+    it('clears the password fields after saving a password change', async () => {
+      global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true }) })
+      const { container } = render(<UserEdit data={makeData()} />)
+
+      setField(container, 'passwd', 'new-pass')
+      fireEvent.change(screen.getByPlaceholderText(/re-enter new password/i), { target: { value: 'new-pass' } })
+      submit(container)
+      confirmWith('old-pass')
+      await waitFor(() => expect(screen.getByText(/profile updated successfully/i)).toBeInTheDocument())
+      expect(container.querySelector('input[name="passwd"]').value).toBe('')
+      expect(dialog()).toBeNull()
+      expect(leaveWarns()).toBe(false)
+    })
   })
 })

@@ -24,6 +24,7 @@ import PreviewContent from '../Editor/PreviewContent'
 import EditorModeToggle from '../Editor/EditorModeToggle'
 import SettingsNavigation from '../SettingsNavigation'
 import LinkNode from '../LinkNode'
+import CurrentPasswordModal, { describeCredentialChange } from '../CurrentPasswordModal'
 import '../Editor/E2Editor.css'
 
 /**
@@ -106,6 +107,12 @@ const UserEdit = ({ data, e2 }) => {
     motto: ''
   })
   const [confirmPasswd, setConfirmPasswd] = useState('')
+  // The current-password prompt for password/email changes (#4637)
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false)
+  const [passwordModalError, setPasswordModalError] = useState(null)
+  // Profile fields as the server has them: page load, then each successful save. Dirty
+  // detection compares against this, so a save clears the unsaved-changes state.
+  const [savedProfile, setSavedProfile] = useState(null)
   const [removeImage, setRemoveImage] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
   const [uploadStatus, setUploadStatus] = useState(null)
@@ -124,6 +131,11 @@ const UserEdit = ({ data, e2 }) => {
   // Check if passwords match (both empty counts as matching)
   const passwordsMatch = formData.passwd === confirmPasswd
   const hasPasswordInput = formData.passwd.length > 0 || confirmPasswd.length > 0
+  // Changing your password or email needs your current password (the API enforces it too).
+  const savedEmail = savedProfile ? savedProfile.email : (data?.user?.email || '')
+  const passwordChanging = formData.passwd.length > 0
+  const emailChanging = formData.email !== savedEmail
+  const needsCurrentPassword = passwordChanging || emailChanging
 
   // Editor mode state - uses localStorage for persistence
   const [editorMode, setEditorMode] = useState(getInitialEditorMode)
@@ -165,8 +177,9 @@ const UserEdit = ({ data, e2 }) => {
         motto: data.user.motto || ''
       })
 
-      // Set editor content (both rich and HTML modes)
-      if (editor) {
+      // Set editor content (both rich and HTML modes). useEditor can hand back an instance it
+      // has since destroyed; its replacement re-runs this effect.
+      if (editor && !editor.isDestroyed) {
         const withBrackets = convertEntitiesToRawBrackets(doctext)
         editor.commands.setContent(withBrackets, { emitUpdate: false })
         // Mark editor as initialized after content is set (so onUpdate events are tracked as user edits)
@@ -183,14 +196,13 @@ const UserEdit = ({ data, e2 }) => {
     }
   }, [data?.user, editor])
 
-  // Track if form has unsaved changes
+  // Track if form has unsaved changes since the last save (or page load)
   useEffect(() => {
     if (!data?.user) return
 
-    const originalData = {
+    const baseline = savedProfile || {
       realname: data.user.realname || '',
       email: data.user.email || '',
-      passwd: '',
       mission: data.user.mission || '',
       specialties: data.user.specialties || '',
       employment: data.user.employment || '',
@@ -198,13 +210,13 @@ const UserEdit = ({ data, e2 }) => {
     }
 
     const formChanged =
-      formData.realname !== originalData.realname ||
-      formData.email !== originalData.email ||
+      formData.realname !== baseline.realname ||
+      formData.email !== baseline.email ||
       formData.passwd !== '' ||
-      formData.mission !== originalData.mission ||
-      formData.specialties !== originalData.specialties ||
-      formData.employment !== originalData.employment ||
-      formData.motto !== originalData.motto ||
+      formData.mission !== baseline.mission ||
+      formData.specialties !== baseline.specialties ||
+      formData.employment !== baseline.employment ||
+      formData.motto !== baseline.motto ||
       removeImage
 
     // Check if bookmarks changed (removed or reordered)
@@ -215,7 +227,7 @@ const UserEdit = ({ data, e2 }) => {
       JSON.stringify(baselineBookmarkIds) !== JSON.stringify(currentBookmarkIds)
 
     setIsDirty(formChanged || bookmarksChanged || bioModified)
-  }, [formData, removeImage, bookmarks, removedBookmarks, savedBookmarkOrder, data?.user, bioModified])
+  }, [formData, removeImage, bookmarks, removedBookmarks, savedBookmarkOrder, savedProfile, data?.user, bioModified])
 
   // Warn about unsaved changes on navigation
   useEffect(() => {
@@ -257,12 +269,12 @@ const UserEdit = ({ data, e2 }) => {
   const toggleMode = useCallback(() => {
     const newMode = editorMode === 'rich' ? 'html' : 'rich'
 
-    if (editorMode === 'rich' && editor) {
+    if (editorMode === 'rich' && editor && !editor.isDestroyed) {
       // Switching to HTML mode - capture current rich content
       const html = editor.getHTML()
       const withEntities = convertRawBracketsToEntities(html)
       setHtmlContent(convertToE2Syntax(withEntities))
-    } else if (editorMode === 'html' && editor) {
+    } else if (editorMode === 'html' && editor && !editor.isDestroyed) {
       // Switching to rich mode - load HTML content into editor
       const withBrackets = convertEntitiesToRawBrackets(htmlContent)
       editor.commands.setContent(withBrackets, { emitUpdate: false })
@@ -376,8 +388,8 @@ const UserEdit = ({ data, e2 }) => {
     }
   }, [selectedFile, data])
 
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault()
+  // Save the profile. currentPassword is only passed (from the modal) for password/email changes.
+  const saveProfile = useCallback(async (currentPassword) => {
     setSaving(true)
     setError(null)
     setSuccess(null)
@@ -391,6 +403,10 @@ const UserEdit = ({ data, e2 }) => {
         node_id: user.node_id,
         ...formData,
         user_doctext: bioContent
+      }
+
+      if (currentPassword) {
+        submitData.current_password = currentPassword
       }
 
       // Add image removal flag
@@ -422,21 +438,53 @@ const UserEdit = ({ data, e2 }) => {
 
       const result = await response.json()
 
+      // A wrong (or missing) current password: keep the modal open and say so there.
+      if (!result.success && currentPassword && /^current_password_/.test(result.code || '')) {
+        setPasswordModalError(result.error || 'Your current password is incorrect.')
+        return
+      }
+      setPasswordModalOpen(false)
+
       if (result.success) {
         setSuccess('Profile updated successfully!')
         setRemovedBookmarks(new Set())
         // Update the saved bookmark order baseline so dirty detection uses the new order
         setSavedBookmarkOrder(bookmarks.map(b => b.node_id))
+        // Everything just saved is the new baseline; clear the one-shot fields.
+        setSavedProfile({
+          realname: formData.realname,
+          email: formData.email,
+          mission: formData.mission,
+          specialties: formData.specialties,
+          employment: formData.employment,
+          motto: formData.motto
+        })
+        setFormData(prev => ({ ...prev, passwd: '' }))
+        setConfirmPasswd('')
+        setRemoveImage(false)
+        setBioModified(false)
         setIsDirty(false)
       } else {
         setError(result.error || 'Failed to update profile')
       }
     } catch (err) {
+      setPasswordModalOpen(false)
       setError(err.message || 'An error occurred while saving')
     } finally {
       setSaving(false)
     }
   }, [formData, removeImage, removedBookmarks, bookmarks, user.node_id, getCurrentContent, data.user.bookmarks])
+
+  // Password and email changes are confirmed with the current password in a modal first.
+  const handleSubmit = useCallback((e) => {
+    e.preventDefault()
+    if (needsCurrentPassword) {
+      setPasswordModalError(null)
+      setPasswordModalOpen(true)
+      return
+    }
+    saveProfile(null)
+  }, [needsCurrentPassword, saveProfile])
 
   // Handle tab navigation - navigates to Settings page with hash
   const handleTabChange = useCallback((tab) => {
@@ -526,9 +574,9 @@ const UserEdit = ({ data, e2 }) => {
               onChange={handleInputChange}
               className="user-edit-input user-edit-input--medium"
             />
-            {user.realname && (
+            {(savedProfile ? savedProfile.realname : user.realname) && (
               <div className="user-edit-hint">
-                Currently: {user.realname}
+                Currently: {savedProfile ? savedProfile.realname : user.realname}
               </div>
             )}
           </div>
@@ -593,9 +641,9 @@ const UserEdit = ({ data, e2 }) => {
               onChange={handleInputChange}
               className="user-edit-input user-edit-input--medium"
             />
-            {user.email && (
+            {(savedProfile ? savedProfile.email : user.email) && (
               <div className="user-edit-hint">
-                Currently: {user.email}
+                Currently: {savedProfile ? savedProfile.email : user.email}
               </div>
             )}
           </div>
@@ -837,6 +885,15 @@ const UserEdit = ({ data, e2 }) => {
           </>
         )}
       </form>
+
+      <CurrentPasswordModal
+        isOpen={passwordModalOpen}
+        onClose={() => setPasswordModalOpen(false)}
+        onConfirm={saveProfile}
+        changing={describeCredentialChange(passwordChanging, emailChanging)}
+        isSubmitting={saving}
+        error={passwordModalError}
+      />
     </div>
   )
 }

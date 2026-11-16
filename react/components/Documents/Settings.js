@@ -26,6 +26,7 @@ import MenuBar from '../Editor/MenuBar'
 import PreviewContent from '../Editor/PreviewContent'
 import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
+import CurrentPasswordModal, { describeCredentialChange } from '../CurrentPasswordModal'
 import '../Editor/E2Editor.css'
 
 // Maximum length for macros (from legacy system)
@@ -236,6 +237,38 @@ function Settings({ data, user }) {
     motto: data.profileData?.motto || ''
   }))
   const [confirmPasswd, setConfirmPasswd] = useState('')
+  // The current-password prompt for password/email changes (#4637)
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false)
+  const [passwordModalError, setPasswordModalError] = useState(null)
+
+  // What the server has, as of page load or the last successful save. Dirty detection and the
+  // save handler's "did this section change?" checks compare against it, so saving clears the
+  // unsaved-changes state instead of leaving the page-load values as the reference forever.
+  const [savedBaseline, setSavedBaseline] = useState(() => {
+    const notifs = {}
+    ;(data.notificationPreferences || []).forEach(notif => {
+      notifs[notif.node_id] = notif.enabled === 1
+    })
+    return {
+      settingsPrefs: data.settingsPreferences || {},
+      advancedPrefs: data.advancedPreferences || {},
+      nodelets: data.nodelets || [],
+      notificationPrefs: notifs,
+      nodeletSettings: data.nodeletSettings || {},
+      editorPrefs: data.editorPreferences || {},
+      macros: data.macros || [],
+      profile: {
+        realname: data.profileData?.realname || '',
+        email: data.profileData?.email || '',
+        passwd: '',
+        doctext: data.profileData?.doctext || '',
+        mission: data.profileData?.mission || '',
+        specialties: data.profileData?.specialties || '',
+        employment: data.profileData?.employment || '',
+        motto: data.profileData?.motto || ''
+      }
+    }
+  })
   const [removeImage, setRemoveImage] = useState(false)
   const [selectedBookmarks, setSelectedBookmarks] = useState(new Set())
   const [previewTrigger, setPreviewTrigger] = useState(0)
@@ -247,6 +280,10 @@ function Settings({ data, user }) {
   // Check if passwords match (both empty counts as matching)
   const passwordsMatch = profileData.passwd === confirmPasswd
   const hasPasswordInput = profileData.passwd.length > 0 || confirmPasswd.length > 0
+  // Changing your password or email needs your current password (the API enforces it too).
+  const passwordChanging = profileData.passwd.length > 0
+  const emailChanging = profileData.email !== savedBaseline.profile.email
+  const needsCurrentPassword = passwordChanging || emailChanging
 
   // Initialize TipTap editor for bio
   const bioEditor = useEditor({
@@ -259,7 +296,9 @@ function Settings({ data, user }) {
 
   // Set editor content when it's ready
   useEffect(() => {
-    if (bioEditor && data.profileData?.doctext) {
+    // useEditor can hand back an instance it has since destroyed (it re-creates on remount);
+    // its replacement re-runs this effect.
+    if (bioEditor && !bioEditor.isDestroyed && data.profileData?.doctext) {
       const withBrackets = convertEntitiesToRawBrackets(data.profileData.doctext)
       bioEditor.commands.setContent(withBrackets, { emitUpdate: false })
     }
@@ -288,47 +327,24 @@ function Settings({ data, user }) {
     }
   )
 
-  // Track if settings have changed
+  // Track if settings have changed since the last save (or page load)
   useEffect(() => {
-    const prefsChanged = JSON.stringify(settingsPrefs) !== JSON.stringify(data.settingsPreferences || {})
-    const advancedPrefsChanged = JSON.stringify(advancedPrefs) !== JSON.stringify(data.advancedPreferences || {})
-    const nodeletsChanged = JSON.stringify(nodelets) !== JSON.stringify(data.nodelets || [])
-
-    // Check if notification preferences changed
-    const originalNotifs = {}
-    if (data.notificationPreferences) {
-      data.notificationPreferences.forEach(notif => {
-        originalNotifs[notif.node_id] = notif.enabled === 1
-      })
-    }
-    const notifsChanged = JSON.stringify(notificationPrefs) !== JSON.stringify(originalNotifs)
-
-    // Check if nodelet settings changed
-    const nodeletSettingsChanged = JSON.stringify(nodeletSettings) !== JSON.stringify(data.nodeletSettings || {})
-
-    // Check if editor preferences changed (admin tab)
-    const editorPrefsChanged = JSON.stringify(editorPrefs) !== JSON.stringify(data.editorPreferences || {})
-
-    // Check if macros changed (admin tab)
-    const macrosChanged = JSON.stringify(macros) !== JSON.stringify(data.macros || [])
-
-    // Check if profile changed (profile tab)
-    const originalProfile = {
-      realname: data.profileData?.realname || '',
-      email: data.profileData?.email || '',
-      passwd: '',
-      doctext: data.profileData?.doctext || '',
-      mission: data.profileData?.mission || '',
-      specialties: data.profileData?.specialties || '',
-      employment: data.profileData?.employment || '',
-      motto: data.profileData?.motto || ''
-    }
-    const profileChanged = JSON.stringify(profileData) !== JSON.stringify(originalProfile) ||
+    const changed = (current, saved) => JSON.stringify(current) !== JSON.stringify(saved)
+    const profileChanged = changed(profileData, savedBaseline.profile) ||
       removeImage ||
       selectedBookmarks.size > 0
 
-    setIsDirty(prefsChanged || advancedPrefsChanged || nodeletsChanged || notifsChanged || nodeletSettingsChanged || editorPrefsChanged || macrosChanged || profileChanged)
-  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, profileData, removeImage, selectedBookmarks, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings, data.editorPreferences, data.macros, data.profileData])
+    setIsDirty(
+      changed(settingsPrefs, savedBaseline.settingsPrefs) ||
+      changed(advancedPrefs, savedBaseline.advancedPrefs) ||
+      changed(nodelets, savedBaseline.nodelets) ||
+      changed(notificationPrefs, savedBaseline.notificationPrefs) ||
+      changed(nodeletSettings, savedBaseline.nodeletSettings) ||
+      changed(editorPrefs, savedBaseline.editorPrefs) ||
+      changed(macros, savedBaseline.macros) ||
+      profileChanged
+    )
+  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, profileData, removeImage, selectedBookmarks, savedBaseline])
 
   // Handle preference toggle (for checkboxes)
   const handleTogglePref = useCallback((prefKey) => {
@@ -401,12 +417,12 @@ function Settings({ data, user }) {
   const toggleEditorMode = useCallback(() => {
     const newMode = editorMode === 'rich' ? 'html' : 'rich'
 
-    if (editorMode === 'rich' && bioEditor) {
+    if (editorMode === 'rich' && bioEditor && !bioEditor.isDestroyed) {
       // Switching to HTML mode - capture current rich content
       const html = bioEditor.getHTML()
       const withEntities = convertRawBracketsToEntities(html)
       setHtmlContent(convertToE2Syntax(withEntities))
-    } else if (editorMode === 'html' && bioEditor) {
+    } else if (editorMode === 'html' && bioEditor && !bioEditor.isDestroyed) {
       // Switching to rich mode - load HTML content into editor
       const withBrackets = convertEntitiesToRawBrackets(htmlContent)
       bioEditor.commands.setContent(withBrackets, { emitUpdate: false })
@@ -507,8 +523,8 @@ function Settings({ data, user }) {
     }))
   }, [])
 
-  // Save all settings
-  const handleSave = useCallback(async () => {
+  // Save all settings. currentPassword is only passed (from the modal) for password/email changes.
+  const saveAll = useCallback(async (currentPassword) => {
     setIsSaving(true)
     setSaveError(null)
     setSaveSuccess(false)
@@ -517,14 +533,14 @@ function Settings({ data, user }) {
       // Save settings preferences
       const prefsToSave = {}
       Object.keys(settingsPrefs).forEach(key => {
-        if (settingsPrefs[key] !== (data.settingsPreferences || {})[key]) {
+        if (settingsPrefs[key] !== savedBaseline.settingsPrefs[key]) {
           prefsToSave[key] = settingsPrefs[key]
         }
       })
 
       // Add advanced preferences to save
       Object.keys(advancedPrefs).forEach(key => {
-        if (advancedPrefs[key] !== (data.advancedPreferences || {})[key]) {
+        if (advancedPrefs[key] !== savedBaseline.advancedPrefs[key]) {
           prefsToSave[key] = advancedPrefs[key]
         }
       })
@@ -545,7 +561,7 @@ function Settings({ data, user }) {
       }
 
       // Save nodelet order if changed
-      const originalNodeletIds = (data.nodelets || []).map(n => n.node_id)
+      const originalNodeletIds = savedBaseline.nodelets.map(n => n.node_id)
       const currentNodeletIds = nodelets.map(n => n.node_id)
 
       if (JSON.stringify(originalNodeletIds) !== JSON.stringify(currentNodeletIds)) {
@@ -562,12 +578,7 @@ function Settings({ data, user }) {
       }
 
       // Save notification preferences if changed
-      const originalNotifs = {}
-      if (data.notificationPreferences) {
-        data.notificationPreferences.forEach(notif => {
-          originalNotifs[notif.node_id] = notif.enabled === 1
-        })
-      }
+      const originalNotifs = savedBaseline.notificationPrefs
 
       if (JSON.stringify(notificationPrefs) !== JSON.stringify(originalNotifs)) {
         // Convert boolean values to 1 for enabled notifications only
@@ -591,7 +602,7 @@ function Settings({ data, user }) {
       }
 
       // Save nodelet-specific settings if changed
-      if (JSON.stringify(nodeletSettings) !== JSON.stringify(data.nodeletSettings || {})) {
+      if (JSON.stringify(nodeletSettings) !== JSON.stringify(savedBaseline.nodeletSettings)) {
         const nodeletPrefsToSave = {}
         Object.keys(nodeletSettings).forEach(nodeletId => {
           const settings = nodeletSettings[nodeletId]
@@ -615,8 +626,8 @@ function Settings({ data, user }) {
       }
 
       // Save admin settings (editor preferences + macros) if changed
-      const editorPrefsChanged = JSON.stringify(editorPrefs) !== JSON.stringify(data.editorPreferences || {})
-      const macrosChanged = JSON.stringify(macros) !== JSON.stringify(data.macros || [])
+      const editorPrefsChanged = JSON.stringify(editorPrefs) !== JSON.stringify(savedBaseline.editorPrefs)
+      const macrosChanged = JSON.stringify(macros) !== JSON.stringify(savedBaseline.macros)
 
       if (editorPrefsChanged || macrosChanged) {
         // Build the admin settings payload
@@ -656,16 +667,7 @@ function Settings({ data, user }) {
       }
 
       // Save profile data if changed (profile tab)
-      const originalProfile = {
-        realname: data.profileData?.realname || '',
-        email: data.profileData?.email || '',
-        passwd: '',
-        doctext: data.profileData?.doctext || '',
-        mission: data.profileData?.mission || '',
-        specialties: data.profileData?.specialties || '',
-        employment: data.profileData?.employment || '',
-        motto: data.profileData?.motto || ''
-      }
+      const originalProfile = savedBaseline.profile
 
       const profileChanged = JSON.stringify(profileData) !== JSON.stringify(originalProfile) ||
         removeImage ||
@@ -692,6 +694,9 @@ function Settings({ data, user }) {
         if (profileData.passwd) {
           profilePayload.passwd = profileData.passwd
         }
+        if (currentPassword) {
+          profilePayload.current_password = currentPassword
+        }
 
         // Include image removal flag
         if (removeImage) {
@@ -710,6 +715,11 @@ function Settings({ data, user }) {
         })
 
         const profileResult = await profileResponse.json()
+        // A wrong (or missing) current password: keep the modal open and say so there.
+        if (!profileResult.success && currentPassword && /^current_password_/.test(profileResult.code || '')) {
+          setPasswordModalError(profileResult.error || 'Your current password is incorrect.')
+          return
+        }
         if (!profileResult.success) {
           throw new Error(profileResult.error || 'Failed to save profile')
         }
@@ -721,17 +731,45 @@ function Settings({ data, user }) {
         setSelectedBookmarks(new Set())
       }
 
+      // Everything on screen is now what the server has.
+      setSavedBaseline({
+        settingsPrefs,
+        advancedPrefs,
+        nodelets,
+        notificationPrefs,
+        nodeletSettings,
+        editorPrefs,
+        macros,
+        profile: { ...profileData, passwd: '' }
+      })
+      setPasswordModalOpen(false)
       setSaveSuccess(true)
       setIsDirty(false)
 
       // Clear success message after 3 seconds
       setTimeout(() => setSaveSuccess(false), 3000)
     } catch (err) {
+      setPasswordModalOpen(false)
       setSaveError(err.message)
     } finally {
       setIsSaving(false)
     }
-  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, profileData, removeImage, selectedBookmarks, hasPasswordInput, passwordsMatch, getCurrentBioContent, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings, data.editorPreferences, data.macros, data.profileData, currentUser])
+  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, profileData, removeImage, selectedBookmarks, hasPasswordInput, passwordsMatch, savedBaseline, getCurrentBioContent, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings, data.editorPreferences, data.macros, data.profileData, currentUser])
+
+  // Password and email changes are confirmed with the current password in a modal first.
+  const handleSave = useCallback(() => {
+    if (hasPasswordInput && !passwordsMatch) {
+      setSaveSuccess(false)
+      setSaveError('Passwords do not match')
+      return
+    }
+    if (needsCurrentPassword) {
+      setPasswordModalError(null)
+      setPasswordModalOpen(true)
+      return
+    }
+    saveAll(null)
+  }, [hasPasswordInput, passwordsMatch, needsCurrentPassword, saveAll])
 
   // Warn about unsaved changes
   useEffect(() => {
@@ -1575,9 +1613,9 @@ function Settings({ data, user }) {
                 onChange={handleProfileInputChange}
                 className="settings-input-name"
               />
-              {data.profileData?.realname && (
+              {savedBaseline.profile.realname && (
                 <div className="settings-current-value">
-                  Currently: {data.profileData.realname}
+                  Currently: {savedBaseline.profile.realname}
                 </div>
               )}
             </div>
@@ -1636,9 +1674,9 @@ function Settings({ data, user }) {
                 onChange={handleProfileInputChange}
                 className="settings-input-name"
               />
-              {data.profileData?.email && (
+              {savedBaseline.profile.email && (
                 <div className="settings-current-value">
-                  Currently: {data.profileData.email}
+                  Currently: {savedBaseline.profile.email}
                 </div>
               )}
             </div>
@@ -1799,6 +1837,15 @@ function Settings({ data, user }) {
           </fieldset>
         </div>
       )}
+
+      <CurrentPasswordModal
+        isOpen={passwordModalOpen}
+        onClose={() => setPasswordModalOpen(false)}
+        onConfirm={saveAll}
+        changing={describeCredentialChange(passwordChanging, emailChanging)}
+        isSubmitting={isSaving}
+        error={passwordModalError}
+      />
     </div>
   )
 }
