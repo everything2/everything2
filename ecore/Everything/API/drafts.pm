@@ -349,11 +349,11 @@ sub get_draft {
 
     my $draft = $DB->getNodeById($draft_id);
     return [ $self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' } ]
-      unless $draft;
+      unless $draft && $draft->{type}{title} eq 'draft';
 
-    # Check ownership
+    # The author, or whoever the draft's publication status lets see it (canSeeDraft)
     unless ( $draft->{author_user} == $user_id
-        || $self->APP->isEditor( $REQUEST->user->NODEDATA ) )
+        || $self->APP->canSeeDraft( $REQUEST->user->NODEDATA, $draft ) )
     {
         return [
             $self->HTTP_FORBIDDEN,

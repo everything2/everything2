@@ -5793,6 +5793,10 @@ sub getRecentChatter
   my $offset = int($params->{offset} || 0);
   my $room = int($params->{room} || 0);
   my $since = $params->{since}; # Optional timestamp for incremental updates
+  # Accept only a timestamp ("2025-11-24T12:00:00Z" or "2025-11-24 12:00:00"); anything else
+  # falls back to the default time window.
+  $since = undef unless defined($since)
+    && $since =~ /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?$/;
   my $user = $params->{user}; # Optional user for filtering blocked authors
 
   # Enforce limits
@@ -6938,6 +6942,7 @@ sub clean_old_rooms
   my $csr = $this->{db}->sqlSelectMany("roomdata_id", "roomdata", "UNIX_TIMESTAMP(lastused_date) <= ".(time()-$this->{conf}->room_cleanup_threshold));
   my %exceptions = map { $this->{db}->getNode($_, "room")->{node_id} => 1} @{$this->{conf}->always_keep_rooms};
 
+  my @removed;
   while(my $row = $csr->fetchrow_hashref)
   {
     my $N = $this->{db}->getNodeById($row->{roomdata_id});
@@ -6945,9 +6950,36 @@ sub clean_old_rooms
     next if $exceptions{$N->{node_id}};
 
     $this->{db}->nukeNode($N, -1);
+    push @removed, $N->{node_id};
   }
 
+  # Nobody stays in a room that no longer exists.
+  $this->move_users_outside(@removed);
+
   return;
+}
+
+# Moves everyone whose in_room is one of @room_ids back outside, for rooms that no longer exist.
+# Only resets in_room: it doesn't put anyone on the online list (most of them aren't online).
+# Returns how many users were moved.
+sub move_users_outside
+{
+  my ($this, @room_ids) = @_;
+
+  @room_ids = grep { $_ > 0 } map { int($_ // 0) } @room_ids;
+  return 0 unless @room_ids;
+
+  my $in_list = join(',', @room_ids);
+  my $user_ids = $this->{db}->{dbh}->selectcol_arrayref("SELECT user_id FROM user WHERE in_room IN ($in_list)") || [];
+  foreach my $user_id (@$user_ids)
+  {
+    my $user = $this->{db}->getNodeById($user_id) or next;
+    $user->{in_room} = 0;
+    $this->{db}->updateNode($user, -1);
+  }
+  $this->{db}->sqlDelete('room', "room_id IN ($in_list)");
+
+  return scalar(@$user_ids);
 }
 
 sub obscure_writeups
@@ -7803,7 +7835,14 @@ sub buildNodeInfoStructure
       $e2->{chatterbox}->{roomName} = 'outside';
     } else {
       my $room = $this->{db}->getNodeById($USER->{in_room});
-      $e2->{chatterbox}->{roomName} = $room->{title} if $room;
+      if ($room && $room->{type}{title} eq 'room') {
+        $e2->{chatterbox}->{roomName} = $room->{title};
+      } else {
+        # Their room no longer exists (old-room cleanup, or deleted): back outside.
+        $this->changeRoom($USER, undef, 1);
+        $USER->{in_room} = 0;
+        $e2->{chatterbox}->{roomName} = 'outside';
+      }
     }
 
     # Get room topic

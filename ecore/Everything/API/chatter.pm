@@ -31,6 +31,18 @@ sub get_all
 
   my $since = $REQUEST->cgi->param("since") || undef;
 
+  # A room's chatter is for people who can be in it: the room you're in (even if that room has
+  # since been deleted, e.g. by old-room cleanup), or one you could enter.
+  if ($room) {
+    my $USER = $REQUEST->user->NODEDATA;
+    unless ( int($USER->{in_room} // 0) == $room ) {
+      my $room_node = $self->DB->getNodeById($room);
+      my $allowed = $room_node && $room_node->{type}{title} eq 'room'
+        && $self->APP->canEnterRoom($room_node, $USER, $self->APP->getVars($USER));
+      return [$self->HTTP_OK, []] unless $allowed;
+    }
+  }
+
   my $params = {
     limit => $limit,
     offset => $offset,
