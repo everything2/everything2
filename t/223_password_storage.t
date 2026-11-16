@@ -109,6 +109,34 @@ sub cookie_login {
     is( scalar( () = $APP->migrated_legacy_password( $u{marker} ) ),  0, 'already-migrated accounts are not migrated again' );
 }
 
+# ---- passwords beyond Latin-1 --------------------------------------------------------------------
+{
+    my $salt = $APP->new_password_salt;
+    my $wide = "\x{65E5}\x{672C}\x{8A9E}-pass-\x{1F600}";    # CJK + emoji
+    my $hash = eval { $APP->hashString( $wide, $salt ) };
+    ok( defined $hash && length $hash, 'a password with characters above U+00FF hashes' ) or diag $@;
+    is( $APP->hashString( $wide, $salt ), $hash, 'consistently' );
+
+    # Existing hashes are unchanged: ASCII and Latin-1 hash exactly as plain crypt() always did.
+    for my $pw ( 'plain-ascii-1', "caf\x{E9}-cr\x{E8}me", "na\x{EF}ve" ) {
+        my $old = crypt( $pw, $salt );
+        $old =~ s/^.*\$//;
+        is( $APP->hashString( $pw, $salt ), $old, "unchanged hash for '$pw'" );
+    }
+
+    my ( $h, $s ) = $APP->saltNewPassword($wide);
+    ok( $APP->check_password( { passwd => $h, salt => $s }, $wide ), 'set and checked with such a password' );
+    ok( !$APP->check_password( { passwd => $h, salt => $s }, "\x{65E5}\x{672C}" ), 'and a different one does not match' );
+
+    my $legacy = { passwd => "\x{4F60}\x{597D}pw12", salt => undef };    # stored pre-salt, beyond Latin-1
+    my ( $mp, $ms ) = eval { $APP->migrated_legacy_password($legacy) };
+    ok( defined $mp, 'a pre-salt password beyond Latin-1 migrates' ) or diag $@;
+    ok( $mp && $APP->check_password( { passwd => $mp, salt => $ms }, "\x{4F60}\x{597D}pw12" ), 'and still accepts it' );
+
+    my $token = eval { $APP->getToken( { salt => $salt }, $wide, 'reset', time() + 600 ) };
+    ok( defined $token && length $token, 'a reset token for such a password works' );
+}
+
 # ---- login through the app ----------------------------------------------------------------------
 {
     my $u = make_user( 'hashed', $APP->saltNewPassword('normal-pass-1') );
@@ -123,11 +151,20 @@ sub cookie_login {
 for my $case (
     [ 'short',  'pa55wd',     'pa55wd' ],
     [ 'ten',    'abcdefghij', 'abcdefghijKLMNOP' ],    # typed longer than the 10 stored characters
+    [ 'wide',   "\x{4F60}\x{597D}pw12", "\x{4F60}\x{597D}pw12" ],    # beyond Latin-1
 ) {
     my ( $tag, $stored_plain, $typed ) = @$case;
 
     my $pre = make_user( "pre_$tag", $stored_plain, undef );
-    ok( cookie_login( $pre, $stored_plain ), "pre-salt ($tag): an existing cookie still works before migration" );
+    if ( $tag eq 'wide' ) {
+        # Cookie values arrive as bytes, so a password beyond Latin-1 never matched a cookie (and
+        # the old cookie check crashed on it). It must refuse cleanly; after migration it's moot.
+        my $res = $test->request( HTTP::Request::Common::GET( '/api/sessions',
+            Cookie => $Everything::CONF->cookiepass . '=' . uri_escape_utf8("$pre->{title}|$stored_plain") ) );
+        is( $res->code, 200, "pre-salt ($tag): a cookie is refused without an error" );
+    } else {
+        ok( cookie_login( $pre, $stored_plain ), "pre-salt ($tag): an existing cookie still works before migration" );
+    }
     my ($ok) = form_login( $pre, $typed );
     ok( $ok, "pre-salt ($tag): logs in" );
     my $after = stored($pre);
@@ -194,11 +231,15 @@ for my $case ( [ 'empty', '' ], [ 'null', undef ], [ 'marker', $NONE ] ) {
 {
     # A no-password account (any form) can still be recovered by a reset.
     my $u = make_user( 'reset_none', '', undef );
+    $DB->{dbh}->do( q{UPDATE user SET lasttime = '2004-02-29 08:00:00' WHERE user_id = ?}, undef, $u->{id} );
+    $APP->node_by_id( $u->{id} )->cache_refresh;
     my $res = $test->request( HTTP::Request::Common::POST( '/api/password/reset-request',
         'Content-Type' => 'application/json',
         Content => encode_json( { who => $u->{title}, password => 'brand-new-pass', passwordConfirm => 'brand-new-pass' } ) ) );
     my $row = stored($u);
     is( $row->{passwd}, $NONE, 'reset request on a no-password account stores the marker, not a hash of it' );
+    is( scalar $DB->{dbh}->selectrow_array( 'SELECT CAST(lasttime AS CHAR) FROM user WHERE user_id = ?', undef, $u->{id} ),
+        '2004-02-29 08:00:00', 'and leaves its last-seen time alone' );
     ok( length( $row->{salt} // '' ), 'and gives it a salt' );
     ok( !( form_login( $u, $NONE ) )[0], 'the marker does not work as a password' );
 
@@ -230,6 +271,20 @@ for my $case ( [ 'empty', '' ], [ 'null', undef ], [ 'marker', $NONE ] ) {
     my $null    = make_user( 'm_null', undef, undef );
     my @all     = ( $hashed, $pending, @plain, $empty, $null );
     my @ids     = map { $_->{id} } @all;
+
+    # Last-seen times are memorials for some users: the migration must never change them.
+    my @lasttimes = ( '2009-04-01 12:34:56', '0000-00-00 00:00:00', undef, '2001-09-10 23:59:59' );
+    {
+        my ($mode) = $DB->{dbh}->selectrow_array('SELECT @@SESSION.sql_mode');
+        $DB->{dbh}->do(q{SET SESSION sql_mode = ''});
+        my $i = 0;
+        $DB->{dbh}->do( 'UPDATE user SET lasttime = ? WHERE user_id = ?', undef, $lasttimes[ $i++ % @lasttimes ], $_ ) for @ids;
+        $DB->{dbh}->do( 'SET SESSION sql_mode = ?', undef, $mode );
+    }
+    my $lasttimes_now = sub {
+        return { map { $_ => scalar $DB->{dbh}->selectrow_array( 'SELECT CAST(lasttime AS CHAR) FROM user WHERE user_id = ?', undef, $_ ) } @ids };
+    };
+    my %lasttime_before = %{ $lasttimes_now->() };
     my %before  = map { $_->{id} => stored($_) } @all;
     my %version = map { $_ => ( $DB->sqlSelect( 'version', 'version', "version_id = $_" ) // 0 ) } @ids;
 
@@ -247,6 +302,7 @@ for my $case ( [ 'empty', '' ], [ 'null', undef ], [ 'marker', $NONE ] ) {
     is( $r->{plaintext}, 5, 'dry run: counts the pre-salt passwords' );
     is( $r->{none}, 2, 'dry run: and the empty ones' );
     is_deeply( { map { $_->{id} => stored($_) } @all }, \%before, 'dry run: changes nothing' );
+    is_deeply( $lasttimes_now->(), \%lasttime_before, 'dry run: last-seen times untouched' );
     is( $lines->[0]{status}, 'start', 'prints a start line' );
     is( $lines->[-1]{status}, 'done', 'and a done line' );
     is( $lines->[-1]{remaining}, 7, 'dry run: everything still to do' );
@@ -262,6 +318,7 @@ for my $case ( [ 'empty', '' ], [ 'null', undef ], [ 'marker', $NONE ] ) {
     ok( $r->{ok}, 'resuming completes' );
     is( $lines->[-1]{remaining}, 0, 'with nothing left' );
 
+    is_deeply( $lasttimes_now->(), \%lasttime_before, 'applying: last-seen times untouched, every row (including zero and NULL)' );
     is_deeply( stored($hashed),  $before{ $hashed->{id} },  'a normal account is untouched' );
     is_deeply( stored($pending), $before{ $pending->{id} }, 'an account awaiting activation is untouched' );
     for my $u (@plain) {
@@ -274,6 +331,7 @@ for my $case ( [ 'empty', '' ], [ 'null', undef ], [ 'marker', $NONE ] ) {
         ok( length( stored($u)->{salt} ), "$u->{title}: and a salt" );
     }
 
+    # (Logging in below is a real login, which records last-seen as it always has.)
     # every migrated account still logs in with its old password (and is then upgraded)
     my $n = 0;
     for my $u (@plain) {
@@ -289,6 +347,7 @@ for my $case ( [ 'empty', '' ], [ 'null', undef ], [ 'marker', $NONE ] ) {
 
     # Guest User never authenticates by password: it gets the no-password marker, by name in the log
     my $guestish = make_user( 'm_guest', 'guestpw', undef );
+    $DB->{dbh}->do( q{UPDATE user SET lasttime = '2010-10-29 11:34:02' WHERE user_id = ?}, undef, $guestish->{id} );
     {
         my $out = '';
         open( my $fh, '>', \$out ) or die;
@@ -296,6 +355,8 @@ for my $case ( [ 'empty', '' ], [ 'null', undef ], [ 'marker', $NONE ] ) {
             apply => 1, pause => 0, out => $fh )->run;
         is( $res->{guest}, 1, 'the guest account is counted on its own' );
         is( stored($guestish)->{passwd}, $NONE, 'and gets the no-password marker, not a legacy hash' );
+        is( scalar $DB->{dbh}->selectrow_array( 'SELECT CAST(lasttime AS CHAR) FROM user WHERE user_id = ?', undef, $guestish->{id} ),
+            '2010-10-29 11:34:02', 'and its last-seen time is untouched' );
         ok( ( grep { /"account":"Guest User"/ && /"status":"special"/ } split /\n/, $out ), 'and is named in the output' );
         ok( !( form_login( $guestish, 'guestpw' ) )[0], 'and its old password no longer logs in' );
     }

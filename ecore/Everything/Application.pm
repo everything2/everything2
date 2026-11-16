@@ -432,8 +432,9 @@ sub check_password_cookie
 	return 0 if $kind eq 'none';
 	return 1 if defined($cookie_pass) && length($cookie_pass) && $cookie_pass eq $user->{passwd};
 
-	# Very old cookies carried title|crypt(plaintext, title)
-	return 1 if $kind eq 'plaintext' && defined($raw_cookie)
+	# Very old cookies carried title|crypt(plaintext, title). They predate passwords beyond
+	# Latin-1, which crypt() can't take anyway.
+	return 1 if $kind eq 'plaintext' && defined($raw_cookie) && $user->{passwd} !~ /[^\x00-\xFF]/
 		&& $this->urlDecode($raw_cookie) eq $user->{title} . '|' . crypt($user->{passwd}, $user->{title});
 	return 0;
 }
@@ -479,6 +480,13 @@ sub hashString
 {
 	my ($this, $pass, $salt) = @_;
 
+	# crypt() takes bytes: it downgrades characters up to U+00FF to single bytes and dies on
+	# anything higher. Hash those strings as UTF-8 instead. Only strings that would die change,
+	# so every existing hash still matches.
+	if (defined($pass) && $pass =~ /[^\x00-\xFF]/)
+	{
+		utf8::encode($pass);
+	}
 	$pass = crypt($pass, $salt);
 	# Salt prefix reveals algorithm, and we store the salt separately anyway
 	$pass =~ s/^.*\$//;
