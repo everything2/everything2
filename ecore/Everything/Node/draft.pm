@@ -3,6 +3,13 @@ use Moose;
 use POSIX;
 extends 'Everything::Node::writeup';
 
+# Drafts follow their publication status and collaborators (Application::canSeeDraft).
+sub can_read_node
+{
+  my ($self, $user) = @_;
+  return $self->APP->canSeeDraft($user->NODEDATA, $self->NODEDATA) ? 1 : 0;
+}
+
 sub canonical_url
 {
   my ($self) = @_;

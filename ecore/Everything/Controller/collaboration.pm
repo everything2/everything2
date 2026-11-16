@@ -15,30 +15,12 @@ use Readonly;
 
 Readonly my $LOCK_EXPIRE_SECONDS => 15 * 60;  # 15 minutes
 
-# Check if user can access the collaboration
+# Check if user can access the collaboration. The rule lives on the node
+# (Everything::Node::collaboration::can_access).
 sub _check_access {
     my ($self, $user, $node) = @_;
-
-    my $APP = $self->APP;
-
-    # Admins always have access
-    return 1 if $user->is_admin;
-
-    # Content Editors have access
-    return 1 if $user->is_editor;
-
-    # crtleads members have access
-    my $crtleads = $self->DB->getNode('crtleads', 'usergroup');
-    if ($crtleads && Everything::isApproved($user->NODEDATA, $crtleads)) {
-        return 1;
-    }
-
-    # Check if user is in the collaboration's approved list
-    if (Everything::isApproved($user->NODEDATA, $node->NODEDATA)) {
-        return 1;
-    }
-
-    return 0;
+    return 0 unless $node && $node->can('can_access');
+    return $node->can_access($user);
 }
 
 # Check if lock has expired
@@ -172,13 +154,17 @@ sub display {
         }
     }
 
+    # The text and member list go only to people who can read the collaboration.
+    my $can_read = $can_access || $is_public;
+    $members = [] unless $can_read;
+
     # Build content data
     my $content_data = {
         type => 'collaboration',
         collaboration => {
             node_id => int($node->node_id),
             title => $node->title,
-            doctext => $node->NODEDATA->{doctext} || '',
+            doctext => $can_read ? ($node->NODEDATA->{doctext} || '') : '',
             public => $is_public,
             locktime => $locktime,
             lockedby_user => int($lockedby_user),

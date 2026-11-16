@@ -123,29 +123,9 @@ sub create_debate {
 # Check if user can access the debatecomment based on root's restricted field
 sub _check_access {
     my ($self, $user, $node) = @_;
-
-    # Admins always have access
-    return 1 if $user->is_admin;
-
-    # Get root debatecomment to check restriction
-    my $root_id = $node->NODEDATA->{root_debatecomment} || $node->node_id;
-    my $root = $self->APP->node_by_id($root_id);
-    return 0 unless $root;
-
-    # Get the restricted usergroup (default to CE for legacy nodes)
-    my $restricted_id = $root->NODEDATA->{restricted} || 923653;
-
-    # Handle legacy magic numbers
-    if ($restricted_id == 0) {
-        $restricted_id = 923653;  # Content Editors
-    } elsif ($restricted_id == 1) {
-        $restricted_id = 114;     # gods
-    }
-
-    my $group = $self->DB->getNodeById($restricted_id);
-    return 0 unless $group;
-
-    return $self->APP->inUsergroup($user->NODEDATA, $group);
+    # The rule lives on the node (Everything::Node::debatecomment::can_access).
+    return 0 unless $node && $node->can('can_access');
+    return $node->can_access($user);
 }
 
 # Create a reply to a debatecomment
