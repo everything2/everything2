@@ -60,7 +60,7 @@ sub notelet_payload {
         max_length       => $self->notelet_max_length($user->NODEDATA),
         user_level       => $self->APP->getLevel($user->NODEDATA) || 0,
         notelet_enabled  => (index($VARS->{nodelets} || '', $NOTELET_NODELET_ID) >= 0) ? 1 : 0,
-        keep_comments    => $VARS->{nodeletKeepComments} ? 1 : 0,
+        keep_comments    => $VARS->{noteletKeepComments} ? 1 : 0,
     };
 }
 
@@ -77,8 +77,10 @@ sub save_notelet {
     $VARS->{noteletRaw} = $VARS->{personalRaw} if exists $VARS->{personalRaw};
     delete $VARS->{personalRaw};
 
-    if ($keep_comments) { $VARS->{nodeletKeepComments} = 1; }
-    else                { delete $VARS->{nodeletKeepComments}; }
+    # noteletKeepComments is the key Application::screen_notelet reads (#4662).
+    delete $VARS->{nodeletKeepComments};
+    if ($keep_comments) { $VARS->{noteletKeepComments} = 1; }
+    else                { delete $VARS->{noteletKeepComments}; }
 
     if (!defined $notelet_source || !length($notelet_source)) {
         delete $VARS->{noteletRaw};
