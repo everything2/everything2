@@ -263,9 +263,9 @@ sub create_account {
 
   $self->security_log("Created user " . $APP->linkNode($new_user));
 
-  # Send activation email in production
-  if ($CONF->is_production) {
-    my $mail = $APP->node_by_name('Welcome to Everything2', 'mail')->NODEDATA;
+  # Send the activation email. In development node2mail keeps it in the dev mail spool
+  # (tools/test-password-reset.pl --sent shows it); other environments send nothing.
+  if ($CONF->is_production || $APP->inDevEnvironment) {
     my $params = $APP->getTokenLinkParameters(
       $new_user,
       $password,
@@ -278,13 +278,10 @@ sub create_account {
       $APP->node_by_name('Confirm password', 'superdoc')->NODEDATA
     );
 
-    $mail->{doctext} =~ s/<name>/$username/;
-    $mail->{doctext} =~ s/<link>/$link/g;
     # Public host from configuration, not $ENV{SERVER_NAME} (127.0.0.1 under Starman) (#4614).
-    my $server_name = $CONF->canonical_web_server;
-    $mail->{doctext} =~ s/<servername>/$server_name/g;
-
-    $APP->node2mail($email, $mail, 1);
+    my $mail = $APP->mail_from_template('Welcome to Everything2',
+      { name => $username, link => $link, servername => $CONF->canonical_web_server });
+    $APP->node2mail($email, $mail, 1) if $mail;
   }
 
   # Set spam threshold if we have recaptcha score
