@@ -9,9 +9,11 @@ use lib "$FindBin::Bin/lib";
 use lib "/var/libraries/lib/perl5";
 
 use Test::More;
+use JSON;
 use Everything;
 use Everything::Application;
 use Everything::API::signup;
+use Everything::API::user;
 use Everything::SecurityLog;
 use MockRequest;
 
@@ -80,7 +82,7 @@ for my $email (@invalid_emails) {
     title => 'Guest User',
     is_guest_flag => 1,
     request_method => 'POST',
-    postdata => qq({"username": "uniquetestuser${unique_counter}", "password": "testpass", "email": "$email"})
+    postdata => qq({"username": "ut${unique_counter}", "password": "testpass", "email": "$email"})
   );
 
   my $result = $api->create_account($request);
@@ -316,7 +318,7 @@ subtest 'a failed verification records why' => sub {
   local *Everything::API::signup::verify_recaptcha_token = sub { return { success => 0, reason => 'invalid token: EXPIRED; hostname=everything2.com; action=signup' } };
   local $ENV{HTTP_HOST} = 'development.everything2.com';    # turns reCAPTCHA on outside production
 
-  my $name = 'recaptcha_reason_' . time();
+  my $name = 'rr_' . time();
   my ($before) = $DB->sqlSelect('MAX(seclog_id)', 'seclog');
   my $result = $api->create_account(MockRequest->new(
     node_id => 0, title => 'Guest User', is_guest_flag => 1, request_method => 'POST',
@@ -339,6 +341,53 @@ subtest 'security log details longer than the column are truncated, not lost' =>
   my ($len) = $DB->sqlSelect('LENGTH(seclog_details)', 'seclog',
     "seclog_id > $before AND seclog_details LIKE " . $DB->{dbh}->quote("$marker%"), 'ORDER BY seclog_id DESC LIMIT 1');
   is($len, 255, 'stored, truncated to 255');
+};
+
+#############################################################################
+# Username length: at most 20 characters (user.nick), counted as characters
+#############################################################################
+
+subtest 'username length' => sub {
+  my $root = $DB->getNode('root', 'user');
+  my @made;
+  my $signup = sub {
+    my ($name) = @_;
+    my $r = $api->create_account(MockRequest->new(
+      node_id => 0, title => 'Guest User', is_guest_flag => 1, request_method => 'POST',
+      postdata => JSON::encode_json({ username => $name, password => 'lengthpass123', email => 'len' . time() . int(rand(1e6)) . '@test.example.com' }),
+    ));
+    my $user = $DB->getNode($name, 'user');
+    push @made, $user if $user;
+    return $r->[1];
+  };
+  my $stem = substr(sprintf('%x', time()), -6);
+
+  my $long = "ln$stem" . ('x' x 13);    # 21 characters
+  is(length($long), 21, 'test name is 21 characters');
+  my $r = $signup->($long);
+  is($r->{success}, 0, '21 characters: refused');
+  is($r->{error}, 'invalid_username', '... as an invalid username');
+  ok(!$DB->getNode($long, 'user'), '... and no account is created');
+  ok(!defined($APP->create_user($long, 'lengthpass123', 'x@test.example.com')), 'create_user refuses it too');
+  my $avail = Everything::API::user->new->check_available(MockRequest->new(), $long)->[1];
+  is($avail->{available}, 0, 'the availability check calls it unavailable');
+  is($avail->{reason}, 'invalid_format', '... as an invalid name');
+  is(Everything::API::user->new->check_available(MockRequest->new(), "av$stem" . ('z' x 12))->[1]{available}, 1,
+    'while an unused 20-character name is available');
+
+  my $max = "ok$stem" . ('y' x 12);     # 20 characters
+  is(length($max), 20, 'test name is 20 characters');
+  is($signup->($max)->{success}, 1, '20 characters: accepted');
+
+  my $wide = "\x{e9}$stem" . ("\x{e9}" x 13);    # 20 characters, 33 bytes as UTF-8
+  is(length($wide), 20, 'accented test name is 20 characters');
+  is($signup->($wide)->{success}, 1, '20 accented characters: accepted (characters, not bytes)');
+
+  # The user-delete hook logs as the request's user, which a test script has to supply.
+  local $Everything::HTML::USER = $root;
+  for my $u (@made) {
+    eval { $DB->nukeNode($u, $root, 1); 1 } or diag("cleanup of $u->{title} failed: $@");
+  }
 };
 
 done_testing();

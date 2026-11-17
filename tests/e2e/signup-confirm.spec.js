@@ -116,6 +116,56 @@ test.describe('Sign Up -> Confirm Password (#4335 / #4475)', () => {
     });
   });
 
+  test('usernames are limited to 20 characters', async ({ browser }) => {
+    test.setTimeout(demo.DEMO ? 180000 : 60000);
+    const stamp = Date.now().toString(36); // 8 characters
+    const member = await demo.actor(browser, 'new member (long username)', '#38495e');
+    const { page } = member;
+    const form = page.locator('form').filter({ has: page.locator('button.signup__submit') });
+    const nameField = form.locator('input[type="text"]').first();
+    const fill = async (name) => {
+      await nameField.fill(name);
+      await form.locator('input[type="password"]').nth(0).fill('longname123');
+      await form.locator('input[type="password"]').nth(1).fill('longname123');
+      await form.locator('input[type="email"]').nth(0).fill(`${stamp}@test.example.com`);
+      await form.locator('input[type="email"]').nth(1).fill(`${stamp}@test.example.com`);
+    };
+
+    await demo.scenario('signup-username-length', [member], async () => {
+      // 1. The field holds at most 20 characters.
+      await page.goto('/node/superdoc/Sign+up');
+      await demo.step(page, 'types a 25-character username');
+      const typed = `e2t${stamp}abcdefghijklmn`; // 25 characters
+      await nameField.click();
+      await page.keyboard.type(typed, { delay: demo.DEMO ? 40 : 0 });
+      await expect(nameField).toHaveValue(typed.slice(0, 20));
+      await demo.step(page, 'the field stops at 20 characters');
+      await demo.show(nameField);
+
+      // 2. Past the field's limit, the server's availability check refuses the name.
+      await page.goto('/node/superdoc/Sign+up');
+      await nameField.evaluate((el) => el.removeAttribute('maxlength'));
+      await demo.note(member, 'removes the field\'s 20-character limit',
+        "page.evaluate: the username input's maxlength attribute is removed, so a 21-character name reaches the server");
+      const long = `e2u${stamp}abcdefghij`; // 21 characters
+      expect(long.length).toBe(21);
+      await fill(long);
+      await expect(nameField).toHaveClass(/signup__input--error/, { timeout: 10000 }); // availability check: not available
+      await demo.step(page, 'a 21-character name is marked invalid as it is typed');
+      await demo.show(nameField);
+      // The form only submits an available name, so Create new account stays disabled. (The
+      // API refuses it too: t/063_signup_api.t.)
+      const submit = form.locator('button.signup__submit');
+      await expect(submit).toBeDisabled();
+      await demo.step(page, 'Create new account stays disabled');
+      await demo.show(submit);
+      await expect(page.locator('.signup__success-title')).toHaveCount(0);
+      // No account was created under that name.
+      const check = await page.request.get(`/api/user/available/${long}`);
+      expect((await check.json()).available).toBe(0);
+    });
+  });
+
   test('an EXPIRED activation link reports expired and does NOT nuke the account (#4475)', async ({ page }) => {
     const uname = 'e2x_' + Date.now().toString(36); // nick is varchar(20)
     const pass = 'e2epass123';
