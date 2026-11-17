@@ -1,11 +1,12 @@
 # Everything2 Node Object System
 
-**Last Updated**: 2026-06-15
+**Last Updated**: 2026-11-16
+**Last verified: 2026-11-16** against `ecore/Everything/Node.pm`, `Node/*.pm`, `Request.pm`, `Application.pm`, [docs/orm-migration-plan.md](orm-migration-plan.md).
 **Author**: Claude Code / Jay Bonci
 
 ## Overview
 
-This document describes the Everything2 node object system, covering the transition from legacy HASHREF-based nodes to the modern `Everything::Node` blessed object system. A full migration to DBIx::Class was **evaluated and deferred** (June 2026) — see [docs/orm-migration-plan.md](orm-migration-plan.md). The forward direction is to modernize `NodeBase` in place, reserving DBIx::Class for new tables rather than re-hosting the node model on it.
+This document describes the Everything2 node object system, covering the transition from legacy HASHREF-based nodes to the modern `Everything::Node` blessed object system. **DBIx::Class is dead** (decision 2026-06-29, [docs/orm-migration-plan.md](orm-migration-plan.md)) — including the earlier "DBIC for new tables only" carve-out. The direction is to **finish `Everything::Node::*` as E2's ORM layer**, move from Moose to Object::Pad incrementally (Globals → controllers → Node classes), and keep `NodeBase` as the storage engine (modernized in place).
 
 ## Table of Contents
 
@@ -16,7 +17,7 @@ This document describes the Everything2 node object system, covering the transit
 5. [Legacy Context: Hashrefs](#legacy-context-hashrefs)
 6. [Migration Patterns](#migration-patterns)
 7. [Test Coverage](#test-coverage)
-8. [Future Direction: DBIx::Class](#future-direction-dbixclass)
+8. [Future Direction: Node::* on Object::Pad](#future-direction-node-on-objectpad-dbixclass-rejected)
 9. [Work Items](#work-items)
 
 ---
@@ -70,30 +71,16 @@ $APP->legacyFunction($hashref);
 - `NODEDATA` method bridges old and new worlds
 - Type-safe method calls
 
-### Phase 3: DBIx::Class — Evaluated and Deferred (June 2026)
+### Phase 3: Finish Node::* on Object::Pad (decided 2026-06-29; DBIx::Class rejected)
 
-A full ORM migration was considered as the eventual Phase 3 and **deliberately deferred** — the
-decision (June 2026) is "mostly no": modernize `NodeBase` in place and reserve DBIx::Class for
-*new* tables, rather than re-hosting the node model on an ORM. Rationale and the dual-write/
-benchmark plan that was shelved live in [docs/orm-migration-plan.md](orm-migration-plan.md); pull
-it forward only if the data model actively becomes a cost or feature bottleneck. The sketch below
-is the shape it would take *if* revived, not committed work:
-
-```perl
-# Illustrative only (deferred) — what an ORM-backed access pattern might look like
-my $user = $schema->resultset('User')->find({ title => 'root' });
-# $user is a DBIx::Class::Row object
-
-my $title = $user->title;
-my $writeups = $user->writeups->search({ reputation => { '>' => 5 } });
-$user->update({ lasttime => \'NOW()' });
-```
-
-**If revived, the goals would be**:
-- Full ORM with relationships
-- Database abstraction
-- Transaction support
-- Advanced querying
+DBIx::Class was evaluated (May–June 2026) and rejected outright: E2's domain is nodes
+(multi-table inheritance via `sqltablelist` + VARS + group membership), which DBIC doesn't model.
+`Everything::Node::*` already is the domain layer; the plan is to finish it (relationship helpers,
+fewer raw `$APP`/hashref call sites) and migrate Moose → Object::Pad in the order
+Globals/Configuration (#4178) → controllers (`Everything::API`, `Everything::Page`) → `Node::*` →
+PluginFactory teardown. Object::Pad fields aren't hash-accessible, which is what eventually removes
+the blessed-vs-hashref split. Schema migrations (sqitch) are a separate, parallel track. Details:
+[docs/orm-migration-plan.md](orm-migration-plan.md).
 
 ---
 
@@ -116,7 +103,7 @@ blessed($user)  # returns 'Everything::Node::user'
 ```
 
 ### 2. Plain Hashrefs
-**Where**: Legacy code, `$DB->getNode()`, old delegation methods
+**Where**: Legacy code, `$DB->getNode()`, `Everything::Application` (raw hashrefs by design), remaining `Everything::Delegation::*` modules (`achievement`, `htmlcode`, `maintenance`, `notification`, `room`)
 
 ```perl
 # Created by
@@ -149,8 +136,9 @@ bless $node, 'Everything::Node::user';
 | Get node ID | `$node->{node_id}` | `$node->node_id` | ✅ Both work on blessed nodes |
 | Get title | `$node->{title}` | `$node->title` | ✅ Use method for blessed nodes |
 | Get type | `$node->{type}{title}` | `$node->type->title` | Type is also a node |
-| Get author | `$node->{author_user}` | `$node->author_user` or `$node->author` | Depends on implementation |
-| Custom field | `$node->{custom_field}` | `$node->get('custom_field')` or accessor | Varies by node type |
+| Get author | `$node->{author_user}` | `$node->author_user` (id) or `$node->author` (blessed node) | Defined on `Everything::Node` |
+| Custom field | `$node->{custom_field}` | type-specific accessor, else `$node->NODEDATA->{custom_field}` | Varies by node type |
+| Permissions on a node | `$DB->canReadNode($user, $node)` | `$node->can_read_node($user)` / `can_update_node` / `can_delete_node` | |
 
 ### Checking User Permissions
 
@@ -162,6 +150,9 @@ bless $node, 'Everything::Node::user';
 | Is Editor | `$APP->isEditor($user_hashref)` | `$user->is_editor` | `$USER->is_editor` |
 | Is Developer | `$APP->isDeveloper($user_hashref)` | `$user->is_developer` | `$USER->is_developer` |
 | User Level | `$APP->getLevel($user_hashref)` | `$user->level` | `$USER->level` |
+
+The `$APP->is*` / `getLevel` helpers take a **hashref** (or id). Pass `$user->NODEDATA`, or better,
+use the blessed method. (`isGuest` additionally accepts a blessed `Everything::Node`; the others do not.)
 
 ### Converting Between Representations
 
@@ -183,7 +174,7 @@ my $blessed = $APP->node_by_name('root', 'user');  # Fetch again as blessed
 
 ## API Context: Blessed Nodes
 
-In `Everything::API::*` modules, `$REQUEST->user` always returns a blessed `Everything::Node::user` object.
+In `Everything::API::*` modules (and `Everything::Page`/`Everything::Controller`), `$REQUEST->user` always returns a blessed `Everything::Node::user` object. Note: API handlers must always return HTTP 200 and signal errors in the body (`[$self->HTTP_OK, {success => 0, error => '...'}]`) — see CLAUDE.md.
 
 ### Correct API Patterns
 
@@ -202,9 +193,9 @@ sub some_endpoint {
   my $DB = $self->DB;
   my $CONF = $self->CONF;
 
-  # ✅ CORRECT: Use blessed methods
-  return [403, { error => 'Forbidden' }] if $USER->is_guest;
-  return [403, { error => 'Admin only' }] unless $USER->is_admin;
+  # ✅ CORRECT: Use blessed methods; errors go in a 200 body
+  return [$self->HTTP_OK, { success => 0, error => 'Forbidden' }] if $USER->is_guest;
+  return [$self->HTTP_OK, { success => 0, error => 'Admin only' }] unless $USER->is_admin;
 
   my $user_level = $USER->level;
   my $user_title = $USER->title;
@@ -214,8 +205,8 @@ sub some_endpoint {
   my $user_hashref = $USER->NODEDATA;
   $APP->someLegacyMethod($user_hashref);
 
-  # ❌ WRONG: Don't use APP methods on blessed objects
-  # my $level = $APP->getLevel($USER);  # May not work correctly
+  # ❌ WRONG: APP helpers expect hashrefs, not blessed objects
+  # my $level = $APP->getLevel($USER);  # pass $USER->NODEDATA or use $USER->level
 
   # ❌ WRONG: Don't use hashref access on blessed objects
   # my $title = $USER->{title};  # Works but wrong pattern
@@ -224,7 +215,7 @@ sub some_endpoint {
 
 ### Everything::Request User Delegation
 
-The `Everything::Request` object delegates these methods to the user object:
+The `Everything::Request` object delegates these methods to the user object (`handles` on the `user` attribute):
 
 ```perl
 # These all work because Request delegates to user:
@@ -246,12 +237,12 @@ $REQUEST->user->is_admin
 
 ## Legacy Context: Hashrefs
 
-In legacy code (delegation methods, htmlcodes, old templates), nodes are often plain hashrefs.
+In legacy code (`Everything::Application`, the remaining `Everything::Delegation::*` modules), nodes are often plain hashrefs. (`Delegation::document`, `htmlpage` and `opcode` no longer exist.)
 
 ### Legacy Patterns
 
 ```perl
-# In Everything::Delegation::document.pm or htmlcode.pm
+# In Everything::Application or a remaining Delegation module
 
 sub some_legacy_function {
   my $node = shift;
@@ -309,16 +300,17 @@ sub create_room {
   my ($self, $REQUEST) = @_;
 
   my $USER = $REQUEST->user;  # Blessed object
-  my $title = $REQUEST->{room_title};
+  my $data = $REQUEST->JSON_POSTDATA;
+  my $title = $data->{room_title};
 
-  # Blessed method access
+  # Blessed method access; errors returned as HTTP 200 + success => 0
   if ($USER->is_guest) {
-    return [$self->HTTP_UNAUTHORIZED, { error => 'Guests cannot create rooms' }];
+    return [$self->HTTP_OK, { success => 0, error => 'Guests cannot create rooms' }];
   }
 
   my $level = $USER->level;
   if ($level < 5 && !$USER->is_admin) {
-    return [$self->HTTP_FORBIDDEN, { error => 'Too young, level 5 required' }];
+    return [$self->HTTP_OK, { success => 0, error => 'Too young, level 5 required' }];
   }
 
   # Create room (or use blessed methods with NODEDATA if needed)
@@ -356,16 +348,9 @@ sub check_suspension {
 
 ### Current Test Structure
 
-```
-t/
-├── 0*.t              # Core system tests (DB, nodes, basic operations)
-├── 02*.t             # Node operations (resurrection, cleanup, etc.)
-├── 03*.t             # API tests (NEW - testing blessed node APIs)
-├── 1*.t-3*.t         # Feature tests (chat, voting, etc.)
-└── 9*.t              # Integration tests
-
-react/components/**/*.test.js  # React component tests (141 tests)
-```
+`t/` holds ~222 numbered `.t` files (`t/NNN_topic.t`); numbering is roughly chronological, not
+by category, so grep by topic (e.g. `ls t | grep node`). React has ~313 `*.test.js` files under
+`react/`. The devbuild runs Perl tests via `t/run.pl` (handles serial tests).
 
 ### API Test Pattern (Blessed Nodes)
 
@@ -394,7 +379,7 @@ ok(!$root_user->is_guest, 'Root user is not guest');
 ### Legacy Test Pattern (Hashrefs)
 
 ```perl
-# t/022_node_resurrection.t
+# t/015_node_resurrection.t
 use strict;
 use warnings;
 use Test::More tests => 5;
@@ -424,14 +409,13 @@ ok($DB->getNodeById($node->{node_id}), 'Node exists');
 
 ---
 
-## Future Direction: DBIx::Class — Deferred
+## Future Direction: Node::* on Object::Pad (DBIx::Class rejected)
 
-> **Status (June 2026):** evaluated and deferred. The direction is to modernize `NodeBase` in
-> place and use DBIx::Class only for *new* tables, not to replace the node model wholesale. The
-> material below is the parked design — see [docs/orm-migration-plan.md](orm-migration-plan.md)
-> for the deferral rationale. Revisit only if the node model becomes a cost/feature bottleneck.
+> **Status (decided 2026-06-29):** DBIx::Class is **dead** — not full adoption, not the
+> "new tables only" carve-out. See Phase 3 above and [docs/orm-migration-plan.md](orm-migration-plan.md).
+> The DBIC material below is kept only as the historical design that was rejected; do not revive it.
 
-### Goals (if revived)
+### Goals of the rejected DBIC design (historical)
 
 1. **Full ORM**: Replace custom NodeBase with DBIx::Class
 2. **Relationships**: Define has_many, belongs_to, many_to_many
@@ -498,13 +482,12 @@ my $writeups = $user->writeups->search(
 );
 ```
 
-### Migration Path
+### Migration Path (current)
 
-**Phase 1**: Continue building blessed Everything::Node system
-**Phase 2**: Create DBIx::Class schema alongside existing code
-**Phase 3**: Dual-write to both systems
-**Phase 4**: Migrate reads to DBIx::Class
-**Phase 5**: Remove legacy NodeBase
+1. `Everything::Globals` / Configuration off Moose roles (#4178)
+2. Controllers (`Everything::API`, `Everything::Page`) to Object::Pad
+3. `Everything::Node::*` to Object::Pad (long pole: hashref pokes in `Application.pm`)
+4. Retire `PluginFactory` for a plain dispatch table
 
 ---
 
@@ -513,11 +496,8 @@ my $writeups = $user->writeups->search(
 ### High Priority
 
 1. **Complete API Migration**
-   - ✅ nodenotes API (done)
-   - ✅ poll API (done)
-   - 🔄 chatroom API (in progress - debugging blessed methods)
-   - ⬜ personallinks API (pending)
-   - ⬜ chatterbox API (complex, high value)
+   - ✅ nodenotes, poll, chatroom, personallinks, chatter APIs exist (`ecore/Everything/API/`)
+   - Ongoing: remaining Page/controller logic → APIs (see [spec/state-mutating-pages.md](spec/state-mutating-pages.md))
 
 2. **Add Blessed Node Test Coverage**
    - ⬜ Test suite for `Everything::Node::user` methods
@@ -538,10 +518,10 @@ my $writeups = $user->writeups->search(
    - ⬜ Move room operations from Application.pm to room.pm
    - ⬜ Create node method equivalents for common $APP operations
 
-5. **Standardize Delegation Methods**
-   - ⬜ Update delegation methods to accept both blessed and hashref
-   - ⬜ Use NODEDATA internally when needed
-   - ⬜ Add type checking (`blessed()` checks)
+5. **Retire Remaining Delegation Modules** (`achievement`, `htmlcode`, `maintenance`, `notification`, `room`; #4259)
+   - Move logic into tested `Everything::Application` / `Node::*` methods rather than widening delegation signatures
+
+   Also: `Everything::Node::htmlpage` and `Everything::Node::opcode` still exist although those nodetypes were removed — cleanup candidates.
 
 6. **Create NODEDATA Tests**
    - ⬜ Test that NODEDATA returns correct hashref structure
@@ -550,11 +530,7 @@ my $writeups = $user->writeups->search(
 
 ### Low Priority
 
-7. **DBIx::Class Preparation** (deferred — not active work; see [docs/orm-migration-plan.md](orm-migration-plan.md))
-   - ⬜ Design DBIx::Class schema for core tables
-   - ⬜ Create proof-of-concept for user table
-   - ⬜ Benchmark DBIx::Class vs current NodeBase
-   - ⬜ Plan migration strategy
+7. **Object::Pad migration** (see [docs/orm-migration-plan.md](orm-migration-plan.md); DBIx::Class work items dropped)
 
 8. **Refactoring**
    - ⬜ Remove redundant $APP methods that have blessed equivalents
@@ -635,7 +611,7 @@ The Everything2 node system is in transition from legacy hashrefs to blessed obj
 - **APIs use blessed objects** - call methods directly
 - **Legacy code uses hashrefs** - use hash access and $APP methods
 - **NODEDATA bridges the gap** - converts blessed → hashref when needed
-- **DBIx::Class is deferred** - the forward direction is modernizing NodeBase in place; ORM only for new tables (see [docs/orm-migration-plan.md](orm-migration-plan.md))
+- **DBIx::Class is rejected** - `Everything::Node::*` is the ORM layer going forward, moving to Object::Pad; NodeBase stays the storage engine (see [docs/orm-migration-plan.md](orm-migration-plan.md))
 
 When in doubt, check `blessed($node)` to determine what you're working with.
 

@@ -1,7 +1,7 @@
 # Everything2 Notification System
 
-**Last Updated**: 2026-01-17
-**Status**: Active - Partially Migrated to Delegation Pattern
+**Last verified**: 2026-11-16
+**Status**: Active - rendering fully on `Everything::Delegation::notification`; many types have **no producer** (see table)
 **Audit Status**: Reviewed with identified issues
 
 ## Executive Summary
@@ -14,10 +14,10 @@ Everything2's notification system provides user notifications for events like vo
 
 1. **Notification Nodes** - Template definitions in `nodepack/notification/*.xml`
 2. **Notified Table** - Active notifications per user in database
-3. **Delegation Module** - `Everything::Delegation::notification` with 23 rendering functions (one, `bookmark`, is now dormant — its notification type is retired and no longer emitted; see below)
+3. **Delegation Module** - `Everything::Delegation::notification` with 22 rendering functions + 15 `*_is_valid` checks (`bookmark` is dormant; `socialbookmark` was deleted in #4332)
 4. **Rendering Engine** - `getRenderedNotifications()` in `Application.pm`
 5. **Delivery System** - `add_notification()` in `Application.pm`
-6. **API Endpoints** - `Everything::API::notifications` (get_all, dismiss)
+6. **API Endpoints** - `Everything::API::notifications` (`GET /api/notifications/`, `POST /api/notifications/dismiss`)
 
 ### Data Flow
 
@@ -45,40 +45,40 @@ The system uses two patterns for routing notifications:
 
 1. **Direct Notifications**: Sent to a specific user
    - `notified.user_id = target_user_id`
-   - Examples: voting, cooled, achievement, experience, gp, frontpage, favorite
+   - Examples: achievement, favorite, newcomment, newdiscussion
 
 2. **Broadcast Notifications**: Available to all users subscribed to that notification type
    - `notified.user_id = notification_id` (the notification type's node ID)
-   - Examples: nodenote, e2poll, draft_for_review, newbiewriteup, weblog, newdiscussion
+   - Examples: nodenote, e2poll, draft_for_review, newbiewriteup, blankedwriteup, editor/author_removed_writeup
 
-### Complete List (22 Active Notification Types)
+### Complete List (22 notification nodes in `nodepack/notification/`)
 
-> **`bookmark` is omitted (retired).** A `bookmark` rendering function still exists in `Everything::Delegation::notification`, but the `bookmark` notification is **no longer emitted**: the bookmark opcode that produced it was retired in #4292, and nothing in the codebase calls `add_notification('bookmark', ...)`. It is intentionally excluded from the active type list below.
+The **Producer** column is the code that currently calls `add_notification` for the type (verified by grep 2026-11-16). Types marked **none** have a renderer, a nodepack node, and a Settings checkbox, but **nothing emits them** — subscribing does nothing. Most lost their producer when the legacy opcodes/evalCode were retired; `chanop_borged_user` was emitted by the borg path of the removed `message` opcode (#4332) and was not carried into `Application.pm`'s borg code.
 
-| Notification | Pattern | Target Audience | Description |
-|--------------|---------|-----------------|-------------|
-| achievement | Direct | Node author | User earned an achievement |
-| author_removed_writeup | Direct | Node author | Author deleted their own writeup |
-| blankedwriteup | Broadcast | Editors | A writeup was blanked |
-| chanop_borged_user | Broadcast | Chanops | A user was borged |
-| chanop_dragged_user | Broadcast | Chanops | A user was dragged |
-| cooled | Direct | Node author | Writeup was C!'d (cooled) |
-| draft_for_review | Broadcast | Editors | Draft submitted for review |
-| e2poll | Broadcast | All users | New poll created |
-| editor_removed_writeup | Direct | Node author | Editor removed a writeup |
-| experience | Direct | Target user | XP gained or lost |
-| favorite | Direct | Node author | Node was favorited |
-| frontpage | Direct | Node author | Content hit front page |
-| gp | Direct | Target user | GP (Golden Peach) awarded |
-| mostwanted | Direct | Request filler | Most Wanted request filled |
-| newbiewriteup | Broadcast | Editors | New user published first writeup |
-| newcomment | Direct | Discussion participants | Comment posted |
-| newdiscussion | Broadcast | Usergroup members | New discussion started |
-| nodenote | Broadcast | Editors | Node note posted |
-| socialbookmark | Direct | Node author | Content shared externally |
-| voting | Direct | Node author | Writeup voted on |
-| weblog | Broadcast | Usergroup members | Weblog entry posted |
-| writeupedit | Direct | Node author | Editor edited writeup |
+| Notification | Pattern | Target Audience | Description | Producer |
+|--------------|---------|-----------------|-------------|----------|
+| achievement | Direct | Achiever | User earned an achievement | `Application` achievement check (opt-in) |
+| author_removed_writeup | Broadcast | Editors | Author deleted their own writeup | `Application` writeup-removal path (`user_id` 0 → broadcast) |
+| blankedwriteup | Broadcast | Editors | A writeup was blanked | `Delegation::maintenance::writeup_update` |
+| bookmark | — | — | *(retired, #4292; CME private message sent instead by `API::cool::_notify_bookmark`)* | none |
+| chanop_borged_user | Broadcast | Chanops | A user was borged | **none** |
+| chanop_dragged_user | Broadcast | Chanops | A user was dragged | **none** |
+| cooled | Direct | Node author | Writeup was C!'d | **none** (`API::cool` sends a Cool Man Eddie private message instead) |
+| draft_for_review | Broadcast | Editors | Draft submitted for review | `Delegation::maintenance::draft_update`; `DataStash::neglecteddrafts` (re-notify on neglect) |
+| e2poll | Broadcast | All users | New poll created | `API::polls` |
+| editor_removed_writeup | Broadcast | Editors | Editor removed a writeup | `Application` writeup-removal path (`user_id` 0 → broadcast) |
+| experience | Direct | Target user | XP gained or lost | **none** |
+| favorite | Direct | Followers | Favorited author published | `Application::finalize_published_writeup` (opt-in) |
+| frontpage | Direct | Node author | Content hit front page | **none** |
+| gp | Direct | Target user | GP awarded | **none** |
+| mostwanted | Direct | Request filler | Most Wanted request filled | **none** |
+| newbiewriteup | Broadcast | Editors | New user published first writeup | `Application::finalize_published_writeup` |
+| newcomment | Direct | Usergroup members | Comment posted | `Delegation::maintenance::debatecomment_create` (see Issue #6) |
+| newdiscussion | Direct | Usergroup members | New discussion started | `Application::notify_new_discussion` (opt-in) |
+| nodenote | Broadcast | Editors | Node note posted | `API::nodenotes`, `Application::add_nodenote` |
+| voting | Direct | Node author | Writeup voted on | **none** |
+| weblog | Broadcast | Usergroup members | Weblog entry posted | **none** |
+| writeupedit | Direct | Node author | Editor edited writeup | **none** |
 
 ## Database Schema
 
@@ -113,11 +113,11 @@ Stores active notification instances:
 ### Core Files
 
 - `ecore/Everything/Application.pm` - `add_notification()`, `getRenderedNotifications()`, `_canseeNotification()`
-- `ecore/Everything/Delegation/notification.pm` - 23 rendering functions
+- `ecore/Everything/Delegation/notification.pm` - 22 rendering functions + 15 validity checks
 - `ecore/Everything/API/notifications.pm` - REST endpoints
 - `react/components/Nodelets/Notifications.js` - UI component
 
-### Rendering Flow (Application.pm:8243-8342)
+### Rendering Flow (`Application::getRenderedNotifications`)
 
 ```perl
 sub getRenderedNotifications {
@@ -140,7 +140,7 @@ Notifications can become invalid when the referenced content is deleted or modif
 ### Implementation
 
 **Location**: `ecore/Everything/Delegation/notification.pm`
-**Called From**: `getRenderedNotifications()` in `Application.pm:8330`
+**Called From**: `getRenderedNotifications()` in `Application.pm`
 
 ```perl
 my $validityCheck = Everything::Delegation::notification->can($notificationTitle . "_is_valid");
@@ -166,7 +166,6 @@ if ($validityCheck) {
 | newcomment | ✓ | Node exists |
 | newdiscussion | ✓ | Discussion node exists |
 | nodenote | ✓ | Node exists AND nodenote record exists |
-| socialbookmark | ✓ | Writeup node exists |
 | voting | ✓ | Node exists |
 | weblog | ✓ | Writeup node exists |
 | writeupedit | ✓ | Node exists |
@@ -206,7 +205,7 @@ sub nodenote_is_valid {
 
 ### Issue #1: Broadcast Notification Query Logic (ANALYZED - NO BUG)
 
-**Location**: `Application.pm:8274-8295`
+**Location**: `Application::getRenderedNotifications`
 
 **Description**: The SQL query that fetches notifications uses an OR condition:
 
@@ -237,7 +236,9 @@ WHERE (
 $APP->add_notification( 'e2poll', '', { e2poll_id => $poll_id } );
 ```
 
-**Problem**: Passes empty string `''` instead of `undef` for user_id. In `add_notification()`, line 3791:
+**Status**: Still present as of 2026-11-16.
+
+**Problem**: Passes empty string `''` instead of `undef` for user_id. In `add_notification()`:
 ```perl
 $user_id ||= $notification_id;
 ```
@@ -250,20 +251,21 @@ $APP->add_notification( 'e2poll', undef, { e2poll_id => $poll_id } );
 
 ### Issue #3: Legacy Code in XML Files
 
-**Status**: 19 of 23 notification XML files still contain legacy `<code>` fields that are NO LONGER USED since `getRenderedNotifications()` now calls delegation functions directly.
+**Status**: 19 of 22 notification XML files still contain legacy `<code>` fields that are NO LONGER USED since `getRenderedNotifications()` now calls delegation functions directly.
 
-**Already Empty (4 notifications)**:
-- socialBookmark
+**Already Empty (3 notifications)**:
 - voting
 - weblog
 - writeupedit
+
+(`socialbookmark.xml` was deleted in #4332.)
 
 **Still Have Legacy Code (19 notifications)**:
 All other notifications still have code in XML that should be cleared for clarity.
 
 **Action Required**: Clear `<code>` and `<invalid_check>` from XML files since delegation module handles rendering.
 
-### Issue #4: Missing hourLimit Values (FIXED)
+### Issue #4: Missing hourLimit Values (FIXED in nodepack/dev; moot without producers)
 
 Two notification types had no `<hourLimit>` field in their XML:
 - `voting` (node_id: 1961735)
@@ -275,19 +277,21 @@ Two notification types had no `<hourLimit>` field in their XML:
 ```
 would immediately produce a negative value, causing the `HAVING (timeLimit > 0)` clause to filter out ALL notifications of these types.
 
-**Fix Applied**: Added `<hourLimit>72</hourLimit>` to both XML files. The database also needed direct UPDATE since nodepack only affects new node creation:
-```sql
-UPDATE notification SET hourLimit = 72 WHERE notification_id IN (1961735, 1981770);
-```
+**Fix Applied** (2026-06, #4194 area): `nodepack/notification/voting.xml` and `writeupedit.xml` now carry `<hourLimit>48</hourLimit>` (dev DB confirms 48). Prod needs a direct `UPDATE notification SET hourLimit = 48 WHERE notification_id IN (1961735, 1981770);` since nodepack only affects new node creation — that prod step was recorded as pending; verify with the readonly query Lambda.
+
+**However:** no code currently emits `voting` or `writeupedit` notifications (see the Producer column above), so even with a sane `hourLimit` these two types never appear. Re-enabling them needs producers in the vote path (`Everything::API::vote` / `Application::castVote`) and the editor writeup-edit path.
 
 ### Issue #5: Regex-Based Permission Checking (FRAGILE)
 
-**Location**: `Application.pm:8234-8238`, `API/notifications.pm:127-131`
+**Location**: `Application::_canseeNotification`, `Everything::API::notifications`
 
 **Current Approach**:
 ```perl
 return 0 if (!$isCE && ($$notification{description} =~ /node note/));
 return 0 if (!$isCE && ($$notification{description} =~ /new user/));
+return 0 if (!$isCE && ($$notification{description} =~ /(?:blanks|removes) a writeup/));
+return 0 if (!$isCE && ($$notification{description} =~ /review of a draft/));
+return 0 if (!$isChanop && ($$notification{description} =~ /chanop/));
 ```
 
 **Problem**: Permission is based on regex matching against the description field. This is fragile.
@@ -297,15 +301,26 @@ return 0 if (!$isCE && ($$notification{description} =~ /new user/));
 - `requires_chanop` BOOLEAN
 - `requires_coder` BOOLEAN
 
+### Issue #6: newcomment subscription check never matches (BUG, unfixed)
+
+**Location**: `Everything::Delegation::maintenance::debatecomment_create`
+
+`my %notifications = from_json($$v{settings})->{notifications};` assigns a hashref to a hash, so `$notifications{$replyNotification}` is always false and no `newcomment` notification is ever sent. Should be `my $notifications = ...; if ($notifications->{$replyNotification})`.
+
 ## Test Coverage
 
 ### Existing Test Files
 
 | File | Purpose | Coverage |
 |------|---------|----------|
-| `t/013_notification_rendering.t` | Tests all 23 delegation functions | Good - comprehensive |
+| `t/013_notification_rendering.t` | Tests the delegation render functions | Good - comprehensive |
 | `t/040_notifications_api.t` | Tests dismiss endpoint | Good - permission checks |
 | `t/049_notifications.t` | Tests broadcast/direct patterns + isolation | Good - comprehensive |
+| `t/044_message_block_notifications.t` | Message-block interaction | |
+| `t/058_notification_preferences_isolation.t` | Per-user preference isolation | |
+| `t/111_notified_notified_time.t` | `notified_time` handling (MySQL 8.4) | |
+| `t/149_bookmark_notify.t` | CME bookmark messages (cool API) | |
+| `t/164_notify_new_discussion.t` | `notify_new_discussion` | |
 
 ### Cross-User Isolation Tests (ADDED)
 
@@ -348,16 +363,18 @@ The Settings page now displays user-friendly descriptions for each notification 
 
 ### Completed
 
-1. Created `Everything::Delegation::notification` with 23 rendering functions
+1. Created `Everything::Delegation::notification` (now 22 rendering functions after socialbookmark removal)
 2. Updated `getRenderedNotifications()` to use delegation instead of evalCode
 3. Added comprehensive rendering tests in `t/013_notification_rendering.t`
 4. Added friendly descriptions to Settings page
 5. ~~**Add Missing hourLimit**: Set defaults for voting and writeupedit~~ ✓ DONE
 6. ~~**Add Missing Tests**: Cross-user isolation and subscription filtering tests~~ ✓ DONE
-7. ~~**Migrate invalid_check to is_valid functions**~~ ✓ DONE - 16 validity check functions added
+7. ~~**Migrate invalid_check to is_valid functions**~~ ✓ DONE - 15 validity check functions (socialbookmark's removed in #4332)
+8. ~~**Restore producers lost in API migrations**~~ partially: favorite + newbiewriteup (#4314), newdiscussion (`notify_new_discussion`)
 
 ### Remaining Work
 
+0. **Restore or retire producer-less types**: voting, writeupedit, cooled, experience, gp, frontpage, mostwanted, weblog, chanop_borged_user, chanop_dragged_user (see table)
 1. **Clear Legacy XML Code**: Empty `<code>` and `<invalid_check>` from 19 XML files
 2. **Fix polls.pm**: Change empty string to undef in add_notification call
 3. **Add Permission Fields**: Replace regex-based permission with explicit boolean fields
@@ -372,7 +389,7 @@ The Settings page now displays user-friendly descriptions for each notification 
 
 ### `add_notification()`
 
-**Location**: `Application.pm:3785`
+**Location**: `Application::add_notification`
 
 **Signature**:
 ```perl
@@ -386,8 +403,8 @@ $APP->add_notification($notification_id, $user_id, $args);
 
 **Examples**:
 ```perl
-# Direct notification to specific user
-$APP->add_notification('voting', $author_id, { node_id => $writeup_id, weight => 1 });
+# Direct notification to specific user (illustrative; see Producer column for real callers)
+$APP->add_notification('achievement', $user_id, { achievement_id => $ach_id });
 
 # Broadcast notification to all subscribers
 $APP->add_notification('e2poll', undef, { e2poll_id => $poll_id });
@@ -427,7 +444,7 @@ Dismisses a notification.
 | newcomment | 1930993 |
 | newdiscussion | 1980269 |
 | nodenote | 1930989 |
-| socialBookmark | 1936586 |
+| socialBookmark | 1936586 | *(deleted, #4332)* |
 | voting | 1961735 |
 | weblog | 1930850 |
 | writeupedit | 1981770 |
@@ -436,5 +453,5 @@ Dismisses a notification.
 
 **Document Version**: 2.2
 **Author**: System audit
-**Last Updated**: 2026-06-15 (bookmark notification type marked retired per #4292)
+**Last verified**: 2026-11-16 (producer audit added; socialbookmark removed; hourLimit 48; newcomment bug noted)
 **Next Review**: After remaining migration work complete

@@ -1,9 +1,11 @@
 # React 19 Migration Plan
 
-**Status**: Deferred until Q3 2025
-**Priority**: Medium
-**Estimated Effort**: 5-7 hours
-**Blocked By**: Nodelet React migration, Mason2 elimination, legacy.js cleanup
+> **Status (verified 2026-11-16): NOT started — still a live plan.** `package.json` pins `react`/`react-dom` at `~18.3.1` and `@testing-library/react` at `^14.3.1`. The original "blocked by" items (nodelet React migration, Mason2 elimination, legacy.js cleanup) are all done, so nothing on that list blocks this any more; the only hard technical blocker is still `react-collapsible` (peer range `~15 || ~16 || ~17 || ~18`), used solely in `react/components/NodeletContainer.js`. Counts and checklists below are from Nov 2025 — see "Current State (Nov 2026)" for refreshed numbers. Timeline/quarter targets in this doc are historical.
+
+**Last verified**: 2026-11-16
+**Priority**: Medium (unscheduled)
+**Estimated Effort**: 5-7 hours (Nov 2025 estimate; the test suite is now ~50x larger, so budget more for test fallout)
+**Blocked By**: `react-collapsible` replacement only
 
 ## Executive Summary
 
@@ -15,6 +17,22 @@ Everything2's React codebase is in excellent shape for React 19 migration. **One
 ---
 
 ## Current State Analysis
+
+### Current State (Nov 2026)
+
+| Item | Nov 2025 | Nov 2026 |
+|------|----------|----------|
+| React component files (non-test, `react/components/`) | 37 | ~349 |
+| Jest suites / tests | 53 tests | 313 suites / 2789 tests, all passing |
+| `react-collapsible` usage | NodeletContainer | NodeletContainer only (still the blocker) |
+| PropTypes | none | 1 file (`Documents/PitOfAbomination.js`, imports `prop-types` transitively — not a direct dependency). React 19 ignores `propTypes`; delete rather than migrate |
+| `defaultProps` / string refs / `findDOMNode` / `ReactDOM.render` | none | still none (`react/index.js` uses `createRoot`) |
+| Other React-dependent libs | react-modal, react-idle-timer | + TipTap v3 (`@tiptap/react` 3.32, supports React 17–19), `@dnd-kit/*` (React >=16.8) |
+| `react/test-setup.js` `ReactDOM.render` warning filter | present | still present (step 1.2 still applies) |
+
+The nodelet "Portal" names in Phase 1/3 below are pre-rename; the current nodelet components live in `react/components/Nodelets/` (e.g. `Vitals.js`, `NewWriteups.js`, `RecommendedReading.js`, `NewLogs.js`, `RandomNodes.js`, `Developer.js`, `QuickReference.js`, `NeglectedDrafts.js`, `SignIn.js`). Perl test counts like "26/26" are stale — run the full suite via `./docker/devbuild.sh` / `tools/parallel-test.sh`.
+
+### Original Analysis (Nov 2025, historical)
 
 ### ✅ Code Quality Assessment (Completed 2025-11-16)
 
@@ -160,6 +178,8 @@ Review and commit changes.
 ### Phase 2: Dependency Updates (30 minutes)
 
 **2.1 Update package.json**
+
+> Nov 2026 note: the snippet below is a Nov 2025 snapshot and omits current deps (TipTap, dnd-kit, Playwright, Puppeteer, …). Don't paste it — only bump `react`, `react-dom` and `@testing-library/react` (and drop `react-collapsible`).
 
 ```json
 {

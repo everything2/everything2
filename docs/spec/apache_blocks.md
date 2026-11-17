@@ -1,8 +1,10 @@
 # Apache Access Blocks Configuration
 
+**Last verified:** 2026-11-16
+
 ## Overview
 
-This file documents the Apache access control configuration for Everything2, which is stored in `etc/apache_blocks.json` and loaded during Apache startup.
+This file documents the Apache access control configuration for Everything2, which is stored in `etc/apache_blocks.json` and loaded during Apache startup. As of this check the file holds 17 IPs, 5 IP prefixes, and 5 user agents.
 
 ## Configuration File
 
@@ -11,6 +13,8 @@ This file documents the Apache access control configuration for Everything2, whi
 **Format:** JSON
 
 ## Structure
+
+Shape (example values, not the current list):
 
 ```json
 {
@@ -48,18 +52,18 @@ Array of individual IP addresses to block. These are matched against the `X-FORW
 ### `banned_ipblocks`
 Array of IP address prefixes to block entire subnets. These use regex pattern matching.
 
-**Format:** First octets without trailing dot (e.g., `"221.204"` blocks all IPs starting with `221.204.*`)
+**Format:** 1–3 leading octets without trailing dot (e.g., `"221.204"` blocks all IPs starting with `221.204.`). The template applies `Regexp.escape`, so dots match literally.
 
 ## How It Works
 
 1. **Build time:** The `apache_blocks.json` file is committed to source control in `etc/`
 2. **Container startup:** The source code is deployed to `/var/everything/` in the Docker container
 3. **Apache startup:** The `apache2_wrapper.rb` script processes ERB templates
-4. **Template rendering:** `etc/templates/everything.erb` reads the JSON file from `/var/everything/etc/apache_blocks.json` and generates Apache directives:
+4. **Template rendering:** `etc/templates/apache2.conf.erb` reads the JSON file from `/var/everything/etc/apache_blocks.json` and generates Apache directives inside the vhost:
    - `SetEnvIf X-FORWARDED-FOR "IP" denyip` for individual IPs
    - `SetEnvIf X-FORWARDED-FOR ^BLOCK denyip` for IP blocks (regex)
    - `BrowserMatchNoCase "UA" denyip` for user agents
-5. **Request blocking:** Apache denies requests with `deny from env=denyip`
+5. **Request blocking:** `deny from env=denyip` in both `<Location />` (proxied dynamic requests) and `<Directory /var/everything/www/>` (static files), so banned clients get a 403 before reaching Starman
 
 ## Adding New Blocks
 
@@ -97,8 +101,7 @@ Array of IP address prefixes to block entire subnets. These use regex pattern ma
 
 Changes to this file require:
 1. Commit the updated `etc/apache_blocks.json` to source control
-2. Deploy the updated code (Docker image rebuild)
-3. Restart Apache (container restart)
+2. Deploy (`./ops/run-codebuild.rb`): the new image's tasks render the new config at startup
 
 **Note:** This is now part of the application deployment, not a separate secrets update.
 
@@ -123,7 +126,7 @@ cd ../e2-loganalysis
 ../everything2/tools/bot-spike-analysis.rb --lookback 1w   # Last week
 ```
 
-See [tools/bot-spike-analysis.rb](../tools/bot-spike-analysis.rb) for more options.
+See [tools/bot-spike-analysis.rb](../../tools/bot-spike-analysis.rb) for more options.
 
 ## Validation
 
@@ -147,12 +150,13 @@ Before committing changes, validate the JSON file:
 ## Related Files
 
 - `etc/apache_blocks.json` - This configuration file
-- `etc/templates/everything.erb` - ERB template that reads this file
+- `etc/templates/apache2.conf.erb` - ERB template that reads this file
 - `docker/e2app/apache2_wrapper.rb` - Script that processes templates
 - `etc/validate_apache_blocks.rb` - Validation script
 - `etc/test_apache_config_generation.rb` - Configuration generation test
 - `tools/bot-spike-analysis.rb` - Tool for analyzing bot traffic
-- `tools/download-elb-logs.sh` - Tool for downloading ELB logs from S3
+- `tools/download-elb-logs.sh` - Tool for downloading ELB logs from S3 (`elblogs.everything2.com`)
+- [apache-configuration.md](apache-configuration.md) - The rest of the Apache config, including mod_evasive rate limiting
 
 ## Security Note
 

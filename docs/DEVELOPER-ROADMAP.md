@@ -2,7 +2,7 @@
 
 **Created**: 2025-12-17 (original)
 **Rewritten**: 2026-05-24 (this revision)
-**Updated**: 2026-06-25 (opcode→API + htmlcode burndown gates cleared; React-routing thread resequenced, target end of June)
+**Updated**: 2026-11-16 (status verified against code + GH issues: mutation audit, htmlpage, return-based controllers, guest chrome cache, pure-gate controllers all shipped; React router still unbuilt)
 **Owner**: Jay Bonci
 **Status**: Living document — strategic priorities + sequencing
 
@@ -18,103 +18,103 @@ The prior version (Dec 2025, 5,281 lines) tried to be both index and per-phase p
 
 **Approach:** Alternating rounds — optimization rounds drive operating cost down, traffic-driving rounds grow revenue. Rinse, repeat. The cost target lowers with each pass; the revenue target rises.
 
-**Current baseline** (as of 2026-05-24):
+**Baseline** (as of 2026-05-24 — not re-measured in the 2026-11-16 refresh):
 - AWS spend: ~$345/mo
 - AdSense revenue: ~$140-150/mo (trending up — May running rate is ~$153)
 - Gap: about $200/mo deficit
 - Target after planned optimization work: ~$170-200/mo spend, with the assumption that revenue continues organic growth and traffic rounds add discrete jumps
 
 **Constraints on sequencing:**
-- **MySQL 8.4 by 2026-07-31** is a hard deadline (RDS end of standard support). Missing it triggers RDS Extended Support pricing (+$146/mo on `db.t4g.medium` — roughly tripling the DB bill). This dominates all other priorities through July.
-- **PSGI/Plack migration** delivers ~$90/mo savings and capacity headroom but has no external deadline — defer until post-MySQL.
-- **Flexibility > 3-year reservations** — don't lock in to current Fargate / RDS shape with long commits, because both will shrink after PSGI lands. Commit window is post-PSGI, sized to the post-migration shape.
+- ~~**MySQL 8.4 by 2026-07-31**~~ — met (done 2026-06-07, #4226). No hard deadline is currently active.
+- ~~**PSGI/Plack migration**~~ — shipped June 2026 (#4234).
+- **Flexibility > 3-year reservations** — don't lock in to current Fargate / RDS shape with long commits. The post-PSGI shape (1vCPU/2GB, autoscaling) is now known; a 1-year commit is the open question (Phase 7).
 - **Bug fix backlog runs in parallel** with planned phases — not its own numbered phase. Github issues are the unit of tracking for ambient maintenance.
 
 ---
 
-## Where we are (updated 2026-06-14)
+## Where we are (verified 2026-11-16)
 
-**The two hard-deadline / biggest-lever items shipped:**
-- ✅ **MySQL 8.4 migration** — done 2026-06-07 (#4226), ahead of the July RDS deadline. (Phase 1 below = done.)
-- ✅ **PSGI/Plack migration** — LIVE in prod 2026-06-08 (#4234); mod_perl + CGI.pm removed, Apache on
-  mpm_event as a pure proxy, Starman serving. (Phase 6 below = done.)
-- ✅ **Post-PSGI Fargate right-size + autoscaling** — 1vCPU/2GB, 2xx-per-target autoscaling min2/max6,
-  SNS alarms. (Phase 7 below = done.)
-- ✅ **Security-log decoupling** (#4272) — the `seclog` event log moved off node identity onto a stable
-  `Everything::SecurityLog` enum (`seclog_event`), all ~38 writer callers converted to `SECLOG_*`
-  constants, legacy node-mapping machinery removed.
-- ✅ **opcode → API + htmlcode burndown** (#4335 / #4358) — the two big routing gates. Every `op=` mutating
-  handler is now `POST /api/…` (opcode dispatch removed), and `Everything::Delegation::htmlcode` is emptied
-  into unit-tested `Everything::Application` methods (the `htmlcode()` dispatch removed from `Everything::HTML`).
+**Shipped (the gates and the big levers):**
+- ✅ **MySQL 8.4 migration** — done 2026-06-07 (#4226). (Phase 1.)
+- ✅ **PSGI/Plack migration** — live in prod 2026-06-08 (#4234); mod_perl + CGI.pm removed (#4244),
+  Apache on mpm_event as a pure proxy, Starman serving. (Phase 6.)
+- ✅ **Post-PSGI Fargate right-size + autoscaling** — 1vCPU/2GB, 2xx-per-target autoscaling, SNS alarms;
+  ECS deployment circuit breaker added (#4565). (Phase 7, minus the commit.)
+- ✅ **Cron sidecar** (#4246) — GET_LOCK-elected cron runs on the webheads (`E2_CRON_ENABLED`/`E2_CRON_LIVE`
+  on in the prod template). Only the daily sitemap stays a dedicated EventBridge→Fargate task, by design.
+  #4251 (cutover bookkeeping) is still open on GitHub. This replaced the "Cron-to-Lambda" idea (Phase 5).
+- ✅ **Security-log decoupling** (#4272) — `seclog` on the `Everything::SecurityLog` enum.
+- ✅ **opcode → API** (#4198 / #4335) — `Everything::Delegation::opcode` and `op=` dispatch are gone.
+- ✅ **htmlcode burndown** (#4259 / #4300 / #4358) — `Everything::Delegation::htmlcode` has zero subs;
+  `htmlcode()` dispatch removed from `Everything::HTML` (#4362).
+- ✅ **htmlpage nodetype retired** (#4361).
+- ✅ **Render-time mutation audit** (#4298 / #4416) — Page controllers no longer process form posts;
+  mutating actions are `POST /api/…`.
+- ✅ **Return-based controllers** (#4483) — both request paths return an `Everything::Response`; the
+  app.psgi STDOUT capture is deleted.
+- ✅ **Guest chrome cache** — shipped as `Everything::DataStash::guestchrome` (#4371) plus the guest-request
+  diet (#4419). #4257 stays open but is now only the structural `buildNodeInfoStructure` → `PageState` move.
+- ✅ **Pure-gate controllers** (#4513 onward) — 80 pages are now registry entries in `Everything::PureGates`
+  (no Page module); display text and URL params moved into React for those pages.
+- ✅ **TipTap v3** (#4598), dependency/CVE batches, CodeBuild fixes, and a security hardening pass (Nov 2026).
 
-**Current thrust — the React-routing thread (see its own section below).** With MySQL + PSGI behind us and
-the opcode/htmlcode gates cleared, the cost/growth north star is **full client-side React routing**. What
-remains is sweeping the last server-side request-processing surfaces (the silent-`$query` handlers in the
-maintenance hooks and the form-processing Pages), shipping the guest-chrome cache, and building the client
-router — **target: end of June 2026**. The modernization items (esp. anything React) sit behind this thread;
-the ORM/object-cleanup epoch follows it.
+**Not done yet:** the React client router (nothing in `react/` yet), the maintenance-hook `$query` sweep,
+the CSRF guard (#4301), and everything in the object-model epoch.
 
-**Active GH issue backlog:** ambient small bugs / mobile fixes / missing features, triaged opportunistically
-alongside the epic. (GitHub issues are the unit of tracking — this doc is the index.)
+**Active GH issue backlog:** ~290 open issues. An `epoch:react-cleanup` tranche (#4580–#4595: shared
+Modal/Pagination/Loading, one fetch wrapper, stop full-page reloads after mutations) was filed Nov 2026.
 
 ---
 
-## Current thrust — the React-routing thread (mid-2026)
+## Current thrust — the React-routing thread
 
 **Destination:** full client-side React routing (SPA navigation; SSR first paint, client-route subsequent
 nav). **Why it's the north star:** it moves the cost+growth curve, is incremental/reversible, and the API
-layer it forces is the seam that de-risks the later ORM epoch.
+layer it forces is the seam that de-risks the later ORM epoch. *(The original "end of June 2026" target
+slipped. Most of the prerequisites below shipped June–July 2026; after a break (Aug to mid-Nov), the
+Nov 2026 work went to security, build and dependency fixes.)*
 
 **The unifying theme — kill silent `$query` dependence.** You cannot client-route a page that processes a
-request *server-side* — a form POST, an `op=`, or anything that quietly reads `$query`. The whole thread is
-retiring server-side request processing. The htmlcode work made the failure mode concrete: handlers that
-branched on `!$query` to *guess* API-vs-form context, which is unreliable under PSGI/React and silently
-broke newdiscussion notifications + discussion threading until fixed. The same pattern still hides in the
-maintenance hooks and the form-processing Pages — that's what's left to sweep.
+request *server-side*. The end goal is now stricter: **zero `$REQUEST->param` / `->cgi->param` reads in
+Page controllers.** URL params are a React concern (read `window.location`, resolve through APIs), and
+display-only text moves into React too. Controllers become pure gates.
 
-**Gating prerequisites — DONE:**
-- ✅ **opcode → API** (#4198 / #4335) — every `op=` mutating handler migrated to `POST /api/…`;
-  `Everything::Delegation::opcode` + the `op=` dispatch removed.
-- ✅ **htmlcode burndown** (#4259 / #4354 / #4358) — `Everything::Delegation::htmlcode` emptied; the
-  migrated subs are unit-tested `Everything::Application` methods, and the `htmlcode()` dispatch wiring is
-  removed from `Everything::HTML`. *(The htmlcode **nodetype + table stay** — `maintenance` stores its code
-  in the htmlcode table, `jsonexport` extends it — so the empty module + display controller + nodetype are
-  retired later, in the ORM epoch, behind the maintenance teardown.)*
-
-**The sequence from here (target: React routing by end of June 2026):**
-1. **Skinny down htmlcode exposure** *(this work — essentially done)*. Subs + dispatch gone; the residual
-   shell (empty Delegation module, display controller, nodetype) waits on the maintenance teardown.
-2. **Ship cacheable guest-user chrome (#4257)** — the chrome/content split, shipped early so the guest page
-   chrome bakes in prod while the rest of the thread proceeds. Page-speed + payload win on the way to the router.
-3. **Clean out the htmlpage infrastructure (#4361)** + **sweep the maintenance hooks for remaining `$query`
-   exposure** — htmlpages no longer render (the router does); the residual couplings are mimetype/dev-tooling.
-   The maintenance create/update/delete hooks still carry the silent-`$query` pattern.
-4. **Audit all Pages for mutation (#4298)** — move every mutating page action to an API call (React owns
-   state) or a React-rendered display. The last server-side request-processing surface.
-5. **90%+ API test coverage** — the APIs *are* the routing seam; lock them down before the flip. (CSRF guard
-   #4301 lands in this window.)
-6. **React-based routing** — the client router/resolver + `useDocumentMeta` + routing-parity harness +
-   the progressive flip (SSR first paint, client-route subsequent nav).
+**Status of the sequence:**
+1. ✅ **Skinny down htmlcode exposure** — subs + dispatch gone. *(The htmlcode **nodetype + table stay**:
+   `maintenance` keeps its code in the htmlcode table and `jsonexport` extends it. The empty module,
+   `Everything::Controller::htmlcode`, and the nodetype go later, behind the maintenance teardown.)*
+2. ✅ **Cacheable guest chrome** — shipped (#4371/#4419). Open follow-ups: #4257 (structural split),
+   #4493 (post-deploy regen deadlock on the guestchrome datastash).
+3. 🟡 **htmlpage cleanup ✅ (#4361); maintenance-hook `$query` sweep ⬜** — `Everything::Delegation::maintenance`
+   (23 subs) still reads ~13 request params through `$query` (writeup/debatecomment/category/draft/node_forward
+   hooks). Next concrete step: move those into `Node::<type>->create`/API params (see orm-migration-plan.md).
+4. ✅ **Audit all Pages for mutation (#4298)** — closed.
+5. 🟡 **API test coverage** — 132 of 133 `Everything::API::*` modules are exercised by a `t/` test (breadth
+   check, not line coverage; line coverage is unmeasured). CSRF guard **#4301 still open**.
+6. ⬜ **Param-free controllers** — 44 non-feed Page modules still read params (~120 call sites incl. feeds;
+   61 modules with feeds/tickers). Of the 174 remaining Page modules, the rest are param-free; 80 more
+   pages are pure gates. Tracking: [controller-rationalization-inventory.md](controller-rationalization-inventory.md).
+7. ⬜ **React-based routing** — client router/resolver + `useDocumentMeta` + routing-parity harness + the
+   progressive flip. Not started in `react/`. Server-side primitives (pagestate, route recovery,
+   `normalize_types`) are done. Related: #4129 (mod_rewrite title hacks), #4355 (login-redirects).
 
 **Then the next major epoch — object-model modernization (`Everything::Node` cleanup).** **Direction decided
 2026-06-29 (see [docs/orm-migration-plan.md](orm-migration-plan.md)): DBIC is dead.** E2's domain is *nodes*
-(multi-table inheritance + VARS + nodegroups), not tables — DBIC is the wrong *shape*, since it can't model
+(multi-table inheritance + VARS + nodegroups), not tables. DBIC is the wrong *shape*: it can't model
 the node system without rebuilding a node layer on top of it anyway. We already have that layer
 (`Everything::Node::*`); the move is to **finish it, not replace it**, and to **ditch Moose for Object::Pad**
-(the on-ramp to core `class` — we're on perl 5.40), buying real field encapsulation (kills the
-blessed-vs-hashref footgun, our #1 recurring bug class), lower per-object cost, and a non-bespoke future.
-NodeBase stays as the storage engine (its MTI loader is an asset). Cutover sequence, all **post-mutation-thread**
-so we convert settled surfaces:
-1. **`Everything::Globals` / Configuration (#4178)** — scoped to *"the controller bases no longer consume a
-   Moose role"*; dissolves the one non-mechanical part (Moose roles → Pad) before it bites.
+(the on-ramp to core `class` on perl 5.40), buying real field encapsulation (kills the
+blessed-vs-hashref footgun), lower per-object cost, and a non-bespoke future.
+NodeBase stays as the storage engine (its MTI loader is an asset). **Not started as of 2026-11-16** (no
+Object::Pad in `ecore/` or `cpanfile`). Cutover sequence:
+1. **`Everything::Globals` / Configuration (#4178, open)** — scoped to *"the controller bases no longer consume a
+   Moose role"*.
 2. **Controllers (`Everything::API` + `Everything::Page`)** — mechanical once the role's gone, all test-guarded.
-3. **`Everything::Node::*`** — last, gated on killing hashref access; long pole is `Application.pm` (raw
-   `$USER->{title}` by design), not the mostly-clean 63 subclasses.
-4. **PluginFactory teardown** — the payoff once controllers are plain classes.
-Plus the **deferred htmlcode/maintenance teardown** (maintenance restructured out of the htmlcode table,
-freeing the htmlcode nodetype + table + display shell) and **schema versioning (sqitch, Phase 9 — an
-independent parallel track)**. Deferred until now on purpose — the API layer built above is the seam that
-de-risks it.
+3. **`Everything::Node::*`** — last, gated on killing hashref access; long pole is `Application.pm` (~9.7K
+   lines, raw `$USER->{title}` by design), not the 59 Node subclasses.
+4. **PluginFactory teardown (#4261)** — the payoff once controllers are plain classes.
+Plus the **deferred htmlcode/maintenance teardown** and **schema versioning (sqitch, Phase 9 — an
+independent parallel track, not started)**.
 
 ---
 
@@ -130,7 +130,7 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 
 **2025-2026 — Frontend modernization & post-Mason era.** 26 sidebar nodelets migrated to React, 200+ superdoc/htmlpage migrated to React, Mason2 mostly eliminated. Inline-styles → BEM CSS refactor (the big stalled change that landed Apr-May 2026). Mobile-first redesign shipped Jan 2026.
 
-**2026-present — Cost rationalization & forced infrastructure work.** MySQL 8.4 migration (forced by July 2026 RDS deadline). PSGI/Plack migration (planned). Cost optimization (Fargate right-sizing, cron-to-Lambda). Selectively deepening the React modernization (React 19 upcoming).
+**2026-present — Cost rationalization & forced infrastructure work.** MySQL 8.4 migration (done June 2026). PSGI/Plack migration (live June 2026). Cost optimization (Fargate right-sizing, cron sidecar on the webheads). Retiring the delegation layer (opcode + htmlcode gone) and moving every mutation to an API, ahead of client-side React routing.
 
 ---
 
@@ -143,8 +143,8 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 - **Schema cleanup tracking:** [#4074](https://github.com/everything2/everything2/issues/4074) (umbrella) + 17 child issues
 - **Approach:** Phase 0 audit (mostly done) → schema cleanup (per-table SQL in GH issues) → CFN-parameterized dummy RDS for app validation (per-discussion) → blue/green production cutover
 
-### Phase 2 — Cost Optimization Round 1
-- **Window:** August 2026 (3-4 weeks)
+### Phase 2 — Cost Optimization Round 1 ⬜ not started (as of 2026-11-16)
+- **Window:** ~~August 2026~~ — not yet taken; partly overtaken by the PSGI right-size (Phase 7) and the cron sidecar
 - **Why now:** free wins post-MySQL stability; no commits locked in yet so shape changes are easy
 - **Scope:**
   - Audit the 9 public IPv4 addresses ($32/mo) — likely consolidate to 4-5
@@ -154,18 +154,18 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 - **Estimated savings:** $30-50/mo
 - **No long commits yet** — wait for post-PSGI shape
 
-### Phase 3 — React simplification
-- **Window:** August-September 2026 (3-4 weeks; can overlap with Phase 2)
+### Phase 3 — React simplification ⬜ not started as a phase (scope now filed as `epoch:react-cleanup`, #4580–#4595)
+- **Window:** ~~August-September 2026~~ — not taken; the Nov 2026 issue tranche is the concrete work list
 - **Why here:** Finish what the Jan 2026 refactor started while context is fresh; before adding new React features (social login UI)
 - **Scope:**
   - Inline-styles → BEM refactor is resolved; residual theme-level work is tracked in [docs/css-consistency-audit.md](css-consistency-audit.md)
-  - Migrate remaining `formatDate` callers in chat/message components (5 files) to the shared `dateFormat` utility from #4056 work
+  - Migrate remaining direct `toLocale*String` callers (~10 Documents components still call them) to the shared `dateFormat` utility from #4056 work
   - Audit react/components/ for other one-off utilities that should be shared (similar to dateFormat pattern)
   - Drop any unused legacy.js / pre-React holdovers
 - **No deliverable doc yet** — write one when work starts
 
-### Phase 4 — Social login integration
-- **Window:** September-November 2026 (4-6 weeks)
+### Phase 4 — Social login integration ⬜ not started (#4343 signup-flow overhaul is the tracked precursor)
+- **Window:** ~~September-November 2026~~ — not taken
 - **Why here:** user acquisition is real revenue; prerequisite "DB sanity" is satisfied by Phase 1 completion. (The new `user_oauth` table is a plain node-model addition built behind sqitch — **no DBIC**; that carve-out was retired 2026-06-29, see [docs/orm-migration-plan.md](orm-migration-plan.md).)
 - **Scope:**
   - OAuth providers: Google, Facebook, Apple (TBD on Apple — adds complexity)
@@ -175,12 +175,11 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 - **Open question:** whether sqitch (Phase 9) has landed by the time this table is needed; if not, it's a natural forcing function to pull sqitch forward. (DBIC is no longer on the table — decided 2026-06-29.)
 - **No deliverable doc yet** — write a plan doc before starting
 
-### Phase 5 — Cron-to-Lambda
-- **Window:** can interleave with Phase 4 (2-3 weeks of focused work)
-- **Why here:** cron is the only fixed-cost class that doesn't scale with traffic; converting eliminates ~$8-12/mo IPv4 cost from cron task ENIs and ~$30/mo Fargate cost
-- **Scope:** rewrite the 5-6 SQL-only cron jobs (datastash, refresh-rooms, chatterbox-cleanup, etc.) as Python Lambda functions. Keep the 2-3 jobs that need Perl business logic (iqm-recalc, sitemap-generate) as Fargate tasks for now.
-- **Estimated savings:** $30-40/mo + traffic-scaling improvement
-- **No deliverable doc yet**
+### Phase 5 — ~~Cron-to-Lambda~~ → cron sidecar ✅ DONE (#4246)
+- **Status:** the Lambda rewrite was **rejected** in favor of a `GET_LOCK` leader-elected cron sidecar on the
+  (overprovisioned) webheads. Design: [docs/cron-sidecar-design.md](cron-sidecar-design.md). Live in prod; the
+  ~50-minute daily sitemap job stays a dedicated EventBridge→Fargate task on purpose. #4251 (cutover
+  issue) still open on GitHub; #4438 tracks recording the sitemap runs.
 
 ### Phase 6 — PSGI/Plack migration ✅ DONE (live in prod 2026-06-08, #4234)
 - **Window:** ~~November 2026 → February 2027~~ — *pulled forward and shipped June 2026; mod_perl + CGI.pm removed*
@@ -196,19 +195,20 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 - **Estimated savings:** additional $50-70/mo on top of Phase 6's PSGI savings; commits add another $30-40/mo
 - **Total cost picture post-Phase-7:** projected ~$170-200/mo (vs current $345/mo)
 
-### Phase 8 — React 19 upgrade
+### Phase 8 — React 19 upgrade ⬜ not started (still on React 18.3.1)
 - **Window:** Q2 2027 (3-4 weeks)
 - **Why here:** after React simplification (Phase 3) and post-PSGI stability — fewer moving parts to test against
 - **Detailed plan:** [docs/react-19-migration.md](react-19-migration.md) (pre-existing, may need refresh)
 - **Scope:** React 18 → 19, React Compiler adoption, deprecation cleanup. Tests against the JSX transform changes.
 
-### Phase 9 — Schema migration framework (sqitch)
+### Phase 9 — Schema migration framework (sqitch) ⬜ not started (no sqitch files or adoption issue yet)
 - **Window:** Q2 2027 (2-3 weeks) — can be done earlier opportunistically if Phase 4 social login pushes it forward
 - **Why here:** the genuinely missing piece. Production has no migrations pipeline today; every schema change is hand-applied SQL by the maintainer. Sqitch fixes that.
 - **Detailed plan:** [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) (alternatives analysis + why sqitch)
 - **Scope:** sqitch baseline captures the current schema — **dumped from prod, not from the `nodepack/dbtable/` XML.** (Correction 2026-06-29: that XML is a jank dev-bootstrap *reference snapshot*, not a managed applier — prod schema changes are hand-applied SQL today — so there's **no coexistence problem**; sqitch becomes the *first* real migration mechanism.) Every change after baseline is a sqitch change file. An **independent parallel track** to the object-model epoch (schema, not objects); can be pulled forward anytime. The dev-pipeline wiring is an afternoon; the care is in the **prod-migration discipline** (expand/contract, online DDL on big tables, `sqitch revert`).
 
 ### Phase 10 — Bot defense modernization (Cloudflare or AWS WAF)
+- **Status (2026-07):** the July 2026 datacenter bot floods were judged revenue-safe and cache-absorbed; AWS WAF was rejected on cost. Cloudflare is still unevaluated.
 - **Window:** anytime independent — opportunistic
 - **Why here:** mod_evasive (the current bot defender) drove a 30× AdSense RPM improvement in early 2026 by filtering bot traffic. Future-proofing this is real revenue protection — but the work has no forcing function so it slots in whenever there's bandwidth.
 - **Scope:** evaluate Cloudflare (free tier covers bot management at this scale; replaces mod_evasive AND offloads ALB LCUs) vs AWS WAF rate-based rules (stays AWS-native; costs ~$5-10/mo). Decision largely about "one more vendor or not."
@@ -230,7 +230,7 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 - **"React Documents/Htmlpages Migration" (old Phase 4)** — mostly done. The remaining handful of unmigrated documents are tracked in the GH backlog.
 - **"Container/Mason Consolidation" (old Phase 5)** — Mason2 already mostly eliminated; the remaining work is rolled into Phase 3 (React simplification).
 - **"Search Enhancements & Live Search" (old Phase 5.5)** — never started. The live-search for fulltext search did land (commit `afdf34399`). Broader work deferred — would slot into a future traffic-driving round if SEO research shows search is a meaningful entry point.
-- **"Guest User Optimization with S3 caching" (old Phase 6)** — never started. The original premise (eliminating guest-user DB hits via S3 caching) was tied to bigger architectural changes that haven't happened. May resurface as part of Phase 10 (bot defense / edge caching).
+- **"Guest User Optimization with S3 caching" (old Phase 6)** — **rejected** (no new cache tier; cost). The guest-page win came in-process instead: the guestchrome datastash (#4371) + guest-request diet (#4419).
 - **"Mobile Display Modernization" (old Phase 6.5)** — done. Mobile redesign shipped Jan 2026.
 - **"SEO Optimization" (old Phase 8)** — folded into Phase 11 traffic-driving round.
 - **"Settings/Preferences Modernization" (old Phase 9.5)** — deferred indefinitely. Would be a 6-8 week refactor with diffuse benefit; doesn't fit any growth window cleanly. Revisit if there's a specific reason (e.g., user-prefs storage hits a limit).
@@ -243,16 +243,18 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 
 | Phase | Detail doc | Status |
 |---|---|---|
-| 1 | [docs/mysql-migration-plan.md](mysql-migration-plan.md) | Fresh (2026-05-24) |
+| 1 | [docs/mysql-migration-plan.md](mysql-migration-plan.md) | Done; tombstone |
 | 1 (schema audit) | [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) | Audit done; refocused to sqitch plan 2026-06-07 |
 | 2 | (no dedicated doc yet — write when work starts) | — |
 | 3 | Inline-styles refactor resolved; theme backlog in [docs/css-consistency-audit.md](css-consistency-audit.md) | 2026-06 |
 | 4 | (no dedicated doc yet) | — |
-| 5 | (no dedicated doc yet) | — |
+| 5 | [docs/cron-sidecar-design.md](cron-sidecar-design.md) | Done (sidecar, not Lambda) |
 | 6 | PSGI shipped (live in prod 2026-06-08); plan in git history | Done |
-| 7 | (no dedicated doc yet — small) | — |
+| 7 | (no dedicated doc yet — small) | Right-size done; commit TBD |
 | 8 | [docs/react-19-migration.md](react-19-migration.md) | Stale; needs refresh before Phase 8 |
-| 9 | [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) + [docs/orm-migration-plan.md](orm-migration-plan.md) | Fresh |
+| 9 | [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) | Plan only; not started |
+| Object-model epoch | [docs/orm-migration-plan.md](orm-migration-plan.md) | Decided 2026-06-29 (no DBIC; Node:: + Object::Pad); not started |
+| React routing | [controller-rationalization-inventory.md](controller-rationalization-inventory.md), [test-coverage-worklist.md](test-coverage-worklist.md), [api-driven-architecture.md](api-driven-architecture.md) | Prereqs mostly done; router not built |
 | 10 | (no dedicated doc yet) | — |
 | 11 | (no dedicated doc yet) | — |
 
@@ -262,5 +264,5 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 
 - **The cost target.** $170-200/mo post-everything is the projection. If revenue trend changes (AdSense rates, traffic shifts), re-evaluate phase priorities. Specifically: if AdSense revenue lands at $300+/mo, the cost-optimization rounds become less urgent and traffic-driving rounds become more so.
 - **The GH issue backlog.** Triage opportunistically; bugs that surface during phase work get fixed in that phase's PRs when possible.
-- **Hard deadlines.** Watch for new ones — AWS occasionally announces unexpected EOL dates (e.g., the MySQL 8.0 sunset). Anything with a forced timeline jumps the queue.
+- **Hard deadlines.** Watch for new ones — AWS occasionally announces unexpected EOL dates (e.g., the MySQL 8.0 sunset). Anything with a forced timeline jumps the queue. Known upcoming: `explicit_defaults_for_timestamp` removal (#4225).
 - **Strategic posture changes.** This whole roadmap is built on "E2 should pay for itself." If that goal changes (e.g., decide to subsidize indefinitely, or pivot to selling something), the ordering changes too.

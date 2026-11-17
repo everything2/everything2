@@ -1,5 +1,7 @@
 # Favorite Noders System Specification
 
+**Last verified**: 2026-11-16
+
 ## Overview
 
 The Favorite Noders system allows users to follow other users ("noders") and see their recent writeups in a dedicated nodelet. This is distinct from the "unfavorite" system which hides writeups from users.
@@ -35,15 +37,16 @@ CREATE TABLE `links` (
 - **Type:** `linktype` (nodetype 169632)
 
 #### Related User Settings (VARS)
-- `favorite_limit` - Integer, how many writeups to show (default: 15, max: 50, min: 1)
+- `favorite_limit` - Legacy VARS key; **no longer read by any code** (the nodelet query is hard-capped at 5)
 - `unfavoriteusers` - CSV of user IDs whose writeups to hide from New Writeups
 
 ### Data Flow
 
 ```
-User Profile Page (React)
+User Profile Page (React UserDisplay star button)
+  or Settings → FavoriteUsersManager
        │
-       ▼  (button click)
+       ▼
 POST /api/favorites/:id/action/favorite   (or .../unfavorite)
        │
        ▼
@@ -53,10 +56,10 @@ Everything::API::favorites
 links table INSERT/DELETE
        │
        ▼
-Application.pm (on page load)
+Application::buildNodeInfoStructure (on page load, gate 1876005 + non-guest)
        │
        ▼
-Queries links table for user's favorites
+Everything::PageState::_build_favoriteWriteups — queries links table (LIMIT 5)
        │
        ▼
 FavoriteNoders React component
@@ -94,53 +97,34 @@ sub favorite {
 - Favoriting an already-favorited user is idempotent (returns `is_favorited => 1`)
 
 #### 2. Data Population for Nodelet
-**Location:** `ecore/Everything/Application.pm` (lines 7085-7127)
+**Gate:** `Application::buildNodeInfoStructure` (`$nodelets =~ /1876005/` and not guest)
+**Assembly:** `Everything::PageState::_build_favoriteWriteups` (moved there in #4257 Phase 2b)
 
 ```perl
-# Only loads if nodelet 1876005 is enabled and user is logged in
-if($nodelets =~ /1876005/ and not $this->isGuest($USER)) {
-  # Query recent writeups from favorited authors
-  my $sql = "SELECT node.node_id, node.author_user
-    FROM links
-    JOIN node ON links.to_node = node.author_user
-    WHERE links.linktype = $linktypeIdFavorite
-      AND links.from_node = $USER->{user_id}
-      AND node.type_nodetype = $typeIdWriteup
-    ORDER BY node.node_id DESC
-    LIMIT $wuLimit";
-}
+my $wuLimit = 5;   # hard cap, matches the React display limit (#3765)
+my $sql = "SELECT node.node_id, node.author_user
+  FROM links
+  JOIN node ON links.to_node = node.author_user
+  WHERE links.linktype = $linktypeIdFavorite
+    AND links.from_node = $USER->{user_id}
+    AND node.type_nodetype = $typeIdWriteup
+  ORDER BY node.node_id DESC
+  LIMIT $wuLimit";
 ```
 
 **Returns to frontend:**
-- `e2.favoriteWriteups` - Array of {node_id, title, author_id, author_name}
-- `e2.favoriteLimit` - User's configured limit
+- `e2.favoriteWriteups` - Array of `{node_id, title, parent: {node_id, title}, author: {node_id, title}, writeuptype}` (absent if the `favorite` linktype is missing)
+- `e2.favoriteLimit` is **no longer sent**
+
+#### 3. Favorite-author notification
+`Application::finalize_published_writeup` (called on publish, #4314) sends the `favorite` notification (1930837) to each follower who has enabled it in their notification settings.
 
 ### Frontend Components
 
 #### FavoriteNoders Nodelet
 **Location:** `react/components/Nodelets/FavoriteNoders.js`
 
-```javascript
-const FavoriteNoders = (props) => {
-  // Displays writeups from favorited authors
-  // Currently hard-limited to 5 items (see issue #3765)
-  const displayWriteups = props.favoriteWriteups.slice(0, 5)
-
-  return (
-    <NodeletContainer title="Favorite Noders">
-      <ul id="writeup_faves">
-        {displayWriteups.map((writeup) => (
-          <li>
-            <LinkNode nodeId={writeup.node_id} title={writeup.title} />
-            {' by '}
-            <LinkNode nodeId={writeup.author_id} title={writeup.author_name} />
-          </li>
-        ))}
-      </ul>
-    </NodeletContainer>
-  )
-}
-```
+Renders `props.favoriteWriteups.slice(0, 5)` as `<WriteupEntry mode="full">` items in a `ul.infolist.favorite-noders__list`, with an empty state ("No recent writeups from your favorite noders" + hint to use the star icon on profiles). Data is server-baked; no API fetch on page load.
 
 #### E2ReactRoot Integration
 **Location:** `react/components/E2ReactRoot.js`
@@ -150,7 +134,6 @@ const FavoriteNoders = (props) => {
   <FavoriteNoders
     id="favorite_noders"
     favoriteWriteups={this.state.favoriteWriteups}
-    favoriteLimit={this.state.favoriteLimit}
     showNodelet={this.showNodelet}
     nodeletIsOpen={this.state.favoritenoders_show}
   />
@@ -173,7 +156,7 @@ The "unfavorite" system (hiding writeups) is separate but often confused with fa
 | `/api/userinteractions` | GET | List all blocked/hidden users |
 | `/api/userinteractions/create` | POST | Add user to hide/block list |
 | `/api/userinteractions/:id` | GET | Get block status for user |
-| `/api/userinteractions/:id/action/update` | PUT | Update block settings |
+| `/api/userinteractions/:id/action/update` | POST | Update block settings (routing is method-agnostic; React uses POST) |
 | `/api/userinteractions/:id/action/delete` | DELETE | Remove from lists |
 
 #### Request/Response Format
@@ -217,11 +200,7 @@ use constant NODELET_FAVORITENODERS => 1876005;
 ## Known Issues
 
 ### Issue #3765: Hard-coded 5 writeup limit
-The React component hard-codes a limit of 5 writeups regardless of `favorite_limit` setting.
-
-**Current workaround:** `const displayWriteups = props.favoriteWriteups.slice(0, 5)`
-
-**Needed:** A dedicated API endpoint similar to the new writeups API that supports pagination.
+Both the server query (`LIMIT 5` in `_build_favoriteWriteups`) and the React component (`slice(0, 5)`) cap at 5. The `favorite_limit` VARS key is ignored.
 
 ### Confusing Terminology
 - "Favorite" = follow (positive action)
@@ -229,31 +208,28 @@ The React component hard-codes a limit of 5 writeups regardless of `favorite_lim
 
 These are completely separate systems despite similar names.
 
-### Display Limit vs. favorite_limit
-The Favorite Noders nodelet still hard-caps display at 5 items (issue #3765) even though `favorite_limit` allows up to 50. The data plumbing (`/api/favorites` + the nodelet query) now exists to support honoring the configured limit.
-
 ## User Experience
 
 ### Adding a Favorite
 1. Navigate to a user's profile page
-2. Click the "favorite!" control
-3. React POSTs `/api/favorites/:id/action/favorite` and flips the control to "unfavorite!"
+2. Click the star ("Favorite") button
+3. React POSTs `/api/favorites/:id/action/favorite` and flips the button to "Favorited"
 4. User's writeups now appear in Favorite Noders nodelet
 
 ### Removing a Favorite
 1. Navigate to the favorited user's profile page
-2. Click the "unfavorite!" control
-3. React POSTs `/api/favorites/:id/action/unfavorite` and flips the control back to "favorite!"
+2. Click the star ("Favorited") button (or remove via Settings → FavoriteUsersManager)
+3. React POSTs `/api/favorites/:id/action/unfavorite` and flips the button back to "Favorite"
 4. User's writeups no longer appear in nodelet
 
 ### Configuring Display Limit
-Users can set `favorite_limit` in their settings (via Oracle for admins, or directly in VARS).
+Not currently possible — `favorite_limit` is no longer honored (see #3765).
 
 ## Test Coverage
 
 ### Perl Tests
-- **Location:** `t/080_userinteractions_api.t`
-- Tests the unfavorite/block API (not the favorite linktype system)
+- `t/089_favorites_api.t` — favorites API
+- `t/080_userinteractions_api.t` — unfavorite/block API
 
 ### React Tests
 - **Location:** `react/components/Nodelets/FavoriteNoders.test.js`
@@ -261,8 +237,8 @@ Users can set `favorite_limit` in their settings (via Oracle for admins, or dire
 
 ## Future Considerations
 
-1. **Honor `favorite_limit`** in the nodelet (remove the hard-coded slice of 5; the `/api/favorites` backend now exists).
+1. **Honor `favorite_limit`** (or retire the key) — needs both the server `LIMIT 5` and the React slice changed.
 2. **Unify terminology** - rename "unfavorite" to "hide" or "mute"
 3. **Add pagination** to the Favorite Noders nodelet
 4. **Add favorite count** to user profiles
-5. **Notifications** when a favorited user publishes new content
+5. ~~Notifications when a favorited user publishes~~ — built (`favorite` notification, sent from `finalize_published_writeup`)

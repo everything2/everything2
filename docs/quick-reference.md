@@ -1,21 +1,23 @@
 # Everything2 Quick Reference
 
-**Date:** 2025-12-17
+**Last verified:** 2026-11-16
 
 ## 🚀 Quick Start
 
 ```bash
 # Local development
-./docker/devbuild.sh                    # Build containers
+./docker/devbuild.sh                    # Build containers + run tests
+./docker/devbuild.sh --skip-tests       # Apply local changes fast (files are not volume-mounted)
 # Visit http://localhost:9080
+docker exec e2devapp tail -f /tmp/development.log   # App log (Apache error.log stays empty)
 
-# Deploy to production
-git push origin master                  # Automatic deploy
-./ops/run-codebuild.rb                 # Manual deploy
+# Deploy to production (no push-triggered deploy)
+./ops/run-codebuild.rb                  # CodeBuild E2-Application-Builder-ARM, then ECS force-new-deployment
 
 # Testing
-./docker/run-tests.sh                   # Run all tests
-./docker/run-tests.sh 012               # Run specific test
+./docker/run-tests.sh                   # Run all tests (Perl + React)
+./docker/run-tests.sh 012               # Run specific Perl test
+npm test                                # React (Jest) only
 ./tools/coverage.sh                     # Run tests with coverage
 
 # Container shell access
@@ -26,22 +28,23 @@ git push origin master                  # Automatic deploy
 CRITIC_FULL=1 ./tools/critic.pl .       # Full check (core theme)
 
 # Dependency management
-carton install && carton bundle         # Install and vendor Perl deps
-npm install                            # Install JS deps
-npm run build                          # Build React
+# Perl: edit cpanfile; tarballs are vendored in vendor/cache/ (image installs via cpanm --from)
+npm install                             # Install JS deps (Node version: .nvmrc)
+npx webpack --config etc/webpack.config.js   # Build React (devbuild does this for you)
 ```
 
 ## 📊 Modernization Status
 
 See [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md) and run `git log` for the current modernization plan and status.
 
-## 🏗️ Architecture (as of 2026-06)
+## 🏗️ Architecture
 
 ```
-Frontend:  React 18.3.1
+Frontend:  React 18.3 (webpack; prod assets served from S3)
 Backend:   Perl on Starman/PSGI (Apache mpm_event reverse proxy; mod_perl removed)
-Database:  MySQL 8.4
-Deploy:    Docker → AWS CodeBuild → Fargate ECS
+Database:  MySQL 8.4 (RDS)
+Deploy:    ops/run-codebuild.rb → CodeBuild (docker/buildspec.yml, --target final) → ECR → Fargate ECS (ARM64)
+Cron:      leader-elected sidecar in the webheads; sitemap is a nightly EventBridge Fargate task
 ```
 
 ## 📁 Key Directories
@@ -51,10 +54,11 @@ ecore/                          # Perl backend code
 ├── Everything/
 │   ├── API/                   # REST API endpoints
 │   ├── Application.pm         # Core application logic
-│   ├── Controller.pm          # Request routing
-│   ├── Delegation/            # Legacy migrated code (htmlcode, etc.)
+│   ├── Controller.pm          # Base controller
+│   ├── Cron/                  # Cron sidecar (Runner, Schedule, State, Health)
+│   ├── Delegation/            # Legacy code being retired (htmlcode, etc.)
 │   ├── Node/                  # Node type classes (Moose)
-│   ├── NodeBase/              # Node type database methods
+│   ├── NodeBase.pm            # Database/node storage layer
 │   └── Page/                  # Page controllers
 react/                          # React frontend
 ├── components/
@@ -64,17 +68,13 @@ react/                          # React frontend
 www/                           # Web-accessible files
 ├── css/                       # Stylesheets
 └── react/                     # Compiled React bundles
-t/                             # Perl test suite
-├── 0*.t                       # Core tests
-├── 05*.t                      # API tests
-└── 06*.t                      # Feature tests
-docs/                          # Documentation
-├── DEVELOPER-ROADMAP.md       # Master modernization plan
-├── mason2-migration-status.md # React migration status
-└── ...                        # Technical guides
-docker/                        # Docker build and development
-ops/                           # AWS CloudFormation, deployment
-tools/                         # Development utilities
+t/                             # Perl test suite (NNN_name.t, ~220 files; runner t/run.pl)
+docs/                          # Documentation (index: docs/README.md)
+cf/                            # CloudFormation template (everything2-production.json)
+cron/                          # Cron job scripts + cron_runner.pl
+docker/                        # Dockerfile, buildspec.yml, devbuild.sh
+ops/                           # Deploy/ops scripts (run-codebuild.rb, cf.rb, ...)
+tools/                         # Development and diagnostic utilities
 nodepack/                      # Development seed data (XML)
 ```
 
@@ -103,17 +103,21 @@ __PACKAGE__->meta->make_immutable;
 ### Add REST API Endpoint
 
 ```perl
-# In Everything::API::myresource
+# ecore/Everything/API/myresource.pm  ->  /api/myresource/...
 package Everything::API::myresource;
 use Moose;
+use namespace::autoclean;
 extends 'Everything::API';
 
-sub get_resource {
-    my ($self) = @_;
-    my $data = $self->DB->sqlSelectHashref('*', 'mytable', 'id=?', [$id]);
-    return $self->json_response($data);
+sub routes { return { "/" => "get" } }
+
+sub get {
+    my ($self, $REQUEST) = @_;
+    # Always HTTP 200; report errors in the body (mod_perl-era rule, still the convention)
+    return [$self->HTTP_OK, {success => 1, data => {}}];
 }
 
+__PACKAGE__->meta->make_immutable;
 1;
 ```
 
@@ -139,7 +143,7 @@ export default MyComponent;
 ### Write Tests
 
 ```perl
-# t/012_my_test.t
+# t/NNN_my_test.t
 use Test::More tests => 3;
 use Everything::Application;
 
@@ -175,15 +179,15 @@ See [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md) and run `git log` for current o
 
 ### Database Issues
 1. Check RDS status in AWS Console
-2. Review slow query log
-3. Check connection pool exhaustion
+2. Review slow query log (`/aws/rds/instance/everything2vpc/slowquery`)
+3. Check connection count (alarm `e2-rds-high-connections`)
 4. Point-in-time recovery if needed
 
 ### Deployment Failed
-1. Check CodeBuild logs in AWS Console
-2. Review buildspec.yml for errors
-3. Check ECR for image push success
-4. Manually trigger build via `./ops/run-codebuild.rb`
+1. Check CodeBuild logs (`/aws/codebuild/dockerbuild`, stream = build id)
+2. Review `docker/buildspec.yml` / `docker/e2app/Dockerfile` for errors
+3. Check ECR (`everything2/e2app-arm`) for image push success
+4. Re-run `./ops/run-codebuild.rb`. A failed build leaves prod on the last good image.
 
 ## 🔐 Security Checklist
 
@@ -209,7 +213,7 @@ See [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md) and run `git log` for current o
 - Use React.memo for expensive components
 - Lazy load routes and large components
 - Optimize images (compression, WebP)
-- Use CDN for static assets
+- Static assets are served from S3 (no CDN; CloudFront was evaluated and rejected)
 
 ### Database
 - Add indexes for frequently queried fields
@@ -235,7 +239,7 @@ CRITIC_FULL=1 ./tools/critic.pl ecore/Path.pm      # Single file (core theme, al
 # Default mode (bugs theme):
 #   - Severity 1 (brutal) violations only
 #   - Theme: "bugs" (logic errors, unsafe patterns)
-#   - Mimics application health test in t/001_application_health.t
+#   - Mimics application health test in t/000_application_health.t
 #
 # CRITIC_FULL mode (core theme):
 #   - Severity 1 violations only
@@ -244,8 +248,6 @@ CRITIC_FULL=1 ./tools/critic.pl ecore/Path.pm      # Single file (core theme, al
 ```
 
 ### Code Coverage
-
-✅ **Coverage Now Working**: Mock-based API tests enable proper coverage tracking!
 
 ```bash
 ./tools/coverage.sh                      # Run tests with coverage
@@ -258,14 +260,7 @@ perl -MDevel::Cover=-db,coverage/cover_db t/run.pl
 cover -report html -outputdir coverage/html
 ```
 
-**Current Coverage** (Dec 2025):
-- Mock-based API tests: ✅ Working (23-26% coverage)
-- Coverage tracked for: Everything::API::*, Application.pm, Node classes
-- Badges update automatically during `./docker/devbuild.sh`
-
-**Coverage Goals:**
-- Short-term (Q1 2026): 40% (comprehensive API testing)
-- Long-term (2026): 70% (post-PSGI migration)
+Current numbers: see `coverage/COVERAGE-SUMMARY.md` (regenerated by `./docker/devbuild.sh --coverage`).
 
 **View Reports:**
 - Summary: `coverage/COVERAGE-SUMMARY.md`
@@ -277,9 +272,10 @@ cover -report html -outputdir coverage/html
 
 ### React Tests
 ```bash
-npm test                            # Run Jest (when configured)
+npm test                            # Run Jest
 npm run test:watch                  # Watch mode
 npm run test:coverage               # Coverage report
+npm run test:e2e                    # Playwright end-to-end
 ```
 
 ## 🚢 Deployment Checklist
@@ -289,9 +285,9 @@ npm run test:coverage               # Coverage report
 - [ ] Build and test in Docker locally
 - [ ] Update documentation if needed
 - [ ] Commit with descriptive message
-- [ ] Push to GitHub
+- [ ] Merge to master, then run `./ops/run-codebuild.rb`
 - [ ] Monitor CodeBuild progress
-- [ ] Check CloudWatch logs after deployment
+- [ ] Check `/aws/events/e2-app-errors` after deployment
 - [ ] Verify site functionality
 - [ ] Monitor error rates for 15 minutes
 
@@ -306,7 +302,8 @@ npm run test:coverage               # Coverage report
 ### React
 - **Functional components** with hooks (not classes)
 - **Context API** for shared state
-- **React Query** for API calls
+- **fetch to `/api/...`**, with shared hooks in `react/hooks/`
+- **Dates via `react/utils/dateFormat.js`** (UTC), not `toLocaleDateString`
 - **Test with Jest** and React Testing Library
 
 ### Git
@@ -325,7 +322,6 @@ npm run test:coverage               # Coverage report
 ### React
 - [React Hooks Documentation](https://react.dev/reference/react)
 - [React Testing Library](https://testing-library.com/react)
-- [React Query](https://tanstack.com/query/latest)
 
 ### AWS
 - [ECS Documentation](https://docs.aws.amazon.com/ecs/)
@@ -398,29 +394,25 @@ SHOW PROFILE;                          -- Query profiling
 
 **Note:** CloudWatch logs have a **3-day retention period**. These are typically transient errors - if they don't recur regularly within 3 days, they're not worth preserving.
 
+Prod app errors are **not** in `/aws/fargate/fargate-app-awslogs`; they go through EventBridge to `/aws/events/e2-app-errors` and `/aws/events/e2-uninitialized-errors`.
+
 ### Pulling Logs for Analysis
 
 ```bash
-# Pull e2-app-errors for analysis
-aws logs filter-log-events \
-  --log-group-name e2-app-errors \
+./tools/app-errors.rb --hours 24            # Summary of /aws/events/e2-app-errors
+./tools/uninitialized-errors.rb --hours 24  # Summary of /aws/events/e2-uninitialized-errors
+
+# Raw pull
+aws logs filter-log-events --region us-west-2 \
+  --log-group-name /aws/events/e2-app-errors \
   --start-time $(date -d '3 days ago' +%s)000 \
   --output json > app-errors-3days.json
 
 # Filter by pattern (e.g., specific error type)
-aws logs filter-log-events \
-  --log-group-name e2-app-errors \
+aws logs filter-log-events --region us-west-2 \
+  --log-group-name /aws/events/e2-app-errors \
   --filter-pattern "SQL" \
   --start-time $(date -d '24 hours ago' +%s)000
-
-# Pull last 24 hours for immediate triage
-aws logs filter-log-events \
-  --log-group-name e2-app-errors \
-  --start-time $(date -d '24 hours ago' +%s)000 \
-  --output json > app-errors-recent.json
-
-# For uninitialized value errors, use the dedicated tool
-# (shows top 10 in production)
 ```
 
 ### Analyzing Error Patterns
@@ -450,7 +442,7 @@ fields @timestamp, @message
 | sort count desc
 ```
 
-**See:** [infrastructure-overview.md](infrastructure-overview.md#future-monitoring-and-analysis-tasks) for detailed log analysis plan
+**See:** [infrastructure-overview.md](infrastructure-overview.md#monitoring--logging) for the full log group list
 
 ## 📞 Contact
 
@@ -459,5 +451,4 @@ fields @timestamp, @message
 
 ---
 
-**Quick Reference Version:** 1.2
-**Last Updated:** 2025-12-17
+**Last verified:** 2026-11-16

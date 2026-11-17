@@ -4,6 +4,13 @@
 **Owner:** Jay Bonci
 **Status:** Planning — deferred to the post-PSGI cleanup batch (sqitch is the named enabler in [modernization-dependency-tree.md](modernization-dependency-tree.md))
 
+> **Status (verified 2026-11-16):** **not started.** No sqitch plan/change files in the repo and no
+> adoption issue filed. PSGI is done, so this is now reachable whenever it's picked up. DBIx::Class was
+> rejected on 2026-06-29 (see [orm-migration-plan.md](orm-migration-plan.md)), so sqitch is the only
+> schema-versioning path. Also note (2026-06-29 correction): `nodepack/dbtable/` is a dev-bootstrap
+> reference snapshot, not what applies prod schema — prod changes are hand-applied SQL today — so the
+> baseline must come from a prod `--no-data` dump.
+
 > **Predecessor note.** This doc began as a MySQL 8.4 compatibility audit of `nodepack/dbtable/*.xml`
 > (zero-date defaults, missing PKs, `int(N)` widths, FULLTEXT). **That audit is complete and shipped** —
 > the zero-date family (#4074), the PK promotions (#4092), and the 8.4 engine cutover itself
@@ -15,7 +22,7 @@
 
 ## The problem: nodepack has no migration story
 
-`nodepack/dbtable/` holds 98 XML files, one per table, each wrapping a literal `CREATE TABLE` statement
+`nodepack/dbtable/` holds 94 XML files (Nov 2026), one per table, each wrapping a literal `CREATE TABLE` statement
 that `ecoretool import` applies to a fresh database. It works and it's load-bearing, but as a *schema
 management* layer it has structural gaps that get more painful as change frequency rises:
 
@@ -45,7 +52,7 @@ drift** and **no rollback path**.
 | **Atlas** (atlasgo.io) | Declarative schema (HCL or SQL); diffs current vs. desired to *generate* migrations | Go binary | High — "schema as source of truth in the repo" fits the nodepack mental model; but adds a Go toolchain |
 | **Flyway** | Numbered SQL files + a simple history table | Java/Docker | Medium — solid, but a JVM in the build/deploy path is operational weight we don't want |
 | **Liquibase** | Rich XML/YAML/JSON change-sets, rollback-aware | Java/Docker | Low — a JVM **and** an XML/YAML DSL, i.e. the *opposite* of "stop hand-maintaining XML" |
-| **DBIx::Class::Migration** | Migrations tied to a DBIC Result schema | Perl | Deferred — requires DBIC adoption first, which is post-deadline ([orm-migration-plan.md](orm-migration-plan.md)). Don't gate schema tooling on the ORM project |
+| **DBIx::Class::Migration** | Migrations tied to a DBIC Result schema | Perl | **Ruled out** — DBIC was rejected 2026-06-29 ([orm-migration-plan.md](orm-migration-plan.md)) |
 | **Plain numbered `.sql` + a tiny runner** | `001_init.sql`, `002_*.sql`; runner records applied versions in a `_migrations` table | shell glue | Viable — lowest abstraction, works for a solo maintainer, but you end up re-implementing sqitch's deploy/verify/revert by hand |
 
 ## Why sqitch
@@ -59,8 +66,8 @@ It wins on the axes that actually matter for this codebase:
 - **`deploy` / `verify` / `revert` are first-class** — directly addressing the two gaps that hurt:
   rollback becomes a real artifact, and `verify` scripts let CI assert the schema actually reached the
   intended state (drift enforcement).
-- **No ORM prerequisite.** Unlike DBIx::Class::Migration, it's independent of the (deferred) DBIC work, so
-  it can land whenever the post-PSGI batch reaches it without waiting on a multi-quarter project.
+- **No ORM prerequisite.** Unlike DBIx::Class::Migration, it's independent of any ORM (and DBIC is now
+  rejected outright), so it can land whenever it's picked up.
 
 Atlas was the only serious runner-up; its declarative diff model is attractive, but the extra toolchain and
 the fact that sqitch's imperative deploy/verify/revert maps more obviously onto careful prod change
@@ -75,8 +82,8 @@ be touched:
 
 - `dbtable/` — the schema. **This is the only part sqitch replaces.**
 - `nodetype/`, `setting/`, `achievement/` — small structured content, edited rarely. nodepack is fine here.
-- `superdoc/`, `htmlpage/`, `htmlcode/`, `opcode/`, `nodelet/` — legacy content being deleted as the React
-  migration finishes. **Don't modernize the storage of something you're deleting.**
+- `superdoc/`, `nodelet/` (and the already-deleted `htmlpage/`, `htmlcode/`, `opcode/`) — legacy content
+  being deleted as the React migration finishes. **Don't modernize the storage of something you're deleting.**
 - `_data/` — operational data (links, nodegroup membership) that arguably shouldn't be in a schema repo at
   all; out of scope for this plan.
 
@@ -99,12 +106,13 @@ So sqitch comes in *alongside* nodepack, taking only the schema responsibility.
 
 ## Sequencing
 
-- **Post-PSGI.** Don't pull this forward; it's an enabler in the [dependency tree](modernization-dependency-tree.md)
-  for the schema-touching cleanups, not a standalone phase.
+- **Post-PSGI (PSGI is now done).** It's an enabler in the [dependency tree](modernization-dependency-tree.md)
+  for the schema-touching cleanups and runs in parallel with the object-model epoch.
 - **It's a hub.** Several deferred issues are blocked on having versioned migrations: **#4225**
   (`explicit_defaults_for_timestamp` retirement — its deprecation now fires live under 8.4), **#4173**
-  (drop denormalized `numwriteups`), **#4180** (real soft-delete tombstoning), **#4184** (settings → JSON).
-  Landing sqitch unblocks that whole cluster.
+  (drop denormalized `numwriteups`), **#4180** (real soft-delete tombstoning), **#4184** (settings → JSON),
+  plus the "post-sqitch" retirements **#4249** (nodepack/ecoretool schema mechanism) and **#4482**
+  (legacy searchwords backend). Landing sqitch unblocks that whole cluster.
 - **No adoption issue yet** — file one when the post-PSGI batch reaches it, pointing here for the plan.
 
 ---
@@ -112,6 +120,6 @@ So sqitch comes in *alongside* nodepack, taking only the schema responsibility.
 ## References
 
 - [modernization-dependency-tree.md](modernization-dependency-tree.md) — where sqitch sits as an enabler hub
-- [orm-migration-plan.md](orm-migration-plan.md) — the deferred DBIx::Class story (the other half; DBIC::Migration is *not* the chosen path for schema versioning)
+- [orm-migration-plan.md](orm-migration-plan.md) — the object-model plan (DBIx::Class rejected; finish `Node::*` on Object::Pad)
 - `ecoretool/ecoretool.pl` — the current import/export CLI (loses only its table-creation role)
-- `nodepack/dbtable/*.xml` — the schema source-of-truth being retired
+- `nodepack/dbtable/*.xml` — the dev-bootstrap schema snapshot being retired

@@ -2,6 +2,7 @@
 
 **Date**: 2025-11-23 (revised 2026-06-15)
 **Author**: Investigation by Claude Code
+**Last verified**: 2026-11-16 (inventory rebuilt from `nodepack/stylesheet/*.xml` + `nodepack/_data/nodeparam.xml` + `www/css/`; loading code re-read)
 
 ## Table of Contents
 
@@ -19,13 +20,13 @@
 
 Everything2's stylesheet system is a sophisticated node-based architecture where CSS stylesheets are first-class content nodes (type: `stylesheet`). The system supports:
 
-- **22 stylesheet nodes** in the nodepack (14 marked as "supported")
+- **22 stylesheet nodes** in the nodepack (17 flagged `supported_sheet` in dev nodepack data; prod may differ)
+- **19 CSS files** in `www/css/` (basesheet + 17 zensheets + print). Kernel Blue has no file — it *is* the basesheet defaults; ResponsiveBase/Responsive2 nodes have no files
 - **Dual-layer CSS**: base stylesheet + user-selected theme + optional custom CSS
-- **CDN asset pipeline** with compression variants (gzip, brotli, deflate)
-- **User preference system** with theme testing interface
-- **Legacy compatibility** from migration away from old EKW theme system
+- **S3 asset pipeline** with compression variants (gzip, brotli, zstd)
+- **User preference system** (Settings page + Theme Nirvana)
 
-**Key Challenge**: User-contributed stylesheets are in various states of brokenness due to HTML/CSS changes in the codebase, and there's no systematic way to test or validate them against current markup.
+**Key Challenge**: User-contributed stylesheets drift as markup changes. Programmatic checks now exist (`tools/computed-style-diff.js`, `tools/check-css-references.js`, `tools/css-coverage.js`, `tools/visual-regression.js`, `tools/mobile-layout-checker.js`), but none run in CI.
 
 ---
 
@@ -48,28 +49,26 @@ $stylesheet->supported()  # Returns value of 'supported_sheet' parameter
 ### Asset Pipeline Flow
 
 ```
-Stylesheet Node (nodepack/stylesheet/*.xml)
+www/css/[node_id].css  (source of truth; nodepack/stylesheet/*.xml holds the node, doctext is empty)
     ↓
-CSS Content Extracted
+Asset Pipeline (tools/asset_pipeline.rb, run by docker/buildspec.yml on CodeBuild)
     ↓
-Saved to www/css/[node_id].css
+Minification (npx clean-css-cli)
     ↓
-Asset Pipeline (tools/asset_pipeline.rb)
-    ↓
-Minification (clean-css-cli)
-    ↓
-Multiple Compression Variants Created:
+Compression (tools/compress_assets.mjs, Node zlib):
     - Uncompressed minified
-    - gzip compressed
-    - brotli compressed
-    - deflate compressed
+    - gzip
+    - brotli (quality 11)
+    - zstd (level 19)
     ↓
-Upload to S3: deployed.everything2.com/[commit-hash]/[variant]/css/[node_id].css
+Upload to S3 deployed-assets bucket: [commit-hash]/[encoding/][node_id].css
     ↓
-9 Most Recent Commits Retained (quick rollback capability)
+Assets for commits older than the last 9 are expired (quick rollback capability)
     ↓
-Served via CDN with 1-year cache expiration
+Served from S3 with Cache-Control: max-age=31536000 (1 year)
 ```
+
+Dev (`use_local_assets`) serves `/css/[node_id].css` directly.
 
 ### Page Loading Sequence
 
@@ -78,21 +77,21 @@ Served via CDN with 1-year cache expiration
 <link rel="stylesheet" id="basesheet" type="text/css"
       href="[CDN]/1973976.css" media="all">
 
-<!-- 2. User's selected stylesheet (or Kernel Blue default) -->
+<!-- 2. User's selected stylesheet — omitted entirely when the user is on Kernel Blue (default) -->
 <link rel="stylesheet" id="zensheet" type="text/css"
       href="[CDN]/[user-preference].css" media="screen,tv,projection">
 
 <!-- 3. Optional: User's custom CSS overrides -->
 <style type="text/css">
-  /* User's customstyle VARS content (HTML-screened for security) */
+  /* User's customstyle VARS content (passed through htmlScreen) */
 </style>
 
-<!-- 4. Print stylesheet -->
+<!-- 4. Print stylesheet ("print", node 2004473) -->
 <link rel="stylesheet" id="printsheet" type="text/css"
-      href="[CDN]/1997552.css" media="print">
+      href="[CDN]/2004473.css" media="print">
 ```
 
-**Loading Code**: stylesheet *selection* (basesheet/zensheet/printsheet, Kernel-Blue default-theme fallback) lives in `ecore/Everything/Controller.pm` (~lines 176-262); the `<link>` tags are emitted by `ecore/Everything/HTMLShell.pm` (~lines 107-116). (The old `Everything::Delegation::document.pm` and `templates/zen.mc` cited in earlier revisions of this doc no longer exist — they were retired with the delegation/Mason burn-down.)
+**Loading Code**: stylesheet *selection* (basesheet/zensheet/printsheet/customstyle, Kernel-Blue default-theme skip) lives in `ecore/Everything/Controller.pm` (~lines 185-272); the `<link>`/`<style>` tags are emitted by `ecore/Everything/HTMLShell.pm` (~lines 108-120). (The old `Everything::Delegation::document.pm` and `templates/zen.mc` cited in earlier revisions of this doc no longer exist — they were retired with the delegation/Mason burn-down.)
 
 ### User Preference System
 
@@ -102,14 +101,11 @@ userstyle=[stylesheet_node_id]
 ```
 
 **Selection Interface**:
-- **Theme Nirvana** (`/node/superdoc/theme_nirvana`) - Main theme selection page
-- **Choose Theme View** (`?displaytype=choosetheme`) - Live theme testing interface
-  - JavaScript-based dynamic theme switching
-  - All links maintain theme context
-  - Can browse site with test theme applied
-  - Validates and sets preference on confirmation
+- **Settings** (`ecore/Everything/Page/settings.pm`) - theme dropdown; lists all stylesheet nodes except `basesheet`, `print`, `ResponsiveBase`, `Responsive2`
+- **Theme Nirvana** (`ecore/Everything/Page/theme_nirvana.pm`, node `nodepack/superdoc/theme_nirvana.xml`) - popularity listing of stylesheets
+- The old **Choose Theme View** (`?displaytype=choosetheme`) no longer exists in the codebase
 
-**Validation Logic** (`ecore/Everything/Node/user.pm:210`):
+**Validation Logic** (`ecore/Everything/Node/user.pm`, `sub style`, ~line 314):
 ```perl
 sub style {
   my ($self) = @_;
@@ -122,12 +118,12 @@ sub style {
 
   $userstyle = $self->APP->node_by_id($userstyle);
 
-  # Only return if valid stylesheet type AND marked supported
-  if ($userstyle and $userstyle->type->title eq "stylesheet" and $userstyle->supported) {
+  # Any node of type stylesheet is accepted; the supported_sheet flag is NOT checked here
+  if ($userstyle and $userstyle->type->title eq "stylesheet") {
     return $userstyle;
   }
 
-  return $default;  # Fallback to Kernel Blue if invalid/unsupported
+  return $default;  # Fallback to Kernel Blue if invalid
 }
 ```
 
@@ -137,62 +133,46 @@ sub style {
 
 ### Stylesheet Inventory
 
-Located in: `nodepack/stylesheet/` and `www/css/`
+Located in: `nodepack/stylesheet/` (node records) and `www/css/` (CSS). "Supported" = `supported_sheet=1` in `nodepack/_data/nodeparam.xml` (dev seed data; prod may differ).
 
-| Stylesheet | Node ID | Status | File Size | Notes |
+| Stylesheet | Node ID | Supported | CSS file | Notes |
 |---|---|---|---|---|
-| **bare_understatement** | 1855548 | ✓ Supported | - | Minimalist theme |
-| **basesheet** | 1973976 | Base (always loaded) | - | Common base styles |
-| **bookworm** | 1928497 | Unsupported | - | Reading-focused |
-| **bookwormier** | 1951961 | ✓ Supported | - | Enhanced bookworm |
-| **cool_understatement** | 1965449 | ✓ Supported | - | Blue color variant |
-| **deep_ice** | 1882070 | ✓ Supported | - | Cool blue theme |
-| **dim_jukka_emulation** | 1996378 | ✓ Supported | - | Dimmed variant |
-| **e2gle** | - | Missing CSS | - | **BROKEN** |
-| **gunpowder_green** | - | Missing CSS | - | **BROKEN** |
-| **jukka_emulation** | - | Missing CSS | - | **BROKEN** |
-| **kernel_blue** | - | ✓ Default | - | Reference implementation |
-| **mikoyan25** | 1983570 | ✓ Supported | - | Dark theme |
-| **mikoyan25_flipped** | 2029380 | Unsupported | - | Variant |
-| **mikoyan25_light** | 2047469 | Unsupported | - | Light variant |
-| **monochrome_understatement** | 1997697 | ✓ Supported | - | Grayscale theme |
-| **pamphleteer** | 1905818 | ✓ Supported | - | Document-style |
-| **print** | 1997552 | ✓ Print media | - | Printer-friendly |
-| **responsive2** | 2047530 | Unsupported | - | Mobile-responsive |
-| **responsivebase** | 2041900 | Base import | - | Responsive foundation |
-| **simplicity** | 1926437 | ✓ Supported | - | Clean minimal |
-| **understatement** | 1965286 | ✓ Supported | - | Neutral theme |
-| **warm_understatement** | 2000528 | ✓ Supported | - | Warm color variant |
+| **basesheet** | 1973976 | — (always loaded) | ✓ (~40K lines) | Kernel Blue `--e2-*` defaults + all structure |
+| **Kernel Blue** | 1882070 | ✓ default | none | Default theme; zensheet skipped, basesheet provides it |
+| **print** | 2004473 | — (print media) | ✓ | Loaded as `printsheet` |
+| **Understatement** | 1965235 | ✗ | ✓ | |
+| **Bare Understatement** | 1965286 | ✓ | ✓ | |
+| **Cool understatement** | 1926578 | ✓ | ✓ | |
+| **Warm understatement** | 1946242 | ✓ | ✓ | |
+| **Monochrome understatement** | 1965449 | ✓ | ✓ | |
+| **mikoyan25** | 1926437 | ✓ | ✓ | Dark theme |
+| **mikoyan25 flipped** | 1951961 | ✓ | ✓ | |
+| **mikoyan25 light** | 1983570 | ✓ | ✓ | |
+| **bookworm** | 1928497 | ✗ | ✓ | |
+| **Bookwormier** | 2000528 | ✓ | ✓ | Largest zensheet (~900 lines) |
+| **jukka emulation** | 1855548 | ✓ | ✓ | |
+| **dim jukka emulation** | 1997697 | ✓ | ✓ | |
+| **Deep Ice** | 1996378 | ✓ | ✓ | |
+| **e2gle** | 1997552 | ✓ | ✓ | ImageShack image URLs since removed |
+| **Gunpowder Green** | 1905818 | ✓ | ✓ | |
+| **Pamphleteer** | 2029380 | ✓ | ✓ | |
+| **Simplicity** | 2041900 | ✓ | ✓ | |
+| **ResponsiveBase** | 2047469 | ✗ | none | Excluded from Settings |
+| **Responsive2** | 2047530 | ✓ (flag set) | none | Excluded from Settings; no CSS file |
 
-**Total**: 22 stylesheets
-**Supported for User Selection**: 14
-**Known Broken** (missing CSS files): 3
+**Total**: 22 stylesheet nodes, 19 CSS files
+**Supported flag set**: 17 (incl. Kernel Blue and Responsive2)
 **Default**: Kernel Blue
 
 ### Stylesheet Families
 
-Based on naming patterns and @import dependencies:
-
-1. **Understatement Family** (7 variants)
-   - understatement, bare_understatement, cool_understatement, warm_understatement, monochrome_understatement
-
-2. **Mikoyan25 Family** (3 variants)
-   - mikoyan25, mikoyan25_flipped, mikoyan25_light
-   - Dark theme with variants
-
-3. **Bookworm Family** (2 variants)
-   - bookworm, bookwormier
-   - Reading-focused typography
-
-4. **Responsive Family** (2)
-   - responsivebase (imported by others), responsive2
-   - Mobile/tablet support
-
-5. **Standalone**
-   - deep_ice, dim_jukka_emulation, pamphleteer, simplicity, kernel_blue
-
-6. **Special Purpose**
-   - basesheet (always loaded), print (print media)
+1. **Understatement Family** (5): Understatement, Bare, Cool, Warm, Monochrome
+2. **Mikoyan25 Family** (3): mikoyan25 (dark), flipped, light
+3. **Bookworm Family** (2): bookworm, Bookwormier
+4. **Jukka Family** (2): jukka emulation, dim jukka emulation
+5. **Responsive** (2 nodes, no CSS): ResponsiveBase, Responsive2 — vestigial
+6. **Standalone**: Deep Ice, e2gle, Gunpowder Green, Pamphleteer, Simplicity, Kernel Blue
+7. **Special Purpose**: basesheet (always loaded), print (print media)
 
 ### Common Patterns in Stylesheets
 
@@ -222,9 +202,7 @@ Most stylesheets follow this structure:
    - Navigation
    - Header/footer
 
-5. **@import Directives**
-   - Many import responsivebase for mobile support
-   - Example: `@import url(https://everything2.com/node/stylesheet/ResponsiveBase?displaytype=view);`
+5. **@import Directives** — none remain in `www/css/` (the old ResponsiveBase `@import`s are gone); responsive rules live in the basesheet
 
 ---
 
@@ -232,12 +210,10 @@ Most stylesheets follow this structure:
 
 ### 1. HTML Generation Distributed Across Codebase
 
-**Problem**: HTML is generated in multiple locations:
-- Mason2 templates (`templates/nodelets/*.mi`)
-- Perl delegation modules (`ecore/Everything/Delegation/*.pm`)
-- Htmlcode functions (`ecore/Everything/Delegation/htmlcode.pm`)
-- React components (`react/components/**/*.js`)
-- Page controllers / HTML shell (`ecore/Everything/Controller.pm`, `ecore/Everything/HTMLShell.pm`) — these replaced the retired `Everything::Delegation::document.pm`
+**Problem** (much reduced since 2025): Mason2 templates are gone and most delegation HTML has been retired. Markup now comes mainly from:
+- React components (`react/components/**/*.js`) — the vast majority
+- Page controllers / HTML shell (`ecore/Everything/Controller.pm`, `ecore/Everything/HTMLShell.pm`)
+- Remaining legacy Perl HTML (residual `Everything::Delegation::*` / `Everything::HTML` paths, being retired under #4259)
 
 **Impact**:
 - No single source of truth for CSS selectors
@@ -245,33 +221,20 @@ Most stylesheets follow this structure:
 - No way to know if a CSS rule is unused
 - Difficult to refactor without testing all 22 stylesheets
 
-### 2. No Automated Testing for Stylesheets
+### 2. Stylesheet Testing Is Tooling, Not CI
 
-**Problem**: No mechanism to validate stylesheets work with current HTML
+**Status (2026-11)**: dev-only tools now cover most of the original gaps:
+- `tools/computed-style-diff.js` — capture/compare computed styles across pages × themes × viewports (snapshots in `screenshots/computed-styles/`)
+- `tools/visual-regression.js` — screenshots of all pages across all themes
+- `tools/css-coverage.js` — which CSS rules are actually used
+- `tools/check-css-references.js` — JS `className` ↔ CSS definition round-trip
+- `tools/mobile-layout-checker.js` — mobile overflow/touch-target/text-size checks
 
-**Missing Infrastructure**:
-- No visual regression testing
-- No CSS coverage analysis
-- No automated screenshot comparison
-- No broken selector detection
+**Still missing**: none of these run in the CodeBuild pipeline; they are run by hand against dev.
 
-**Current Validation**: Manual only
-- Developer must manually check each theme
-- Time-consuming (22 stylesheets × multiple page types)
-- Easy to miss edge cases
+### 3. React Migration Breaking CSS Selectors (historical)
 
-### 3. React Migration Breaking CSS Selectors
-
-**Problem**: Ongoing Mason2 → React migration changes markup
-
-**Examples of Breaking Changes**:
-- Mason2: `<div class="nodelet">`
-- React: `<div className="nodeletContainer">`
-- Different nesting structures
-- Different class names
-- Different DOM hierarchy
-
-**Risk**: Each nodelet migration potentially breaks all 22 stylesheets
+The Mason2 → React migration is complete; the risk now is ordinary React markup changes, which `check-css-references.js` / `computed-style-diff.js` are meant to catch. The inline-style → BEM classname refactor is also resolved.
 
 ### 4. User-Contributed Stylesheets Frozen
 
@@ -308,64 +271,25 @@ Successfully recovered from git history and restored to `www/css/`:
    - Recovered from commit `2f55285`
    - Includes Clockmaker's fixes
 
-#### Syntax Validation Results
+#### Syntax Validation Results (Nov 2025)
 
-**Clean Stylesheets** (21/22): All braces balanced, valid CSS syntax
-- ✓ 1882070 (kernel_blue)
-- ✓ 1926437 (plain)
-- ✓ 1926578 (e2_classic)
-- ✓ 1928497 (the_grid)
-- ✓ 1946242 (the_e2_logo_page)
-- ✓ 1951961 (purpletone)
-- ✓ 1965235 (greyscale)
-- ✓ 1965286 (naked)
-- ✓ 1965449 (Enlightenment)
-- ✓ 1973976 (ModernE)
-- ✓ 1983570 (Dark_Side_of_the_Node)
-- ✓ 1996378 (CreamLove)
-- ✓ 1997697 (Spartan)
-- ✓ 2000528 (The_Dark_One)
-- ✓ 2004473 (flat_modern)
-- ✓ 2041900 (WuWei)
-- ✓ 2047469 (green_modern)
-- ✓ 2047530 (Techno)
-- ✓ 1855548 (jukka_emulation) - recovered
-- ✓ 1905818 (gunpowder_green) - recovered
-- ✓ 1997552 (e2gle) - recovered (but has external dependencies, see below)
-- ✓ 2029380 (Pamphleteer) - FIXED: Added missing closing brace for @media query (line 208)
+All CSS files then present passed a brace-balance/syntax check; Pamphleteer's missing `@media` closing brace was fixed. (The Nov 2025 list of IDs here carried wrong theme names and has been dropped — see the inventory table above for the correct ID → name mapping.) The build also enforces this: `asset_pipeline.rb` aborts on any clean-css-cli error.
 
 #### External Dependencies
 
-**1997552 (e2gle)**: 6 external image URLs from ImageShack
-- `url(https://img97.imageshack.us/img97/2460/backgroundni.png)` - background (commented out)
-- `url(https://img33.imageshack.us/img33/4905/e2fromfontoverlap.png)` - header image
-- `url(https://img62.imageshack.us/img62/1903/newwriteups.png)` - New Writeups icon
-- `url(https://img44.imageshack.us/img44/3902/coolarchive.png)` - Cool Archive icon
-- `url(https://img62.imageshack.us/img62/4124/staffpicks.png)` - Staff Picks icon
-- `url(https://img89.imageshack.us/img89/3883/newsfornoders.png)` - News icon
+e2gle (1997552) used to reference six ImageShack image URLs; as of 2026-11 `www/css/1997552.css` contains no `url(` references at all.
 
-**Impact**:
-- ImageShack URLs likely broken/unavailable (service degraded/changed)
-- Stylesheet will work but images won't load
-- Affects visual appearance significantly
-- **Options**:
-  1. Host images locally in E2 assets
-  2. Replace with CSS-only alternatives
-  3. Mark stylesheet as "degraded" until fixed
+#### Summary (2026-11)
 
-#### Summary
-
-- **22/22 stylesheets** now present in `www/css/`
-- **22/22** have valid CSS syntax (Pamphleteer @media query fixed)
-- **1/22** (e2gle) has broken external image dependencies
-- **21/22** fully functional with no known issues
+- 19 CSS files present in `www/css/`; the 3 stylesheet nodes without files (Kernel Blue, ResponsiveBase, Responsive2) are intentional/vestigial — see the inventory
+- No known syntax errors or external image dependencies
 
 ### 6. CSS Modernization — largely shipped
 
 **Status (2026)**: The original "no CSS variables / no modernization" finding is now **out of
 date**. Variable-based theming shipped: the basesheet (`www/css/1973976.css`) defines and uses
-the `--e2-*` custom-property system (the "Kernel Blue" design tokens — `--e2-primary`,
-`--e2-link`, etc., ~2,200 `--e2-*` usages in the basesheet), and themes override via those
+the `--e2-*` custom-property system (the "Kernel Blue" design tokens, ~100 distinct `--e2-*`
+variables defined and ~2,250 lines referencing them in the basesheet as of 2026-11), and themes override via those
 variables. Per-theme zensheets layer color overrides on top of the basesheet's variable
 defaults.
 
@@ -410,6 +334,8 @@ Recommendations below for the endorsed approach.
 3. **User-Friendly**: Popular themes stay working
 4. **Sustainable**: Reduces maintenance burden over time
 5. **Modern**: Builds toward CSS variables and component styles
+
+> **Status (2026-11-16):** of the actions below, the CSS variable system (7) and BEM naming (6) are done; broken stylesheets (2) were recovered; a screenshot/computed-style toolset (5) exists as dev tools rather than `tools/test-stylesheets.js`; usage report (1), support-tiers doc (3), smoke-test checks (4) and visual-regression CI (8) have not been done.
 
 ### Immediate Actions (Next Sprint)
 
@@ -485,7 +411,7 @@ The Everything2 stylesheet system is a sophisticated node-based architecture tha
 - No automated testing
 - User-contributed content frozen in time
 
-**The hybrid approach** (Option 6) provides a practical path forward that:
+**The hybrid approach** (the path taken) provides a practical path forward that:
 - Addresses immediate problems (broken stylesheets)
 - Reduces long-term maintenance burden (support tiers)
 - Builds toward modernization (CSS variables)
@@ -504,36 +430,38 @@ The Everything2 stylesheet system is a sophisticated node-based architecture tha
 
 ## Appendix A: Stylesheet Node Structure
 
-Example: `nodepack/stylesheet/kernel_blue.xml`
+Actual `nodepack/stylesheet/kernel_blue.xml` (CSS lives in `www/css/`, not in `doctext`):
 
 ```xml
 <node>
-  <author_user>13681</author_user>
-  <createtime>2014-03-15 00:00:00</createtime>
-  <doctext>/* CSS content here */</doctext>
-  <dynamicauthor_permission>-1</dynamicauthor_permission>
-  <dynamicgroup_permission>-1</dynamicgroup_permission>
-  <dynamicguest_permission>-1</dynamicguest_permission>
-  <dynamicother_permission>-1</dynamicother_permission>
-  <loc_location>1</loc_location>
-  <node_id>12345</node_id>
+  <contentversion>119</contentversion>
+  <doctext></doctext>
+  <node_id>1882070</node_id>
+  <s3bucket></s3bucket>
+  <s3content_id>1882070</s3content_id>
   <title>Kernel Blue</title>
   <type_nodetype>1854352</type_nodetype>
-
-  <!-- Supported stylesheet marker -->
-  <vars>supported_sheet,1</vars>
 </node>
+```
+
+The "supported" marker is a nodeparam, not a node field — in `nodepack/_data/nodeparam.xml`:
+
+```xml
+<nodeparam>
+  <node_id>1882070</node_id>
+  <paramkey>supported_sheet</paramkey>
+  <paramvalue>1</paramvalue>
+</nodeparam>
 ```
 
 ## Appendix B: Asset Pipeline Command
 
 ```bash
-# Run manually
-ruby tools/asset_pipeline.rb
-
-# Runs during build
-# See: docker/devbuild.sh
+# Runs in the prod build (docker/buildspec.yml on CodeBuild):
+./tools/asset_pipeline.rb --assets=$ASSETS_BUCKET
 ```
+
+Dev does not run the pipeline; it serves `www/css/` locally (`use_local_assets`).
 
 ## Appendix C: Key Files Reference
 
@@ -542,13 +470,15 @@ ruby tools/asset_pipeline.rb
 - **Stylesheet Nodes**: `nodepack/stylesheet/*.xml`
 - **CSS Files**: `www/css/*.css`
 - **Asset Pipeline**: `tools/asset_pipeline.rb`
-- **CSS Loading (selection)**: `ecore/Everything/Controller.pm` (~176-262)
-- **Link Generation (`<link>` tags)**: `ecore/Everything/HTMLShell.pm` (~107-116)
-- **User Preference**: `ecore/Everything/Node/user.pm:210` (style method)
-- **Theme Selection**: `ecore/Everything/Delegation/htmlpage.pm:3746`
-- **Theme Test Page**: `nodepack/htmlpage/choose_theme_view_page.xml`
-- **Theme Nirvana**: `nodepack/superdoc/theme_nirvana.xml`
-- **Asset URI**: `ecore/Everything/Application.pm:4581` (asset_uri method)
+- **Supported flags**: `nodepack/_data/nodeparam.xml` (`supported_sheet`)
+- **CDN link**: `ecore/Everything/Node/helper/s3.pm` (`cdn_link` → `asset_uri`)
+- **CSS Loading (selection)**: `ecore/Everything/Controller.pm` (~185-272)
+- **Link Generation (`<link>` tags)**: `ecore/Everything/HTMLShell.pm` (~108-120)
+- **User Preference**: `ecore/Everything/Node/user.pm` (`sub style`, ~314)
+- **Theme Selection**: `ecore/Everything/Page/settings.pm` (theme list ~151-170)
+- **Theme Nirvana**: `ecore/Everything/Page/theme_nirvana.pm`, `nodepack/superdoc/theme_nirvana.xml`
+- **Asset URI**: `ecore/Everything/Application.pm` (`sub asset_uri`, ~7246)
+- *(Retired: `Everything/Delegation/htmlpage.pm` and the choose-theme htmlpage no longer exist)*
 
 ## Appendix D: Configuration Settings
 
@@ -556,9 +486,8 @@ ruby tools/asset_pipeline.rb
 # ecore/Everything/Configuration.pm
 has 'default_style' => (isa => 'Str', is => 'ro', default => 'Kernel Blue');
 has 'use_local_assets' => (isa => 'Bool', is => 'ro', default => '0');
-has 'assets_location' => (isa => 'Str', is => 'ro', lazy => 1, default => sub {
-  "https://s3-us-west-2.amazonaws.com/deployed.everything2.com/" . $_[0]->git_hash
-});
+has 'assets_location' => (isa => 'Str', is => 'ro', builder => '_build_assets_location', lazy => 1);
+# _build_assets_location: "https://s3-<current_region>.amazonaws.com/<deployedassets bucket>/<last_commit>"
 ```
 
 ---
@@ -569,5 +498,6 @@ Dark-mode support is handled through the same variable/zensheet theming describe
 `Everything::Node::user->style()`). The lengthy speculative "autodetection analysis"
 (effort estimates, rollout plan, proof-of-concept steps) that previously lived here has been
 removed — that planning is resolved, and the architecture it would have built on is the
-variable system documented in the sections above. For the user-facing `dark_mode` preference
-plumbing, see the `buildNodeInfoStructure` e2-blob producer in `ecore/Everything/Application.pm`.
+variable system documented in the sections above. As of 2026-11 there is no `dark_mode`
+preference or `prefers-color-scheme` handling anywhere in `ecore/`, `react/` or `www/css/` —
+dark mode means picking a dark zensheet (e.g. mikoyan25).

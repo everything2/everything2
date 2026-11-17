@@ -2,6 +2,14 @@
 
 **Created:** 2026-07-05 · **Owner:** Jay · **Status:** living recon doc
 
+> **Status (verified 2026-11-16).** The goal tightened after this doc was written: **zero param reads in
+> Page controllers** (URL params and display-only text move into React; the controller is a pure gate).
+> That supersedes the `$query`→`$REQUEST->param` facade sweep in Part E. Results so far: **80 pages are
+> now pure-gate registry entries** in `Everything::PureGates` (#4513; no Page module at all), and the
+> pure-controller conversions (#4511–#4557) emptied most of Tranches 3/4. **Left:** 61 Page modules still
+> read params — ~17 feeds/tickers (out of scope) + **44 real pages** (list in Part E status below).
+> Permission follow-ups: #4498, #4463 (both open).
+
 The denominator + classification for the module-by-module controller sweep. Three intertwined
 goals, tracked together so each module is touched once:
 
@@ -23,12 +31,17 @@ scope** (legacy APIs, per Jay).
 
 ## Headline numbers
 
-- **255** Page controllers. **154** already free of `$query`/`param`/CGI. **~101** touch it; ~30 of
-  those are feeds/tickers (out of scope) → **~70 real Page controllers** to sweep.
-- **97** API controllers. **14** share an exact name with a Page (confirmed twins); many more pair
+*(2026-07-05 figures, with 2026-11-16 values in brackets.)*
+
+- **255** Page controllers [**174** Page modules + **80** pure-gate registry entries]. **154** already
+  free of `$query`/`param`/CGI [**113** Page modules + all 80 pure gates]. **~101** touch it [**61**];
+  ~30 of those are feeds/tickers [~17] → **~70 real Page controllers** to sweep [**44**].
+- **97** API controllers [**133**]. **14** share an exact name with a Page (confirmed twins); many more pair
   semantically via the React Document they render.
-- **4** `Everything::Security::*` mixins. **~35** Pages use a mixin explicitly; many more gate inline.
-- **2** shared roles exist today (`NodeTrackerStats`, `IPBlacklist`) — the pattern to replicate.
+- **4** `Everything::Security::*` mixins [still 4: NoGuest, Permissive, StaffOnly, StaffOrDeveloper].
+  **~35** Pages use a mixin explicitly; many more gate inline.
+- **2** shared roles exist today (`NodeTrackerStats`, `IPBlacklist`) [**5**: + `Notelet`,
+  `UsergroupArchive`, `Bestow`].
 
 ---
 
@@ -84,7 +97,7 @@ filter_user,filter_user_not), `buffalo_generator`/`buffalo_haiku_generator` (onl
 This closes the mutation-leftover tail of #4298: no `buildReactData` writes-on-query-param remain among the audited set.
 
 **5 CLEAN (pure-render; action already API-driven):**
-- `e2node_reparenter` — reads `repare` only to look up nodes for display; reparent write is `writeup_reparent` API (React). ✅
+- `e2node_reparenter` — now a pure gate; React reads `repare` and resolves via the `writeup_reparent` API (#4502). ✅
 - `the_oracle` — pure-render; var write moved to `POST /api/oracle/setvar` (#4405). ✅
 - `create_node` — pure-render; create via `node` API (`canCreateNode`). ✅
 - `dr_nate_s_secret_lab` — pure-render; resurrect via `resurrect` API (admin). ✅
@@ -104,7 +117,7 @@ Edge = the Page renders a React Document (`type` in `buildReactData`) which call
 |---|---|---|---|
 | ★ node_tracker | NodeTracker | node_tracker | ✅ `NodeTrackerStats` |
 | ★ ip_blacklist / mass_ip_blacklister | IpBlacklist | ip_blacklist | ✅ `IPBlacklist` |
-| ★ websterbless | AdminBestowTool→? / Websterbless | websterbless | — (candidate) |
+| ★ websterbless | AdminBestowTool→? / Websterbless | websterbless | ✅ `Bestow` |
 | ★ nodetype_changer | NodetypeChanger | nodetype_changer | — |
 | ★ the_tokenator | (Tokenator) | the_tokenator | — |
 | ★ usergroup_message_archive | (UMA) | usergroup_message_archive | — |
@@ -112,7 +125,7 @@ Edge = the Page renders a React Document (`type` in `buildReactData`) which call
 | ★ nate_s_secret_unborg_doc | NatesSecretUnborgDoc | nate_s_secret_unborg_doc | — |
 | ★ page_of_cool | PageOfCool | page_of_cool | — |
 | ★ cool_archive | CoolArchive | cool_archive, node_search | — |
-| ★ superbless | AdminBestowTool | superbless | — (candidate w/ websterbless) |
+| ★ superbless | AdminBestowTool | superbless | ✅ `Bestow` |
 | ★ drafts | Draft | drafts | — |
 | settings | Settings | preferences, nodelets, user | — (candidate: prefs role) |
 | show_user_vars / viewvars | ShowUserVars / UserEditVars | nodevars | — (candidate: nodevars role) |
@@ -121,7 +134,7 @@ Edge = the Page renders a React Document (`type` in `buildReactData`) which call
 | e2_bouncer | E2Bouncer | bouncer | — |
 | message_inbox | MessageInbox | messages, node_search | — |
 | node_parameter_editor | NodeParameterEditor | node_parameter | — |
-| magical_writeup_reparenter / e2node_reparenter | MagicalWriteupReparenter | writeup_reparent | — (candidate: reparent role) |
+| magical_writeup_reparenter / e2node_reparenter | MagicalWriteupReparenter | writeup_reparent | — (pure gates now; helpers live in the API, #4502) |
 | simple_usergroup_editor | SimpleUsergroupEditor | nodes, usergroups | — |
 | collaboration(_edit) | Collaboration / CollaborationEdit | collaborations | — |
 | category_edit / create_category | CategoryEdit / CreateCategory | category | — |
@@ -306,7 +319,15 @@ filter/display params, so they're done for T4 too). `a_year_ago_today`/`recent_n
 via `/api/pagestate?year=2020&count=7` reflects the params on the client-router path (not just SSR). No
 `->cgi` param reads remain in the 13.
 
-### Tranche 3 — Entity deep-link (26)
+### Tranche 3 — Entity deep-link (26) — 🟡 11 done (2026-11-16)
+**Status:** pure gates: `reputation_graph`, `reputation_graph_horizontal`, `do_you_c_what_i_c`,
+`the_recommender`, `editor_endorsements`, `noding_speedometer`, `ip_hunter`, `node_notes_by_editor`,
+`who_killed_what`; param-free Page modules: `e2node_reparenter`, `magical_writeup_reparenter`.
+**Still read params (15):** `show_user_vars`, `node_parameter_editor`, `simple_usergroup_editor`,
+`the_borg_clinic`, `e2_bouncer`, `ip2name`, `renunciation_chainsaw`, `drafts`, `e2_editor_beta`,
+`message_inbox`, `node_heaven_title_search`, `create_node`, `the_oracle`, `dr_nate_s_secret_lab`,
+`altar_of_sacrifice`.
+
 Parity: `entity-deeplink.spec.js` (Gap D). Params: `id/username/user/for_node/for_usergroup/author/
 editor/cooluser/…` (single-entity selector).
 `reputation_graph`, `reputation_graph_horizontal`, `show_user_vars`, `do_you_c_what_i_c`,
@@ -316,7 +337,21 @@ editor/cooluser/…` (single-entity selector).
 `dr_nate_s_secret_lab`, `e2node_reparenter`, `magical_writeup_reparenter`, `node_notes_by_editor`,
 `who_killed_what`, `altar_of_sacrifice`
 
-### Tranche 4 — Filter / display / date options (23) — *lowest risk, most heterogeneous; last*
+### Tranche 4 — Filter / display / date options (23) — 🟡 8 done (2026-11-16)
+**Status:** pure gates: `everything_document_directory`, `my_big_writeup_list`, `everything_s_best_users`,
+`voting_data`, `the_registries`, `content_reports`, `news_for_noders_stuff_that_matters`, `news_archives`.
+**Still read params (15):** `display_categories`, `the_everything2_voting_experience_system`,
+`the_catwalk`, `buffalo_generator`, `buffalo_haiku_generator`, `the_node_crypt`, `manna_from_heaven`,
+`who_is_doing_what`, `historical_iron_noder_stats`, `site_trajectory`, `site_trajectory_2`,
+`log_archive`, `my_achievements`, `clientdev_home`, `usergroup_picks`.
+
+**Also still reading params, outside T3/T4 (14):** T1 route-recovery pages (`nothing_found`, `findings`,
+`duplicates_found`, `login`, `short_url_lookup`, `e2_rot13_encoder` — PageState-owned parsing, may stay
+until the client router), T2 leftovers (`a_year_ago_today`, `fresh_blood`, `freshly_bloodied`,
+`security_monitor`, `topic_archive`), `the_old_hooked_pole`, `confirm_password` (#4512 to promote to
+an API), `e2_xml_search_interface`.
+
+*(Original 2026-07 list:)*
 Params: filter/sort/date/toggle (`filter_*`, `orderby`, `y`/`m`/`year`, `days`, boolean toggles).
 `everything_document_directory`, `my_big_writeup_list`, `everything_s_best_users`, `display_categories`,
 `the_everything2_voting_experience_system`, `voting_data`, `the_catwalk`, `buffalo_generator`,
@@ -356,7 +391,9 @@ the Page and the API twin via `with`. Replicate this shape.
   - Still to fold in: the shared `adjustGP`/loop scaffolding, and the stray `getNode('Webster 1913')`
     in `Everything::API::ilikeit`.
 - `Everything::Roles::NodeVars` — show_user_vars / viewvars / UserEditVars ↔ `nodevars`
-- `Everything::Roles::Reparent` — ✅ **created 2026-07-10 (#4502).** The four node resolve/format
+- `Everything::Roles::Reparent` — *created 2026-07-10 then **removed** in the final #4502 pass: both
+  reparenter Pages became pure gates (React resolves via `GET /api/writeup_reparent`), so the helpers
+  moved back into `API::writeup_reparent`, their only consumer. History below.* The four node resolve/format
   helpers (`getNodeByNameOrId`/`guessParentForWriteup`/`formatE2NodeInfo`/`formatWriteupInfo`) were
   byte-triplicated across `Page::magical_writeup_reparenter`, `Page::e2node_reparenter`, and
   `API::writeup_reparent`; now one copy in the role. `reparent_view()` (page-flavor resolve+format+kvl)
@@ -386,7 +423,12 @@ fully.
 proved the vertical pattern: Page drops `$DB`, Page+API share the role, role unit-tested with a mock DB
 (`t/196`, no live DB — the tier-2 net we lacked).
 
-**Forward (each module touched once):**
+**Update 2026-11-16:** the forward plan below was overtaken by the pure-gate approach (#4502 reparenter,
+#4504 reputation, #4506 user search, #4508 bestow prefill, #4513 registry, then #4511–#4557 batch
+conversions). The next step is the 44 remaining param-reading pages listed in Part E, converted to pure
+gates with React reading `window.location`; roles are only extracted where real shared SSR logic remains.
+
+**Forward (each module touched once) — 2026-07 plan, historical:**
 1. **Extract Part-D roles, module by module** — the value work. For each twin: pull DB/SSR logic into a
    shared `Everything::Roles::*` (Page + API `with` it), swap that page's `$query`→`$REQUEST->param` in
    the same touch, and reconcile the gate (#4463) while the file is open. Order by the Part-D candidate

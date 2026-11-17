@@ -2,6 +2,7 @@
 
 **Purpose**: Link E2 pages to their source code components on GitHub
 **Status**: Implemented and active
+**Last verified**: 2026-11-16
 
 ---
 
@@ -26,14 +27,16 @@ This replaces the legacy "view code" pages that showed raw Perl source in the br
 |-----------|----------|---------|
 | `buildSourceMap()` | `ecore/Everything/Application.pm` | Generates source map data |
 | `Developer` nodelet | `react/components/Nodelets/Developer.js` | UI with "View Source Map" button |
-| `SourceMapModal` | `react/components/Developer/SourceMapModal.js` | Modal displaying source links |
+| `SourceMapModal` | `react/components/Developer/SourceMapModal.js` | Modal wrapper |
+| `SourceMapDisplay` | `react/components/Developer/SourceMapDisplay.js` | Shared list renderer (icons, GitHub links); also used inline by system-node Documents (`Htmlcode`, `Htmlpage`, `Maintenance`, `Nodelet`, `Nodetype`, `Notification`, `Schema`, `Stylesheet`) |
+| Per-type controllers | `ecore/Everything/Controller/{achievement,container,htmlcode,maintenance,nodelet,nodetype,notification,schema,stylesheet}.pm` | Build their own `sourceMap` for the inline display |
 
 ### Data Flow
 
-1. **Server**: `buildSourceMap($NODE, $page)` analyzes the current node
+1. **Server**: `Everything::Controller` calls `buildSourceMap($node->NODEDATA, undef)` (the `$page` arg is unused since htmlpages were retired, #4361)
 2. **Data**: Source map passed via `developerNodelet.sourceMap` in page data
 3. **React**: Developer nodelet renders "View Source Map" button
-4. **Modal**: SourceMapModal displays components with GitHub links
+4. **Modal**: SourceMapModal → SourceMapDisplay renders components with GitHub links
 
 ---
 
@@ -70,8 +73,11 @@ This replaces the legacy "view code" pages that showed raw Perl source in the br
 | `test` | Vial icon (green) | Test file |
 | `page_class` | File icon (purple) | Perl Page class |
 | `delegation` | File icon (purple) | Legacy delegation module |
-| `controller` | File icon (purple) | Controller class |
-| `database_table` | File icon | Nodepack XML for DB table |
+| `node_class` | Cogs icon | `Everything::Node::*` class (emitted by per-type controllers) |
+| `controller` | File icon | Controller class |
+| `database_table` | Database icon | Nodepack XML for DB table |
+
+Unknown types (e.g. `css_file`, emitted by `Controller/stylesheet.pm`) fall back to a book icon. Icon CSS classes are `source-map__icon--{react,test,perl,node,controller,database,default}`.
 
 ---
 
@@ -87,19 +93,17 @@ For `nodelet` nodes:
 
 ### React Documents (superdocs)
 
-For superdocs with a Page class that has `buildReactData`:
+For `superdoc`, `superdocnolinks`, `restricted_superdoc`, `oppressor_superdoc` and `fullpage` nodes with a Page class that has `buildReactData`:
 - Page class: `ecore/Everything/Page/{page_name}.pm`
 - React component: `react/components/Documents/{ComponentName}.js`
 
 ### Legacy Documents
 
-For superdocs using delegation:
-- Delegation: `ecore/Everything/Delegation/document.pm`
-- HTMLPage (if applicable): `ecore/Everything/Delegation/htmlpage.pm`
+For superdoc-family nodes with no Page class / no `buildReactData`, `buildSourceMap()` still emits a `delegation` entry pointing at `ecore/Everything/Delegation/document.pm` — **that file no longer exists**, so this link 404s on GitHub. (The htmlpage entry was removed with #4361.)
 
 ### System Nodes
 
-For maintenance, htmlcode, htmlpage nodes:
+For `maintenance` and `htmlcode` nodes (the `nodelet` test in this branch is unreachable — nodelets match the first branch):
 - Controller: `ecore/Everything/Controller/{nodetype}.pm`
 - React component: `react/components/Documents/SystemNode.js`
 - Database tables: `nodepack/dbtable/{table}.xml`
@@ -128,18 +132,14 @@ The modal displays:
    - File path (monospace)
    - "View on GitHub" button (links to commit)
    - "Edit on GitHub" button (links to branch for PRs)
-3. **Contribute callout**: Link to CONTRIBUTING.md
+3. **Contribute callout**: Link to `blob/master/CONTRIBUTING.md` — note no `CONTRIBUTING.md` exists in the repo today, so this link is dead
 4. **Close button**
 
 ---
 
 ## Access Control
 
-The Developer nodelet (and thus Source Map) is only visible to:
-- Members of the `edev` usergroup
-- Uses standard nodelet visibility rules
-
-The source map data is generated server-side in `buildSourceMap()` and included in the page data only when the Developer nodelet is rendered.
+`Everything::Controller` builds `developerNodelet` (and thus the source map) only when the user has the `developer` flag (edev) **and** the Developer nodelet (node 836984) is in their `nodelets` var. The data is not a security boundary — it only contains public GitHub paths.
 
 ---
 
@@ -184,11 +184,12 @@ Converts node titles to snake_case Page file names:
 
 | File | Purpose |
 |------|---------|
-| `ecore/Everything/Application.pm` | `buildSourceMap()` implementation |
+| `ecore/Everything/Application.pm` | `buildSourceMap()`, `titleToComponentName()`, `titleToPageFile()` (~lines 8597-8750) |
+| `react/components/Developer/SourceMapDisplay.js` | Shared renderer |
 | `react/components/Nodelets/Developer.js` | Developer nodelet with Source Map button |
 | `react/components/Developer/SourceMapModal.js` | Modal component |
 | `react/components/Developer/SourceMapModal.test.js` | Modal tests |
-| `ecore/Everything/Controller.pm` | Passes sourceMap to Developer nodelet |
+| `ecore/Everything/Controller.pm` | Passes sourceMap to Developer nodelet (~line 245) |
 
 ---
 
@@ -202,4 +203,4 @@ Converts node titles to snake_case Page file names:
 
 ---
 
-*Last updated: December 2025*
+*Last updated: December 2025; verified against code 2026-11-16*

@@ -1,9 +1,10 @@
 # In-Webhead Cron Sidecar — as-built reference
 
-**Status**: implemented (#4246), cutover tracked in #4251.
+**Status**: **live in prod** (#4246; cutover #4252; the scheduled-cron EventBridge rules are deleted). Sitemap generation is the one exception: it still runs as a nightly EventBridge → Fargate task (#4431).
+**Last verified:** 2026-11-16
 **Supersedes the architecture in** [cron-sidecar-design.md](cron-sidecar-design.md) (that's the original proposal/cost rationale; the final build uses the `run_once` periodic model below, not the persistent-leader model sketched there).
 
-E2's scheduled cron jobs run **on the webhead tasks** instead of as per-fire EventBridge → Fargate launches. This removes the `e2cron-family` scheduled-cron Fargate cost (~$840/yr + ~4 public IPs) by running the jobs on hardware that's already paid for.
+E2's scheduled cron jobs run **on the webhead tasks** instead of as per-fire EventBridge → Fargate launches. This removed most of the scheduled-cron Fargate cost (~$840/yr + ~4 public IPs) by running the jobs on hardware that's already paid for.
 
 ---
 
@@ -21,7 +22,7 @@ Validated in prod: killing the current leader task left cron continuity intact (
 
 | Module | Role |
 |---|---|
-| `Schedule.pm` | The 8-job registry (argv, cadence, timeout) + `due()`/`prev_fire()` timing. Schedule lives in **code**. |
+| `Schedule.pm` | The 6-job registry (argv, cadence, timeout) + `due()`/`prev_fire()` timing. Schedule lives in **code**. |
 | `State.pm` | Reads/writes the `cron_state` + `cron_leader` tables: `mark_started` / `mark_finished` / `mark_seen` / `heartbeat_leader` / `snapshot`. DATETIMEs stored, read back as epoch via `UNIX_TIMESTAMP` so the rest works in epochs. |
 | `Health.pm` | Pure wedge evaluator: `evaluate(snapshot, now)` → per-job verdict (`ok`/`running`/`hung`/`overdue`/`failing`) + leader-stale → overall (`ok`/`degraded`/`down`) + `wedged`/`failing` lists. No DB, no clock — both injected, so it's unit-tested and reusable. |
 | `Runner.pm` | The engine: `run_once` (lock → run due jobs → release), fork+exec with per-job timeout-kill, init-on-first-sight, leader heartbeat, CloudWatch metric emit. |
@@ -47,9 +48,10 @@ Tests: `t/128_cron_schedule.t`, `t/129_cron_health.t`, `t/130_cron_state.t`.
 | iqm-recalc | daily | 900s | `cron_iqm_recalculate.pl` |
 | clean-old-rooms | daily | 300s | `cron_clean_old_rooms.pl` |
 | chatterbox-cleanup | hourly (`50 * * * *`) | 120s | `cron_clean_cbox.pl` |
-| generate-sitemap | daily (`0 0 * * *`) | 1800s | `cron_generate_sitemap.pl` |
 
 The jobs are the **existing** `cron/*.pl` scripts, unchanged — the runner fork+execs them, so a job crash/leak is isolated from the runner.
+
+**Not in the registry: `generate-sitemap`.** It is a ~50-minute, ~1M-node daily batch that needs a dedicated task's CPU and memory and silently no-ops on a shared webhead. It runs as the `cron-generate-sitemap` EventBridge rule (`cron(0 0 * * ? *)`, `CronGenerateSitemapRule` in CFN) → `RunTask` of `e2cron-family`, logging to `/aws/fargate/fargate-cron-awslogs`. Keep it out of `Schedule.pm` so it doesn't run twice.
 
 ## Key behaviors
 
@@ -63,38 +65,26 @@ The jobs are the **existing** `cron/*.pl` scripts, unchanged — the runner fork
 
 The leader emits the `E2/Cron` **`UnhealthyJobs`** metric (count of `wedged` + `failing` from `Health->evaluate`) each run and during long jobs. Emission is gated to **prod-live only** (skipped in dev and in dry-run shadow, where jobs aren't running and would read falsely-overdue).
 
-CFN alarm **`e2-cron-wedged-jobs`**: `UnhealthyJobs > 0` for 3 min **OR missing data** (`TreatMissingData: breaching`) → publishes to the existing `E2AlertsTopic` email. The missing-data half catches **total cron death** (no webhead winning the lock and emitting). The alarm is gated behind the `EnableCronAlarm` parameter and an inline `cloudwatch:PutMetricData` policy (namespace-scoped to `E2/Cron`) sits on the task role. Cost: ~$0.40/mo.
+CFN alarm **`e2-cron-wedged-jobs`**: `UnhealthyJobs > 0` for 3 min **OR missing data** (`TreatMissingData: breaching`) → publishes to the existing `E2AlertsTopic` (`e2-alerts`) email. The missing-data half catches **total cron death** (no webhead winning the lock and emitting). An inline `cloudwatch:PutMetricData` policy (namespace-scoped to `E2/Cron`) sits on the task role. Cost: ~$0.40/mo.
 
 ## Dev vs prod
 
-- **Dev** always runs the sidecar **live** (keeps `newwriteups`/datastash fresh — dev otherwise has no cron). Init-on-first-sight + datastash being read-only keep it from interfering with the test suite.
-- **Prod** ships **dark** (`E2_CRON_ENABLED` unset → not spawned) and is enabled via CFN parameters at cutover.
+- **Dev** always runs the sidecar **live** (keeps `newwriteups`/datastash fresh — dev otherwise has no cron). Init-on-first-sight + datastash being read-only keep it from interfering with the test suite. Output goes to `/tmp/development.log`.
+- **Prod**: the `e2app` container sets `E2_CRON_ENABLED=1` (spawn the sidecar) and `E2_CRON_LIVE=1` (run jobs; without it the sidecar is a dry-run shadow). Both are hard-coded env vars in `E2AppFargateTaskDefinition`. **`docker/e2app/apache2_wrapper.rb` reads them, so they are not dead config** — removing them once silently stopped cron in prod (#4444).
 
-## Cutover (CFN parameters + `ops/cf.rb`)
+## Cutover history
 
-`cf.rb --update` deploys the template **using each parameter's `Default`** (no runtime overrides). So a cutover step = **edit the parameter's `Default` in `cf/everything2-production.json` and run `cf.rb --update`** — a reviewable diff; the committed `Default` always reflects the live state; revert = flip it back.
+The staged cutover (shadow → live → alarm → teardown) used temporary CFN parameters (`EnableCron`, `CronLive`, `EnableCronAlarm`) that have since been removed; see #4252 and `git log -- cf/everything2-production.json` for the details. What remains from the old EventBridge setup:
 
-| Parameter | Env var | Effect when `true` |
-|---|---|---|
-| `EnableCron` | `E2_CRON_ENABLED` | spawn the sidecar (shadow dry-run unless `CronLive` too) |
-| `CronLive` | `E2_CRON_LIVE` | run jobs **+ the 8 `Cron*Rule`s flip to `State: DISABLED`** atomically (via `CronLiveCond` — no double-execution window) |
-| `EnableCronAlarm` | — | create the `e2-cron-wedged-jobs` alarm |
-
-**Sequence** (each is a `Default` edit + `cf.rb --update`; reversible until teardown):
-
-1. **Shadow** — `EnableCron=true`. Sidecar spawns dry-run; EventBridge still drives real jobs. Validate leader election + failover across both webheads.
-2. **Live** — `CronLive=true`. Webheads run jobs; EventBridge rules disable atomically. Validate jobs running, `cron_state` advancing, the metric flowing.
-3. **Alarm** — `EnableCronAlarm=true` (only after the metric is flowing, so `breaching` can't false-fire).
-4. **Teardown** — delete the 8 `Cron*Rule` blocks + `ECSEventsRole` from the template, deploy. They're `DeletionPolicy: Delete`, so CFN removes them.
-
-### Teardown keeps `e2cron-family`
-The 8 EventBridge rules + `ECSEventsRole` are the *scheduled-cron* infra and get deleted. **Keep** `E2CronFargateTaskDefinition` + `FargateCronLogGroup` — `e2cron-family` doubles as the **on-demand ops task runner** for `ops/nodepack-refresh.rb` and `ops/cron-runner.rb` (which `RunTask` it directly with their own credentials, not via `ECSEventsRole`).
+- `CronGenerateSitemapRule` + `ECSEventsRole` (the sitemap task, above).
+- `E2CronFargateTaskDefinition` (`e2cron-family`) + `FargateCronLogGroup`, used by the sitemap rule and as the **on-demand ops task runner** for `ops/nodepack-refresh.rb` and `ops/cron-runner.rb` (which `RunTask` it directly with their own credentials).
 
 ## Runbook
 
 - **Is cron alive / healthy?** `cron_leader.heartbeat` age (< 90s = leader alive), `cron_state` per-job `status` + `last_success`. The `E2/Cron UnhealthyJobs` metric and the `e2-cron-wedged-jobs` alarm surface it on the alerts email.
-- **Logs** — `[cron]` lines in `/aws/fargate/fargate-app-awslogs` (`leader for this run`, `started X` / `X finished: ok|fail|timeout`, or `[dry-run] would run X` in shadow).
-- **Force-disable / roll back** — flip `CronLive` (and/or `EnableCron`) `Default` back to `false` + `cf.rb --update`; EventBridge rules re-enable atomically and the webhead cron goes shadow/dark.
+- **Logs** — `[cron]` lines in `/aws/fargate/fargate-app-awslogs` (`leader for this run`, `started X` / `X finished: ok|fail|timeout`, or `[dry-run] would run X` in shadow). Sitemap: `/aws/fargate/fargate-cron-awslogs`.
+- **Force-disable** — set `E2_CRON_LIVE` to `0` (shadow) or remove `E2_CRON_ENABLED` (no sidecar) in the task definition and deploy. There is no EventBridge fallback any more, so scheduled jobs stop until it is turned back on.
+- **Run one job by hand** — `ops/cron-runner.rb --job cron_datastash` (script name without `.pl`; `--extra` for one argument, `--task-family e2heavyjob-family` for big jobs) runs it in a one-off Fargate task.
 - **A job is wedged** — `cron_state` shows `status=running` past its timeout (`hung`) or `consecutive_failures >= 3` (`failing`); check that job's `last_output_tail` and the `[cron]` logs.
 
 ## Why (cost)

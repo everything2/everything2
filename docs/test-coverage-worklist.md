@@ -1,6 +1,13 @@
 # Test Coverage Worklist — Routing Epoch Readiness
 
 **Created:** 2026-07-05 (overnight session)
+> **Status (verified 2026-11-16):** Gap A (9 specs) and Gap B (signup + password reset) are done; Gap C/D
+> landed as `writeups-by-type.spec.js` + `entity-deeplink.spec.js`; the parametric `pagination-parity`
+> spec was never written. Now **39 e2e spec files**, 222 `t/` files, 313 jest test files. Documents
+> components: **235 — 74 with interaction tests, 161 render-only, 0 untested**; **56** render-only
+> components call `fetch(` (list in §3b, recomputed). Page modules still reading params: **61** (44
+> excluding feeds/tickers), down from 80. The client router this net was built for hasn't started.
+
 **Purpose:** The checklist that (a) captures the controller→React-routing gap, (b) builds the
 "before/after" test net that lets us flip pages to the client router fast and safely, and (c)
 records the jest coverage gaps found in a module-by-module audit. Work top-to-bottom; check items
@@ -16,7 +23,7 @@ of the APIs, ORM sits *behind* them. Decision (see chat): **routing epoch next**
 last (unless login-with-Google is pulled forward, in which case do only the account-model slice
 first). This doc is the routing epoch's test readiness.
 
-The routing epoch converts **80 Page controllers** that still read query params for their own logic
+The routing epoch converts **80 Page controllers** (61 as of 2026-11-16) that still read query params for their own logic
 (pagination / entity-selection / prefill / external-link landing — all reads; mutations are already
 gone) into a **client router + GET APIs** world. The single sanctioned SSR CGI-parsing element is
 `Everything::PageState` (`node`, `displaytype`); no role/mixin or the `Everything::Page` base class
@@ -73,33 +80,33 @@ These are API-driven now (jest interaction covered) but have zero browser covera
 natural before/after anchors. For each: cover the **states** (guest→denied/login, non-admin→denied
 where applicable, admin→success) and the primary mutation round-trip via its API.
 
-- [ ] `the-borg-clinic.spec.js` — admin sets numborged; non-admin denied; lookup-then-set flow
-- [ ] `tokenator.spec.js` — admin gives token(s); per-user results; non-admin denied
-- [ ] `websterbless.spec.js` — editor/admin bless (PM+karma+GP); non-editor denied
-- [ ] `penny-jar.spec.js` — logged-in give/take (GP + jar count); guest login-gated
-- [ ] `node-tracker.spec.js` — logged-in update snapshot; NoGuest redirect for guest
-- [ ] `nodetype-changer.spec.js` — admin lookup→change; **permanent-cache confirm gate**; non-admin denied
-- [ ] `ip-blacklist.spec.js` — admin add(single+CIDR)/remove/list; the unified page; non-admin denied
-- [ ] `usergroup-message-archive.spec.js` — member copy-to-self + reset-time; guest login msg; non-member error
-- [ ] `nate-unborg.spec.js` — admin unborg button → reload; non-admin brush-off
+- [x] `the-borg-clinic.spec.js` — admin sets numborged; non-admin denied; lookup-then-set flow
+- [x] `tokenator.spec.js` — admin gives token(s); per-user results; non-admin denied
+- [x] `websterbless.spec.js` — editor/admin bless (PM+karma+GP); non-editor denied
+- [x] `penny-jar.spec.js` — logged-in give/take (GP + jar count); guest login-gated
+- [x] `node-tracker.spec.js` — logged-in update snapshot; NoGuest redirect for guest
+- [x] `nodetype-changer.spec.js` — admin lookup→change; **permanent-cache confirm gate**; non-admin denied
+- [x] `ip-blacklist.spec.js` — admin add(single+CIDR)/remove/list; the unified page; non-admin denied
+- [x] `usergroup-message-archive.spec.js` — member copy-to-self + reset-time; guest login msg; non-member error
+- [x] `nate-unborg.spec.js` — admin unborg button → reload; non-admin brush-off
 
 ### Gap B — auth account flow (uses the email helper) — HIGH VALUE
-- [ ] `signup-flow.spec.js` — Sign Up form → `test-signup.pl` link → `confirm_password` login form →
+- [x] `signup-flow.spec.js` *(landed as `signup-confirm.spec.js`)* — Sign Up form → `test-signup.pl` link → `confirm_password` login form →
       set password → logged in. States: fresh signup, **expired link** (state=expired, no nuke now),
       bad token (login_required), already-activated. **Q(morning): OK to have the spec shell out to
       `docker exec … test-signup.pl`, or do we want a Playwright-visible dev mailbox?**
-- [ ] `reset-password.spec.js` — Reset password → confirm link → set new password → logged in
+- [x] `reset-password.spec.js` *(landed as `password-reset.spec.js`)* — Reset password → confirm link → set new password → logged in
 
 ### Gap C — pagination / navigation parity (write behavior-true-in-both-worlds) — MEDIUM
 For the ~19 pagination controllers. Assert the CONTENT of page N and that nav links change the
 content; today it's full-reload, so also snapshot the "reload happens" baseline to later invert.
-- [ ] `writeups-by-type.spec.js` (count/page/wutype)
+- [x] `writeups-by-type.spec.js` (count/page/wutype)
 - [ ] `pagination-parity.spec.js` — parametric over: usergroup_message_archive, who_killed_what,
       homenode_inspector, everything_user_search, caja_de_arena, recent_node_notes, node_notes_by_editor
 - [ ] extend `usergroup-discussions.spec.js` — offset/show_ug nav (pairs with #4473)
 
 ### Gap D — entity-selector landings — MEDIUM
-- [ ] `entity-select.spec.js` — parametric deep-links: reputation_graph?id, show_user_vars?username,
+- [~] `entity-select.spec.js` *(partial: `entity-deeplink.spec.js` covers show_user_vars + reputation_graph)* — parametric deep-links: reputation_graph?id, show_user_vars?username,
       ip_hunter?hunt_ip, node_parameter_editor?for_node, the_borg_clinic?clinic_user (prefill)
 
 ---
@@ -120,18 +127,23 @@ that matters for an API-first site). After e2e dedupe the true fetch-gap is **�
 - [x] `UnimplementedPage` (3 tests: identity echo, encoded GitHub issue link, missing-data degrade)
 
 ### 3b. Render-only but calls `fetch(` (untested API interaction) — HIGH
-Precise count after module-by-module recount (2026-07-05): **56** fetch-driven Documents components
-whose test file is mount-only (no `fireEvent`/`userEvent`). Full list:
-AdminBestowTool, AltarOfSacrifice, BetweenTheCracks, CategoryEdit, Collaboration, CollaborationEdit,
-CoolArchive, CostumeRemover, CreateRoom, DebatecommentEdit, Decloaker, DisplayCategories, Document,
-DrNatesSecretLab, E2Bouncer, E2GiftShop, E2Poll, E2clientEdit, EditWeblogMenu, EverythingPollArchive,
-EverythingPollCreator, EverythingPollDirectory, EverythingUserPoll, KlaprothVanLines,
-MagicalWriteupReparenter, MessageInbox, NewUserImages, NewsForNoders, NodeBackup, NodeParameterEditor,
-PageOfCool, PodcastEdit, QuickRename, RecalculateXp, RecordingEdit, Registry, ReputationGraph,
-~~ResetPassword~~ **[x] done 2026-07-05 (4 interaction tests: client-side validation branches +
-POST /api/password/reset-request + success/error)**, Room, Setting, Settings, SignUp, SilverTrinkets,
-SiteTrajectory, SpamCannon, SuspensionInfo, TheCostumeShop, TheNodeshellHopper, UserDisplay, UserEdit,
-UserEditVars, UserSearch, Usergroup, UsergroupDiscussions, VotingExperienceSystem, WheelOfSurprise.
+**Recomputed 2026-11-16** (component has a test file, no `fireEvent`/`userEvent` in it, and the
+component calls `fetch(`): **56**. The set has shifted — many pure-gate conversions moved data loading
+into React, so report pages now fetch on mount. Current list:
+AltarOfSacrifice, BetweenTheCracks, CajaDeArena, Collaboration, ContentReports, CoolArchive,
+CostumeRemover, CreateRoom, DebatecommentEdit, Decloaker, DisplayCategories, Document,
+DrNatesSecretLab, E2GiftShop, E2clientEdit, EditWeblogMenu, EverythingDataPages,
+EverythingPollArchive, EverythingPollCreator, EverythingPollDirectory, EverythingSRichestNoders,
+EverythingStatistics, EverythingUserPoll, EverythingsBestUsers, EverythingsBestWriteups,
+EverythingsBiggestStars, HomenodeInspector, KlaprothVanLines, LevelDistribution, MyBigWriteupList,
+NewUserImages, NodeBackup, NodeParameterEditor, NodesOfTheYear, PageOfCool, PodcastEdit,
+PopularRegistries, QuickRename, RecalculateXp, RecentRegistryEntries, RecordingEdit,
+RegistryInformation, Room, SignUp, SilverTrinkets, SiteTrajectory, SuspensionInfo, TheCostumeShop,
+TheNodeshellHopper, UserDisplay, UserSearch, UserStatistics, Usergroup, VotingExperienceSystem,
+WheelOfSurprise, WriteupsByType.
+
+*(The 2026-07-05 list — AdminBestowTool, E2Bouncer, MessageInbox, Settings, SpamCannon, UserEdit,
+Registry, etc. — has since gained interaction tests.)*
 
 **Already compensated by e2e (lower jest priority):** `WheelOfSurprise` (wheel.spec), `UsergroupDiscussions`
 (usergroup-discussions.spec), `SuspensionInfo`/`Decloaker`-family, `SignUp`+`ResetPassword` auth flow
@@ -158,7 +170,7 @@ UserEditVars, UserSearch, Usergroup, UsergroupDiscussions, VotingExperienceSyste
 - [x] `Registry` (4, `.interaction.`) — guest gate; submit → `/action/submit`; delete-own (confirm) → `/action/delete`; admin_delete
 - [x] `CategoryEdit` (2, `.interaction.`) — remove_member; update_meta (public → author_user = guest id)
 
-**True remaining jest gap ≈ 39** after this batch. **Next tier:** `NodeParameterEditor`, `CreateRoom`,
+**True remaining jest gap ≈ 39** after this batch *(2026-07-05; see the 2026-11-16 recount above — 56, with a different mix)*. **Next tier:** `NodeParameterEditor`, `CreateRoom`,
 `QuickRename`, `RecalculateXp`, `MagicalWriteupReparenter`, `Collaboration` (single-action), the poll
 family (`EverythingPollCreator`/`EverythingPollArchive`), `SignUp` (jest side — e2e-covered).
 
@@ -236,9 +248,9 @@ UnimplementedPage. Full jest suite after additions: **302 suites / 2516 tests, a
 signup-confirm e2e; validates client-side gates before the network + the reset-request POST.
 
 ### Still TODO (documented, not yet written)
-- Gap C: pagination-parity specs (writeups_by_type, ugma pages, who_killed_what, homenode_inspector…)
-- Gap D: entity-selector deep-link specs (reputation_graph?id, show_user_vars?username, ip_hunter…)
-- Jest §3b: ~50 remaining fetch-driven components (next tier: MessageInbox, Settings, UserEdit,
+- Gap C: ~~writeups_by_type~~ done; parametric pagination-parity spec (ugma pages, who_killed_what, homenode_inspector…) still open
+- Gap D: ~~reputation_graph?id, show_user_vars?username~~ done; ip_hunter / node_parameter_editor / the_borg_clinic deep-links still open
+- Jest §3b: 56 fetch-driven render-only components (recomputed 2026-11-16, see §3b) (next tier: MessageInbox, Settings, UserEdit,
   E2Poll, SpamCannon — see §3b "Suggested next tier by value")
 - ~~Pre-existing e2e failure: `bookmark-notification.spec.js`~~ **RESOLVED (Jay's call, 2026-07-05):**
   a writeup isn't bookmarkable (writeup/draft nodetypes carry `disable_bookmark=1`), so bookmarking a

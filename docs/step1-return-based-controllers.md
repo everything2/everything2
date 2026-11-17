@@ -1,5 +1,9 @@
 # Step 1 — Return-based controllers (retire the STDOUT capture)
 
+> **Status (verified 2026-11-16):** done in #4483 — kept as a historical record. `app.psgi` finalizes
+> the returned `Everything::Response` on both paths and has no STDOUT capture. The "Current state — half
+> done" and touch-point sections below describe the pre-change code (line numbers are stale).
+
 **Status:** DONE (1a + 1b + 1c, 2026-07-09) — the STDOUT capture is deleted; both request paths are
 return-based. · **Created:** 2026-07-08 · Prereq for the composer/dispatch-table arc in
 [api-driven-architecture.md](api-driven-architecture.md).

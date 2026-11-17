@@ -1,11 +1,11 @@
 # Everything2 — AI Assistant Context
 
-**Last Updated**: 2026-06-23
+**Last Updated**: 2026-11-16
 **Maintainer**: Jay Bonci (jay@bonci.net)
 
 This file is a thin layer of non-discoverable context. For anything you can derive by reading code or running `git log`, do that instead. Treat `docs/` as the deeper reference and this file as a finger pointing at it.
 
-E2 is a 1999-vintage Perl/mod_perl/MySQL community writing site mid-modernization: React frontend, AWS Fargate, in-flight migration off the legacy delegation pattern. Solo-maintained.
+E2 is a 1999-vintage Perl/MySQL community writing site mid-modernization: PSGI/Starman behind Apache (mod_perl is gone), React frontend, AWS Fargate, in-flight migration off the legacy delegation pattern. Solo-maintained. The public repo is security-sensitive: security fixes ship as a generic "Security fix" issue/PR with no exploit detail in commits, comments or test names.
 
 ---
 
@@ -36,17 +36,17 @@ E2 is a 1999-vintage Perl/mod_perl/MySQL community writing site mid-modernizatio
 
 **JSON UTF-8.** `JSON::decode_json` expects raw UTF-8 bytes and decodes internally. Calling `decode_utf8` on POSTDATA *before* `decode_json` produces "Wide character in subroutine entry" with non-ASCII input.
 
-**API responses must be HTTP 200.** mod_perl appends HTML to non-200 responses, breaking JSON clients. Return errors as `[$self->HTTP_OK, {success => 0, error => '...'}]`. Never return 4xx/5xx from `Everything::API::*` controllers.
+**API responses must be HTTP 200.** Return errors as `[$self->HTTP_OK, {success => 0, error => '...'}]`; the React clients read the body only on a 200 (`res.ok`), so a 4xx turns a real error message into a generic failure. (It started as a mod_perl workaround; the client contract is why it still holds.) Some older controllers still return 4xx; #3768 tracks the recut and `docs/API.md` lists the exceptions. Never add new ones.
 
 **Blessed vs hashref node access.** Controllers (`Everything::Page`, `Everything::API`) get blessed objects: `$user->title`. `Everything::Application.pm` gets raw hashrefs: `$USER->{title}`. Cross-conversion: `$user->NODEDATA` → hashref, `$APP->node_by_id($USER->{node_id})` → blessed.
 
 **Don't ship circular hashrefs in JSON.** `$node->{type}` is itself a node hashref with circular references and will explode the JSON encoder. Extract: `$node->{type}{title}`.
 
-**Don't call `Everything::Delegation::*` from controllers.** Implement logic in `buildReactData()` or extract to `Application.pm`. The delegation modules are being eliminated; the only remaining permitted exception is `Everything::Delegation::htmlcode::*` during migration cleanup.
+**Don't call `Everything::Delegation::*` from controllers.** Implement logic in `buildReactData()` / an API, or extract to `Application.pm`. `Delegation::htmlcode` is down to zero subs (#4358); the remaining `achievement` / `maintenance` / `notification` / `room` modules are being displaced, so don't add callers.
 
 **Format dates through `react/utils/dateFormat.js`, not `toLocaleDateString` directly.** Server stores all timestamps in UTC (Apache runs `TZ='+0000'`), but JS `toLocaleDateString` defaults to the *viewer's* local timezone — so a UTC timestamp late in the day renders as the next day for viewers east of UTC. Use `formatDate(input)` (long form), `formatShortDate`, `formatDateTime`, or `formatTime`. All default to `timeZone: 'UTC'`. Issue #4056 was caused by ignoring this; same bug pattern existed in ~18 components before the cleanup.
 
-**LinkNode single-encodes; the server-side helper decodes once. Don't break the pair.** `react/components/LinkNode.js` percent-encodes title characters (`& @ + / ; ?`) exactly once via `encodeURIComponent`, and `Everything::HTML::_recover_route_params_from_request_uri` reads `$ENV{REQUEST_URI}` and decodes exactly once. The two are a matched set — change one and you must update the other, or every link with a special character in its title silently 404s (well, falls through to the `Findings:` page). The historical double-encoding workaround in `LinkNode.js` was the only thing keeping title-bearing URLs alive while the Apache rewrite block was the dispatcher; the helper replaced that workaround in #4060. Issue #4129 will eventually remove both pieces together when PSGI lands.
+**LinkNode single-encodes; the server-side helper decodes once. Don't break the pair.** `react/components/LinkNode.js` percent-encodes title characters (`& @ + / ; ?`) exactly once via `encodeURIComponent`, and `Everything::HTML::_recover_route_params_from_request_uri` reads `$ENV{REQUEST_URI}` and decodes exactly once. The two are a matched set — change one and you must update the other, or every link with a special character in its title silently 404s (well, falls through to the `Findings:` page). The historical double-encoding workaround in `LinkNode.js` was the only thing keeping title-bearing URLs alive while the Apache rewrite block was the dispatcher; the helper replaced that workaround in #4060. PSGI is live; #4129 (open) removes both pieces together.
 
 **A CFN env var is only "dead" if `docker/` doesn't read it either.** Config flags are read in more places than the Perl app: the container entrypoint `docker/e2app/apache2_wrapper.rb` reads env directly (e.g. `E2_CRON_ENABLED`/`E2_CRON_LIVE` gate whether the leader-elected cron sidecar even starts; `STARMAN_WORKERS`/`STARMAN_MAX_REQUESTS` launch Starman). Before removing a `E2_*` var from `cf/*.json` as cruft, grep **`docker/`** in addition to `ecore/ tools/ *.psgi`. Removing `E2_CRON_ENABLED` on the strength of an `ecore`-only grep silently killed the cron sidecar in prod (#4444) — datastashes froze until the flags were restored.
 
@@ -54,7 +54,7 @@ E2 is a 1999-vintage Perl/mod_perl/MySQL community writing site mid-modernizatio
 
 ## Visual / styling
 
-The "Kernel Blue" palette is the design system: `#38495e` primary, `#4060b0` link, `#507898` muted text, `#e8f4f8` light bg, `#3bb5c3` cool teal. Driven by CSS variables in `www/css/1973976.css` (basesheet, ~24K lines). Don't use `--e2-text-muted` as a *background* — it's a text color and themes override it inconsistently. Use `--e2-btn-secondary-*` for button backgrounds.
+The "Kernel Blue" palette is the design system: `#38495e` primary, `#4060b0` link, `#507898` muted text, `#e8f4f8` light bg, `#3bb5c3` cool teal. Driven by CSS variables in `www/css/1973976.css` (basesheet, ~40K lines). Don't use `--e2-text-muted` as a *background* — it's a text color and themes override it inconsistently. Use `--e2-btn-secondary-*` for button backgrounds.
 
 19 stylesheets in `www/css/`. Basesheet (`1973976.css`) carries shared structure; per-theme zensheets override colors. Refactor away from inline `style={{...}}` toward BEM classnames in basesheet is the dominant frontend pattern.
 
@@ -64,13 +64,16 @@ The "Kernel Blue" palette is the design system: `#38495e` primary, `#4060b0` lin
 
 | Need | Place |
 |---|---|
-| Project roadmap | [docs/DEVELOPER-ROADMAP.md](docs/DEVELOPER-ROADMAP.md) (long; phases drift from reality, cross-check with `git log`) |
+| Docs index | [docs/README.md](docs/README.md) — every doc with a one-line description. All of `docs/` was re-verified against code 2026-11-16 (each has a "Last verified" line); finished plans carry a status banner |
+| Project roadmap | [docs/DEVELOPER-ROADMAP.md](docs/DEVELOPER-ROADMAP.md) ("Where we are" verified 2026-11-16; still cross-check with `git log`) |
 | MySQL 8.4 migration | ✅ **done 2026-06-07** (#4226); [docs/mysql-migration-plan.md](docs/mysql-migration-plan.md) is now a tombstone, forward work in the dependency tree + #4225 |
-| ORM/DBIx::Class plan | [docs/orm-migration-plan.md](docs/orm-migration-plan.md) (Dec 2025, deferred) |
+| Object-model plan | [docs/orm-migration-plan.md](docs/orm-migration-plan.md) — DBIx::Class was **rejected** (Jun 2026); the plan is to finish `Everything::Node::*` on Object::Pad. Not started; #4178 (Globals) is step 1 |
 | CSS architecture + theme backlog | [docs/stylesheet-system.md](docs/stylesheet-system.md), [docs/css-consistency-audit.md](docs/css-consistency-audit.md) (inline-styles refactor is resolved) |
 | Mobile audit | [docs/mobile-audit.md](docs/mobile-audit.md), `tools/mobile-layout-checker.js` |
 | Schema (current) | `nodepack/dbtable/*.xml` — CREATE TABLE statements, slated for migration to versioned SQL during MySQL work |
-| Special document map | `ecore/Everything/Page/*.pm` + `react/components/DocumentComponent.js` (the live registry; the old hand-curated `special-documents.md` was retired once delegation/document.pm was eliminated) |
+| Special document map | `ecore/Everything/Page/*.pm`, `ecore/Everything/PureGates.pm` (80+ pages that are pure gates with no Page module) + `react/components/DocumentComponent.js` (the live registry) |
+| API reference | [docs/API.md](docs/API.md) — every routed endpoint (checked against all API modules 2026-11-16) |
+| Deploy + rollback | [docs/infrastructure-overview.md](docs/infrastructure-overview.md). Deploys are manual (`ops/run-codebuild.rb` → CodeBuild → ECS force-deploy of `e2app-family` with `:latest`). The ECS circuit breaker rolls back failed deploys to the previous image digest and emails `e2-alerts` (#4565) |
 | Active CSS-diff workflow | `tools/computed-style-diff.js --help` |
 
 ---
@@ -98,19 +101,17 @@ Test command shortcuts: `./docker/devbuild.sh` (full rebuild + tests), `npm test
 
 ---
 
-## Operational priorities (June 2026, post-PSGI, post-opcode)
+## Operational priorities (November 2026)
 
-We're past the PSGI cutover (LIVE in prod), the MySQL 8.4 migration (done #4226), and the **opcode→API migration (done #4335 — verified 2026-06-23)**: `Everything::Delegation::opcode` is gone, `execOpCode` + the `op=` dispatch are removed from `HTML.pm`, and there's no `nodepack/opcode/`. That was the gating prerequisite, so **React routing is now unblocked.** These are pointers; verify with `git log`/`git status` before acting. The destination is a **faster, lighter, React-routed site**, reached in this order:
+Shipped and off the board: PSGI (live), MySQL 8.4 (#4226), opcode→API (#4335), the htmlcode burndown (#4259/#4358), htmlpage retirement (#4361), the render-time mutation audit (#4298), return-based controllers (#4483), guest chrome caching (#4371 + the guest-request diet #4419), the cron sidecar (#4246), and a November security/hardening pass. These are pointers; verify with `git log` and `docs/DEVELOPER-ROADMAP.md` before acting. The destination is still a **faster, lighter, React-routed site**:
 
-1. **htmlcode retirement** (#4259, `epoch:infra-cleanup`) — *in progress, current detour.* Factor the remaining `Everything::Delegation::htmlcode` subs (~11 live: `publishwriteup`/`unpublishwriteup`, `atomise`, `canpublishas`, `send`, `screen`, `user`, `url`, `add`, `nopublishreason`, …) into real, unit-tested `Everything::Application` methods; update callers; retire the delegation subs + orphaned nodepack nodes. The sibling Delegation modules (`achievement`/`maintenance`/`notification`/`room`) are on the same chopping block as each is displaced. Each batch lands `Refs #4259` (umbrella stays open).
+1. **Skinny controllers → APIs → pure gates.** Keep moving page logic into `POST /api/…` endpoints driven by React, and URL params + display text into React, until controllers are pure gates (80+ already live in `Everything::PureGates`). Left: ~44 non-feed Page modules that still read params, and the `$query` reads in `Delegation::maintenance`. As each Document migrates it graduates from a render-only fixture test to the submit→result→error pattern (templates: `TheOldHookedPole.test.js`, `EverythingsMostWanted.test.js`); ~56 data-fetching Documents are still render-only.
 
-2. **Skinny controllers → APIs → React.** Keep collapsing server-rendered `Everything::Page`/legacy controller logic into thin shells over `POST /api/…` endpoints, with the React component owning state and calling the API — the pattern proven on `the_old_hooked_pole` + `everything_s_most_wanted` (#4198). This is the bulk of the controller detangle: every mutating page action becomes an API call a React view drives. As each Document migrates it should graduate from a render-only fixture test to the submit→result→error interaction pattern (templates: `TheOldHookedPole.test.js`, `EverythingsMostWanted.test.js`). ~60 API-driven Documents are still on render-only tests.
+2. **React client router** (`epoch:react-routing`) — the SPA flip, not started in `react/`. Server-side primitives are done and tested (pagestate facade #4255, the `e2.meta` producer, the legacy-URL route-recovery helper: `t/101`/`t/103`/`t/120`/`t/142`/`t/143`). Remaining BUILD: the client router/resolver (it re-implements the Perl URL-recovery parsing; keep the two in parity, the LinkNode↔helper round-trip is the biggest untested risk), `useDocumentMeta`, a routing-parity harness, then the progressive flip (SSR first paint, client-route navigation). #4257 (moving `buildNodeInfoStructure` into PageState) is the structural prep.
 
-3. **React routing prep** (`epoch:react-routing`) — the SPA flip. Server-side primitives are DONE + tested: pagestate facade (#4255), `normalize_types`, the `e2.meta` producer, and the legacy-URL route-recovery helper (`t/101`/`t/103`/`t/120`/`t/142`/`t/143`). Remaining BUILD: the React client router/resolver (it re-implements the Perl URL-recovery parsing inline — keep the two parsers in parity; the cross-language LinkNode↔helper round-trip is the biggest untested risk), `useDocumentMeta`, a routing-parity harness, and the progressive flip (SSR first paint, client-route subsequent nav).
+3. **Permissions + API hygiene alongside:** #4498/#4463 (declarative permission mixins), #4301 (CSRF guard), #3768 (API status recut). The superdoc type encodes access (restricted→admin, oppressor→editor); re-assert it in every API that serves a page.
 
-4. **Guest-user chrome caching detour** (#4257, the 2b chrome/content split) — *still to take.* The near-term **page-speed + payload-size** win: cache the non-personalized page chrome for guest users so we stop re-rendering and re-shipping it per request. This is the concrete performance reason to push routing forward; take it on the way to the full client-router flip.
-
-5. **ORM / data-model / node-model cleanup** — **deferred to last.** Pull forward *only* if it becomes a cost bottleneck or blocks a needed feature. The node model is adequate today (RDS healthy, not pressured); the API layer built in steps 2–3 is the **seam that de-risks** a later ORM migration, so do it on the cleaner/smaller surface the APIs expose — not speculatively first.
+4. **Object-model epoch — deferred to last.** Finish `Everything::Node::*` on Object::Pad (not DBIC), starting with #4178 (Globals); sqitch is a parallel track that hasn't started. Pull forward only if it becomes a cost bottleneck or blocks a feature; the API layer from steps 1–2 is the seam that de-risks it.
 
 **ecoretool/nodepack retirement** remains a long-term direction that happens organically as each step above displaces a category (htmlcode/opcode nodes → deleted; templates → React). Not a standalone project.
 

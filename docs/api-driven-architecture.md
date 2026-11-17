@@ -1,5 +1,11 @@
 # Toward a 100% API-driven E2 — architecture & the I/O testing story
 
+> **Status (verified 2026-11-16):** living direction doc. Steps 0 and 1 are **done** (CGI removed #4244;
+> return-based controllers + capture deleted #4483). Step 2 is **partial** (guest chrome cached via
+> #4371; the structural `PageState` split is #4257, open). Step 3 is **well along**: 80 pages are pure
+> gates (#4513) and mutations are API-only (#4298), but 44 non-feed Page modules still read params.
+> Steps 4–5 (React-owned routing, delete page-render machinery) are **not started**.
+
 **Status:** design / direction (2026-06-09). Written to think through the end state Jay
 described: *"start moving HTTP responses out of Controllers and finalize the move to a 100%
 API-driven site … to help get more granular testing around inputs and outputs."* This is the
@@ -41,11 +47,11 @@ This is already *most* of the API shape — `Everything::API::*` controllers ret
 |---|---|---|
 | Request parse | ✅ Plack::Request (`PlackQuery`) — CGI gone | unchanged |
 | Response format | ✅ `Everything::Response` (Plack::Response/Cookie::Baker) — CGI gone | unchanged |
-| Emission | STDOUT capture in app.psgi parses printed headers | controllers **return** a response; app.psgi `finalize`s it (no capture) |
+| Emission | ✅ controllers **return** an `Everything::Response`; app.psgi `finalize`s it — capture deleted (#4483) | unchanged |
 | API controllers | return `[status, body, headers]`; router prints | return `[status, body, signals]`; router builds `Everything::Response` |
-| Page controllers | assemble `e2` blob + render HTML shell server-side; print | return content data; shell + data served via the API |
-| Page data (`e2` blob) | `buildNodeInfoStructure` (947-line god-method) prints into the shell | `PageState` → `/api/pagestate` (chrome) + `/api/nodes/:id` (content) |
-| Routing | server decides page vs API; renders HTML per page | React owns routing; server serves a static shell + JSON |
+| Page controllers | 🟡 return `buildReactData` content; 80 are pure gates (`{type}` only); HTML shell still server-rendered | return content data; shell + data served via the API |
+| Page data (`e2` blob) | 🟡 `buildNodeInfoStructure` (~560 lines, Nov 2026) still builds it; guest chrome comes from the guestchrome datastash (#4371) | `PageState` → `/api/pagestate` (chrome) + `/api/nodes/:id` (content) |
+| Routing | ⬜ server decides page vs API; renders HTML per page | React owns routing; server serves a static shell + JSON |
 
 The end state: **the server serves a thin, cacheable React shell plus JSON from the same API the
 client already calls.** No bespoke per-page HTML render. "Page load" and "client navigation"
@@ -58,35 +64,37 @@ become the same code path (fetch pagestate + node content).
 0. **CGI out of request & response layers.** ✅ done. `PlackQuery` (request) +
    `Everything::Response` (response). Nothing prints through CGI anymore.
 
-1. **Return-based responses (retire the STDOUT capture).** ✅ **done for the API path (2026-06-10).**
+1. **Return-based responses (retire the STDOUT capture).** ✅ **done for both paths (#4483, 2026-07-09);
+   capture deleted.** API path landed first (2026-06-10):
    `Everything::APIRouter::output` now builds an `Everything::Response` and **returns** it;
    `app.psgi` `finalize`s it directly, so the API response **never touches the STDOUT capture** (→
-   immune to the #4237 capture-poisoning class). **Dual-mode**: the page path
-   (`Everything::HTMLRouter` → base `Everything::Router::output`) still prints into the capture
-   unchanged. The two share `Everything::Router::_build_response_parts` (the I/O-free header/body
+   immune to the #4237 capture-poisoning class). **Dual-mode** (until #4483): the page path
+   (`Everything::HTMLRouter` → base `Everything::Router::output`) still printed into the capture. The two share `Everything::Router::_build_response_parts` (the I/O-free header/body
    builder), and `Everything::Response->from_cgi_parts` turns the same CGI-style header hash into a
    finalize-able response — so the return path is field-for-field equivalent to the capture path
    (pinned by t/131). The one request-flow `print` site the API depended on
    (`Everything::Request::login`'s Set-Cookie) now also accumulates the cookie on the request
-   (`response_cookies`), which the API router folds into the response. The page path converts as its
-   remaining `print` sites move into returned content; the capture is deleted last.
+   (`response_cookies`), which the API router folds into the response. The page path then converted
+   (#4483) and the capture was deleted.
    *(This is "moving HTTP out of controllers" — the first real step of Jay's ask. As-built notes at
    the bottom of this doc.)*
 
-2. **`PageState` extraction (the `e2` blob → an API seam).** Pull `buildNodeInfoStructure` out of
+2. **`PageState` extraction (the `e2` blob → an API seam).** 🟡 *partial — guest chrome cached (#4371),
+   structural split open (#4257).* Pull `buildNodeInfoStructure` out of
    the `Application.pm` god-module into `Everything::PageState`, split **chrome** (page-independent
    per-user shell: nodelets, identity, messages, system — cacheable) from **content** (per-node).
    Chrome becomes `/api/pagestate`; content is `/api/nodes/:id`. (Design: the deferred
    `plack-request-migration.md` Appendix C.)
 
-3. **Controllers return content, not HTML.** Each page controller's `display` returns its content
+3. **Controllers return content, not HTML.** 🟡 *mostly — pure gates (#4513) + no-params work; 44 Pages
+   still read params.* Each page controller's `display` returns its content
    data + signals; the shell mounts with `pagestate + content`. Controllers stop touching HTML.
 
-4. **React-owned routing.** Once chrome/content are separate API resources, the client navigates by
+4. **React-owned routing.** ⬜ *not started.* Once chrome/content are separate API resources, the client navigates by
    fetching them — the server serves only the static shell. Page render leaves the server.
 
-5. **Delete the page-render machinery** (the HTML shell assembly, the capture, the
-   `buildNodeInfoStructure` delegate).
+5. **Delete the page-render machinery** (the HTML shell assembly, the `buildNodeInfoStructure`
+   delegate). ⬜ *(the capture part is already gone.)*
 
 ---
 
@@ -146,7 +154,7 @@ the only safety net.
 
 ---
 
-## Step 1 as-built (2026-06-10) — return-based API responses
+## Step 1 as-built (2026-06-10) — return-based API responses (historical; page path followed in #4483)
 
 The API path is return-based; the page path still prints into the capture. Both paths share one
 header/body builder, so they stay byte-equivalent.
@@ -182,8 +190,9 @@ must-revalidate` Cache-Control (because the cookie is now a real response header
 header block with no Cache-Control. This is strictly more correct (a Set-Cookie response shouldn't
 be cached) and no test asserts the old behaviour.
 
-### Remaining `print`-into-capture sites (the capture-deletion burn-down)
-The capture stays until the **page path** stops printing. Known emitters today:
+### Remaining `print`-into-capture sites (the capture-deletion burn-down) — ✅ RESOLVED (#4483)
+*(Historical — all converted; the capture is deleted. See [step1-return-based-controllers.md](step1-return-based-controllers.md).)*
+The capture stayed until the **page path** stopped printing. Known emitters at the time:
 - `Everything::Router::output` — the page path's `print $REQUEST->header(...)` + body (base class).
 - `Everything::Request::login` — the `opLogin` Set-Cookie print (page path; the API path no longer
   needs it, but `HTML.pm:1171` does).

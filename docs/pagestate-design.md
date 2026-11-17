@@ -1,15 +1,37 @@
 # PageState — extracting the `e2` blob into a cacheable chrome/content seam
 
-**Status:** SPIKE / proposal (2026-06-10). Branch `pagestate-spike`. For discussion — not a
-committed direction. This is **Step 2** of [api-driven-architecture.md](api-driven-architecture.md),
-the next priority after the return-based-response cleanup (Step 1, done).
+**Status:** Phase 2a BUILT (#4255); Phase 2b in progress (key builders moving into
+`Everything::PageState`, #4257/#4367); guest-chrome caching BUILT as a DataStash (#4369/#4371).
+Originally a spike/proposal (2026-06-10). This is **Step 2** of
+[api-driven-architecture.md](api-driven-architecture.md).
+**Last verified: 2026-11-16** against `Everything::Application::buildNodeInfoStructure`,
+`Everything::PageState`, `Everything::API::pagestate`, `Everything::Controller::layout`,
+`Everything::DataStash::guestchrome`.
+
+> **Where it landed vs. this proposal (read first):**
+> - The blob is still assembled by `buildNodeInfoStructure` (`Application.pm` ~L7901, now ~560 lines,
+>   down from 946). Builders moved to `PageState` so far: `_build_news`, `_build_statistics`,
+>   `_build_stash`, `_build_recentNodes`, `_build_favoriteWriteups`, `_build_personalLinks`,
+>   `_build_currentPoll`, `_build_epicenter`, `_build_masterControl`, `_build_user`,
+>   `_build_quickRefSearchTerm`, `_build_bounties`, `_build_recaptcha`. Gating stays in the orchestrator.
+> - `/api/pagestate` returns the **whole blob** (not chrome-only); `from_blob` is retained as a seam.
+> - Guest chrome caching was built as **`Everything::DataStash::guestchrome`** (a build-id-keyed
+>   datastash refreshed by the datastash cron, `interval` 60s), **not** as a TTL region in
+>   `NodeCache`. `buildNodeInfoStructure` has a guest fast-path that hydrates chrome from it and builds
+>   only the per-node keys (`_build_guest_content`); it is bypassed for `%GUEST_CACHE_REACT_TYPES`
+>   (superdoc family, fullpage, maintenance, nodelet).
+> - Server-side `normalize_types` is **no longer called**: int coercion moved client-side to
+>   `react/utils/normalizeE2.js` (#4381 interim; undo tracked in #4383). `PageState::normalize_types`
+>   still exists but has no callers.
+> - `NodeBase::cached_stash` (per-worker TTL decode cache) replaced the per-read `stashData` JSON decode
+>   on the request path (see [pagestate-key-tiers.md](pagestate-key-tiers.md)).
 
 ---
 
 ## The problem in one paragraph
 
-Every server-rendered page calls `Everything::Application::buildNodeInfoStructure` — a **946-line
-god-method** (`Application.pm:6787`) that assembles a single 44-key `e2` blob mixing two very
+Every server-rendered page calls `Everything::Application::buildNodeInfoStructure` — at the time a
+**946-line god-method** (now ~560 lines at `Application.pm` ~L7901) that assembles a single 44-key `e2` blob mixing two very
 different things: the **per-user chrome** (nodelets, identity, messages, epicenter — the same on
 every page this user loads) and the **per-node content** (the node, its writeups, its categories).
 Because they're fused, the chrome is re-assembled from scratch on every page load, none of it is
@@ -18,10 +40,12 @@ unlock for caching, for React-owned routing, and for the I/O testing story.
 
 ## The blob today
 
-`buildNodeInfoStructure($NODE, $USER, $VARS, $query, $REQUEST)` → a 44-key `$e2` hashref. Callers:
-the main page render (`Application.pm` ~7640) and five controllers (`Controller/user.pm`,
-`htmlcode.pm`, `nodelet.pm`, `usergroup.pm`). The blob is serialized into the page shell as the
-`e2` global the React app boots from.
+`buildNodeInfoStructure($NODE, $USER, $VARS, $query, $REQUEST, $opts)` → the `$e2` hashref. Callers
+(2026-11): `Everything::Controller` (`layout` and two other render paths), `Controller/draft.pm`,
+`datastash.pm`, `nodegroup.pm`, `nodetype.pm`, the `Everything::API::pagestate` fallback, and
+`Everything::DataStash::guestchrome` (with `{ skip_guest_cache => 1 }`). `Controller::layout` adds
+`lastnode_id`, `nodeletorder`, `collapsedNodelets`, `developerNodelet` and serializes the blob into
+the page shell as the `e2` global the React app boots from.
 
 ### Proposed classification of the 44 keys
 
@@ -41,7 +65,8 @@ the main page render (`Application.pm` ~7640) and five controllers (`Controller/
 (the controller's `buildReactData` — the actual page body), `nodeCategories`, `usergroupData`,
 `noteletData`.
 
-**AMBIGUOUS — settle in the morning:**
+**AMBIGUOUS (original proposal; current manifest in `PageState.pm` has `coolnodes`/`staffpicks`
+in CHROME and only `bounties`/`otherUsersData` AMBIGUOUS):**
 - `bounties` — the Bounties *nodelet* (site-wide → chrome) or bounties *on this node* (content)?
 - `otherUsersData` — "Other Users" online nodelet (chrome) vs something node-scoped?
 - `recentNodes` — per-user session breadcrumb; chrome, but mutates on every navigation, so its
@@ -133,6 +158,12 @@ volume. So the lever is **not issuing** the checks, not making them faster.
 
 ### The mechanism: a pre-compiled, TTL guest-chrome region
 
+> **As built (#4369/#4371):** a DataStash (`guestchrome`), keyed by `last_commit` so a deploy
+> never serves stale-asset chrome, refreshed on the datastash tick and lazily via `current_or_build`.
+> It stores the chrome *structure* (not a pre-serialized string) and is shared across workers via the
+> DB stash rather than an in-process `NodeCache` region. The "optional refinement" below is
+> effectively what shipped.
+
 For content that's already TTL-bounded by its stash, re-validating each constituent node per render
 buys nothing. So:
 
@@ -186,6 +217,7 @@ about *not re-computing / not re-validating*, not standing up Redis.
   pre-compiled TTL guest-chrome region, cardinality framing, no new infra).
 - **`otherUsersData`:** currently a live per-request query (not stashed). **Add it as a DataStash**
   (cron-refreshed ~2 min) so it joins the `site` chrome instead of querying per render.
+  *(Not done as of 2026-11-16 — still built per render by `buildOtherUsersData`.)*
 - **`recentNodes`:** the one genuinely per-navigation per-user key. Keep it **client-side** (or accept
   it as the per-request exception); do not let it force the rest of the chrome to be per-request.
 
@@ -203,7 +235,7 @@ about *not re-computing / not re-validating*, not standing up Redis.
    guest-chrome TTL region first (the highest-value, lowest-risk slice — it's a read-path optimization
    with no behaviour change), leave the React shell wiring + the logged-in per-user cache for follow-ups.
 
-## What's in this spike branch
+## What was in the original spike branch (historical)
 
 - `docs/pagestate-design.md` — this doc.
 - `ecore/Everything/PageState.pm` — skeleton facade: the key manifest + `from_blob` partition +
@@ -226,10 +258,10 @@ contract is normalized + covered.
   React app boots from: chrome + the node's `contentData` + the rendering key `contentData.type`
   (which `DocumentComponent` maps to a view). The `e2` blob, delivered as an API resource.
 - **`Everything::PageState->normalize_types`** — recursively coerces integer-string ids
-  (`node_id`, …) to real integers (#4152/#4108). Applied at the **single source**
-  (`buildNodeInfoStructure`'s return), so the **inline render and `/api/pagestate` emit the
-  identical, correctly-typed contract** — parity by construction. Fixed the live inline blob (54
-  string `node_id`s → 0). Full Perl suite green (4640).
+  (`node_id`, …) to real integers (#4152/#4108). Originally applied at `buildNodeInfoStructure`'s
+  return. **Superseded:** the server now hands the blob off untyped and `react/utils/normalizeE2.js`
+  coerces `window.e2` / API payloads once at ingestion (#4381 interim, undo #4383). Parity between
+  inline and API is still by construction (same source blob, same client normalizer).
 - **`tools/capture-pagestate-fixtures.sh`** — snapshots the real normalized `/api/pagestate` as
   React fixtures (`react/__fixtures__/pagestate/<type>.json`), so test fixtures match the contract
   by construction. Re-run when the contract changes.
@@ -241,7 +273,11 @@ The first facade cut called `buildNodeInfoStructure` directly, which only produc
 saw `contentData.type = None`. Fixed by **routing the facade through the real render path**:
 `Everything::API::pagestate` calls `$Everything::ROUTER->route_node($node, $displaytype, $REQUEST)`;
 `Everything::Controller::layout` (the single chokepoint where every controller hands off its built
-blob) **normalizes and stashes `$e2` on the request** (`pagestate_e2`); the facade returns that. The
+blob) **stashes `$e2` on the request** (`pagestate_e2`); the facade returns that. Before routing,
+the facade applies the same node-level access rules as the page path (`NodeBase::canReadNode` →
+permission-denied node; `Application::canSeeDraft` for drafts → not-found node). If the controller
+answers with a non-200 response (redirect/forward), the facade returns
+`{success:0, error:'not available', status, redirect}` instead of building data another way. The
 rendered HTML is printed into the STDOUT capture, which app.psgi discards for the return-based API
 path. Result: the facade output is **identical to the inline render for every node type**, supports
 `?displaytype=`, and the controller's post-override `contentData` gets normalized too. (Caveat: it

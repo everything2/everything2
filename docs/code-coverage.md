@@ -1,12 +1,23 @@
 # Code Coverage for Everything2
 
+**Last verified: 2026-11-16**
+
 ## Overview
 
-Everything2 uses [Devel::Cover](https://metacpan.org/pod/Devel::Cover) to measure and track code coverage across the Perl codebase. Coverage reports are generated automatically during development builds and tracked via SVG badges.
+Everything2 uses [Devel::Cover](https://metacpan.org/pod/Devel::Cover) for Perl and Jest's built-in coverage for React. Coverage is generated on demand (`./docker/devbuild.sh --coverage` or `./tools/coverage.sh`) and tracked via SVG badges committed under `coverage/badges/`.
 
-## ✅ Current Status (point-in-time snapshot, Dec 2025)
+## Current Status
 
-**Coverage is now working!** The migration from legacy HTTP-based tests to mock-based unit tests has enabled proper code coverage tracking. The Everything::APIClient module has been removed from the codebase.
+| Suite | Coverage | Source |
+|-------|----------|--------|
+| Perl (statements) | **53.1%** | `coverage/COVERAGE-SUMMARY.md`, last regenerated 2026-06-15 |
+| React (lines) | **55.6%** (statements 54.6%, branches 49.8%, functions 45.8%) | measured 2026-11-16 with `npm test -- --coverage`; the committed badge (17.73%, June 2026) is stale until badges are regenerated |
+
+Suite size (2026-11-16): 222 Perl test files (`t/*.t`), 313 Jest suites / 2789 tests.
+
+### History: how coverage started working (Dec 2025)
+
+The migration from legacy HTTP-based tests to mock-based unit tests enabled coverage tracking. The Everything::APIClient module has been removed from the codebase.
 
 ### What's Tracked
 
@@ -19,7 +30,7 @@ Everything2 uses [Devel::Cover](https://metacpan.org/pod/Devel::Cover) to measur
 
 ![Perl Coverage](../coverage/badges/perl-coverage.svg)
 
-**From just 6 mock-based API tests** (~24% overall coverage, as of the Dec 2025 snapshot):
+**Dec 2025 snapshot (historical)** — from just 6 mock-based API tests (~24% overall):
 - `Everything::API::e2nodes`: 100%
 - `Everything::API::users`: 100%
 - `Everything::API::writeups`: 81.2%
@@ -30,17 +41,17 @@ See [coverage/COVERAGE-SUMMARY.md](../coverage/COVERAGE-SUMMARY.md) for detailed
 
 ### Future Coverage
 
-**Full request-path coverage** is now achievable: the PSGI/Plack migration is done and live (as of 2026-06), so request handlers can be exercised directly rather than only through mocks. Current mock-based testing already provides excellent coverage of business logic, APIs, and core modules.
+**Full request-path coverage** is now achievable: the PSGI/Plack migration is done and live (as of 2026-06), so request handlers can be exercised directly rather than only through mocks.
 
 ## Quick Start
 
-**Coverage runs automatically** during `./docker/devbuild.sh` (unless you use `--skip-tests`).
+Coverage is **opt-in**: plain `./docker/devbuild.sh` runs tests without coverage. Add `--coverage` to also run `tools/coverage.sh clean`, `tools/coverage.sh` and `tools/generate-coverage-badges.sh`.
 
 ### Manual Coverage Commands
 
 ```bash
-# Run development build with tests and coverage (automatic)
-./docker/devbuild.sh
+# Run development build with tests, coverage and badge regeneration
+./docker/devbuild.sh --coverage
 
 # Run tests with coverage manually
 ./tools/coverage.sh
@@ -68,11 +79,11 @@ open coverage/html/coverage.html
 ```
 
 This will:
-1. Clean old coverage data
-2. Sync code to the Docker container
-3. Run all tests with Devel::Cover enabled
-4. Generate HTML and text coverage reports
-5. Display a summary
+1. Clean old coverage data (`rm -rf coverage/` — including the tracked badges/summaries, which `generate-coverage-badges.sh` then recreates)
+2. Run Jest with coverage (`npm test -- --coverage --watchAll=false`, output in `coverage/react/`)
+3. `docker cp` `t/` and `ecore/` into the `e2devapp` container
+4. Run `t/run.pl` under Devel::Cover (ignoring `t/` and `/var/libraries/`)
+5. Generate the HTML report and print a text summary
 
 ### Generate Report Only
 
@@ -114,13 +125,13 @@ A text summary is displayed after each coverage run showing:
 
 ## Coverage Goals
 
-### Current (snapshot, Dec 2025)
-- ✅ **Perl**: ~24% (6 mock-based API tests)
-- ✅ **React**: 0% (Jest infrastructure ready, tests needed)
+### Current (2026-11-16)
+- **Perl**: 53.1% (June 2026 snapshot)
+- **React**: 55.6% lines
 
-### Short-term Goals (Q1 2026)
-- 🎯 **Perl**: 40% (comprehensive API testing)
-- 🎯 **React**: 60% (component test coverage)
+### Short-term Goals (set for Q1 2026)
+- ✅ **Perl**: 40% — met
+- 🎯 **React**: 60% — close (55.6%)
 
 ### Long-term Goals (2026+)
 - 🎯 **Perl**: 70% (full request-path coverage, now unblocked — PSGI migration is done/live as of 2026-06)
@@ -153,10 +164,9 @@ A text summary is displayed after each coverage run showing:
 
 The following are excluded from coverage analysis:
 
-- `t/` - Test files themselves
-- `vendor/` - Third-party dependencies
-- Moose-generated code (attributes, etc.)
-- Legacy eval'd database code
+- `t/` - Test files themselves (`-ignore,'^/var/everything/t/'`)
+- `/var/libraries/` - CPAN dependencies (`-ignore` / `-ignore_re`)
+- React: `react/index.js`, `*.test.js`, `__tests__/`, `__mocks__/` (`collectCoverageFrom` in `jest.config.js`)
 
 ## Advanced Usage
 
@@ -165,8 +175,10 @@ The following are excluded from coverage analysis:
 Inside the Docker container:
 
 ```bash
-# Run tests with coverage
-perl -MDevel::Cover=-db,coverage/cover_db,-ignore,'^t/',-ignore,'^vendor/' t/run.pl
+# Run tests with coverage (what tools/coverage.sh does)
+perl -I/var/libraries/lib/perl5 -I/var/everything/ecore \
+  -MDevel::Cover=-db,/var/everything/coverage/cover_db,-ignore,'^/var/everything/t/',-ignore,'^/var/libraries/',-silent,1 \
+  t/run.pl
 
 # Generate HTML report
 cover -report html -outputdir coverage/html
@@ -185,7 +197,8 @@ cover -report text -coverage_threshold 70
 docker exec e2devapp \
   perl -MDevel::Cover=-db,/var/everything/coverage/cover_db \
   -I/var/libraries/lib/perl5 \
-  t/012_sql_injection_fixes.t
+  -I/var/everything/ecore \
+  t/012_users_api.t
 ```
 
 ### Merge Multiple Coverage Runs
@@ -197,14 +210,11 @@ cover -merge_from coverage/cover_db.1 coverage/cover_db.2
 
 ## Integration with Development Workflow
 
-### Automated Coverage (Current)
+### Coverage via devbuild (opt-in)
 
-Coverage is **automatically generated** during `./docker/devbuild.sh`:
-1. Tests run in parallel
-2. Coverage data is collected via Devel::Cover
-3. Coverage reports are generated
-4. SVG badges are updated
-5. COVERAGE-SUMMARY.md is regenerated
+`./docker/devbuild.sh --coverage`, after the normal parallel test run:
+1. Runs `tools/coverage.sh clean` then `tools/coverage.sh` (Jest + Devel::Cover)
+2. Runs `tools/generate-coverage-badges.sh`, which updates the SVG badges and regenerates `COVERAGE-SUMMARY.md`, `PERL-MODULE-COVERAGE.md`, `REACT-MODULE-COVERAGE.md`
 
 ### Coverage Badges (Active)
 
@@ -222,7 +232,9 @@ Coverage badges are embedded in README.md and auto-updated:
 - 🟢 Yellow-green: 60-80%
 - 💚 Green: ≥80%
 
-### Future: GitHub Actions Integration
+### Future: CI Integration (not planned)
+
+Prod builds run on AWS CodeBuild, not GitHub Actions (GHA only runs CodeQL), so the snippet below is illustrative only.
 
 ```yaml
 - name: Run tests with coverage
@@ -246,7 +258,7 @@ Ensure the Docker container is running:
 ### Slow Coverage Runs
 
 Coverage adds overhead. For faster iteration:
-1. Run regular tests: `./docker/run-tests.sh`
+1. Run regular tests: `./tools/parallel-test.sh` or `./docker/run-tests.sh`
 2. Run coverage periodically or before commits
 
 ### Out of Memory
@@ -272,7 +284,10 @@ coverage/                        # Generated coverage data
     coverage.html               # Main Perl report page
   react/                         # React coverage reports (git-ignored)
     lcov-report/                # Jest HTML coverage
-  COVERAGE-SUMMARY.md            # Auto-generated coverage summary
+    coverage-summary.json       # Jest json-summary (read by the badge script)
+  COVERAGE-SUMMARY.md            # Auto-generated coverage summary (tracked)
+  PERL-MODULE-COVERAGE.md        # Per-module Perl breakdown (tracked)
+  REACT-MODULE-COVERAGE.md       # Per-component React breakdown (tracked)
 ```
 
 ## Mock-Based Testing Enables Coverage
@@ -301,7 +316,6 @@ my $result = $api->get_writeup($mock_request);  # ✅ Full coverage!
 
 **Cleanup Complete**: All legacy HTTP-based tests and the APIClient module have been removed.
 
-See [api-test-conversion-summary.md](api-test-conversion-summary.md) for migration details.
 
 ## Further Reading
 
@@ -310,4 +324,4 @@ See [api-test-conversion-summary.md](api-test-conversion-summary.md) for migrati
 - [Devel::Cover Tutorial](https://perlmaven.com/code-coverage-with-devel-cover)
 - [Test::More](https://metacpan.org/pod/Test::More) - Test framework
 - [Everything2 Testing Strategy](quick-reference.md#-testing-strategy)
-- [API Test Conversion Summary](api-test-conversion-summary.md) - How we enabled coverage
+- [React Testing Guide](react-testing.md)

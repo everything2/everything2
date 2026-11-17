@@ -2,6 +2,7 @@
 
 **Purpose**: Display real-time list of users in the chatterbox system
 **Status**: Implemented (React + API)
+**Last verified**: 2026-11-16
 
 ---
 
@@ -17,13 +18,13 @@ The Other Users nodelet shows who is currently online in the chatterbox, their s
 |-----------|----------|---------|
 | `OtherUsers.js` | `react/components/Nodelets/OtherUsers.js` | React UI component |
 | `useOtherUsersPolling.js` | `react/hooks/useOtherUsersPolling.js` | Polling hook (2 min interval) |
-| `buildOtherUsersData()` | `ecore/Everything/Application.pm:6658` | Server-side data builder |
+| `buildOtherUsersData()` | `ecore/Everything/Application.pm` | Server-side data builder |
 | `chatroom.pm` | `ecore/Everything/API/chatroom.pm` | API endpoints for room operations |
 
 ### Data Flow
 
 1. **Initial load**: `buildOtherUsersData($USER)` generates data during page render
-2. **Polling**: `useOtherUsersPolling` refreshes every 2 minutes via `GET /api/chatroom/` (the `/` route → `get_other_users`)
+2. **Polling**: `useOtherUsersPolling` refreshes every 2 minutes via `GET /api/chatroom/` (the `/` route → `get_other_users`), sent with `X-Ajax-Idle: 1`. Pauses after 10 min of inactivity or when the tab is hidden, and refreshes on tab focus. It does **not** pause when the nodelet is collapsed.
 3. **Actions**: Room changes, cloaking, room creation use dedicated API endpoints
 
 ---
@@ -36,6 +37,9 @@ The Other Users nodelet shows who is currently online in the chatterbox, their s
 | `/api/chatroom/change_room` | POST | Change user's current room |
 | `/api/chatroom/set_cloaked` | POST | Toggle user visibility (cloak) |
 | `/api/chatroom/create_room` | POST | Create a new room |
+| `/api/chatroom/lock_room` | POST | Admin-only: set `roomlocked` on a room (used by `Documents/Room.js`, not the nodelet) |
+
+All chatroom endpoints reject guests (`unauthorized_if_guest`).
 
 ---
 
@@ -44,14 +48,16 @@ The Other Users nodelet shows who is currently online in the chatterbox, their s
 ```javascript
 {
   userCount: 15,
+  currentRoomUserCount: 6,
   currentRoom: "outside",
   currentRoomId: 0,
   rooms: [
     {
-      title: null,  // null for first/current room
+      title: "Outside",  // always populated (#3990); room 0 is "Outside"
       users: [
         {
           userId: 123,
+          username: "username",
           displayName: "username",  // or costume name during Halloween
           isCurrentUser: true,
           flags: [
@@ -72,6 +78,7 @@ The Other Users nodelet shows who is currently online in the chatterbox, their s
           action: {
             type: "recent",
             nodeId: 789,
+            nodeTitle: "Writeup Title",
             parentTitle: "Node Title"
           }
         }
@@ -86,7 +93,7 @@ The Other Users nodelet shows who is currently online in the chatterbox, their s
   isCloaked: false,
   canCreateRoom: true,
   createRoomSuspended: false,
-  suspension: null  // or { type: "temporary", seconds_remaining: 300 }
+  suspension: null  // or { type: "temporary", seconds_remaining: 300 } / { type: "indefinite" }
 }
 ```
 
@@ -121,7 +128,7 @@ Flags appear in brackets after the username: `[@ $ + Ø i ~]`
 Random fun text shown after username (2% probability per user):
 
 ### Conditions
-- User has `showuseractions` VARS preference enabled
+- **Viewer** has `showuseractions` VARS preference enabled
 - Not the current user (`!sameUser`)
 - Random chance: `0.02 > rand()`
 
@@ -148,8 +155,8 @@ killer bees, an angst sandwich, Butterfinger McFlurry
 ### Recent Noding
 
 Alternative to random action (2% probability):
-- User has `showuseractions` enabled
-- User noded within last week (604800 seconds)
+- **Viewer** has `showuseractions` enabled (no `!sameUser` check here, so it can fire for yourself)
+- Listed user noded within last week (604800 seconds)
 - Last node not hidden (`notnew` flag)
 - Shows: "has recently noded [link to writeup]"
 
@@ -159,9 +166,9 @@ Alternative to random action (2% probability):
 
 ## Halloween Costumes
 
-During Halloween period (`inHalloweenPeriod()`):
-- User's `e2_hc_costume` VARS contains costume node_id
-- Display name replaced with costume node title
+During Halloween period (`inHalloweenPeriod()`, Oct 25 – Nov 2):
+- User's `costume` VARS key holds the costume **string** (not a node_id; see halloween-costume-system.md)
+- `displayName` is replaced with that string; `username`/`userId` stay real
 - Link still points to real user
 
 ---
@@ -228,9 +235,8 @@ Users can be locked in a room:
 - `suspension.type !== "temporary"`: "Locked here indefinitely"
 
 ### Room Display
-- First room (current) has no header
-- Additional rooms show header: `<div>Room Title:</div>`
-- Room 0 displays as "outside"
+- Server always sends `rooms[].title`; the client shows room headers only when `rooms.length > 1`
+- Room 0 is titled "Outside" in `rooms` and "outside" in `availableRooms`
 
 ---
 
@@ -253,7 +259,7 @@ Users can be locked in a room:
 | `hide_chatterbox_staff_symbol` | Hide own staff badge |
 | `lastnoded` | Last writeup node_id |
 | `votesrefreshed` | Active days (from last login) |
-| `e2_hc_costume` | Halloween costume node_id |
+| `costume` | Halloween costume display string |
 
 ---
 
@@ -269,4 +275,4 @@ Users can be locked in a room:
 
 ---
 
-*Last updated: December 2025*
+*Last verified: 2026-11-16*

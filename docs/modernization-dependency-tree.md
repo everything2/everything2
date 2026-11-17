@@ -1,20 +1,21 @@
 # Everything2 Modernization — Epoch Tree
 
-**Last updated**: 2026-06-14
+**Last updated**: 2026-11-16 (issue states re-checked against GitHub; closed items struck or annotated)
 **Maintainer**: Jay Bonci
 
 > **The two hard roots are cleared.** `epoch:mysql-8.4` (migrated 2026-06-07, #4226) and
-> `epoch:psgi` (live in prod 2026-06-08) are **done** — so the post-PSGI cleanups this tree lists
-> as *blocked* are now the **active frontier**, and CGI.pm has since been removed entirely
-> (#4230). The current center of gravity is the request/response modernization → 100%-API-driven
-> move (see `docs/api-driven-architecture.md`).
+> `epoch:psgi` (live in prod 2026-06-08) are **done**, and CGI.pm is gone entirely (#4244). Since
+> then the routing prerequisites shipped too: opcode→API (#4335), htmlcode burndown (#4358),
+> htmlpage retirement (#4361), the mutation audit (#4298), return-based controllers (#4483), the
+> guest chrome cache (#4371/#4419) and pure-gate controllers (#4513+). **The open frontier is the
+> React client router itself, the last param-reading Page controllers, the maintenance-hook
+> `$query` sweep, and the object-model epoch** (see `DEVELOPER-ROADMAP.md`).
 
-> **★ #4246 (cron sidecar) — BUILT, in cutover.** The `GET_LOCK`-elected cron sidecar is built
-> (`ecore/Everything/Cron/{Runner,Schedule,State,Health}.pm` + `cron/cron_runner.pl`) and in cutover.
-> It collapses the 8 EventBridge→`RunTask` rules onto the (overprovisioned) webheads, retiring the
-> dedicated cron Fargate tasks (`e2cron-family`, **~$70/mo (~$840/yr), ~half the Fargate+IPv4 bill**,
-> driven by `datastash` at `rate(2m)` running effectively 24/7); near-zero marginal cost, frees ~4
-> public IPs, and fixes a latent overlap bug. Design: `docs/cron-sidecar-design.md`.
+> **✅ #4246 (cron sidecar) — LIVE.** The `GET_LOCK`-elected cron sidecar
+> (`ecore/Everything/Cron/{Runner,Schedule,State,Health}.pm`) runs on the webheads in prod
+> (`E2_CRON_ENABLED`/`E2_CRON_LIVE` = 1 in the template). Only the heavy daily sitemap stays a
+> dedicated EventBridge→Fargate task, on purpose. #4251 (cutover issue) is still open on GitHub;
+> #4438 records the sitemap runs. Design: `docs/cron-sidecar-design.md`.
 
 The map of where deferred work lands and what depends on what. Two axes:
 
@@ -37,28 +38,32 @@ epoch:mysql-8.4   ✅ DONE — migrated 2026-06-07 (#4226). Was the July 2026 ha
          │              mpm_event (#2424), Starman/Plack; DB connections cut ~5×.
          │
          │   ── post-PSGI request/response modernization (the ACTIVE FRONTIER) ──
-         │   ├─ ✅ CGI.pm fully removed (#4230) — request + response layers + the dep
+         │   ├─ ✅ CGI.pm fully removed (#4244) — request + response layers + the dep
          │   │     itself. New: Everything::Request::PlackQuery (request),
          │   │     Everything::Response (response), Everything::HealthCheck (PSGI health
          │   │     app, replaced www/health.pl). CGI dropped from cpanfile + vendor cache.
          │   │     Docs: plack-request-migration.md.
-         │   └─ ▶ NEXT epoch: 100%-API-driven move — controllers return data, HTTP lives
-         │         in the response layer. Return-based responses (retire the STDOUT
-         │         capture → #4237-immune), PageState chrome/content split, the e2-blob
-         │         normalization (#3981 identity de-dup, #4152 int-as-string).
+         │   ├─ ✅ opcode→API (#4335) · htmlcode burndown (#4358) · htmlpage (#4361)
+         │   │     · mutation audit (#4298) · return-based controllers / STDOUT capture
+         │   │     deleted (#4483) · guest chrome cache (#4371/#4419) · e2-blob
+         │   │     de-dup (#3981) + int normalization (#4152) · pure gates (#4513+)
+         │   └─ ▶ NEXT: React client router (not started). Remaining prereqs: param-free
+         │         Page controllers (44 non-feed modules still read params), maintenance-
+         │         hook $query sweep, #4257 structural PageState split, CSRF guard #4301.
          │         Design: docs/api-driven-architecture.md.
          │
          │   ENABLERS for the broader cleanups (early in the post-PSGI batch):
-         │   ├─ sqitch adoption ........ versioned schema migrations (no DBIC needed)
-         │   └─ #4178 Globals/Constants/Configuration detangle (perl-cleanup hub)
+         │   ├─ sqitch adoption ........ versioned schema migrations (not started)
+         │   └─ #4178 Globals/Constants/Configuration detangle (perl-cleanup hub; also
+         │         step 1 of the Object::Pad epoch — see orm-migration-plan.md)
          │
          ├─> epoch:perl-cleanup   (UNBLOCKED; schema-touching ones need sqitch)
          ├─> epoch:react-cleanup  (UNBLOCKED; SSE ones use PSGI's process model)
          ├─> epoch:infra-cleanup  (apache/deploy; #4129 also needs #4163 settled)
-         │      └─ ★ #4246 cron sidecar (GET_LOCK) — ~$840/yr cost cut, BUILT/in cutover
+         │      └─ ✅ #4246 cron sidecar (GET_LOCK) — live; #4251 bookkeeping open
          │
-         └─> epoch:social-login   (feature; first new table → DBIC carve-out decision;
-                                    needs sqitch first)
+         └─> epoch:social-login   (feature; first new table is a plain node-model
+                                    addition — no DBIC; needs sqitch first)
 
 epoch:user-requests  ── orthogonal; community asks, schedule independently.
 epoch:infra-cleanup (security subset, #4182) ── NOT gated on anything; ships now.
@@ -68,21 +73,21 @@ Key non-obvious edges:
 - **sqitch is a hub**: `#4173`, `#4180`, settings→JSON all want versioned migrations. Pull it in as PSGI lands, not "phase 9."
 - **`#4178` (Globals) is a hub**: settings→JSON, tombstoning, numwriteups all touch the global/config surface — do #4178 first so they build on clean config.
 - **`#4129` depends on `#4163`**: mod_rewrite title-hack removal needs LinkNode's URL shape settled first.
-- **`#4182` (security headers) depends on nothing** — Apache `mod_headers` + a 2-line cookie change. Ship independent of the spine.
+- **`#4182` (security headers) depends on nothing** — ship independent of the spine.
 
 ---
 
 ## epoch:mysql-8.4 — ✅ DONE (migrated 2026-06-07, #4226)
 
-Was deadline-gated (July 2026 RDS engine sunset); shipped ahead of it. The zero-date family and
-the `everyuser`→`caching_sha2_password` auth-plugin blocker are cleared. Residual non-8.4-blocking
-items below (e.g. #4092 PK-less tables, #2210 `ALLOW_INVALID_DATES` removal) are now ordinary
-backlog, not deadline work. Original tracking: **#4074**.
+Was deadline-gated (July 2026 RDS engine sunset); shipped ahead of it. The zero-date family is
+cleared (#4074 closed), and #4092 (PK promotion) + #2210 (`ALLOW_INVALID_DATES`) are closed. The app
+connects as a `caching_sha2_password` user, but **#4122 is still open on GitHub** — close or rescope it.
+Still open: #4109 (message_outbox columns), #4225 (`explicit_defaults_for_timestamp`).
 - Zero-date family: #4075 node.createtime · #4076 writeup.publishtime · #4077 e2node.updated · #4078 vote times · #4079 weblog · #4080 pollvote · #4081 nodetracker · #4082 notified · #4083 lastreaddebate · #4084 dbstats · #4086 podcast · #4087 roomdata · #4088 nodebak · #4089 heaven  *(— #4085 locktime done; #4090/#4091 tomb/krut evaluated)*
-- #4122 — everyuser → caching_sha2_password (hard blocker)
+- #4122 — everyuser → caching_sha2_password *(open on GH; functionally migrated)*
 - #4109 — message_outbox columns
-- #4092 — promote unique keys to PRIMARY KEY on 5 PK-less tables *(low priority; not 8.4-blocking)*
-- #2210 — drop the `ALLOW_INVALID_DATES` sql-mode workaround *(the parent reason for the #4074 zero-date family)*
+- ~~#4092 — promote unique keys to PRIMARY KEY on 5 PK-less tables~~ ✅ closed
+- ~~#2210 — drop the `ALLOW_INVALID_DATES` sql-mode workaround~~ ✅ closed
 
 ## epoch:psgi — ✅ DONE (live in prod 2026-06-08)
 
@@ -102,7 +107,7 @@ DB connections cut ~5×. (Shipped 2026-06-08; original plan in git history.)
   **verify** whether any `ModPerl::Util::exit` / bare `exit` remains in the live path (would kill a
   Starman worker) and convert to a return, then close.
 
-### ✅ Post-PSGI: CGI.pm removal (#4230) — DONE (working tree; not yet committed/PR'd)
+### ✅ Post-PSGI: CGI.pm removal (#4244) — DONE (merged in #4245, commit `e8b00e4dc`; #4230, the request-layer slice, is still open on GH and can be closed)
 
 CGI.pm removed from the entire application across two threads:
 - **Request layer** — `Everything::Request::PlackQuery` (Plack::Request-backed drop-in); the
@@ -117,13 +122,12 @@ CGI.pm removed from the entire application across two threads:
 - Tests: t/122 (req backing) + t/123 (request/response contract) + t/127 (health); the migration
   parity scaffolds were retired once proven.
 
-### ▶ NEXT epoch: 100%-API-driven move
+### ▶ 100%-API-driven move — mostly through; router next
 
 Controllers become pure `(request data) → (response data)`; HTTP lives only in the response layer.
-Foundation (`Everything::Response.finalize`) is already in place. Steps: return-based responses
-(retire the STDOUT capture → immune to the #4237 bug class) → `PageState` extraction with a
-**structural-vs-live chrome** split (the e2 blob out of the `Application.pm` god-method; #3981
-identity de-dup, #4152 int-as-string normalization fold in here) → React-owned routing.
+✅ return-based responses (#4483, STDOUT capture deleted) · ✅ #3981 identity de-dup · ✅ #4152
+int-as-string normalization · ✅ guest chrome cache (#4371). ⬜ `PageState` structural split (#4257 —
+`buildNodeInfoStructure` is still ~560 lines in `Application.pm`) · ⬜ React-owned routing.
 **ALB-cost constraint:** deliver bundled (one request/page); the split is a server-assembly +
 client-memory optimization, *not* per-endpoint fan-out. Design: [api-driven-architecture.md](api-driven-architecture.md).
 
@@ -142,9 +146,11 @@ client-memory optimization, *not* per-endpoint fan-out. Design: [api-driven-arch
 - #2134 — incomplete JS response (truncation) · #2154 — Cool Man Eddie sharing-button confusion *(#1687 falsy-0 link bug → merged into #4108)*
 - #2594 — superdocs render without theme/structure · #2854 — Text Formatter preview broken · #2974 — remove ariaHideApp={false} from Developer nodelet (a11y) · #2988 — Cool Writeups visual glitch
 - #3897 — Personal Links blank for some users · #3903 — progress wheels on admin draft ops · #3911 — fetchWithErrorReporting on all fetches · #3921 — softlink URLs inconsistent w/ other node links *(LinkNode)*
-- #3981 — de-dup React state already on e2.user (is_admin) · #3982 — expand AdminNothingFoundLink to a create-node UI · #3984 — writeup-edit link atop e2nodes (discoverability)
+- ~~#3981 — de-dup React state already on e2.user~~ ✅ closed · #3982 — expand AdminNothingFoundLink to a create-node UI · #3984 — writeup-edit link atop e2nodes (discoverability)
 - #4006 — messages should show newlines · #4007 — mikoyan25-flipped nodelet layout · #4019 — Jukka emulation icons missing *(theme-asset cluster w/ #117)* · #4026 — rich-text editor link behavior · #4030 — lastnode title gone from search box · #4031 — profile pic doesn't update (Android Chrome) *(homenode cluster)*
-- #4095 — consolidate duplicated React patterns · #4096 — window.confirm → ConfirmActionModal · #4098 — autosuggest on single-entity inputs · #4099 — bulk newline fields → tag/chip inputs · #4108 — {value && JSX} truthy audit *(absorbs #1687; cluster w/ #4152)*
+- #4095 — consolidate duplicated React patterns · #4096 — window.confirm → ConfirmActionModal · #4098 — autosuggest on single-entity inputs · #4099 — bulk newline fields → tag/chip inputs · ~~#4108 — {value && JSX} truthy audit~~ ✅ closed
+- **Nov 2026 tranche (#4577–#4595)** — shared Modal (#4584) / Pagination (#4583) / Loading (#4588), one fetch wrapper (#4582, supersedes #3911), `usePolling` consolidation (#4587), stop reloading after mutations (#4586), `window.confirm` → modal (#4585, overlaps #4096), LinkNode for internal hrefs (#4580), stable React keys (#4593), CSS-variable colors (#4594)
+- Also open: #4611 ESLint hooks rules · #4608 lazy-load the rich editor · #4639 TipTap destroyed-editor guard
 - **Asset-pipeline remnants** — the DB→S3 CSS migration is **DONE** (#2845/#2846/#2847/#2869 closed); image inlining (#2856) and basesheet-elimination (#2852) also closed (the basesheet *is* Kernel Blue now — themes are thin variable-override zensheets on top; the BEM refactor consolidates structure into it). Remaining nugget: #2832 eliminate customstyle widgetry *(still ~9 files)*
 
 ## epoch:perl-cleanup
@@ -172,7 +178,7 @@ client-memory optimization, *not* per-endpoint fan-out. Design: [api-driven-arch
 - **nodelet schema dead-columns** — #532 parent_container/updateinterval · #564 nltext
 - #591 — node.title → NOT NULL *(ties to no-NULL-on-node policy)* · #618 — author_user=-1 SQL error · #628 — strip hardcoded node IDs *(→ #4178)*
 - #419 — scrub Recommended Reading for AdSense badwords · #452 — move other-users to a datastash job *(overlaps #4117)* · #525 — canonical URL for non-default Node types
-- #500 — drop update_lastseen stored proc *(likely OBE — Request.pm does direct UPDATE)* · #501 — flaky ejection-count test
+- ~~#500 — drop update_lastseen stored proc~~ ✅ closed · #501 — flaky ejection-count test
 - #325 — unified error logging *(absorbs #781 full-SQL-on-DBI-error + #855 printErr→file)*
 - **title validation** — #822 case-only-different e2node titles · #840 blank category titles (+ title-lookup #366)
 - #933 — well-formed tables *(nested-table handling + homenode/draft coverage; #934 merged in)*
@@ -186,7 +192,7 @@ client-memory optimization, *not* per-endpoint fan-out. Design: [api-driven-arch
 - **datastash jobs** — #3763 available rooms · #452 other-users · #3330 IQM recalc *(same 'move heavy work to datastash' pattern)*
 - #3761 — refactor poll-creation out of maintenance ($query) · #3833 — refactor Duplicates-Found overloaded-$NODE hack · #3834 — rework random nodeshells · #3887 — group notifications too wide *(→ #3416)* · #3893 — search excerpts show HTML entities · #3916 — node-note notifications link to wrong URL
 - #3948 — guest ilikeit broken · #3958 — HTML in user messages *(encoding)* · #3988 — lingering invalid_check notification code in DB · #3989 — evaluate whether the schema nodetype is needed *(cf #2939)* · #4009 — ilikeit notifications too wide *(notif-scope cluster w/ #3887/#3416)*
-- #4114 — delete 4 vestigial htmlcode nodes · #4136 — add-to-collection adds parent e2node not the writeup · #4152 — Perl→React int fields serialize as strings *(truthy cluster w/ #4108)* · #4174 — XP-gain notification races itself (multiple oldexp consumers)
+- #4114 — delete 4 vestigial htmlcode nodes · #4136 — add-to-collection adds parent e2node not the writeup · ~~#4152 — Perl→React int fields as strings~~ ✅ closed (residual: #4386 model-side int coercion, #4383 undo client hack) · #4174 — XP-gain notification races itself (multiple oldexp consumers)
 - #834 — unvotable writeups in writeups API · #844 — DB default collation still latin1_swedish_ci *(tables already utf8mb4)* · #856 — remove dead Everything::cleanLinks
 - #877 — perlcritic silences cleanup · #897 — drop built-in-opcode special cases · #917 — cache perlcritic health check · #935 — routing to node ".."
 - #971 — shared-draft title search regression · #1107 — Room Topics UTF-8 not importing to nodepack cleanly · #1243 — condense ENN/New Nodes/EKN/E2N into Writeups-by-Type
@@ -198,20 +204,22 @@ client-memory optimization, *not* per-endpoint fan-out. Design: [api-driven-arch
 
 ## epoch:social-login
 
-- OAuth/social login feature → first `user_oauth` table → DBIC carve-out decision *(needs sqitch; see [orm-migration-plan.md](orm-migration-plan.md)). No issue yet._
+- OAuth/social login feature → first `user_oauth` table, built as a plain node-model addition (**no DBIC** — decided 2026-06-29, see [orm-migration-plan.md](orm-migration-plan.md)); needs sqitch. Tracked precursor: #4343 (signup-flow overhaul). Related account-model issues: #4650, #4651.
 
 ## epoch:infra-cleanup
 
-- #4182 — HTTP security posture (HttpOnly/Secure cookie, HSTS, headers, CSP) **(ships now, ungated)**
+- #4182 — HTTP security posture (headers, CSP, …) **(ungated; partly addressed by the Nov 2026 security work, still open)**
 - #4146 — modernize dev build pipeline
 - #4129 — remove mod_rewrite title hacks *(needs PSGI + #4163)*
-- **React-routing epic** — the mid-2026 thrust toward full client-side routing (see `DEVELOPER-ROADMAP.md` → "Current thrust"). Gated on retiring server-side request processing:
-  - #4198 — opcode → API: retire legacy `op=` handlers in Delegation/opcode.pm. **The gating prerequisite.** Overlaps #897.
-  - #4299 — opcode kill rounds (verify dead / 1:1-superseded, delete). Phases 1–5 + bookmark/weblog/weblogify/category/massacre/leadusergroup done; remaining candidates mapped.
-  - #4298 — page form-handling: 23 Page controllers that process form params server-side (the *other* routing blocker, beyond opcodes).
-  - #4300 — htmlcode burndown: 56 `Delegation/htmlcode` subs → factor into `Application` methods or delete. Continues the closed #4259.
-  - #4301 — API-wide CSRF guard (belt-and-suspenders Origin/header check; lands after the cleanout).
-  - #4272 — ✅ security-log decoupling (done; `seclog_event` enum, callers on `SECLOG_*`).
+- **React-routing epic** — the thrust toward full client-side routing (see `DEVELOPER-ROADMAP.md` → "Current thrust"). Gated on retiring server-side request processing:
+  - ✅ #4198 / #4299 / #4335 — opcode → API; `Delegation/opcode.pm` and `op=` dispatch gone. (#897 built-in-opcode special cases: re-check, likely OBE.)
+  - ✅ #4298 / #4416 — page form-handling / render-time mutations retired.
+  - ✅ #4300 / #4358 — htmlcode burndown; `Delegation/htmlcode.pm` has zero subs.
+  - ✅ #4272 — security-log decoupling.
+  - ⬜ #4301 — API-wide CSRF guard (belt-and-suspenders Origin/header check).
+  - ⬜ #4257 — structural PageState split · #4129 — mod_rewrite title hacks · #4355 — login-sensitive pages redirect-to-login.
+  - ⬜ #4498 / #4463 — permission consolidation via Security mixins (pagestate path + API gates).
+  - ⬜ Client router itself — no issue yet.
 - #11 — normalize `user.imgsrc` path (drop `images/userimages/` prefix) *(homenode-images cluster)*
 - #91 — rework `homenode_image_host` for the TLS/prod setup *(homenode-images cluster)*
 - #116 — move robots.txt blocks → Apache UA blocking (`apache_blocks.json`)
@@ -232,7 +240,7 @@ Many of the ancient issues are one-line 2012–2017 stubs that share a subject. 
 
 - **homenode-images** — #11 (imgsrc path), #91 (`homenode_image_host` for TLS/prod), #13 (captions). One pass over how homenode images are stored, hosted, and rendered.
 - **security/TLS** — #4182 (headers + cookie flags + PFS, absorbing #120/#1310/#2841/#141). Ships now, ungated.
-- **encoding/UTF-8** — #4167 (entity-encoded titles), and verify-state of the recently-closed #3042/#4165 line; #113 (Cream of the Cool snippets) likely belongs here.
+- **encoding/UTF-8** — #4167 (entity-encoded titles), #3042 double-encoded UTF-8 (still open; #4165 closed). Pairs with the #4570 UTF-8 param contract fix. (#113 is closed.)
 
 ## Dedupe pass (planned — after tagging consolidation)
 
