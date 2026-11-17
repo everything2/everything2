@@ -247,7 +247,9 @@ sub _get_writeup_excerpt {
     # Handle regular links: [link text] -> link text
     $text =~ s/\[([^\]]+)\]/$1/g;
 
-    # HTML entities are decoded on the React side via decodeHtmlEntities()
+    # HTML entities are decoded on the React side via decodeHtmlEntities(). No-break spaces
+    # are whitespace here, so a writeup that opens with &nbsp; doesn't give an indented excerpt.
+    $text =~ s/&nbsp;/ /gi;
 
     # Collapse whitespace
     $text =~ s/\s+/ /g;
