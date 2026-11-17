@@ -3,6 +3,9 @@ package Everything::Node::writeup;
 use Moose;
 extends 'Everything::Node::document';
 
+use Encode ();
+use HTML::Entities qw(decode_entities);
+
 override 'json_display' => sub
 {
   my ($self, $user) = @_;
@@ -249,13 +252,19 @@ sub notnew
   return int($self->NODEDATA->{notnew} || 0);
 }
 
+# Plain text for <meta name="description"> (what search engines show as the excerpt), the
+# JSON-LD description and the client-side <head>. Returns RAW, entity-decoded text: the
+# consumers escape it (see Everything::PageMetadata). Escaping here as well made search
+# results show "&quot;" and "&amp;#91;".
 sub metadescription
 {
   my ($self) = @_;
 
   my $doctext = $self->doctext || '';
 
-  # Strip HTML tags
+  # Line and paragraph breaks become spaces, so paragraphs don't run together; then the
+  # remaining tags go.
+  $doctext =~ s{<\s*(?:br|hr|/p|/div|/li|/h[1-6]|/blockquote|/pre|/tr|/td|/th|/dd|/dt)\b[^>]*>}{ }gi;
   $doctext =~ s/<[^>]+>//g;
 
   # Parse E2 link syntax - keep the display text
@@ -264,16 +273,14 @@ sub metadescription
   $doctext =~ s/\[([^\]|]+)\|([^\]]+)\]/$2/g;  # pipelinks: keep display text
   $doctext =~ s/\[([^\]]+)\]/$1/g;              # simple links: keep link text
 
-  # Decode common HTML entities
-  $doctext =~ s/&nbsp;/ /g;
-  $doctext =~ s/&amp;/&/g;
-  $doctext =~ s/&lt;/</g;
-  $doctext =~ s/&gt;/>/g;
-  $doctext =~ s/&quot;/"/g;
-  $doctext =~ s/&#39;/'/g;
+  # Every entity to its character: named, decimal and hex (after the tags are gone, so an
+  # escaped "&lt;b&gt;" in the text stays text). Old writeups use Windows-1252 numbers
+  # (&#149; for a bullet), which browsers show as cp1252, so map those the same way.
+  $doctext = decode_entities($doctext);
+  $doctext =~ s/([\x{80}-\x{9F}])/Encode::decode('cp1252', chr(ord($1)))/ge;
 
-  # Normalize whitespace
-  $doctext =~ s/\s+/ /g;
+  # Normalize whitespace, including no-break spaces and stray control characters
+  $doctext =~ s/[\s\x{A0}\x{00}-\x{1F}\x{7F}]+/ /g;
   $doctext =~ s/^\s+|\s+$//g;
 
   # If no content, fall back to default
@@ -286,13 +293,6 @@ sub metadescription
     $doctext =~ s/\s+\S*$//;
     $doctext .= '...';
   }
-
-  # Re-encode for HTML attribute context
-  # Must escape these characters for safe use in content="..." attributes
-  $doctext =~ s/&/&amp;/g;   # Ampersand first (before adding new entities)
-  $doctext =~ s/"/&quot;/g;  # Double quotes break content="..."
-  $doctext =~ s/</&lt;/g;    # Less-than could start tags
-  $doctext =~ s/>/&gt;/g;    # Greater-than for completeness
 
   return $doctext;
 }
