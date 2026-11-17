@@ -4172,6 +4172,40 @@ sub notify_new_discussion {
   return $sent;
 }
 
+# Notify usergroup members of a new reply in one of their discussions (the per-member
+# "newcomment" notification, #4661). Called from Everything::API::debatecomments after the
+# reply is created. The old debatecomment_create maintenance hook never delivered it: it
+# read the member's notification prefs into a hash from a hashref (never matched), and
+# wrote args the newcomment renderer/validity check don't read. Skips the replier and
+# anyone who hasn't opted in. Returns the count sent.
+sub notify_new_comment {
+  my ($this, $replier_id, $comment_id) = @_;
+  my $db = $this->{db};
+  my $notif   = $db->getNode('newcomment', 'notification') or return 0;
+  my $comment = $db->getNodeById($comment_id) or return 0;
+  my $ug_id   = $comment->{restricted} or return 0;
+
+  my $sent = 0;
+  for my $uid (split ',', ($this->usergroupToUserIds($ug_id) // '')) {
+    next if $uid == $replier_id;
+    my $member = $db->getNodeById($uid) or next;
+    my $mvars  = $this->getVars($member) or next;
+    next unless $mvars->{settings};
+    my $parsed = eval { from_json($mvars->{settings}) };
+    next unless ref($parsed) eq 'HASH' && ref($parsed->{notifications}) eq 'HASH';
+    next unless $parsed->{notifications}{ $notif->{node_id} };
+    # node_id (the reply) is what the newcomment validity check reads; uid + root are
+    # what the renderer shows.
+    $this->add_notification($notif->{node_id}, $uid, {
+      node_id => int($comment_id),
+      uid     => int($replier_id),
+      root    => int($comment->{root_debatecomment} || 0),
+    });
+    $sent++;
+  }
+  return $sent;
+}
+
 # Screen a user's notelet (the legacy screenNotelet htmlcode; #4358). Reads
 # $vars->{noteletRaw}/{personalRaw}, length-limits by user level, strips comments
 # (unless noteletKeepComments) and <script> tags, then writes the result to

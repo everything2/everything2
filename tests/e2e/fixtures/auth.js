@@ -1,151 +1,79 @@
 /**
  * Authentication helpers for E2E tests
  *
- * Provides reusable login functions to reduce test boilerplate
+ * Provides reusable login functions to reduce test boilerplate. They work at desktop
+ * and mobile sizes: desktop signs in through the Sign In nodelet, mobile (no sidebar)
+ * through the header's Sign In button and its modal. Both use the same form fields.
  */
 
 /**
- * Login as root user (admin)
- * Uses the Sign In nodelet that appears on the homepage
+ * Login as any user. Waits for window.e2.user to show a logged-in session.
+ *
+ * Login can be a client-side fetch with no full navigation, so this does NOT
+ * waitForNavigation (it would hang on the background pollers); the window.e2.user
+ * check is the real "we're logged in" signal.
  */
+async function loginAs(page, username, password) {
+  await page.goto('/')
+  await page.waitForSelector('#e2-react-page-root', { timeout: 5000 })
+
+  const nodelet = page.locator('#sign_in')
+  const headerButton = page.locator('.e2-header-signin-btn')
+  await nodelet.or(headerButton).first().waitFor({ state: 'visible', timeout: 5000 })
+
+  let form
+  let userField = '#signin_user'
+  let passField = '#signin_passwd'
+  if (await nodelet.isVisible()) {
+    // Desktop: expand the Sign In nodelet if collapsed.
+    const signInHeader = page.locator('h2:has-text("Sign In")')
+    const isCollapsed = await signInHeader.evaluate(el =>
+      el.className.includes('is-closed') || el.getAttribute('aria-expanded') === 'false'
+    )
+    if (isCollapsed) {
+      await signInHeader.click()
+      await page.waitForTimeout(300) // expand animation
+    }
+    form = nodelet
+  } else {
+    // Mobile: the header button opens the sign-in modal (Log In tab is the default).
+    await headerButton.click()
+    form = page.locator('.auth-modal form').filter({ has: page.locator('input[type="password"]') }).first()
+    await form.waitFor({ state: 'visible', timeout: 5000 })
+    userField = 'input[type="text"]'
+    passField = 'input[type="password"]'
+  }
+
+  await form.locator(userField).first().fill(username)
+  await form.locator(passField).first().fill(password)
+  await form.locator('button[type="submit"]').first().click()
+
+  await page.waitForFunction(() => window.e2 && window.e2.user && window.e2.user.guest === false, { timeout: 15000 })
+}
+
+/** Login as root user (admin) */
 async function loginAsRoot(page) {
-  await page.goto('/')
-
-  // Wait for React to hydrate Sign In nodelet
-  await page.waitForSelector('#e2-react-page-root', { timeout: 5000 })
-  await page.waitForSelector('#sign_in', { timeout: 5000 })
-
-  // Expand Sign In nodelet if collapsed
-  const signInHeader = page.locator('h2:has-text("Sign In")')
-  const isCollapsed = await signInHeader.evaluate(el =>
-    el.className.includes('is-closed') || el.getAttribute('aria-expanded') === 'false'
-  )
-  if (isCollapsed) {
-    await signInHeader.click()
-    await page.waitForTimeout(300) // Wait for expand animation
-  }
-
-  await page.fill('#signin_user', 'root')
-  await page.fill('#signin_passwd', 'blah')
-
-  // Submit. The Sign In nodelet uses a <button type="submit">Login</button>
-  // (not input[type=submit]), and login can be a client-side fetch with no full
-  // navigation -- so we do NOT waitForNavigation (it would hang on the background
-  // pollers anyway). The post-submit wait below (#epicenter / window.e2.user) is
-  // the real "we're logged in" signal.
-  await page.click('#sign_in button[type="submit"]')
-
-  // Wait for React to render epicenter (always present for logged-in users)
-  await page.waitForSelector('#epicenter', { timeout: 15000 })
+  return loginAs(page, 'root', 'blah')
 }
 
-/**
- * Login as generic test user
- * Uses the Sign In nodelet that appears on the homepage
- */
+/** Login as generic test user */
 async function loginAsGenericDev(page) {
-  await page.goto('/')
-
-  // Wait for React to hydrate Sign In nodelet
-  await page.waitForSelector('#e2-react-page-root', { timeout: 5000 })
-  await page.waitForSelector('#sign_in', { timeout: 5000 })
-
-  // Expand Sign In nodelet if collapsed
-  const signInHeader = page.locator('h2:has-text("Sign In")')
-  const isCollapsed = await signInHeader.evaluate(el =>
-    el.className.includes('is-closed') || el.getAttribute('aria-expanded') === 'false'
-  )
-  if (isCollapsed) {
-    await signInHeader.click()
-    await page.waitForTimeout(300) // Wait for expand animation
-  }
-
-  await page.fill('#signin_user', 'genericdev')
-  await page.fill('#signin_passwd', 'blah')
-
-  // Submit. The Sign In nodelet uses a <button type="submit">Login</button>
-  // (not input[type=submit]), and login can be a client-side fetch with no full
-  // navigation -- so we do NOT waitForNavigation (it would hang on the background
-  // pollers anyway). The post-submit wait below (#epicenter / window.e2.user) is
-  // the real "we're logged in" signal.
-  await page.click('#sign_in button[type="submit"]')
-
-  // Wait for React to render epicenter (always present for logged-in users)
-  await page.waitForSelector('#epicenter', { timeout: 15000 })
+  return loginAs(page, 'genericdev', 'blah')
 }
 
-/**
- * Login as e2e_admin user (admin via gods group)
- * Uses the Sign In nodelet that appears on the homepage
- */
+/** Login as e2e_admin user (admin via gods group) */
 async function loginAsE2EAdmin(page) {
-  await page.goto('/')
-
-  // Wait for React to hydrate Sign In nodelet
-  await page.waitForSelector('#e2-react-page-root', { timeout: 5000 })
-  await page.waitForSelector('#sign_in', { timeout: 5000 })
-
-  // Expand Sign In nodelet if collapsed
-  const signInHeader = page.locator('h2:has-text("Sign In")')
-  const isCollapsed = await signInHeader.evaluate(el =>
-    el.className.includes('is-closed') || el.getAttribute('aria-expanded') === 'false'
-  )
-  if (isCollapsed) {
-    await signInHeader.click()
-    await page.waitForTimeout(300) // Wait for expand animation
-  }
-
-  await page.fill('#signin_user', 'e2e_admin')
-  await page.fill('#signin_passwd', 'test123')
-
-  // Submit. The Sign In nodelet uses a <button type="submit">Login</button>
-  // (not input[type=submit]), and login can be a client-side fetch with no full
-  // navigation -- so we do NOT waitForNavigation (it would hang on the background
-  // pollers anyway). The post-submit wait below (#epicenter / window.e2.user) is
-  // the real "we're logged in" signal.
-  await page.click('#sign_in button[type="submit"]')
-
-  // Wait for React to populate window.e2.user (indicates successful login)
-  await page.waitForFunction(() => {
-    return window.e2 && window.e2.user && window.e2.user.guest === false
-  }, { timeout: 10000 })
+  return loginAs(page, 'e2e_admin', 'test123')
 }
 
-/**
- * Login as e2e_user (regular test user)
- * Uses the Sign In nodelet that appears on the homepage
- */
+/** Login as e2e_editor (Content Editors member, not an admin) */
+async function loginAsE2EEditor(page) {
+  return loginAs(page, 'e2e_editor', 'test123')
+}
+
+/** Login as e2e_user (regular test user) */
 async function loginAsE2EUser(page) {
-  await page.goto('/')
-
-  // Wait for React to hydrate Sign In nodelet
-  await page.waitForSelector('#e2-react-page-root', { timeout: 5000 })
-  await page.waitForSelector('#sign_in', { timeout: 5000 })
-
-  // Expand Sign In nodelet if collapsed
-  const signInHeader = page.locator('h2:has-text("Sign In")')
-  const isCollapsed = await signInHeader.evaluate(el =>
-    el.className.includes('is-closed') || el.getAttribute('aria-expanded') === 'false'
-  )
-  if (isCollapsed) {
-    await signInHeader.click()
-    await page.waitForTimeout(300) // Wait for expand animation
-  }
-
-  await page.fill('#signin_user', 'e2e_user')
-  await page.fill('#signin_passwd', 'test123')
-
-  // Submit. The Sign In nodelet uses a <button type="submit">Login</button>
-  // (not input[type=submit]), and login can be a client-side fetch with no full
-  // navigation -- so we do NOT waitForNavigation (it would hang on the background
-  // pollers anyway). The post-submit wait below (#epicenter / window.e2.user) is
-  // the real "we're logged in" signal.
-  await page.click('#sign_in button[type="submit"]')
-
-  // Wait for React to populate window.e2.user (indicates successful login)
-  await page.waitForFunction(() => {
-    return window.e2 && window.e2.user && window.e2.user.guest === false
-  }, { timeout: 10000 })
+  return loginAs(page, 'e2e_user', 'test123')
 }
 
 /**
@@ -156,9 +84,11 @@ async function visitAsGuest(page) {
 }
 
 module.exports = {
+  loginAs,
   loginAsRoot,
   loginAsGenericDev,
   loginAsE2EAdmin,
+  loginAsE2EEditor,
   loginAsE2EUser,
   visitAsGuest
 }

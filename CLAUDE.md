@@ -14,6 +14,7 @@ E2 is a 1999-vintage Perl/MySQL community writing site mid-modernization: PSGI/S
 - **Never create git commits.** The user handles all commits. Same for `git push`, branch deletion, force push.
 - **Never use destructive shortcuts** (`--no-verify`, `--force`, `git reset --hard`) without explicit instruction.
 - **Programmatic verification over manual visual review.** Manual screenshot inspection across themes/pages caused a multi-month stall in early 2026. Prefer Puppeteer / `tools/computed-style-diff.js` / `tools/mobile-layout-checker.js` style checks over "look at all these screenshots."
+- **Prove user-visible changes in the real app, on video.** Before calling a feature enhancement or user-facing fix done, run the `e2e-demo` skill (`.claude/skills/e2e-demo/`): a Playwright spec through the real UI on warm workers (single user by default; one browser per user, side by side, only for collaboration features), recorded with `tools/e2e-demo.sh` (add `E2E_DEMO_DEVICE=mobile` for phone resolution) and sent to Jay. Recordings go to gitignored `e2e-demos/`; never commit them. After a security fix, rerun the affected feature's spec to show it still works, worded around the feature rather than the flaw. Unit tests alone have repeatedly certified broken multi-user features (#4661).
 - **Cite-then-trust.** When older docs make claims about codebase state ("15 vulnerabilities", "11 components done"), re-grep first. Stale planning docs are common; treat them as historical scope, not current truth.
 
 ---
@@ -83,6 +84,7 @@ The "Kernel Blue" palette is the design system: `#38495e` primary, `#4060b0` lin
 `tools/` has Puppeteer-based debugging utilities. The ones likely to come up:
 
 - `browser-debug.js` — auth + screenshot + DOM inspection. The everyday tool.
+- `e2e-demo.sh <spec>` — runs a Playwright spec that uses `tests/e2e/fixtures/demo.js` with recording on, and writes `e2e-demos/<spec>.mp4` plus numbered PNG stills (step banners, scroll-and-outline on results, green/red end state; multiple users stitched side by side; `E2E_DEMO_DEVICE=mobile` for phone resolution). Procedure: the `e2e-demo` skill.
 - `computed-style-diff.js` — capture+compare computed styles across pages × themes × viewports. Used to verify the inline-styles refactor without manual screenshot review. Snapshots live in `screenshots/computed-styles/`.
 - `mobile-layout-checker.js` — programmatic mobile layout validation (overflow, touch targets, font sizing).
 - `cls-debug.js` — Cumulative Layout Shift analysis.

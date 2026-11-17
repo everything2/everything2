@@ -81,16 +81,20 @@ sub voting
 
 #############################################################################
 # New comment notification
-# Triggered when someone comments on user's writeup
-# Args: { node_id => writeup_id, comment_id => comment_node_id }
+# Triggered when someone replies in a discussion in one of the user's usergroups
+# Args: { node_id => reply_id, uid => replier_id, root => discussion_id }
 #############################################################################
 
 sub newcomment
 {
     my ($DB, $APP, $args) = @_;
 
-    my $str = "Someone commented on ";
-    $str .= $APP->bracketLink( $args->{node_id}) if $args->{node_id};
+    # Producer: Application::notify_new_comment (#4661).
+    my $who   = $APP->bracketLink($args->{uid});
+    my $where = $APP->bracketLink($args->{root} || $args->{node_id});
+
+    my $str = $who ? "$who replied" : "New reply";
+    $str .= " in $where" if $where;
 
     return $str;
 }

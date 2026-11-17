@@ -13,6 +13,16 @@ sub dispatcher
 {
   my ($self) = @_;
   my $REQUEST = Everything::Request->new;
+
+  # Node maintenance hooks (Everything::Delegation::maintenance, via
+  # NodeBase::nodeMaintenance) read the request globals that the page path sets in
+  # Everything::HTML::mod_perlInit. Set them for this request: an API call carries no
+  # form query, and the acting user is this request's user.
+  $Everything::HTML::query = '';
+  $Everything::HTML::GNODE = '';
+  $Everything::HTML::USER  = $REQUEST->user->NODEDATA;
+  $Everything::HTML::VARS  = $REQUEST->user->VARS;
+
   my $urlform = $REQUEST->url(-absolute=>1);
   my $method = lc($REQUEST->request_method());
 
