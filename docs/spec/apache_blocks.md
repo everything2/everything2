@@ -45,14 +45,14 @@ Array of user agent strings to block. These are matched case-insensitively using
 - Malicious bots: `BLEXBot`, `DataForSeoBot`
 
 ### `banned_ips`
-Array of individual IP addresses to block. These are matched against the `X-FORWARDED-FOR` header (ELB passes client IP here).
+Array of individual IP addresses to block. These are matched exactly against the client address `mod_remoteip` resolves from the ALB's `X-Forwarded-For` (Apache's `Remote_Addr`).
 
 **Format:** Full IP address (e.g., `"97.66.136.146"`)
 
 ### `banned_ipblocks`
 Array of IP address prefixes to block entire subnets. These use regex pattern matching.
 
-**Format:** 1–3 leading octets without trailing dot (e.g., `"221.204"` blocks all IPs starting with `221.204.`). The template applies `Regexp.escape`, so dots match literally.
+**Format:** 1–3 leading octets (e.g., `"221.204"` blocks all IPs starting with `221.204.`). The template escapes the dots and anchors the prefix at an octet boundary; a trailing dot is optional.
 
 ## How It Works
 
@@ -60,8 +60,9 @@ Array of IP address prefixes to block entire subnets. These use regex pattern ma
 2. **Container startup:** The source code is deployed to `/var/everything/` in the Docker container
 3. **Apache startup:** The `apache2_wrapper.rb` script processes ERB templates
 4. **Template rendering:** `etc/templates/apache2.conf.erb` reads the JSON file from `/var/everything/etc/apache_blocks.json` and generates Apache directives inside the vhost:
-   - `SetEnvIf X-FORWARDED-FOR "IP" denyip` for individual IPs
-   - `SetEnvIf X-FORWARDED-FOR ^BLOCK denyip` for IP blocks (regex)
+   - `SetEnvIf Remote_Addr "^IP$" denyip` for individual IPs
+   - `SetEnvIf Remote_Addr "^BLOCK\." denyip` for IP blocks
+   - `Remote_Addr` is the client address after `mod_remoteip` (see [apache-configuration.md](apache-configuration.md#rate-limiting-mod_evasive-and-client-ip-mod_remoteip)), not the raw header
    - `BrowserMatchNoCase "UA" denyip` for user agents
 5. **Request blocking:** `deny from env=denyip` in both `<Location />` (proxied dynamic requests) and `<Directory /var/everything/www/>` (static files), so banned clients get a 403 before reaching Starman
 
