@@ -1,8 +1,14 @@
 # Opcode retirement audit (#4266 → #4198)
 
+> **Status (verified 2026-11-16):** done in #4335 (closed with #4198) — kept as a historical record.
+> `Everything::Delegation::opcode` is deleted, there is no `nodepack/opcode/`, and `Everything::HTML`
+> has no `op=` dispatch (`execOpCode`/`opLogin`/`opLogout`/`opNuke` removed). The "8 remain live"
+> table at the bottom was the 2026-06-15 state; all 8 were retired in PRs #4319–#4334 (issues #4314,
+> #4320, #4322, #4324, #4327, #4332).
+
 Auditing `Everything::Delegation::opcode` — the legacy `op=…` CGI action dispatch
 (HTML.pm:1258 dispatches `$query->param('op')` → `Everything::Delegation::opcode->can($op)`).
-Started at 44 `sub` handlers; **8 remain live** as of 2026-06-15 (see "Live opcodes" below).
+Started at 44 `sub` handlers; 8 were still live on 2026-06-15, and **0 remain** now.
 Verdict per handler was **reachable / dead / superseded-by-API**: dead + superseded were removed,
 still-needed actions migrate to `POST /api/…` under #4198.
 
@@ -23,8 +29,8 @@ a stale comment + query-string *parse* test data in t/122).
 | `resurrect` | `API::resurrect` (`resurrect_node`, uses `$DB->resurrectNode`) | DrNatesSecretLab | **754045** |
 
 Dead-but-harmless follow-up (NOT touched here, it's a Page not an opcode):
-`Everything/Page/blind_voting_booth.pm:46` still has an `if ($op eq 'vote' && $votedon)` post-vote
-branch. The React component (`BlindVotingBooth.js`) casts via `API::vote` then `reload()`s — it never
+`Everything/Page/blind_voting_booth.pm:46` had an `if ($op eq 'vote' && $votedon)` post-vote
+branch (since removed). The React component (`BlindVotingBooth.js`) casts via `API::vote` then `reload()`s — it never
 sets `op=vote` — so that branch never triggers now. Safe to delete in a later Page-cleanup pass.
 
 Removing `resurrect` also orphaned its only-callers helper htmlcodes **`resurrectNode`** +
@@ -121,10 +127,9 @@ opcode was retired:
 | `removeweblog` | **#4310** | weblog API (NodeRow.js link → API) |
 | `changeusergroup` | **#4312** | usergroups API (`UsergroupWriteups.js` form field → API) |
 
-## Live opcodes — the remaining 8 (as of 2026-06-15)
+## Live opcodes — the remaining 8 (as of 2026-06-15) — ✅ ALL RETIRED since (#4335)
 
-These are the only handlers left in `opcode.pm`. Each needs a parity step before it can retire under
-#4198:
+*(Historical.)* These were the last handlers in `opcode.pm`, each needing a parity step:
 
 | opcode | what it needs before retirement |
 |---|---|

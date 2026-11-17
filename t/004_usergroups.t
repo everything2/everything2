@@ -1082,6 +1082,82 @@ subtest 'staff usergroups are admin-only; editors manage the rest' => sub {
   ok($gate->[0], "admin can manage gods");
 };
 
+#############################################################################
+# Member lists for adduser/removeuser are node ids
+#############################################################################
+
+subtest 'member lists must be node ids' => sub {
+  my $nm3 = $DB->getNode("normaluser3", "user");
+  my $nm4 = $DB->getNode("normaluser4", "user");
+  my $admin = sub {
+    return MockRequest->new(
+      node_id => $root_user->{node_id}, title => $root_user->{title}, nodedata => $root_user,
+      is_guest_flag => 0, is_admin_flag => 1, postdata => $_[0],
+    );
+  };
+  my $owner = sub {
+    return MockRequest->new(
+      node_id => $nm2->{node_id}, title => $nm2->{title}, nodedata => $nm2,
+      is_guest_flag => 0, is_admin_flag => 0, is_editor_flag => 0, postdata => $_[0],
+    );
+  };
+  my $members = sub {
+    my ($group_id) = @_;
+    return join ',', sort { $a <=> $b } @{ $DB->{dbh}->selectcol_arrayref(
+      'SELECT node_id FROM nodegroup WHERE nodegroup_id = ?', undef, $group_id) };
+  };
+  my $new_group = sub {
+    my $created = $api->create($admin->({ title => "Member list group $_[0] " . time(), doctext => 'x', type => 'usergroup' }));
+    my $id = $created->[1]{node_id};
+    $api->adduser($admin->([$nm3->{node_id}, $nm4->{node_id}]), $id);
+    return $id;
+  };
+
+  my $mine  = $new_group->('A');
+  my $other = $new_group->('B');
+  ok($mine && $other, 'created two ordinary usergroups');
+  $APP->setParameter($DB->getNodeById($mine), $root_user, 'usergroup_owner', $nm2->{node_id});
+
+  my $mine_before  = $members->($mine);
+  my $other_before = $members->($other);
+  like($mine_before, qr/\b$nm3->{node_id}\b/, 'group A starts with members');
+
+  for my $bad ('abc', "$nm3->{node_id} extra", '1.5', '-3', '0', '', { id => 1 }, undef) {
+    my $label = defined $bad ? (ref $bad ? 'a hash' : "'$bad'") : 'undef';
+    my $result = $api->removeuser($owner->([$bad]), $mine);
+    is($result->[0], 200, "removeuser answers $label with 200");
+    is($result->[1]{success}, 0, "removeuser refuses $label");
+    $result = $api->adduser($owner->([$bad]), $mine);
+    is($result->[1]{success}, 0, "adduser refuses $label");
+  }
+  is($members->($mine),  $mine_before,  'group A unchanged after refused lists');
+  is($members->($other), $other_before, 'group B unchanged after refused lists');
+
+  # One bad entry refuses the whole list.
+  my $result = $api->removeuser($owner->([$nm3->{node_id}, 'abc']), $mine);
+  is($result->[1]{success}, 0, 'a list with one bad entry is refused');
+  is($members->($mine), $mine_before, 'nobody removed when the list is refused');
+
+  # Owner in the list: refused before anything is removed.
+  $result = $api->removeuser($owner->([$nm3->{node_id}, $nm2->{node_id}]), $mine);
+  like($result->[1]{error} // '', qr/Cannot remove the group owner/, 'owner in the list is refused');
+  is($members->($mine), $mine_before, 'nobody removed when the owner is in the list');
+
+  # Not a list at all.
+  $result = $api->removeuser($owner->({ node_id => $nm3->{node_id} }), $mine);
+  is_deeply([$result->[0], $result->[1]{success}], [200, 0], 'a body that is not a list is refused with 200');
+
+  # Numeric strings are fine, and only the named member of this group is removed.
+  $result = $api->removeuser($owner->(["$nm3->{node_id}"]), $mine);
+  is($result->[0], 200, 'removeuser with a valid id returns 200');
+  unlike($members->($mine), qr/\b$nm3->{node_id}\b/, 'the member was removed from group A');
+  like($members->($mine), qr/\b$nm4->{node_id}\b/, 'other members of group A remain');
+  is($members->($other), $other_before, 'group B is untouched');
+
+  $APP->delParameter($DB->getNodeById($mine), $root_user, 'usergroup_owner');
+  $DB->nukeNode($DB->getNodeById($_), $root_user) for $mine, $other;
+};
+
 done_testing();
 
 =head1 NAME

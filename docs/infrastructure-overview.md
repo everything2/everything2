@@ -1,10 +1,10 @@
 # Everything2 Infrastructure Overview
 
-**Date:** 2025-11-07
+**Last verified:** 2026-11-16 (against `cf/everything2-production.json`, `docker/`, and live us-west-2 state)
 
 ## Architecture Summary
 
-Everything2 runs on a containerized AWS infrastructure with Docker containers managed by Fargate ECS, defined via CloudFormation templates.
+Everything2 runs on AWS (us-west-2): one Docker image, run as ARM64 Fargate tasks on ECS behind an ALB, with RDS MySQL 8.4. Everything is defined in one CloudFormation template.
 
 ## Development Environment
 
@@ -12,229 +12,185 @@ Everything2 runs on a containerized AWS infrastructure with Docker containers ma
 
 **Build Command:**
 ```bash
-./docker/devbuild.sh
+./docker/devbuild.sh               # full build + tests
+./docker/devbuild.sh --skip-tests  # apply local changes quickly (files are NOT volume-mounted)
 ```
 
-**Containers:**
-- `e2devdb` - MySQL 8.4 database
-- `e2devapp` - Perl on Starman/PSGI behind an Apache (mpm_event) reverse proxy + Node.js application (as of 2026-06; mod_perl removed)
+**Containers** (on the `e2-dev-net` Docker network):
+- `e2devdb` - MySQL 8.4 database (host port 9306)
+- `e2devapp` - Apache (mpm_event) reverse proxy → Starman/PSGI (`app.psgi`) on 127.0.0.1:5000, plus the cron sidecar (always live in dev)
 
 **Access:**
 - Local site: http://localhost:9080
-- Database: MySQL on standard port (internal)
+- App log: `docker exec e2devapp tail -f /tmp/development.log` (Starman, app warnings, cron sidecar)
 
 **Dependency Management:**
-- **Perl:** Carton (cpanfile + cpanfile.snapshot)
-  - Dependencies **embedded in codebase** for deployment
-  - Location: `vendor/` directory
-  - Install: `carton install`
-- **JavaScript:** npm (package.json + package-lock.json)
-  - Dependencies in `node_modules/`
-  - Build: `npm install && npm run build`
+- **Perl:** `cpanfile` + `cpanfile.snapshot`; tarballs vendored in `vendor/cache/`. The image installs them with `cpanm --from vendor/cache` into `/var/libraries`.
+- **JavaScript:** npm (`package.json` + `package-lock.json`); Node version pinned in `/.nvmrc` (currently 24.18.0) and passed to the image as `NODE_VERSION`.
+  - Build: `npx webpack --config etc/webpack.config.js` (the dev image runs this itself)
 
 ### Development Workflow
 
 1. Code locally
-2. Test at http://localhost:9080
-3. Commit to GitHub
-4. (Optional) Manual deploy via `./ops/run-codebuild.rb`
-5. Or automatic deploy on push
+2. `./docker/devbuild.sh` and test at http://localhost:9080
+3. Merge to master on GitHub
+4. Deploy with `./ops/run-codebuild.rb` (there is no push-triggered deploy)
 
 ## Production Infrastructure
 
 ### Deployment Pipeline
 
 ```
-GitHub (everything2/everything2)
-  ↓ Push to master
-AWS CodeBuild
-  ↓ docker/buildspec.yml
-  ↓ Builds Docker image
-  ↓ Runs Carton to bundle Perl deps
-  ↓ Runs npm build for React
-  ↓ Pushes to ECR
-AWS Fargate ECS
-  ↓ Pulls latest image
-  ↓ Launches containers
+./ops/run-codebuild.rb  (your AWS credentials; run after merging to master)
+  ↓ starts CodeBuild project E2-Application-Builder-ARM
+AWS CodeBuild (ARM, docker/buildspec.yml)
+  ↓ Node from .nvmrc, npm install, webpack
+  ↓ tools/asset_pipeline.rb uploads JS/CSS to S3 (deployed.everything2.com/<sha>/)
+  ↓ docker buildx --target final (BuildKit registry cache in ECR)
+  ↓ pushes everything2/e2app-arm:latest to ECR
+run-codebuild.rb, on SUCCEEDED
+  ↓ ecs update-service --force-new-deployment (E2-App-Fargate-Service)
+ECS rolling deploy (circuit breaker + rollback on)
 Production (everything2.com)
 ```
+
+The CodeBuild project has no GitHub webhook, so nothing deploys on push. A FAILED build leaves prod on the last good image. GitHub Actions only runs CodeQL.
 
 ### Manual Deployment
 
 ```bash
 ./ops/run-codebuild.rb
-# Uses your AWS credentials
-# Triggers CodeBuild manually
-# Same process as automatic deploy
+# Starts the CodeBuild build, polls it, and forces a new ECS deployment if it succeeds
 ```
 
 ### Infrastructure-as-Code
 
 **CloudFormation Template:**
-- Location: `cf/everything2-production.json`
-- Defines: ECS cluster, Fargate tasks, load balancer, networking
+- Location: `cf/everything2-production.json` (stack `everything2-production`)
+- Defines: VPC/subnets, ALB, ECS cluster/service/task definitions, RDS, S3 buckets, Route53, alarms, EventBridge rules, CodeBuild project, read-only query Lambda
 - Stack policy: `cf/stack-policy.json`
+- Deploy: `tools/cf-deploy.rb` / `ops/cf.rb`
 
 **CodeBuild Configuration:**
 - Location: `docker/buildspec.yml`
-- Phases: pre_build, build, post_build
-- Currently: **No test phase** (tests don't run in CI/CD)
+- Phases: pre_build (ECR/Docker Hub login, Node, npm), build (webpack, asset pipeline, image build + push), post_build (log only)
+- **No test phase.** Tests run locally via `./docker/devbuild.sh`.
 
 ### AWS Resources
 
 **Compute:**
-- Fargate ECS cluster
-- Multiple task definitions:
-  - Web application (e2devapp)
-  - Cron jobs (scheduled tasks)
+- ECS cluster `E2-App-ECS-Cluster`, service `E2-App-Fargate-Service`
+- Task definitions (all ARM64, same image):
+  - `e2app-family` — webhead, 1 vCPU / 2 GB, `STARMAN_WORKERS=10`; runs the cron sidecar (`E2_CRON_ENABLED=1`, `E2_CRON_LIVE=1`)
+  - `e2cron-family` — 0.5 vCPU / 1 GB; the nightly sitemap task and on-demand `ops/cron-runner.rb` / `ops/nodepack-refresh.rb` runs
+  - `e2heavyjob-family` — 1 vCPU / 4 GB; manual long jobs in `jobs/`
+- Autoscaling: min 2 / max 8, target tracking on 2xx-per-target and on CPU (60%)
 
 **Storage:**
-- RDS MySQL (production database)
-- S3 Buckets:
-  - `hnimagew.everything2.com` - Home node images
-  - `deployed.everything2.com` - Deployed assets
-  - `nodebackup.everything2.com` - Backup/export data
-  - `sitemap.everything2.com` - Sitemap data
+- RDS MySQL 8.4.9, `db.t4g.medium`, single-AZ, gp3, 7-day automated backups, deletion protection
+- S3 buckets (main ones): `deployed.everything2.com` (built JS/CSS), `hnimagew.everything2.com` (homenode images), `sitemap.everything2.com`, `nodebackup.everything2.com`, `elblogs.everything2.com` (ALB access logs), `secrets.everything2.com`, `e2-maintenance-jobs`, `nodepack.everything2.com`. See the template for the full list.
 
 **Networking:**
-- Application Load Balancer (ALB) — terminates client TLS directly
-- Route53 DNS
+- Application Load Balancer (ALB) — terminates client TLS (TLS 1.2+ policy) and forwards HTTP to port 80
+- Route53 DNS for everything2.com/.org/.net
 
 (No CloudFront and no AWS WAF: both were evaluated and rejected at this scale — the ALB terminates TLS and serves the origin directly, and bot traffic is absorbed rather than filtered by a WAF. See the CloudFront/WAF cost-vs-value decisions.)
 
 **Monitoring:**
-- CloudWatch logs
-- CloudWatch metrics
-- (Manual monitoring via AWS Console)
+- CloudWatch logs (3-day retention on most groups), Container Insights
+- 7 CloudWatch alarms + deploy-failed EventBridge rule → SNS topic `e2-alerts` (email). See Monitoring & Logging below.
 
 ## Cron Jobs / Scheduled Tasks
 
-**Location:** `cron/` directory (7 scripts)
-
-Each cron job:
-- Runs as a scheduled Fargate task
-- Has its own copy of the Everything2 codebase
-- Defined in CloudFormation template
-- Runs independently of web application
+Scripts live in `cron/`. Since the #4246/#4252 cutover they run **inside the webhead tasks** via the leader-elected cron sidecar, not as per-job Fargate tasks. Full reference: [cron-sidecar.md](cron-sidecar.md).
 
 ### Cron Job Inventory
 
-1. **cron_clean_cbox.pl** (221 bytes)
-   - Purpose: Chatterbox cleanup
-   - Removes old messages, maintains chatterbox state
+| Script | Where it runs | Cadence |
+|---|---|---|
+| `cron_datastash.pl` | webhead sidecar | every 2 min |
+| `cron_datastash.pl --lengthy` | webhead sidecar | every 6 h |
+| `cron_refresh_rooms.pl` | webhead sidecar | every 5 min |
+| `cron_clean_cbox.pl` | webhead sidecar | hourly at :50 |
+| `cron_clean_old_rooms.pl` | webhead sidecar | daily |
+| `cron_iqm_recalculate.pl` | webhead sidecar | daily |
+| `cron_generate_sitemap.pl` | dedicated `e2cron-family` Fargate task via EventBridge rule `cron-generate-sitemap` | daily 00:00 UTC |
 
-2. **cron_clean_old_rooms.pl** (252 bytes)
-   - Purpose: Room cleanup
-   - Archives or removes inactive rooms
-
-3. **cron_datastash.pl** (925 bytes)
-   - Purpose: DataStash updates
-   - Refreshes cached data for various datastash displays
-   - Examples: newwriteups, coolnodes, frontpagenews
-
-4. **cron_generate_sitemap.pl** (1.2K)
-   - Purpose: Sitemap generation
-   - Creates XML sitemaps for search engines
-   - Uploads to S3 bucket (sitemap.everything2.com)
-
-5. **cron_iqm_recalculate.pl** (257 bytes)
-   - Purpose: IQM (Image Quality Metric?) recalculation
-   - Updates quality metrics
-
-6. **cron_refresh_rooms.pl** (378 bytes)
-   - Purpose: Room refresh
-   - Updates room state, user lists
+Other scripts in `cron/`: `cron_runner.pl` (the sidecar entry point), `run_s3_job.pl` (one-off maintenance jobs, see [maintenance-jobs.md](maintenance-jobs.md)), `cron_extract_writeup_content.pl` (run on demand).
 
 ### Cron Job Architecture
 
 ```
-CloudFormation Template
-  ↓ Defines scheduled tasks
-  ↓ Uses EventBridge (CloudWatch Events)
-Fargate ECS
-  ↓ Launches cron task container
-  ↓ Contains full E2 codebase
-Cron Script
-  ↓ Initializes Everything (use Everything;)
-  ↓ Connects to database
-  ↓ Performs maintenance task
-  ↓ Exits (container terminates)
-CloudWatch Logs
-  ↓ Captures output
-```
+Every webhead task (apache2_wrapper.rb)
+  ↓ supervised loop: cron/cron_runner.pl; sleep 60
+Everything::Cron::Runner->run_once
+  ↓ GET_LOCK('e2cron_leader', 0) — one webhead wins per run
+  ↓ fork+exec each due cron/*.pl (per-job timeout)
+  ↓ records state in cron_state / cron_leader tables
+  ↓ emits E2/Cron UnhealthyJobs → alarm e2-cron-wedged-jobs
+Logs: [cron] lines in /aws/fargate/fargate-app-awslogs
 
-**Key Points:**
-- Each cron job runs in its own container
-- Container starts, runs script, exits
-- Uses same Docker image as web application
-- Scheduled via EventBridge/CloudWatch Events
-- Logs go to CloudWatch
+Sitemap only:
+EventBridge cron-generate-sitemap → RunTask e2cron-family
+  → /aws/fargate/fargate-cron-awslogs
+```
 
 ## Docker Configuration
 
 ### Docker Images
 
-**Development:**
-- Location: `docker/` directory
-- Base image: Ubuntu 26.04
-- Includes: Apache2 (mpm_event proxy), Starman/PSGI, MySQL client, Node.js 20.19.2
-- Build script: `docker/devbuild.sh`
-- Clean script: `docker/devclean.sh`
+One Dockerfile, `docker/e2app/Dockerfile`, base `ubuntu:26.04`. Entrypoint is `docker/e2app/apache2_wrapper.rb`: it renders `etc/templates/apache2.conf.erb`, fetches secrets from S3 (prod only), starts the Starman supervisor and the cron sidecar, then runs Apache in the foreground.
 
-**Production:**
-- Built by CodeBuild
-- Same base as development
-- Includes compiled React bundles
-- Perl dependencies from Carton
-- Tagged with git commit SHA
+**Development** (`dev` target, the default):
+- Built by `docker/devbuild.sh`; clean with `docker/devclean.sh`; DB image in `docker/e2db/`
+- Runs webpack inside the image; writes `last_commit` from git
+
+**Production** (`final` target):
+- Built by CodeBuild with `--target final`; JS/CSS are built on the CodeBuild host and served from S3, not from the image
+- Pushed as `everything2/e2app-arm:latest`; each deploy is identified by its image digest. The commit SHA goes into `/etc/everything/last_commit`.
 
 ### Dockerfile Highlights
 
-**Multi-stage build:**
-1. System dependencies (imagemagick, libmysqlclient, etc.)
-2. Perl dependencies via Carton
-3. Node.js and React build
-4. Apache (mpm_event reverse proxy) configuration
-5. Everything2 codebase
+**Stages:**
+1. `deps` — apt packages (Apache, ImageMagick, mysql-client, Ruby, AWS CLI), bsdtar swap (#4544), Perl deps via `cpanm` from `vendor/cache`, Node from `NODE_VERSION`, `npm install`
+2. `commit` — writes the commit id
+3. `final` — unloads mod_perl, removes Ghostscript, copies the app (all `COPY --link`)
+4. `dev` — `final` + webpack + git commit id
 
 **Key Components:**
 - Apache (mpm_event) reverse proxy in front of Starman/PSGI (`app.psgi`); mod_perl removed
-- Perl modules from cpanfile (via Carton)
-- Node.js for Webpack build
-- React compiled to `www/react/main.bundle.js`
-- Git commit recorded in image
+- Apache modules: deflate, brotli, rewrite, proxy, proxy_http, status, evasive, remoteip, headers
+- Webpack output: `www/react/[name].bundle.js` (dev); prod assets in S3 under `<sha>/`
 
 ## Database
 
 ### Development Database
 
 **Container:** e2devdb
-**Engine:** MySQL 8.0+
+**Engine:** MySQL 8.4 (dev runs strict `sql_mode`; prod is non-strict)
 **Data:**
-- Seeded from `nodepack/` XML files
+- Seeded from `nodepack/` XML plus `tools/seeds.pl` (via `tools/qareload.pl`)
 - Development data only
-- Reset with `./docker/devclean.sh`
+- Reset with `./docker/devclean.sh` then `./docker/devbuild.sh`
 
 **Configuration:**
 - Location: `etc/development-docker.json`
-- Connection: Internal Docker network
+- Connection: `e2-dev-net` Docker network (`E2_DBSERV=e2devdb`)
 - Credentials: Development defaults
 
 ### Production Database
 
-**Service:** AWS RDS MySQL
+**Service:** AWS RDS MySQL 8.4.9 (`everything2vpc`, `db.t4g.medium`)
 **Configuration:**
-- Location: `etc/production.json` (secrets location reference)
-- Actual credentials: AWS Secrets Manager (not in repo)
-- Backups: Automated via RDS
-- High availability: Multi-AZ (likely)
+- Location: `etc/production.json`; host comes from `E2_DBSERV` (set by CloudFormation)
+- Credentials: not in the repo; fetched at container startup (see Secrets below)
+- Backups: RDS automated backups, 7-day retention (point-in-time restore)
+- High availability: **single-AZ** (`MultiAZ: false`)
+- Ad-hoc read-only queries: the `e2-readonly-query` Lambda (`tools/aws/readonly-query-lambda/`)
 
 ### Database Schema
 
-**Source:** `nodepack/dbtable/*.xml`
-- Node table definitions
-- Index definitions
-- Stored procedure definitions (2 procedures)
+**Source:** `nodepack/dbtable/*.xml` (94 tables; CREATE TABLE statements incl. indexes)
 
 **Key Tables:**
 - `node` - Core node table (all content)
@@ -253,47 +209,44 @@ CloudWatch Logs
 - `etc/docker-mysql-development.json` - Database config
 
 **Production:**
-- `etc/production.json` - References AWS Secrets Manager
-- Actual secrets: Not in repository
-- Retrieved at container startup
+- `etc/production.json` - Non-secret production settings
+- Actual secrets: Not in repository; `apache2_wrapper.rb` downloads them from the private secrets bucket at container startup
 
 ### Environment Variables
 
-**Key Variables:**
-- `TZ=+0000` - Timezone (UTC)
-- `SCRIPT_NAME` - CGI script path
-- `PERL5LIB` - Perl library path
-- Database connection details (from config)
+**Key Variables (set in the task definition or by the wrapper):**
+- `E2_DBSERV` - Database host
+- `E2_DOCKER=development` - Dev mode (dev container only)
+- `STARMAN_WORKERS` (prod 10, default 14), `STARMAN_MAX_REQUESTS` (1000) - Starman sizing
+- `E2_CRON_ENABLED`, `E2_CRON_LIVE` - Start the cron sidecar and let it run jobs (both `1` in prod). The wrapper reads these, so don't remove them as unused.
+- `PERL5LIB=/var/libraries/lib/perl5:/var/everything/ecore` - Set by the wrapper for Starman and cron
+- Timezone is UTC (`TZ=Etc/UTC` in the image)
 
 ## Deployment Process Details
 
 ### CodeBuild Phases
 
 **pre_build:**
-- Login to ECR (Docker registry)
-- Pull base images if needed
+- Log in to ECR and Docker Hub
+- Install Node `$(cat .nvmrc)` with `n`, then `npm install`
+- Install `aws-sdk-s3` for the asset pipeline
 
 **build:**
-- Run Carton to install Perl dependencies
-- Bundle dependencies into `vendor/`
-- Run npm install
-- Build React with Webpack
-- Build Docker image
-- Tag with commit SHA
+- `npx webpack --config etc/webpack.config.js`
+- `tools/asset_pipeline.rb --assets=$ASSETS_BUCKET` (compressed copies to S3 under the commit SHA)
+- `docker buildx build --push --target final` with a BuildKit registry cache (`:buildcache`) in ECR; falls back to an inline-cache `docker build` if buildx or the cache fails
 
 **post_build:**
-- Push image to ECR
-- Update ECS service to use new image
-- Fargate pulls new image and deploys
+- Log only. The ECS deploy is done by `ops/run-codebuild.rb` after the build succeeds.
 
-**NOTE:** No test phase currently configured
+**NOTE:** No test phase.
 
 ### Deployment Configuration
 
 **Buildspec:** `docker/buildspec.yml`
-**ECR:** Elastic Container Registry
-**ECS:** Elastic Container Service
-**Fargate:** Serverless container runtime
+**CodeBuild project:** `E2-Application-Builder-ARM` (ARM container, `amazonlinux-aarch64-standard:4.0`, 90-min timeout); build logs in `/aws/codebuild/dockerbuild`
+**ECR repo:** `everything2/e2app-arm` (tag `latest`)
+**ECS:** cluster `E2-App-ECS-Cluster`, service `E2-App-Fargate-Service`, task family `e2app-family`
 
 ### Rollback Strategy
 
@@ -326,52 +279,39 @@ what changes is the image digest. Each ECS deployment records the digest it reso
 
 ### Current Monitoring
 
-**CloudWatch:**
-- Application logs from containers
-- Cron job output
-- ECS task metrics (CPU, memory, network)
-- **Container Insights** - Enhanced monitoring for ECS cluster
-  - Task and container-level CPU and memory metrics
-  - Network metrics (rx/tx bytes, packets)
-  - Diagnostic metrics for performance troubleshooting
-  - Pre-built CloudWatch dashboards
+**CloudWatch log groups (us-west-2):**
 
-**Enhanced Observability Features:**
-- **Tag Propagation** - Service tags automatically propagate to tasks for better resource tracking and cost allocation
-- **Non-blocking Logging** - Logs use non-blocking mode with 25MB buffer to prevent logging backpressure from affecting application performance
-- **ECS Managed Tags** - Automatic tagging of resources with cluster, service, and task metadata
+| Group | Contents |
+|---|---|
+| `/aws/fargate/fargate-app-awslogs` | Webhead container stdout/stderr: Starman lifecycle, uncaught output, `[cron]` sidecar lines |
+| `/aws/events/e2-app-errors` | App warnings and caught `die`s (via `$SIG` handlers → EventBridge). **Check this first for 500s.** |
+| `/aws/events/e2-uninitialized-errors` | "Use of uninitialized value" warnings |
+| `/aws/fargate/fargate-cron-awslogs` | Sitemap task and on-demand `e2cron-family` runs |
+| `/aws/fargate/fargate-heavyjob-awslogs` | `e2heavyjob-family` runs |
+| `/aws/fargate/e2-health-check` | Written by `tools/container-health-check.pl` (Server Telemetry page) |
+| `/aws/e2/client-errors`, `/aws/e2/rate-limit-blocks` | Browser-reported JS errors; mod_evasive blocks |
+| `/aws/rds/instance/everything2vpc/{error,slowquery}` | RDS logs |
+| `/aws/codebuild/dockerbuild` | Build logs |
 
-**Manual:**
-- AWS Console monitoring
-- Log inspection
-- Performance profiling (Devel::NYTProf locally)
+Most groups keep 3 days (client-errors and rate-limit-blocks keep 7). 500s from malformed requests that fail before the app's handlers run show up only in the ALB access logs in S3 (`elblogs.everything2.com`).
+
+**Alarms → SNS `e2-alerts` (email):** `e2-app-5xx-errors`, `e2-app-high-p99-latency`, `e2-app-unhealthy-hosts`, `e2-rds-high-cpu`, `e2-rds-high-connections`, `e2-rds-low-freeable-memory`, `e2-cron-wedged-jobs`, plus the `e2-ecs-deployment-failed` EventBridge rule. The two autoscaling `AlarmLow` alarms normally sit in ALARM; that is expected.
+
+**Other:** Container Insights on the cluster; awslogs non-blocking mode with a 25 MB buffer; ECS managed tags and tag propagation. Memory: use Container Insights `MemoryUtilized`, not `MemoryUtilization` (the latter counts page cache and reads high).
+
+**Error tooling:** `tools/app-errors.rb`, `tools/uninitialized-errors.rb`, `ops/top-app-errors.rb`.
 
 ### Gaps
 
-- ❌ No application performance monitoring (APM)
-- ❌ No error tracking (Sentry, Rollbar, etc.)
-- ❌ No uptime monitoring
-- ❌ No alerting on errors
-- ⚠️  Basic metrics dashboards (Container Insights provides task-level metrics, but no application-level APM)
-
-### Recommendations
-
-1. ✅ Container Insights enabled - Use pre-built dashboards for task/container metrics
-2. Set up CloudWatch alarms based on Container Insights metrics (CPU, memory, network)
-3. Configure alerting for:
-   - Task failure count
-   - Unhealthy target count
-   - High CPU/memory utilization
-   - Network errors
-4. Implement application-level APM (NewRelic, DataDog, or CloudWatch Application Insights)
-5. Add error tracking service (Sentry, Rollbar)
-6. Set up PagerDuty or similar for on-call
+- ❌ No APM or third-party error tracking
+- ❌ No external uptime monitoring
+- ⚠️  Alerts are email-only (no paging)
 
 ### Troubleshooting Tools
 
 **Application Health Checks:**
 
-The E2 application includes a dedicated health check endpoint at `/health` for monitoring and diagnostics. See [Health Check Documentation](health-checks.md) for complete details.
+The app serves `/health` (also `/health.pl`) from `Everything::HealthCheck` in `app.psgi`. The ALB target group checks `/health`; the ECS container check curls `/`. See [Health Check Documentation](health-checks.md) for details.
 
 ```bash
 # Test health check locally
@@ -434,17 +374,16 @@ The health check diagnostic tool ([tools/diagnose-health-checks.rb](../tools/dia
 **Network:**
 - ALB with HTTPS termination
 - Security groups restricting access
-- Private subnets for database
+- Database in private subnets
 
 **Secrets:**
-- AWS Secrets Manager for credentials
-- No secrets in repository
-- IAM roles for container access
+- Not in the repository; app secrets are fetched from a private S3 bucket at container startup, and the RDS master password lives in Secrets Manager
+- IAM task roles for AWS access
 
 **Updates:**
-- Ubuntu 24.04 base (regular security updates needed)
-- Perl module updates via Carton
-- npm package updates via package-lock.json
+- Ubuntu 26.04 base (rebuild picks up OS updates)
+- Perl modules pinned in `cpanfile.snapshot` / `vendor/cache`
+- npm packages pinned in `package-lock.json`
 
 ### Security Features
 
@@ -452,52 +391,49 @@ The health check diagnostic tool ([tools/diagnose-health-checks.rb](../tools/dia
   - Application-level IP blacklist enforcement (see `t/190_ip_blacklist_enforcement`)
   - CloudWatch metrics/logging on the ALB and app
 
-### Security Gaps (as of 2026-06)
+### Security Gaps
 
-The previously-flagged SQL injection vulnerabilities and eval'd-in-database code have been cleaned up (the "~15 vulnerabilities" framing in older docs is stale). Remaining hardening opportunities:
+The previously-flagged SQL injection vulnerabilities and eval'd-in-database code have been cleaned up (the "~15 vulnerabilities" framing in older docs is stale). CodeQL runs on GitHub. Remaining hardening opportunity:
 
-- ❌ No automated security scanning
 - ❌ No dependency vulnerability scanning
 
 ### Recommendations
 
-1. Add Dependabot for dependency updates
-2. Run Snyk or similar for vulnerability scanning
+1. Add Dependabot (or similar) for dependency updates and vulnerability alerts
 
 (WAF geo-blocking and AWS Shield Advanced were considered and set aside — see the "just eat it" bot-traffic decision above; not worth the cost at this scale.)
 
 ## Scaling Considerations
 
-### Current Architecture (as of 2026-06)
+### Current Architecture
 
-**Starman/PSGI (as-built):** The PSGI/Plack migration is done and live in production (#4234). The app runs under Starman workers; Apache (mpm_event) is a pure reverse proxy on the front. This delivered the benefits previously listed as future work — lower per-worker memory, more efficient connection pooling (RDS connections roughly halved), and a clean worker model bounded by `STARMAN_WORKERS`.
+**Starman/PSGI (as-built):** The PSGI/Plack migration is done and live in production (#4234). The app runs under Starman workers (`--preload-app`, 10 per task in prod, recycled every 1000 requests); Apache (mpm_event) is a pure reverse proxy on the front. RDS connections roughly halved compared with mod_perl.
 
 - Per-worker memory cache (no shared cache tier; Redis/Memcached was evaluated and rejected as not cost-effective)
 - Cache coherency via database `version` table
 
 **Horizontal Scaling:**
-- Multiple Fargate tasks (autoscaling on 2xx-per-target, min 2 / max 6)
+- 2–8 Fargate tasks (target tracking on 2xx-per-target and on 60% CPU)
 - Each task has isolated cache
 - Cache coherency via database `version` table
 
 **Bottlenecks:**
-- Database connection pool (eased by PSGI's reduced connection count)
+- RDS instance size (buffer pool RAM), not connection count
 - Cache version checks (DB query per cache hit)
 - No shared cache between workers (by design)
 
 ## Cost Optimization Opportunities
 
-1. **Right-size Fargate tasks** - Monitor actual CPU/memory usage
-2. **CDN for static assets** - Reduce origin requests
-3. **Cache optimization** - Reduce database queries
-4. **Spot instances** - For non-critical tasks (cron jobs)
-5. **S3 lifecycle policies** - Archive old backups to Glacier
+Done: webheads right-sized to 1 vCPU / 2 GB; scheduled cron moved onto the webheads (removed most cron Fargate tasks); JS/CSS served from S3. Rejected: CloudFront, WAF, Aurora, and a shared cache tier. Remaining ideas:
+
+1. **Cache optimization** - Reduce database queries per render
+2. **S3 lifecycle policies** - Archive old backups to Glacier
 
 ## Disaster Recovery
 
 ### Current Backup Strategy
 
-- **Database:** RDS automated backups
+- **Database:** RDS automated backups (7 days, point-in-time restore); S3 buckets exist for manual snapshot exports (`mysqlsnapshots.everything2.com`, `e2-snapshot-exports`)
 - **Code:** GitHub repository
 - **Node backups:** S3 bucket (nodebackup.everything2.com)
 
@@ -532,85 +468,26 @@ The dated Q1-Q4 2025 roadmap that lived here (including "PSGI/Plack migration �
 
 ### AWS CloudWatch Log Analysis
 
-**Priority:** Medium (Quality improvement)
-**Estimated Effort:** 2-3 weeks
+Ongoing practice rather than a project: periodically pull the two app-error groups, fix what recurs, and skip one-offs. Logs keep only **3 days**, so look for patterns inside that window.
 
-#### Log Groups to Review
-
-1. **e2-app-errors** - Application-level errors
-   - Parse and categorize error types
-   - Identify most frequent error patterns
-   - Create metrics and alarms for critical errors
-   - Document error handling improvements needed
-
-2. **e2-uninitialized-errors** - Uninitialized variable warnings
-   - Catalog all uninitialized value warnings
-   - Prioritize by frequency and severity
-   - Similar to the base.pm fix we made (basedir defaulting)
-   - Track down sources and add proper initialization
-   - Add perlcritic rules to prevent new occurrences
-
-#### Implementation Plan
-
-**Note:** CloudWatch logs have a **3-day retention period**. Since these are transient errors, focus on recurring patterns within the 3-day window rather than historical archiving.
-
-**Week 1: Data Collection & Pattern Identification**
 ```bash
-# Pull recent logs from CloudWatch (3-day window sufficient)
-aws logs filter-log-events \
-  --log-group-name e2-app-errors \
+./tools/app-errors.rb --hours 24 --group-by file      # /aws/events/e2-app-errors
+./tools/uninitialized-errors.rb --hours 24 --group-by file   # /aws/events/e2-uninitialized-errors
+
+# Raw pull, if you want jq
+aws logs filter-log-events --region us-west-2 \
+  --log-group-name /aws/events/e2-app-errors \
   --start-time $(date -d '3 days ago' +%s)000 \
   --output json > app-errors-3days.json
-
-aws logs filter-log-events \
-  --log-group-name e2-uninitialized-errors \
-  --start-time $(date -d '3 days ago' +%s)000 \
-  --output json > uninit-errors-3days.json
-
-# Identify frequently recurring errors (multiple occurrences = worth fixing)
-jq '.events[].message' app-errors-3days.json | sort | uniq -c | sort -rn | head -20
+jq -r '.events[].message' app-errors-3days.json | sort | uniq -c | sort -rn | head -20
 ```
 
-**Week 2: Analysis & Prioritization**
-- Parse log data to extract error patterns
-- Create frequency distribution (focus on errors appearing 10+ times)
-- Identify recurring issues that impact user experience
-- Categorize by severity and fix priority
-- **Skip one-off errors** - if it only happened once in 3 days, not worth fixing
-
-**Week 3: Remediation**
-- Fix top 5 most frequent errors
-- Add test coverage for fixes
-- Update code to prevent recurrence
-- Document patterns in coding standards
-
-#### Expected Outcomes
-
-- **Reduced error noise** - Cleaner logs, easier debugging
-- **Better code quality** - Proper initialization patterns
-- **Improved monitoring** - CloudWatch dashboards with meaningful metrics
-- **Proactive alerting** - Alarms for critical error spikes
-
-#### Related Files
-
-- [cf/everything2-production.json:653](../cf/everything2-production.json#L653) - CloudWatch log group definitions
-- [ecore/Everything/dataprovider/base.pm:24-26](../ecore/Everything/dataprovider/base.pm#L24-L26) - Example fix for uninitialized basedir
-
-#### Success Metrics
-
-- 50% reduction in e2-uninitialized-errors log volume
-- 80% of e2-app-errors categorized and documented
-- CloudWatch dashboard created with key metrics
-- All critical error patterns have test coverage
+Log group definitions: `AppErrorsLogGroup` / `AppUninitializedLogGroup` (and the `ApplicationErrorLoggingRule` / `ApplicationUninitializedValueLoggingRule` EventBridge rules) in `cf/everything2-production.json`.
 
 ## Related Documentation
 
-- [Modernization Priorities](modernization-priorities.md) - Strategic priorities
-- [Analysis Summary](analysis-summary.md) - Complete technical analysis
-- [mod_perl/PSGI Analysis](modperl-psgi-analysis.md) - Detailed migration analysis
-
----
-
-**Document Status:** Architecture/security/roadmap sections refreshed for Starman/PSGI as-built
-**Last Updated:** 2026-06-15 (was 2025-11-07)
-**Next Review:** see DEVELOPER-ROADMAP.md
+- [Cron Sidecar](cron-sidecar.md) - How scheduled jobs run
+- [Health Checks](health-checks.md) - `/health` and the ECS/ALB checks
+- [Maintenance Jobs](maintenance-jobs.md) - One-off in-VPC Fargate jobs
+- [Apache configuration](spec/apache-configuration.md) - Reverse-proxy config
+- [Developer Roadmap](DEVELOPER-ROADMAP.md) - Current priorities

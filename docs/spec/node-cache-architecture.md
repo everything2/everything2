@@ -3,6 +3,15 @@
 **Author**: Claude Code / Jay Bonci
 **Date**: December 2025
 **Status**: Technical Analysis
+**Last verified: 2026-11-16** against `ecore/Everything/NodeCache.pm`, `NodeBase.pm`, `Configuration.pm`, `app.psgi`.
+
+> **Changes since Dec 2025 (summary):** `incrementGlobalVersion` is now an atomic upsert
+> (`INSERT ... ON DUPLICATE KEY UPDATE version=version+1`); `getGlobalVersion`'s first-version insert
+> is idempotent. A per-worker **hydration bundle** (#4423) preloads core nodes as permanent,
+> version-exempt residents. `static_cache` dropped `htmlpage`/`opcode` (types removed) and gained
+> `stylesheet` (#4419); `permanent_cache` gained `room`; `nodecache_size` default is 1300.
+> `NodeBase::cached_stash` adds a per-worker TTL cache for decoded datastash payloads. Per-type cache
+> stats (`getStats`) are exposed on the `cache_dump` page. `typeversion_controls` no longer exists.
 
 ## Overview
 
@@ -69,7 +78,23 @@ The primary cache, storing complete node hashrefs in process memory.
 | `paramcache` | {node_id}{param_name} → value | Per-pageload |
 | `groupCache` | {group_id}{member_id} → 1 | Persistent (until group modified) |
 
-**Cache Size:** Controlled by `nodecache_size` in Configuration.pm (default: 1000 nodes)
+Also: `hydrationExempt` (node_id → 1 for hydration-bundle residents; persistent) and `stats`
+(hits/misses/evictions/stale by type; persistent per worker, `getStats`/`resetStats`).
+
+**Cache Size:** Controlled by `nodecache_size` in Configuration.pm (default: 1300 nodes)
+
+**Permanent flag:** `NodeBase::getNodeById` caches a node as permanent if its type is in
+`static_cache` **or** `permanent_cache`.
+
+### Layer 1b: Hydration Bundle (#4423)
+
+On each Starman worker's first request, `app.psgi` calls `NodeCache::loadHydrationCache`, which reads
+a JSON bundle of core nodes (default `/var/everything/hydration/hydration_cache.json`, override
+`E2_HYDRATION_CACHE_PATH`; built by `ecoretool hydrate` in `jobs/job_nodepack_builder.pl`). Each node is
+inserted via `hydrateNode` as **permanent and version-exempt** (`hydrationExempt`), so it is served
+without touching the DB. Nodetypes in the bundle have their derived inheritance fields stripped so
+`getType` re-derives them (#4444/#4446). Best-effort: a missing/malformed bundle logs and falls back
+to the normal DB path. Dev-only drift check: `E2_HYDRATION_VERIFY=1`.
 
 ### Layer 2: Static Cache (No Version Checks)
 
@@ -89,10 +114,10 @@ has 'static_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
   "nodelet" => 1,
   "container" => 1,
   "theme" => 1,
+  "stylesheet" => 1,   # deploy-managed, file-backed CSS (#4419)
 
   # Code-backed types (delegation modules)
   "htmlcode" => 1,
-  "htmlpage" => 1,
   "maintenance" => 1,
 
   # Code-backed document types (Page/Controller classes)
@@ -106,7 +131,6 @@ has 'static_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
 
   # Other code-controlled types
   "achievement" => 1,
-  "opcode" => 1,
 } });
 ```
 
@@ -114,7 +138,7 @@ has 'static_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
 1. Never evicted from cache (permanent)
 2. **No version table queries** - `isSameVersion()` returns 1 immediately
 3. Changes only take effect after ECS task restart
-4. Covers the code-backed types listed above (`document` was removed from the list; `opcode` was added)
+4. Covers the 18 types listed above (`htmlpage` and `opcode` were dropped when those nodetypes were removed)
 
 ### Layer 3: Permanent Cache (With Version Checks)
 
@@ -125,6 +149,7 @@ has 'permanent_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
   "usergroup" => 1,
   "setting" => 1,
   "datastash" => 1,
+  "room" => 1,
 } });
 ```
 
@@ -150,11 +175,15 @@ CREATE TABLE version (
 1. When a node is cached, its global version is fetched and stored locally
 2. When retrieving a cached node, `isSameVersion()` compares local vs global
 3. If versions differ, the cached node is stale and re-fetched from database
-4. When a node is updated, `incrementGlobalVersion()` bumps the global version
+4. When a node is updated, `incrementGlobalVersion()` bumps the global version via an atomic upsert:
+   `INSERT INTO version (version_id, version) VALUES (N, 1) ON DUPLICATE KEY UPDATE version = version + 1`
+   (replaced a check-then-insert that raced concurrent workers into duplicate-PK errors)
+5. `getGlobalVersion()` inserts a missing row as version 1 with a no-op `ON DUPLICATE KEY UPDATE`, so
+   first-version creation is also race-safe
 
-**Current statistics (dev environment):**
-- 1,782 rows in version table
-- Version numbers range from 1 to 1,115
+**Current statistics (dev environment, 2026-11-16):**
+- 14,204 rows in version table
+- Version numbers range from 1 to 4,140
 
 ### Layer 5: Type Version Table (typeversion) - DISABLED
 
@@ -241,17 +270,18 @@ updateNode(NODE)
     │
     ├─ incrementGlobalVersion(NODE)
     │      │
-    │      ├─ UPDATE version SET version=version+1 WHERE version_id=node_id
+    │      ├─ INSERT INTO version ... ON DUPLICATE KEY UPDATE version=version+1
     │      │
-    │      └─ If node's type is in typeversion table:
+    │      └─ SELECT from typeversion for the type; if a row exists:
     │              UPDATE typeversion SET version=version+1 WHERE typeversion_id=type_id
+    │         (typeversion is empty in dev, so this is a SELECT-only no-op per update)
     │
     └─ cacheNode(NODE) -- Re-cache with new version
 ```
 
 ### Per-Pageload Reset Flow
 
-At the start of each request, `clearSessionCache()` is called:
+At the start of each request, `Everything::initEverything()` (called from `HTML::mod_perlInit` and the API dispatch path in `app.psgi`) calls `clearSessionCache()`:
 
 ```
 clearSessionCache() / resetCache()
@@ -329,7 +359,7 @@ sub isSameVersion {
 }
 ```
 
-**Impact:** Eliminates ~30 million version table queries per day at 600K pageloads. Code-backed types (~641 nodes across 19 types) now have zero version table overhead.
+**Impact:** Eliminates ~30 million version table queries per day at 600K pageloads. Code-backed types (18 types) have zero version table overhead; hydration-bundle residents are likewise exempt (`hydrationExempt` check, which also covers Guest User).
 
 ### Issue 4: No Group Cache Invalidation (RESOLVED - December 2025)
 
@@ -375,7 +405,10 @@ if($this->{nodeQueue}->{numPermanent} >= $this->{maxSize}) {
 
 **Impact:** Memory usage can grow unexpectedly if many permanent-type nodes are cached.
 
-### Issue 6: TypeVersion Admin Page (typeversion_controls)
+### Issue 6: TypeVersion Admin Page (typeversion_controls) (RESOLVED — page removed)
+
+`typeversion_controls` was removed along with `Everything::Delegation::document`; nothing in `ecore/`
+or `react/` references it now. The dev `typeversion` table is empty. Historical description:
 
 **Problem:** The typeversion_controls page is a legacy delegation function that directly manipulates database tables without audit logging. It's also not obvious what types should be typeversioned.
 
@@ -391,6 +424,11 @@ sub typeversion_controls {
 **Recommendation:** Replace with static configuration in Everything::Configuration (see migration plan below).
 
 ## Proposed: Static TypeVersion Configuration
+
+> **Status 2026-11-16: largely moot.** Bulk invalidation is disabled in `resetCache`, the admin page is
+> gone, and the dev `typeversion` table is empty (prod not checked). The only live code path left is
+> the per-update typeversion SELECT in `incrementGlobalVersion`. Kept below as historical analysis;
+> type names like `htmlpage`/`opcode` no longer exist.
 
 Instead of managing typeversion via a database-backed admin page, define it statically in Configuration.pm:
 
@@ -509,9 +547,11 @@ sub cleanupVersionTable {
 }
 ```
 
-### 4. Cache Hit Rate Monitoring
+### 4. Cache Hit Rate Monitoring (BUILT, differently)
 
-Add instrumentation to track cache effectiveness:
+`NodeCache` now tracks per-type `hits`/`misses`/`evictions`/`stale` in `$this->{stats}`
+(`getStats`/`resetStats`), and the `cache_dump` page (`Everything::Page::cache_dump`) shows them along
+with `NodeBase::cached_stash_stats`. The original proposal was:
 
 ```perl
 # Add to NodeCache
@@ -533,8 +573,10 @@ sub getCacheStats {
 
 | Setting | Location | Default | Purpose |
 |---------|----------|---------|---------|
-| `nodecache_size` | Configuration.pm | 1000 | Max non-permanent nodes |
-| `permanent_cache` | Configuration.pm | 13 types | Types never evicted |
+| `nodecache_size` | Configuration.pm | 1300 | Max non-permanent nodes |
+| `static_cache` | Configuration.pm | 18 types | Never evicted, never version-checked |
+| `permanent_cache` | Configuration.pm | 4 types | Never evicted, still version-checked |
+| `E2_HYDRATION_CACHE_PATH` | env | `/var/everything/hydration/hydration_cache.json` | Hydration bundle location |
 | `static_nodetypes` | Configuration.pm | varies | Whether nodetypes are cached permanently |
 
 ## Files Reference
@@ -545,7 +587,9 @@ sub getCacheStats {
 | `ecore/Everything/CacheQueue.pm` | LRU queue data structure |
 | `ecore/Everything/NodeBase.pm` | Database layer, calls cache methods |
 | `ecore/Everything/Configuration.pm` | Cache configuration |
-| `ecore/Everything/Delegation/document.pm:4691` | typeversion_controls function |
+| `app.psgi` | Loads the hydration bundle once per worker |
+| `ecore/Everything/Page/cache_dump.pm` | Cache stats display |
+| `jobs/job_nodepack_builder.pl` | Builds + uploads the hydration bundle |
 
 ## See Also
 

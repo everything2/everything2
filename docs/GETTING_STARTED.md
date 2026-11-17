@@ -1,5 +1,7 @@
 # Everything2 Development Guide
 
+**Last verified:** 2026-11-16
+
 ## Quick Start
 
 Everything2 is a user-submitted content website emphasizing writing and connectivity between entries. This guide will get you set up for local development.
@@ -18,14 +20,15 @@ Everything2 is a user-submitted content website emphasizing writing and connecti
 
 The build script automatically detects if the database container exists. On subsequent runs, it will only rebuild the application container unless you use `--db-only` or `--clean` flags.
 
+**Source files are not volume-mounted** into the container. After editing code, run `./docker/devbuild.sh --skip-tests` (or the full build) to apply the change.
+
 ### Default User Credentials
 
-The development database is seeded with test users, all using the same default password for easy testing:
+The development database is seeded with test users (full list in `tools/seeds.pl`):
 
-- **Username:** `root` (super user with full admin privileges)
-- **Password:** `blah`
-
-**All seeded users** have the password `blah`, including users with special characters like `user with space`.
+- **Username:** `root` (super user with full admin privileges), **Password:** `blah`
+- `genericdev`, `genericeditor`, `genericchanop`, `normaluser1`–`normaluser30`, and users with special characters like `user with space`: password `blah`
+- The `e2e_*` users (`e2e_admin`, `e2e_editor`, `e2e_user`, ...): password `test123`
 
 To log in:
 1. Visit http://localhost:9080
@@ -37,21 +40,22 @@ To log in:
 ## Repository Structure
 
 * **[cf](https://github.com/everything2/everything2/tree/master/cf)** - CloudFormation templates for AWS infrastructure
-* **[cron](https://github.com/everything2/everything2/tree/master/cron)** - Cron jobs, run in ECS Fargate, can be simulated manually
+* **[cron](https://github.com/everything2/everything2/tree/master/cron)** - Cron job scripts; run by the in-webhead cron sidecar (see [cron-sidecar.md](cron-sidecar.md))
 * **[docker](https://github.com/everything2/everything2/tree/master/docker)** - Docker images for production and development builds
 * **[docs](https://github.com/everything2/everything2/tree/master/docs)** - Documentation, guides, and technical analysis (this directory)
 * **[ecore](https://github.com/everything2/everything2/tree/master/ecore)** - Core Everything libraries (Perl/Moose OOP)
-* **[ecoretool](https://github.com/everything2/everything2/tree/master/ecoretool)** - Tool for importing/exporting database nodes
-* **[etc](https://github.com/everything2/everything2/tree/master/etc)** - Configuration files (Apache, Webpack, etc.)
+* **[ecoretool](https://github.com/everything2/everything2/tree/master/ecoretool)** - Legacy tool for importing/exporting nodepack nodes (being retired)
+* **[etc](https://github.com/everything2/everything2/tree/master/etc)** - Configuration (Apache template, `apache_blocks.json`, Webpack, environment JSON)
 * **[jobs](https://github.com/everything2/everything2/tree/master/jobs)** - Manual server processes run by operations
-* **[node_modules](https://github.com/everything2/everything2/tree/master/node_modules)** - Node.js dependencies (npm install)
 * **[nodepack](https://github.com/everything2/everything2/tree/master/nodepack)** - Infrastructure nodes, exported to XML
 * **[ops](https://github.com/everything2/everything2/tree/master/ops)** - Cloud operation scripts (AWS CodeBuild, ECS deployment)
-* **[react](https://github.com/everything2/everything2/tree/master/react)** - Modern React 18 frontend components
-* **[t](https://github.com/everything2/everything2/tree/master/t)** - Test suite (Perl tests)
-* **[tools](https://github.com/everything2/everything2/tree/master/tools)** - Build tools (asset pipeline, perlcritic, etc.)
-* **[vendor](https://github.com/everything2/everything2/tree/master/vendor)** - Carton-managed Perl dependencies
-* **[www](https://github.com/everything2/everything2/tree/master/www)** - Static web assets (CSS, JS, images, index.pl)
+* **[react](https://github.com/everything2/everything2/tree/master/react)** - React 18 frontend (components, hooks, utils, Jest tests)
+* **[t](https://github.com/everything2/everything2/tree/master/t)** - Perl test suite (runner: `t/run.pl`)
+* **[tools](https://github.com/everything2/everything2/tree/master/tools)** - Build, debugging, and ops tools (asset pipeline, perlcritic, Puppeteer helpers like `browser-debug.js`)
+* **[vendor](https://github.com/everything2/everything2/tree/master/vendor)** - Vendored Perl dependency tarballs (`vendor/cache/`)
+* **[www](https://github.com/everything2/everything2/tree/master/www)** - Document root: CSS, built React bundles, static files, verification files
+
+The app entry point is `app.psgi` at the repo root.
 
 ## Development Workflow
 
@@ -68,38 +72,29 @@ Run specific test:
 ./docker/run-tests.sh sql          # By pattern
 ```
 
-Tests automatically run during `./docker/devbuild.sh`.
+Tests automatically run during `./docker/devbuild.sh` (skip with `--skip-tests`). React tests alone: `npm test`. A single Perl test inside the container: `docker exec e2devapp prove -I/var/libraries/lib/perl5 t/NNN_name.t`.
+
+### Debugging
+
+- App log (Starman, app warnings, cron sidecar): `docker exec e2devapp tail -f /tmp/development.log`. Apache's `/var/log/apache2/error.log` stays empty.
+- The page HTML is rendered client-side by React, so `curl` only shows the server scaffolding. Use `node tools/browser-debug.js` (Puppeteer; commands listed in its header) to inspect rendered pages; curl is fine for `/api/...` JSON.
+- MySQL shell: `docker exec -it e2devdb mysql -u root -pblah everything`
 
 ### Working with Perl Dependencies
 
-E2 uses [Carton](https://metacpan.org/pod/Carton) to manage Perl dependencies. Dependencies are vendored in the `vendor/` directory.
+Perl dependencies are listed in `cpanfile` (resolved versions in `cpanfile.snapshot`), and their tarballs are vendored in `vendor/cache/`. The Docker build installs them with `cpanm --from vendor/cache` into `/var/libraries`, so nothing is fetched from CPAN at build time.
 
-**Prerequisites for local development (Ubuntu/Debian):**
-```bash
-sudo apt-get install carton mysql-server mysql-client libmysqlclient-dev libexpat1-dev imagemagick
-```
+To add or update a dependency:
+1. Modify `cpanfile`
+2. Refresh `cpanfile.snapshot` and add the new tarballs to `vendor/cache/` (for example with `carton install && carton bundle`, which writes `vendor/cache`)
+3. Commit `cpanfile`, `cpanfile.snapshot`, and the `vendor/cache/` changes
+4. Rebuild: `./docker/devbuild.sh`
 
-For other distributions, install equivalent packages for:
-- Carton (Perl dependency manager)
-- MySQL server and client libraries
-- libmysqlclient development headers
-- libexpat development headers
-- ImageMagick
+ImageMagick's Perl bindings come from the OS package (`perlmagick`), not CPAN.
 
-To update dependencies:
-1. Ensure you have the system dependencies listed above
-2. Modify `cpanfile`
-3. Run `carton install` to fetch new dependencies
-4. Run `carton bundle` to vendor them into the source tree
-5. Commit both `cpanfile.snapshot` and `vendor/` changes
-6. Rebuild container: `./docker/devbuild.sh`
+### Node version
 
-**Note:** Ubuntu LTS has historically had issues with Perlmagick6, so image builds use the OS distribution packages instead.
-
-**Quick command:**
-```bash
-carton install && carton bundle
-```
+The Node version is pinned in `/.nvmrc`. CodeBuild, the Docker image, and `devbuild.sh` all read it. To bump Node, edit `.nvmrc` (and keep the `NODE_VERSION` default in `docker/e2app/Dockerfile` in sync).
 
 ### Code Style
 
@@ -130,6 +125,12 @@ The `devbuild.sh` script intelligently manages both database and application con
 ./docker/devbuild.sh --clean      # Remove all containers, images, network
 # Or use the wrapper:
 ./docker/devclean.sh
+
+# Skip tests (fastest way to apply a code change)
+./docker/devbuild.sh --skip-tests
+
+# Run with code coverage
+./docker/devbuild.sh --coverage
 ```
 
 **Common workflows:**
@@ -150,7 +151,8 @@ The `devbuild.sh` script intelligently manages both database and application con
 docker stop e2devapp e2devdb
 
 # View logs
-docker logs e2devapp -f           # App logs
+docker exec e2devapp tail -f /tmp/development.log   # App log
+docker logs e2devapp -f           # Container startup output
 docker logs e2devdb -f            # Database logs
 
 # Shell access (convenience script)
@@ -170,21 +172,23 @@ The database container automatically runs `qareload.pl` to load nodepack and see
 
 ## Architecture Overview
 
-### Backend (as of 2026-06)
+### Backend
 - **Perl** on **Starman/PSGI** (`app.psgi`); **Apache (mpm_event)** runs as a reverse proxy only — mod_perl is gone
-- **Moose** - Modern OOP framework (100+ modules)
+- **Moose** - OOP framework for `ecore/Everything/*`
 - **MySQL 8.4** - Primary database
 
 ### Frontend
-- **React 18.3.1** - Modern frontend framework
+- **React 18.3** - All page rendering
 - **Webpack** - Asset bundling
-- **Legacy jQuery 1.11.1** - Being phased out
+- jQuery has been removed
 
 ### Infrastructure
-- **AWS Fargate ECS** - Container orchestration
-- **AWS CodeBuild** - CI/CD pipeline
-- **S3** - Asset storage with git commit hashing
+- **AWS Fargate ECS** (ARM64) - Container orchestration
+- **AWS CodeBuild** - Builds the image; deploys are started with `./ops/run-codebuild.rb`
+- **S3** - Built JS/CSS stored under the git commit SHA
 - **Docker** - Development and production containers
+
+See [infrastructure-overview.md](infrastructure-overview.md) for details.
 
 ## Key Modernization Priorities
 
@@ -194,10 +198,10 @@ See [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md) for the current roadmap, and ru
 
 For comprehensive technical documentation, architecture analysis, and modernization plans:
 
-- **[Analysis Summary](analysis-summary.md)** - Complete technical overview
+- **[Docs index](README.md)** - Every doc in `docs/`, with descriptions
 - **[Quick Reference](quick-reference.md)** - Common commands and workflows
 - **[Coding Standards](coding-standards.md)** - Style guide and best practices
-- **[Modernization Priorities](modernization-priorities.md)** - Strategic roadmap
+- **[Developer Roadmap](DEVELOPER-ROADMAP.md)** - Strategic roadmap
 
 ## Getting Help
 
@@ -267,4 +271,4 @@ issue/ISSUE_NUMBER/short-description
 
 ---
 
-**Last Updated:** 2025-11-08
+**Last verified:** 2026-11-16

@@ -1,5 +1,13 @@
 # Plack::Request migration — surface audit & approach
 
+> **Status (verified 2026-11-16):** core migration done — CGI.pm removed (#4244, commit `e8b00e4dc`);
+> response epoch done — return-based controllers, STDOUT capture deleted (#4483). Kept as the design
+> record. Still open: the immutable-param / `handleUserRequest` rework (Phase 2), and the PageState
+> structural split (Appendix C, #4257). The surface counts in this doc are June 2026; today `ecore/`
+> has ~150 `$query->` sites and ~30 `->cgi->` sites. **Direction change:** the goal is no longer
+> "route every Page param through the facade" but **zero param reads in Page controllers** (params move
+> to React), see [controller-rationalization-inventory.md](controller-rationalization-inventory.md).
+
 **Status:** as-built / largely complete (2026-06). Successor to the PSGI migration: PSGI gave
 us the *server*; this replaced the CGI.pm *request layer* with Plack::Request while keeping
 `Everything::Request` as the auth-bearing façade.
@@ -21,9 +29,9 @@ us the *server*; this replaced the CGI.pm *request layer* with Plack::Request wh
   below) — the param-mutation sites and the node/type routing-derivation rework are not yet
   done; `handleUserRequest` still lives in `Everything::HTML.pm`.
 - The **PageState chrome/content split** (Appendix C) — `PageState` exists but
-  `Application.pm::buildNodeInfoStructure` is still the ~870-line monolith (`ecore/Everything/
-  Application.pm:7015`); only `normalize_types` has been extracted. The chrome-vs-content split
-  and build-on-demand nodelets are still planned.
+  `Application.pm::buildNodeInfoStructure` is still a ~560-line monolith (Nov 2026). PageState has
+  ~13 `_build_*` builders, used for the guest-chrome cache path (#4371), not the main render. The
+  structural split (#4257) and build-on-demand nodelets are still planned.
 
 The sections below are retained as the design of record. Where a phase describes the
 now-finished CGI→Plack request/response flip it is marked **DONE**; the deferred follow-ups are
@@ -169,9 +177,9 @@ deliberate migration-with-test. The scaffold is built to be deleted (final phase
 - **Phase 3 — DONE** — flip the backing (`_build_cgi` → `Everything::Request::PlackQuery` over
   Plack::Request). **CGI.pm out of the live request path** (commit `e8b00e4dc`) — the headline
   win, shipped.
-- **Phase 4 (response epoch) — IN PROGRESS** — `Everything::Response` exists (commit `d3217e175`)
-  and is the return-based response object; converting the remaining `header`/`redirect`/`print`
-  sites and retiring the STDOUT capture is the tail of this epoch.
+- **Phase 4 (response epoch) — DONE (#4483, 2026-07-09)** — `Everything::Response` is the
+  return-based response object on both the API and page paths; the STDOUT capture is deleted. See
+  [step1-return-based-controllers.md](step1-return-based-controllers.md).
 - **Phase 5 — DONE** — `use CGI` removed from `ecore/`; `Everything::Request` is Plack-backed.
 
 ## Open questions (to refine)
@@ -306,8 +314,8 @@ $RESPONSE  (NEW -- response work that used to live on the request)  -- see Appen
 ## Appendix B — the `$RESPONSE` object (response epoch) — **shipped** (`Everything::Response`)
 
 > **Status:** the class described here exists at `ecore/Everything/Response.pm` (commit
-> `d3217e175`). The remaining work is converting the last request-doing-response-work sites and
-> deleting the STDOUT capture; the design below is the as-built reference.
+> `d3217e175`), and the STDOUT capture + dual-mode fallback below are deleted (#4483). The design
+> below is the as-built reference; the "transitional dual-mode" snippet is historical.
 
 Composition mirror of the request side: `Everything::Response` wraps `Plack::Response`. This is
 what controllers **return** instead of printing — and returning one makes a handler **immune to
@@ -408,11 +416,10 @@ thing deleted. This is why the response epoch is sequenced **after** the request
 
 ## Appendix C — `PageState` extraction (the e2 blob, out of the god module) — **PLANNED**
 
-> **Status:** still forward-looking. `Everything::PageState` exists
-> (`ecore/Everything/PageState.pm`) but so far only `normalize_types` is wired in;
-> `Application.pm::buildNodeInfoStructure` (`ecore/Everything/Application.pm:7015`) is still the
-> ~870-line monolith. The chrome/content split and build-on-demand nodelets below feed the
-> React-routing epoch and are deferred.
+> **Status (2026-11-16):** still forward-looking (#4257). `Everything::PageState` has `normalize_types`
+> plus ~13 `_build_*` chrome builders that feed the guest-chrome datastash (#4371);
+> `Application.pm::buildNodeInfoStructure` is still the ~560-line monolith and doesn't delegate to
+> them. The chrome/content split and build-on-demand nodelets below feed the React-routing epoch.
 
 `Application.pm::buildNodeInfoStructure` is **~870 lines inside an ~8,800-line god module** — it
 builds the `e2` JSON blob every controller mounts the React app with. Extracting it is the

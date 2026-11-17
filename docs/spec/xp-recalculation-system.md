@@ -1,5 +1,7 @@
 # XP Recalculation System Specification
 
+**Last verified**: 2026-11-16
+
 ## Overview
 
 The XP Recalculation system was created in October 2008 to migrate users from the old XP calculation method to a new system. It allows legacy users (who joined before October 29, 2008) to convert their XP to the new formula, with any excess XP converted to GP as a one-time bonus.
@@ -79,11 +81,11 @@ This table is:
 
 - **Available to**: Users who joined before October 29, 2008
 - **Restricted if**: `hasRecalculated` var is already set to 1
-- **Admin override**: Gods can recalculate any user's XP via the `targetUser` field
+- **Admin override**: Admins can recalculate any user's XP by passing `username` to the API. For an admin targeting *another* user, the cutoff and `hasRecalculated` checks are **not** applied (`API::xp::recalculate` only enforces them on self-recalculation).
 
 ### Recalculated Users (oppressor_superdoc)
 
-- **Available to**: Editors only (oppressor_superdoc type)
+- **Available to**: Editors only (oppressor_superdoc type; enforced by node read permissions — `Page::recalculated_users` has no in-code gate)
 - **Purpose**: Audit trail of who has recalculated
 
 ## Workflow
@@ -111,10 +113,18 @@ This table is:
 
 ### Admin Flow
 
-Gods can recalculate other users by:
-1. Entering username in "Target user" field
-2. System looks up user and displays their stats
-3. Confirmation and recalculation proceeds as normal
+Admins (`user.admin` in React) can recalculate other users by:
+1. Entering a username in the target-user field
+2. React POSTs `/api/xp/stats` `{ username }` and displays that user's stats
+3. Confirmation → `POST /api/xp/recalculate` `{ username, confirmed: 1 }`
+
+### Request flow
+
+- Initial page data: `Everything::Page::recalculate_xp::buildReactData` returns `recalculateXp` (eligibility + the viewer's own stats).
+- `POST /api/xp/stats` → `get_stats` (self, or `username` if admin)
+- `POST /api/xp/recalculate` → `recalculate` (requires `confirmed`)
+
+Note: `_get_user_stats` is duplicated in `Page/recalculate_xp.pm` and `API/xp.pm`; keep them in sync if the formula changes.
 
 ## Maintenance Integration
 
@@ -122,10 +132,10 @@ Gods can recalculate other users by:
 
 When a draft/writeup is deleted, the `draft_delete` maintenance function:
 
-1. Checks if author joined before Oct 29, 2008
+1. Checks if author joined before Oct 29, 2008 (`author_user < 1960662`)
 2. If so, retrieves current `xpHistoryCache` for that user
-3. Calculates upvotes from the deleted content
-4. Updates `xpHistoryCache` with accumulated totals
+3. Deletes the node's `vote` and `coolwriteups` rows, deriving upvotes from vote count + reputation
+4. `sqlUpdate`s `xpHistoryCache` with accumulated totals (update only — no row is inserted, so it is a no-op once the user has recalculated and their row was deleted)
 
 This ensures that even deleted content's votes count toward the recalculation.
 
@@ -184,7 +194,7 @@ AND author_user = $uid
 
 ## Security Considerations
 
-- All recalculations are logged via `$APP->securityLog()`
+- All recalculations are logged via `$APP->securityLog(SECLOG_XP_RECALC, ...)` (actor = requesting user, subject = target)
 - Users can only recalculate once (`hasRecalculated` flag)
 - Confirmation checkbox required before execution
 - Gods have override capability for admin purposes
@@ -201,15 +211,15 @@ This feature is essentially **frozen functionality** - it was designed for a one
 
 The React migration is **done**:
 
-1. **Recalculate XP** — React component `react/components/Documents/RecalculateXp.js`, backed by `Everything::API::xp` (`POST /api/xp/stats`, `POST /api/xp/recalculate`).
-2. **Recalculated Users** — React component `react/components/Documents/RecalculatedUsers.js`.
+1. **Recalculate XP** — React component `react/components/Documents/RecalculateXp.js` + `ecore/Everything/Page/recalculate_xp.pm`, backed by `Everything::API::xp` (`POST /api/xp/stats`, `POST /api/xp/recalculate`).
+2. **Recalculated Users** — React component `react/components/Documents/RecalculatedUsers.js` + `ecore/Everything/Page/recalculated_users.pm`.
 
 The original migration considerations were honored:
 - Eligibility checks preserved (`$CUTOFF_NODE_ID = 1960662` in `API/xp.pm`; `hasRecalculated` guard).
 - Security logging maintained (`Everything::SecurityLog`).
 - Confirmation workflow kept in the React UI.
-- The `xpHistoryCache` logic in `draft_delete` remains in Perl.
+- The `xpHistoryCache` logic in `draft_delete` remains in `Everything::Delegation::maintenance`.
 
 ---
 
-*Last updated: June 2026 (React migration complete: `Everything::API::xp` + RecalculateXp.js / RecalculatedUsers.js)*
+*Last verified: 2026-11-16*

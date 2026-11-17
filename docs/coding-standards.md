@@ -2,6 +2,9 @@
 
 **Date:** 2025-11-08
 **Status:** Active Guidelines
+**Last verified:** 2026-11-16
+
+E2-specific code gotchas (HTTP 200 API errors, blessed vs hashref nodes, JSON UTF-8, no Delegation calls from controllers, `dateFormat.js`, LinkNode encoding) live in the repo-root `CLAUDE.md`; this file covers general style.
 
 ## Purpose
 
@@ -67,13 +70,15 @@ foreach my $id (@node_ids) {
     die "Invalid node ID: $id" unless $id =~ /^\d+$/;
 }
 
-# ✅ GOOD - Use int() for user input
-my $id = int($query->param('node_id'));
+# ✅ GOOD - Use int() for user input (in an API controller)
+my $id = int($REQUEST->param('node_id') // 0);
 ```
+
+New Page/controller code should not read request params at all — URL params are a React concern resolved through `/api/*` endpoints; the API is the validation boundary.
 
 ### Moose Usage
 
-**Required:** Use Moose for all new object-oriented code
+**Required:** Use Moose for all new object-oriented code (Moose is in ~480 `ecore/` modules today; Object::Pad is not yet used anywhere. The ORM plan, `docs/orm-migration-plan.md`, intends a later move to Object::Pad — follow existing Moose patterns until that lands.)
 
 ```perl
 # ✅ GOOD - Moose class
@@ -175,8 +180,8 @@ foreach my $id (@node_ids) {
     die "Invalid node ID: $id" unless $id =~ /^\d+$/;
 }
 
-# ✅ GOOD - Security-related changes must be commented
-# Fixed SQL injection: use prepared statement with placeholders
+# ✅ GOOD - Comment the invariant, not the exploit
+# Placeholders only: values here can be user-supplied
 my $sth = $dbh->prepare('UPDATE table SET col=? WHERE id=?');
 
 # ❌ AVOID - Obvious comments
@@ -184,6 +189,8 @@ my $count = 0;  # Initialize count to zero
 ```
 
 ## JavaScript Coding Standards
+
+**Linting:** there is no ESLint config yet (tracked in #4611, "Add ESLint with React hooks rules"). Until then, Jest (`npm test`) is the only automated JS gate.
 
 ### Modern JavaScript
 
@@ -212,7 +219,7 @@ var element = document.getElementById('id');
 
 ### DOM Manipulation
 
-**Preferred:** Use vanilla JS, not jQuery for new code
+**Required:** Use vanilla JS / React. jQuery is no longer loaded by the site (as of 2026-11), so the legacy example below is for reading old code only
 
 ```javascript
 // ✅ GOOD - Vanilla JS (modern browsers)
@@ -256,6 +263,10 @@ class MyComponent extends React.Component {
 }
 ```
 
+### Dates
+
+Format timestamps with `react/utils/dateFormat.js` (`formatDate`, `formatShortDate`, `formatDateTime`, `formatTime`), never `toLocaleDateString` directly — server timestamps are UTC (see #4056).
+
 ### Asset Pipeline
 
 **Required:** All JavaScript must go through asset pipeline
@@ -290,9 +301,10 @@ done_testing();
 
 **Required:** New code must have tests
 
-- **Critical code:** 80%+ coverage
-- **New features:** 70%+ coverage
+- **Critical code:** 80%+ coverage (aspirational — see `docs/code-coverage.md` for actual numbers)
+- **New features:** 70%+ coverage (aspirational)
 - **Bug fixes:** Test for regression
+- **React:** co-located `Foo.test.js`; see `docs/react-testing.md`
 
 ### Test Naming
 
@@ -359,7 +371,7 @@ Longer description if needed, explaining:
 Fixes #issue-number
 ```
 
-**Important:** Use `Fixes #issue-number` (not just `References`) to:
+**Important:** Use `Fixes #issue-number` (not just `References`) to close an issue — but for umbrella issues that stay open across many PRs (e.g. #4259), use `Refs #N` instead. Use `Fixes` to:
 - Automatically close the issue when PR is merged
 - Create clickable links in GitHub
 - Maintain traceability between commits and issues
@@ -373,14 +385,12 @@ Fixes #issue-number
 **Examples:**
 
 ```
-Fix SQL injection in opcode removeweblog
+Security fix
 
-Replaced direct interpolation with prepared statement using
-placeholders. Added integer validation for node IDs.
-
-Security: Fixes CVE-YYYY-XXXX
-Fixes #3596
+Fixes #NNNN
 ```
+
+**Security fixes (public repo):** the commit message, PR body, code comments and tests say only "security fix" — no endpoint names, exploit narrative or repro steps — and no detailed public issue is filed before the fix is live.
 
 ```
 Add tests for SQL injection fixes
@@ -483,8 +493,8 @@ Fixes #3598
 **Checklist:**
 - [ ] Branch follows naming convention: `issue/NUMBER/description`
 - [ ] All commits have proper messages with `Fixes #NUMBER`
-- [ ] Run perlcritic: `CRITIC_FULL=1 ./tools/critic.pl .`
-- [ ] Run tests: `./docker/run-tests.sh`
+- [ ] Run perlcritic: `CRITIC_FULL=1 ./tools/critic.pl` (inside the container; see below)
+- [ ] Run tests: `./docker/devbuild.sh` (full rebuild + `tools/parallel-test.sh`) or `./docker/run-tests.sh`
 - [ ] Test locally: http://localhost:9080
 - [ ] Check for security issues
 - [ ] Add/update documentation
@@ -578,12 +588,17 @@ my $api_key = 'sk_live_abc123...';
 ### Running perlcritic
 
 ```bash
-# Full check (severity 1-5)
-CRITIC_FULL=1 ./tools/critic.pl .
+# Default: "bugs" theme, severity 1, all of ecore/
+./tools/critic.pl
 
-# Check specific file
-perlcritic --severity 3 ecore/Everything/MyModule.pm
+# Full check ("core" theme, severity 1)
+CRITIC_FULL=1 ./tools/critic.pl
+
+# Check one file (takes a single file path, not a directory)
+./tools/critic.pl ecore/Everything/MyModule.pm
 ```
+
+`critic.pl` uses `/var/libraries/lib/perl5` and the repo's `.perlcriticrc`, so run it in the `e2devapp` container.
 
 ### Exceptions
 
@@ -641,5 +656,5 @@ For clarification on any standard, see:
 ---
 
 **Document Status:** Active
-**Last Updated:** 2025-11-07
+**Last Updated:** 2025-11-07 (facts re-verified 2026-11-16)
 **Enforcement:** Required for all new code, encouraged for modified code

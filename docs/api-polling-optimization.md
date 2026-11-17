@@ -3,6 +3,11 @@
 **Date**: 2025-11-24
 **Status**: Completed
 
+> **Status (verified 2026-11-16):** done (Nov 2025) — kept as a historical record. `usePolling`,
+> `useChatterPolling` and `useOtherUsersPolling` still take initial data and skip the mount fetch.
+> Line references below are stale. Follow-up: #4587 (consolidate all polling on `usePolling`; stop
+> mobile modals polling in background tabs).
+
 ## Problem
 
 Update handlers (polling hooks) were firing API requests on initial page load, even though components already received initial state from the server via `window.e2`. This caused:
@@ -244,8 +249,7 @@ All tests pass:
 
 ## Related Documentation
 
-- [docs/nodelet-periodic-updates.md](nodelet-periodic-updates.md) - Periodic update system architecture
-- [docs/react-migration-strategy.md](react-migration-strategy.md) - Overall React migration plan
+- [docs/spec/nodelet-periodic-updates.md](spec/nodelet-periodic-updates.md) - Periodic update system architecture
 - [docs/API.md](API.md) - API endpoint documentation
 
 ## Files Modified
@@ -264,7 +268,7 @@ All tests pass:
 ## Next Steps
 
 1. **Monitor performance** - Track API call reduction in production logs
-2. **Add chatter initial data** - Update backend to provide `window.e2.chatterbox.messages`
+2. ~~**Add chatter initial data**~~ - done (see "Chatterbox Optimization" above)
 3. **Optimize other nodelets** - Apply same pattern to Messages, Notifications when they add polling
 4. **Consider initial data caching** - Could use localStorage for even faster loads
 

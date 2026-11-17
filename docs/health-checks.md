@@ -1,27 +1,22 @@
 # Everything2 Health Check System
 
+**Last verified:** 2026-11-16
+
 ## Overview
 
-The E2 health check system provides monitoring and diagnostics for the application running in ECS containers. It includes a lightweight health check endpoint, comprehensive logging, and testing tools.
+`/health` is a small PSGI app, `Everything::HealthCheck`, that `app.psgi` answers before any request setup. The ALB target group checks it. The ECS container health check requests `/` instead (see Health Check Configuration). Tests: `t/127`.
 
 ## Health Check Endpoint
 
-**URL:** `/health.pl` (or `/health` which redirects to `/health.pl`)
+**URL:** `/health` (`/health.pl` is an alias; both are matched in `app.psgi`, no redirect)
 
-The health endpoint is designed for:
-- ECS container health checks
-- ELB target group health checks
-- Manual diagnostics and monitoring
-- Automated health monitoring scripts
-
-**Note:** Both `/health` and `/health.pl` work. The actual endpoint is `/health.pl` but Apache has a rewrite rule that redirects `/health` to `/health.pl` for convenience.
+The basic check needs no database, so a DB hiccup does not fail the ALB check and recycle every task. `?db=1` is the readiness probe.
 
 ### Basic Health Check
 
 ```bash
-curl http://localhost/health.pl
-# or
-curl http://localhost/health
+curl http://localhost:9080/health      # dev
+curl https://everything2.com/health    # prod
 ```
 
 **Response:**
@@ -36,12 +31,12 @@ curl http://localhost/health
 
 **HTTP Status Codes:**
 - `200 OK` - Application is healthy
-- `503 Service Unavailable` - Application is unhealthy
+- `503 Service Unavailable` - Only returned with `?db=1` when the DB probe fails
 
 ### Detailed Health Check
 
 ```bash
-curl http://localhost/health.pl?detailed=1
+curl 'http://localhost:9080/health?detailed=1'
 ```
 
 **Response:**
@@ -74,7 +69,7 @@ curl http://localhost/health.pl?detailed=1
 ### Database Connectivity Check
 
 ```bash
-curl http://localhost/health.pl?db=1
+curl 'http://localhost:9080/health?db=1'
 ```
 
 **Response:**
@@ -105,7 +100,7 @@ curl http://localhost/health.pl?db=1
 }
 ```
 
-**Note:** Database checks are slower and should only be used for detailed diagnostics, not for frequent health monitoring.
+**Note:** `?db=1` opens a fresh DBI connection as the app DB user (SSL, 2 s connect timeout) and runs `SELECT 1`, independent of the app framework (#4215). `checks.database` is `ok`, `query_failed`, `connection_failed`, or `error`. Use it for diagnostics, not frequent polling.
 
 ## Query Parameters
 
@@ -157,9 +152,9 @@ Reports memory statistics from `/proc/meminfo`:
 - High memory usage with good performance is normal (Linux caches aggressively)
 - Memory issues typically show as swap usage or OOM kills
 
-### Worker / Concurrency Model (as of 2026-06)
+### Worker / Concurrency Model
 
-The app runs under **Starman/PSGI** (`app.psgi`, served by `Everything::HealthCheck` as a standalone PSGI app); **Apache (mpm_event)** sits in front as a pure reverse proxy and runs no app code. mod_perl, the prefork MPM, and the old mod_status worker-metrics block are gone, so the health response no longer carries an `apache` object. Concurrency is bounded at the backend by `STARMAN_WORKERS` (see `etc/templates/apache2.conf.erb` and `docker/e2app/apache2_wrapper.rb`), not by `MaxRequestWorkers`.
+The app runs under **Starman/PSGI** (`app.psgi`; `/health` is answered by `Everything::HealthCheck` inside it); **Apache (mpm_event)** sits in front as a pure reverse proxy and runs no app code. The health response carries no `apache` object. Concurrency is bounded at the backend by `STARMAN_WORKERS` (10 per task in prod; set in the task definition, read by `docker/e2app/apache2_wrapper.rb`), not by Apache's `MaxRequestWorkers`.
 
 The detailed health response instead reports `system` (load average) and `memory` (meminfo), plus `database` when `?db=1` is passed — see the examples above. To inspect live worker/request state, look at Starman's own process list and the CloudWatch request/latency metrics rather than an Apache mod_status scrape.
 
@@ -179,7 +174,7 @@ The detailed health response instead reports `system` (load average) and `memory
 
 ### ECS Container Health Check
 
-Configured in [cf/everything2-production.json](../cf/everything2-production.json):
+Configured on the `e2app` container in `E2AppFargateTaskDefinition` ([cf/everything2-production.json](../cf/everything2-production.json)):
 
 ```json
 "HealthCheck": {
@@ -187,19 +182,24 @@ Configured in [cf/everything2-production.json](../cf/everything2-production.json
   "Retries": 5,
   "StartPeriod": 60,
   "Timeout": 5,
-  "Command": ["CMD-SHELL","curl -f -s http://localhost/health.pl || exit 1"]
+  "Command": ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
 }
 ```
 
 **Settings:**
+- **Command:** requests the front page (`/`), not `/health`, so it exercises the full app stack
 - **Interval:** 10 seconds between checks
 - **Retries:** 5 consecutive failures before marking unhealthy
 - **StartPeriod:** 60 second grace period during container startup
 - **Timeout:** 5 second timeout per check
 
+### ALB Target Group Health Check
+
+`FargateTargetGroupHTTP` (`E2-App-Fargate-HTTP-TG`): HTTP on port 80, path `/health`, expects `200`, 20 s timeout, healthy after 2 / unhealthy after 5 checks. The ECS service adds a 45 s health-check grace period. Deployments use the circuit breaker with rollback, so a build whose tasks never pass these checks is rolled back automatically (see [infrastructure-overview.md](infrastructure-overview.md)).
+
 ### Apache (Reverse Proxy) Configuration
 
-The proxy-side bits are in [etc/templates/apache2.conf.erb](../etc/templates/apache2.conf.erb). Under PSGI, `/health` and `/health.pl` are reverse-proxied to the Starman backend and answered by `Everything::HealthCheck` (in `app.psgi`); Apache only suppresses logging for them:
+The proxy-side bits are in [etc/templates/apache2.conf.erb](../etc/templates/apache2.conf.erb). Under PSGI, `/health` and `/health.pl` are reverse-proxied to the Starman backend like any other dynamic path and answered by `Everything::HealthCheck` (in `app.psgi`). Apache only marks `/health.pl` as `dontlog`:
 
 ```apache
 # Health check endpoint - no access logging
@@ -215,157 +215,22 @@ The proxy-side bits are in [etc/templates/apache2.conf.erb](../etc/templates/apa
 </Location>
 ```
 
-**Key features (as of 2026-06):**
-- No access logging for health check or server-status (reduces log noise)
+**Key features:**
+- `dontlog` on `/health.pl` and `/server-status` (Apache writes an access log only in dev anyway)
 - Both `/health` and `/health.pl` are proxied to Starman and answered by the PSGI health app
 - `/server-status` (Apache mod_status) reports on the **proxy** layer only — it no longer feeds app metrics into the health response
 - The health JSON's worker/concurrency model is Starman, not Apache prefork (see the Worker / Concurrency Model section above)
 
-### CloudWatch Logs Configuration
+### CloudWatch Log Group `/aws/fargate/e2-health-check`
 
-CloudWatch Logs infrastructure is configured in [cf/everything2-production.json](../cf/everything2-production.json):
+`Everything::HealthCheck` does **no logging**; it only returns JSON. The `HealthCheckLogGroup` (`/aws/fargate/e2-health-check`, 3-day retention, write access via `HealthCheckLogWritePolicy` on the task role) is written by `tools/container-health-check.pl`, an older script that checks Apache processes, `/health.pl`, `/server-status`, and the DB, and posts the result to that group when run in prod. The admin Server Telemetry page (`Everything::Page::server_telemetry`) runs it on demand. It is not part of the ECS or ALB health checks.
 
-**Log Group:**
-```json
-"HealthCheckLogGroup": {
-  "Type": "AWS::Logs::LogGroup",
-  "Properties": {
-    "LogGroupName": "/aws/fargate/health-check-awslogs",
-    "RetentionInDays": 3
-  }
-}
-```
-
-**IAM Policy:**
-```json
-"HealthCheckLogWritePolicy": {
-  "Type": "AWS::IAM::ManagedPolicy",
-  "Properties": {
-    "Description": "Allows the app containers to write health check logs to CloudWatch",
-    "PolicyDocument": {
-      "Statement": [
-        {
-          "Effect": "Allow",
-          "Action": "logs:PutLogEvents",
-          "Resource": "arn:aws:logs:*:*:log-group:/aws/fargate/health-check-awslogs:*"
-        },
-        {
-          "Effect": "Allow",
-          "Action": "logs:CreateLogStream",
-          "Resource": "arn:aws:logs:*:*:log-group:/aws/fargate/health-check-awslogs:*"
-        }
-      ]
-    }
-  }
-}
-```
-
-**Key features:**
-- 3-day retention period (shorter retention since only failures/slow responses are logged)
-- Automatic log stream creation per container instance
-- JSON-formatted structured logs for easy querying
-- Attached to AppFargateTaskRole via HealthCheckLogWritePolicy
-- Only logs failures and slow responses (minimal CloudWatch Logs costs)
-
-## Health Check Logging
-
-### Log Destinations
-
-Health check events are logged to two destinations:
-
-1. **Local file**: `/var/log/everything/health-check.log`
-2. **CloudWatch Logs**: `/aws/fargate/health-check-awslogs`
-
-### What Gets Logged
-
-The health check endpoint only logs:
-- **Failed health checks** (status 503)
-- **Slow health checks** (> 1 second response time)
-
-This prevents log spam from frequent health checks while capturing important diagnostic information.
-
-### Log Format
-
-**Local file format:**
-```
-[Timestamp] REASON status=CODE time=TIMEms details
-```
-
-**CloudWatch Logs format (JSON):**
-```json
-{
-  "reason": "FAILED",
-  "status_code": 503,
-  "response_time_ms": 156.23,
-  "timestamp": 1702476225,
-  "checks": {"apache": "ok", "database": "connection_failed"},
-  "system": {...},
-  "memory": {...},
-  "apache": {...}
-}
-```
-
-**Examples:**
-
-Local file:
-```
-[Fri Dec 13 14:23:45 2024] FAILED status=503 time=156.23ms checks={"apache":"ok","database":"connection_failed"}
-[Fri Dec 13 14:30:12 2024] SLOW status=200 time=1234.56ms checks={"apache":"ok","database":"ok"}
-```
-
-### Viewing Health Check Logs
-
-**Local file:**
 ```bash
-# View recent health check failures/slowness
-tail -f /var/log/everything/health-check.log
-
-# Count failures in the last hour
-grep FAILED /var/log/everything/health-check.log | tail -100
-
-# Analyze slow health checks
-grep SLOW /var/log/everything/health-check.log
+./tools/tail-health-check-logs.sh --since 1h       # helper (reads /aws/fargate/e2-health-check)
+aws logs tail /aws/fargate/e2-health-check --since 1h --region us-west-2
 ```
 
-**CloudWatch Logs:**
-
-Using the helper script (recommended):
-```bash
-# Follow all health check logs in real-time
-./tools/tail-health-check-logs.sh
-
-# Show only failed health checks
-./tools/tail-health-check-logs.sh --failed
-
-# Show only slow health checks
-./tools/tail-health-check-logs.sh --slow
-
-# Show logs from the last hour
-./tools/tail-health-check-logs.sh --since 1h
-
-# Show failed checks from last 30 minutes
-./tools/tail-health-check-logs.sh --since 30m --failed
-```
-
-Using AWS CLI directly:
-```bash
-# View recent health check events
-aws logs tail /aws/fargate/e2-health-check --follow --region us-west-2
-
-# Query failed health checks from the last hour
-aws logs filter-log-events \
-  --log-group-name /aws/fargate/e2-health-check \
-  --region us-west-2 \
-  --start-time $(date -d '1 hour ago' +%s)000 \
-  --filter-pattern '"FAILED"'
-
-# Query slow health checks
-aws logs filter-log-events \
-  --log-group-name /aws/fargate/e2-health-check \
-  --region us-west-2 \
-  --start-time $(date -d '1 hour ago' +%s)000 \
-  --filter-pattern '"SLOW"'
-```
+For actual app errors, use `/aws/events/e2-app-errors` and `/aws/events/e2-uninitialized-errors` (see [infrastructure-overview.md](infrastructure-overview.md#monitoring--logging)).
 
 ## Testing Health Checks
 
@@ -393,20 +258,12 @@ Use [tools/test-health-check.sh](../tools/test-health-check.sh) for comprehensiv
 ### Manual Testing
 
 ```bash
-# Basic check
-curl http://localhost/health.pl
+H=http://localhost:9080/health   # dev; inside a container use http://localhost/health
 
-# Check with pretty JSON (requires jq)
-curl -s http://localhost/health.pl | jq .
-
-# Check HTTP status code only
-curl -s -o /dev/null -w '%{http_code}\n' http://localhost/health.pl
-
-# Detailed check with timing
-time curl -s http://localhost/health.pl?detailed=1 | jq .
-
-# Database connectivity check
-curl -s http://localhost/health.pl?db=1 | jq .
+curl -s $H | jq .                                  # basic
+curl -s -o /dev/null -w '%{http_code}\n' $H        # status code only
+time curl -s "$H?detailed=1" | jq .                # detailed with timing
+curl -s "$H?db=1" | jq .                           # database probe
 ```
 
 ## Troubleshooting Health Check Failures
@@ -423,33 +280,29 @@ aws ecs describe-tasks \
   --tasks <task-arn>
 ```
 
-### Step 2: Check Health Check Logs
+### Step 2: Check Logs
 
 ```bash
-# In the container or via ECS exec
-tail -100 /var/log/everything/health-check.log
+# Container stdout/stderr (Starman lifecycle, startup errors)
+aws logs tail /aws/fargate/fargate-app-awslogs --since 30m --region us-west-2
 
-# Via CloudWatch Logs - Health Check specific logs (use helper script)
-./tools/tail-health-check-logs.sh --failed
+# App errors (caught dies, warnings)
+./tools/app-errors.rb --hours 1
 
-# Via CloudWatch Logs - General application logs
-aws logs tail /aws/fargate/fargate-app-awslogs --follow --region us-west-2
+# Dev
+docker exec e2devapp tail -100 /tmp/development.log
 ```
 
 ### Step 3: Test Health Endpoint Manually
 
 ```bash
-# From within the container
-curl -v http://localhost/health.pl
+# From within the container (ECS exec is enabled on the service)
+curl -v http://localhost/health
+curl -v 'http://localhost/health?db=1'
+curl -v http://127.0.0.1:5000/health     # Starman directly, bypassing Apache
 
-# With database check
-curl -v http://localhost/health.pl?db=1
-
-# Check Apache is running
-ps aux | grep apache
-
-# Check port 80 is listening
-netstat -tlnp | grep :80
+# Check Apache and Starman are running
+ps aux | grep -E 'apache2|starman'
 ```
 
 ### Step 4: Check Target Group Health
@@ -467,18 +320,18 @@ aws elbv2 describe-target-health \
 
 ### Issue: Health checks timing out
 
-**Symptoms:** Health checks fail after 5 seconds
+**Symptoms:** Container check (5 s) or target group check (20 s) times out
 
 **Possible causes:**
-- Database connectivity issues (if using `?db=1`)
-- Apache overloaded or hanging
-- Network latency
+- All Starman workers busy (the container check requests `/`, which needs a free worker)
+- Database slow or unreachable (affects `/`, and `/health?db=1`)
+- Starman not running (Apache returns 502/503)
 
 **Solutions:**
-1. Check if issue persists with basic health check (no `?db=1`)
-2. Review Apache error logs: `tail /var/log/apache2/error.log`
-3. Check database connectivity separately
-4. Consider increasing health check timeout in CloudFormation
+1. Compare `/health` (no DB) with `/` from inside the container
+2. Check container logs in `/aws/fargate/fargate-app-awslogs` (in prod, Apache's error log goes to stderr)
+3. Check RDS CPU/connections alarms
+4. Consider the timeouts in CloudFormation
 
 ### Issue: Health checks fail during deployments
 
@@ -487,9 +340,9 @@ aws elbv2 describe-target-health \
 **Expected behavior:** This is normal during rolling deployments
 
 **Mitigation:**
-- 60-second StartPeriod allows containers to initialize
+- 60-second StartPeriod and 45-second service grace period allow containers to initialize
 - 5 retries prevent false positives
-- ECS maintains minimum healthy percentage during deployments
+- ECS keeps 100% minimum healthy during deployments; the circuit breaker rolls back deployments whose tasks never get healthy
 
 ### Issue: Database health checks always fail
 
@@ -503,21 +356,21 @@ aws elbv2 describe-target-health \
 
 **Solutions:**
 1. Verify database endpoint: `echo $E2_DBSERV`
-2. Test connectivity: `mysql -h $E2_DBSERV -u e2readonly -e "SELECT 1"`
+2. Check that `/etc/everything/database_password_secret` exists (written at startup by `apache2_wrapper.rb`)
 3. Check security group rules allow MySQL traffic
 4. Review CloudFormation database configuration
 
 ### Issue: Health checks succeed but application returns errors
 
-**Symptoms:** `/health.pl` returns 200 OK, but application pages fail
+**Symptoms:** `/health` returns 200 OK, but application pages fail
 
-**Explanation:** Basic health check only verifies Apache is responding
+**Explanation:** The basic check only proves Starman is answering; it does not load the app or touch the DB
 
 **Solutions:**
-1. Use detailed health check: `curl http://localhost/health.pl?db=1`
-2. Check application logs: `tail -f /var/log/everything/e2.error.log`
+1. Use the DB probe: `curl 'http://localhost/health?db=1'`
+2. Check `/aws/events/e2-app-errors` (`./tools/app-errors.rb`); in dev, `/tmp/development.log`
 3. Test specific application endpoints
-4. Review Apache access logs for errors
+4. Check the `e2-app-5xx-errors` alarm and ALB access logs in `elblogs.everything2.com`
 
 ## Performance Considerations
 
@@ -529,12 +382,12 @@ aws elbv2 describe-target-health \
 | Detailed | ~50-150ms | Low | Periodic diagnostics, includes system metrics |
 | Database | ~150-250ms | Moderate | Troubleshooting, includes all metrics + DB test |
 
-**Note:** Response times for detailed and database modes include gathering system load, memory usage, and Apache worker statistics.
+**Note:** Detailed and database modes read `/proc/loadavg` and `/proc/meminfo`; database mode adds a fresh DB connection.
 
 ### Recommendations
 
-1. **ECS Container Health Checks:** Use basic mode (default)
-2. **ELB Target Health Checks:** Use basic mode
+1. **ECS Container Health Checks:** Currently `/` (full page)
+2. **ELB Target Health Checks:** Basic `/health`
 3. **Monitoring Dashboards:** Use basic mode with 30-60s intervals
 4. **Troubleshooting:** Use detailed or database mode as needed
 5. **Automated Testing:** Use basic mode for CI/CD pipelines
@@ -546,28 +399,15 @@ aws elbv2 describe-target-health \
 Health check failures are visible through:
 - ECS container health status
 - Target group unhealthy target count
-- CloudWatch Logs (if health check logging enabled)
-
-### Custom Metrics
-
-To create custom CloudWatch metrics from health check logs:
-
-```bash
-# Parse health check log and publish metrics
-grep FAILED /var/log/everything/health-check.log | \
-  wc -l | \
-  aws cloudwatch put-metric-data \
-    --namespace Everything2/Health \
-    --metric-name HealthCheckFailures \
-    --value <count>
-```
+- The `e2-ecs-deployment-failed` EventBridge rule (failed/rolled-back deploys)
 
 ### Alerting
 
-Recommended CloudWatch alarms:
-1. **Unhealthy Target Count** > 0 for 2 minutes
-2. **Task Failed Health Checks** > 5 in 5 minutes
-3. **Running Task Count** < Desired Count
+Live alarms that cover health (SNS `e2-alerts`, email):
+1. `e2-app-unhealthy-hosts` — target group unhealthy hosts
+2. `e2-app-5xx-errors` — target 5xx
+3. `e2-app-high-p99-latency`
+4. `e2-ecs-deployment-failed` (EventBridge rule, not an alarm)
 
 See [tools/diagnose-health-checks.rb](../tools/diagnose-health-checks.rb) for automated diagnostics.
 
@@ -601,8 +441,8 @@ See [tools/diagnose-health-checks.rb](../tools/diagnose-health-checks.rb) for au
 │                       │                                     │
 │  ┌────────────────────┼──────────────────────────────────┐ │
 │  │  ECS Container Health Check                          │ │
-│  │  Every 10s: curl http://localhost/health.pl          │ │
-│  │  5 retries, 60s grace period                         │ │
+│  │  Every 10s: curl -f http://localhost/                │ │
+│  │  5 retries, 60s start period                         │ │
 │  └──────────────────────────────────────────────────────┘ │
 │                       │                                     │
 └───────────────────────┼─────────────────────────────────────┘
@@ -610,9 +450,9 @@ See [tools/diagnose-health-checks.rb](../tools/diagnose-health-checks.rb) for au
                         ▼
         ┌───────────────────────────────┐
         │  Target Group Health Check     │
-        │  Protocol: HTTPS               │
-        │  Port: 443                     │
-        │  Path: /                       │
+        │  Protocol: HTTP                │
+        │  Port: 80                      │
+        │  Path: /health                 │
         └───────────────────────────────┘
 ```
 
@@ -623,11 +463,14 @@ See [tools/diagnose-health-checks.rb](../tools/diagnose-health-checks.rb) for au
 | [ecore/Everything/HealthCheck.pm](../ecore/Everything/HealthCheck.pm) | Health check endpoint implementation (PSGI app, wired in `app.psgi`) |
 | [etc/templates/apache2.conf.erb](../etc/templates/apache2.conf.erb) | Apache reverse-proxy config for `/health` |
 | [cf/everything2-production.json](../cf/everything2-production.json) | ECS health check configuration |
+| [app.psgi](../app.psgi) | Routes `/health` and `/health.pl` to the health app |
+| [t/127_health_check.t](../t/127_health_check.t) | Unit tests |
 | [tools/test-health-check.sh](../tools/test-health-check.sh) | Health check testing script |
 | [tools/diagnose-health-checks.rb](../tools/diagnose-health-checks.rb) | ECS health check diagnostics |
-| `/var/log/everything/health-check.log` | Health check failure/slowness log |
+| [tools/container-health-check.pl](../tools/container-health-check.pl) | Legacy combined check used by the Server Telemetry page; writes `/aws/fargate/e2-health-check` |
+| [tools/tail-health-check-logs.sh](../tools/tail-health-check-logs.sh) | Tails `/aws/fargate/e2-health-check` |
 
 ## See Also
 
 - [Infrastructure Overview](infrastructure-overview.md) - Overall system architecture
-- [Delegation Migration Guide](delegation-migration.md) - Application architecture patterns
+- [Apache configuration](spec/apache-configuration.md) - Reverse-proxy config

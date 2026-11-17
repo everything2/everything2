@@ -23,7 +23,13 @@ Successful APIs will always return 200 OK and well-formed JSON. If you pass a ``
 
 Content should always be assumed to be UTF-8 encoded.
 
-Return codes follow basic HTTP conventions.
+**Error convention:** handler-level errors (validation failures, permission denials, "not found") are returned as **HTTP 200** with a JSON body of the form `{"success": 0, "error": "..."}` (some endpoints add `message`, `code` or `state`). Clients should check `success`, not the status code. Newer controllers follow this strictly; some older ones still answer with 4xx/5xx statuses (with or without a JSON body), and those are noted per endpoint below. A few statuses come from the framework rather than the handler:
+
+* **401** — endpoints wrapped by the base-class guest/editor/developer guards reject the caller with an empty 401 before the handler runs.
+* **405** — no route matched the path (also returned by the `/api/nodes`-family when an id doesn't resolve to a node).
+* **400 / 410** — an unsupported API version was requested via the `Accept` header (see below).
+* Requests a browser labels (Fetch Metadata) as coming from another origin, or as a navigation/subresource load rather than a fetch/XHR/beacon, are refused with `{"success": 0, "error": "API requests must be made by the site itself"}`.
+* While the site is in maintenance mode, every API path is answered by the catchall controller.
 
 ## Node references
 
@@ -49,7 +55,7 @@ All times are in UTC
 
 ### Return codes:
 
-No other content is expected to be returned in any situation other than 200 OK.
+No other content is expected to be returned in any situation other than 200 OK. (Historical list below; see the error convention above for current practice.)
 
 * 200 OK,  Request was successful, JSON follows
 * 400 BAD REQUEST, The server did not understand the API call or did not have the proper parameters POSTed to it.
@@ -69,9 +75,9 @@ During the rapid development period, we may be changing the APIs, but we will be
 
 This section documents the automated test coverage for each API endpoint. Coverage indicates how many endpoints have dedicated test suites verifying their functionality.
 
-> **Note:** This catalogue is hand-maintained and may lag the code. There are currently **78** controller modules under `ecore/Everything/API/` (`ls ecore/Everything/API/*.pm | wc -l`); the table below was last reconciled when there were 54 and does not enumerate every newer controller. The authoritative endpoint list for any controller is its own `routes()` method — treat that as ground truth, this doc as a guide.
+> **Note:** This catalogue is hand-maintained and may lag the code. There are currently **133** controller modules under `ecore/Everything/API/` (`ls ecore/Everything/API/*.pm | wc -l`). The coverage table below was last reconciled when there were 54 and does not enumerate every newer controller; the endpoint sections further down were re-validated against the code on 2026-11-16 and now cover every routed controller (newer page-backing controllers are summarized in compact tables near the end). The authoritative endpoint list for any controller is its own `routes()` method (or a hand-written `route()` override in `giftshop`, `sanctify`, `nodeshells`, `signup`, `user`, `wheel`) — treat that as ground truth, this doc as a guide.
 
-**Last Updated**: 2026-06-15
+**Last Updated**: 2026-11-16
 
 | API Module | Endpoints | Tested | Coverage | Test File |
 |------------|-----------|--------|----------|-----------|
@@ -125,12 +131,12 @@ This section documents the automated test coverage for each API endpoint. Covera
 | Between the Cracks | 1 | 1 | ✅ 100% | [t/075_betweenthecracks_api.t](../t/075_betweenthecracks_api.t) (MockRequest) - neglected writeups search |
 | Trajectory | 1 | 1 | ✅ 100% | [t/085_trajectory_api.t](../t/085_trajectory_api.t) (12 tests, MockRequest) - site statistics by month |
 | **Admin & Moderation** |
-| Admin | 4 | 4 | ✅ 100% | [t/051_admin_api.t](../t/051_admin_api.t) (admin node editing) |
+| Admin | 11 | 4 | ⚠️ (table predates 7 newer routes) | [t/051_admin_api.t](../t/051_admin_api.t) (admin node editing) |
 | System Utilities | 1 | 1 | ✅ 100% | [t/060_systemutilities_api.t](../t/060_systemutilities_api.t) (11 tests, MockRequest) |
-| Superbless | 5 | 0 | ❌ 0% | None - **LOW PRIORITY** (admin grants) |
+| Superbless | 4 | 4 | ✅ | [t/097_superbless_api.t](../t/097_superbless_api.t) |
 | Suspension | 3 | 3 | ✅ 100% | [t/071_suspension_api.t](../t/071_suspension_api.t) (50 tests, MockRequest) - get/suspend/unsuspend with permission checks |
 | Easter Eggs | 1 | 1 | ✅ 100% | [t/079_easter_eggs_api.t](../t/079_easter_eggs_api.t) (MockRequest) - admin bestow feature |
-| Teddy Bear | 1 | 0 | ❌ 0% | None - **LOW PRIORITY** (fun feature) |
+| Teddy Bear | 1 | 1 | ✅ | [t/098_teddybear_api.t](../t/098_teddybear_api.t) |
 | List Nodes | 1 | 1 | ✅ 100% | [t/078_list_nodes_api.t](../t/078_list_nodes_api.t) (MockRequest) - node listing by type |
 | Node Vars | 4 | 4 | ✅ 100% | [t/088_nodevars_api.t](../t/088_nodevars_api.t) (26 tests, MockRequest) - admin CRUD for node settings/vars |
 | **Other** |
@@ -138,7 +144,7 @@ This section documents the automated test coverage for each API endpoint. Covera
 | Wheel | 1 | 1 | ✅ 100% | [t/045_wheel_api.t](../t/045_wheel_api.t) |
 | Tests | 1 | 1 | ✅ 100% | [t/003_api_versions.t](../t/003_api_versions.t) (8 tests - version testing) |
 | Catchall | 0 | 0 | ⚠️ N/A | Empty placeholder module |
-| Writeuptypes | 1 | 0 | ❌ 0% | None - **LOW PRIORITY** (writeup type info) |
+| Writeuptypes | 1 | 1 | ✅ | [t/132_writeuptypes_api.t](../t/132_writeuptypes_api.t) |
 
 **Overall API Test Coverage** (as of the 54-module reconciliation below): 49 of 54 catalogued modules had tests. The controller count has since grown to **78** (see note at the top of this section) — the figures below describe the 54 modules enumerated in the table, not the full current surface.
 
@@ -152,15 +158,14 @@ This section documents the automated test coverage for each API endpoint. Covera
 - Total Test Assertions: 2,904
 - Modern MockRequest Tests: 27 files
 
-### APIs Without Tests (5 remaining)
+### APIs Without Tests (from the 54-module snapshot)
+
+superbless, teddybear and writeuptypes have since gained tests (t/097, t/098, t/132). Remaining partial coverage:
 
 | API | Priority | Notes |
 |-----|----------|-------|
-| superbless | LOW | Admin blessing grants - rarely used |
-| teddybear | LOW | Teddy bear fun feature |
-| users | LOW | User listing (partial in user_api) |
-| nodes | LOW | General node ops (partial coverage) |
-| writeuptypes | LOW | Writeup type enumeration |
+| users | LOW | Partial ([t/012_users_api.t](../t/012_users_api.t), [t/048_user_api.t](../t/048_user_api.t)) |
+| nodes | LOW | General node ops (clone/delete only) |
 
 **Test Infrastructure:**
 - [t/001_api_routing.t](../t/001_api_routing.t) - General API routing (2 tests)
@@ -199,7 +204,7 @@ This section documents the automated test coverage for each API endpoint. Covera
 
 ---
 
-**Modernization Status**: ✅ All controllers use the modern `routes()` method - No legacy `command_post` patterns remain! (This held across the 54 catalogued modules and remains the convention for the controllers added since.)
+**Modernization Status**: ✅ No legacy `command_post` patterns remain. Controllers declare a `routes()` table, except six (`giftshop`, `sanctify`, `nodeshells`, `signup`, `user`, `wheel`) that override `route()` to dispatch on the path (and, for `user`/`wheel`/`signup`, the HTTP method) by hand. Note that `routes()` matching ignores the HTTP method; handlers that care check `request_method` themselves.
 
 ## Node requests
 
@@ -207,11 +212,17 @@ This section documents the automated test coverage for each API endpoint. Covera
 
 The node requests form is good for looking up particular node_ids, but does not have actions on it.
 
-Looking up the a node_id under a wrong type API throws a 404 NOT FOUND; for instance, looking up a user under /api/usergroups.
+Looking up the a node_id under a wrong type API throws a 404 NOT FOUND; for instance, looking up a user under /api/usergroups. An id that doesn't resolve to any node returns 405 (UNIMPLEMENTED) for `/:id`, `/:id/action/update` and `/:id/action/delete`.
+
+The same base controller backs `/api/users`, `/api/usergroups`, `/api/writeups`, `/api/e2nodes` and `/api/nodegroups`; each subclass adds its own routes (documented in its section).
 
 ### /api/nodes
 
 Always returns UNIMPLEMENTED
+
+### /api/nodes/create
+
+Generic creation is switched off on `/api/nodes` (returns 405). Subclasses with creation enabled (`writeups`, `e2nodes`, `usergroups`) accept a JSON body, keep only whitelisted fields plus `title`, and check the node type's create permission (401 for guests, 403 if not permitted). For creating an arbitrary node type by name, see `POST /api/node/create`.
 
 ### /api/nodes/:id
 
@@ -219,7 +230,7 @@ Returns the readable form of a node. Always the following items:
 
 * **node_id** The unique identifier of the object
 * **author** A node reference of the creator of the object
-* **creattime** ISO formatted date of when the node was created
+* **createtime** ISO formatted date of when the node was created
 * **type** Human readable version of the type. Pluralize to find the right API
 * **title** The title of the node
 
@@ -231,9 +242,9 @@ Deletes the node if the user has permission to do so.
 
 Returns 403 FORBIDDEN if the user does not have permission
 
-Returns 404 NOT FOUND if the node does not exist
+Returns 405 if the node does not exist
 
-On success returns a has with one key:
+On success returns a hash with one key:
 * **deleted**: The node_id of the removed node 
 
 ### /api/nodes/:id/action/update
@@ -242,19 +253,19 @@ Updates the node if the user has permission to do so
 
 Returns 403 FORBIDDEN if the user does not have permission
 
-Returns 404 NOT FOUND if the node does not exist
+Returns 405 if the node does not exist
 
 On success, returns the json display of the newly updated node
 
-The fields that are allowed to be updated work on a whitelist system. The following node type and field combinations are allowed:
+The fields that are allowed to be updated work on a whitelist system defined by each node class's `field_whitelist`:
 
-* **users** - doctext
-* **documents** - doctext
-* **usergroups** - doctext
+* **document** and types derived from it (users, usergroups, …) - doctext
+* **writeups** - doctext, wrtype_writeuptype, notnew, parent_e2node. A writeup can't be moved by editing it: a changed `parent_e2node` returns `{success: 0, error: "parent_change_not_allowed"}`. Changing to an editor-only writeup type as a non-editor returns `{success: 0, error: "writeuptype_not_allowed"}`; an unknown type id returns `invalid_writeuptype`. A successful type change also retitles the writeup to "<e2node> (<type>)".
+* Other types - nothing (the update is a no-op)
 
 ### /api/nodes/:id/action/clone
 
-**POST only, admin-only endpoint**
+**POST, admin-only endpoint**
 
 Creates a complete copy of the specified node with a new title. Only administrators can clone nodes.
 
@@ -277,8 +288,7 @@ Creates a complete copy of the specified node with a new title. Only administrat
 * **403 FORBIDDEN** - User is not an administrator
   * **error** - "Only administrators can clone nodes"
 
-* **404 NOT FOUND** - Node does not exist
-  * **error** - Error message
+* **405** - Node does not exist (no body)
 
 * **409 CONFLICT** - A node with the specified title already exists
   * **error** - "A node with this title already exists"
@@ -362,17 +372,31 @@ The **URL-pattern resolution lives in React's client router**, not here. React p
 
 **Type contract:** the payload is type-normalized — integer ids (`node_id`, `user_id`, …) are real integers, never strings (#4152/#4108). The same normalization runs at the single source (`buildNodeInfoStructure`), so the inline page render and this endpoint are byte-for-byte equivalent. Captured fixtures (`react/__fixtures__/pagestate/`) are snapshots of this endpoint; `tools/capture-pagestate-fixtures.sh` regenerates them (supports `E2_LOGIN_USER`/`E2_LOGIN_PASS` for authed views).
 
-Always returns **200 OK** (E2 API convention); a missing context node returns `{success: 0, error: ...}`.
+Always returns **200 OK** (E2 API convention). Errors: `{success: 0, error: "node not found"}` (id/title form), `"unknown type '<type>'"` / `"node not found: <type>/<title>"` (lookup form). Node-level read rules match the page render: a node the user can't read yields the Permission Denied page's payload, and a draft they can't see yields the not-found page's payload. If the node's page controller declines to render for this user (a redirect or other non-200 answer), the response is `{success: 0, error: "not available", status, redirect}`.
 
 **Future:** `?lite=1` (not yet implemented) will return the chrome subset only, for clients that reuse it across client-side navigation. The chrome/content partition is already modeled in `Everything::PageState->from_blob`.
 
 ## Users
 
-**Test Coverage: ❌ 0%** (0/7 endpoints tested)
+**Test Coverage: ⚠️ partial** ([t/012_users_api.t](../t/012_users_api.t), [t/048_user_api.t](../t/048_user_api.t), [t/090_cure_infection_api.t](../t/090_cure_infection_api.t))
+
+Two controllers: `/api/users` (the node-API subclass: `/:id` plus `lookup` and `confirm`) and `/api/user` (profile actions, dispatched by path + HTTP method).
 
 ### /api/users
 
 Always returns UNIMPLEMENTED
+
+### GET /api/users/lookup?username=NAME
+
+Exact-title user lookup. Returns `{success: 1, user_id, username}`, or `{success: 0, error}` for a missing parameter / unknown user.
+
+### POST /api/users/confirm
+
+Finalizes an account activation or password reset from an emailed token link (replaces the legacy confirm-password form).
+
+**Body:** `{ username, passwd, token, action: "activate"|"reset", expiry, expires? }` (`expires` is the optional "stay logged in" cookie duration).
+
+**Returns** `{success, state}`: `success_activate` (plus `profileUrl`) or `success_reset` on success, which also logs the user in; otherwise `missing_params`, `invalid_action`, `expired`, `no_user`, `locked`, or `login_required`. The human-readable copy for each state lives in React.
 
 ### /api/users/:id
 
@@ -384,20 +408,27 @@ Returns all of the items returned by /api/nodes/:id for that id, plus the follow
 * **GP** - The GP of the user
 * **level** - The current level of the user
 * **leveltitle** - The title of the level of the user
-* **createtime** - The ISO formatted time when the user signed up
 * **lasttime** - The ISO formatted time when the user was last online
 * **bookmarks** - Array of bookmark objects. See the bookmarks API. This key is not shown if there are no bookmarks.
-* **numwriteups** - Number of writeups a user has created. The key is not displayed if the amount is zero
+* **numwriteups** - Number of writeups a user has created (0 if none)
 * **specialties** - User-inputted text field for "specialties" as listed on homenode
 * **missions** - User-inputted text field for "mission drive within everything" as listed on homenode
 * **employment** - User-inputted text field for "school/company" as listed on homenode
 * **motto** - User-inputted text field for "motto" as listed on homenode
 * **is_online** - Whether the user is online. This is mostly used internally to send ONO messages, but could be used for other features in the future
 * **message_forward_to** - Node reference to message recipient if this is a chatterbox forward
+* **imgsrc** - Homenode image path, if set
+* **acctlock** - Node reference to whoever locked the account, if locked
+* **hidelastseen** / **hidelastnoded** / **hidemsgme** - The user's display-privacy settings (1/0)
+* **lastnoded** - `{writeup, e2node}` references for the most recent writeup (omitted when the user hides it)
+* **groups** - Node references of usergroup memberships (omitted if none)
+* **categories** - Node references of categories the user maintains (omitted if none)
 
 ### POST /api/user/edit
 
 Updates a user's profile information. Requires authentication. Users can only edit their own profile unless they are an admin.
+
+Changing **your own** password or email requires `current_password`; without it the response is `{success: false, code: "current_password_required"}`, and a wrong one returns `code: "current_password_incorrect"`. When your own password changes, the response sets a fresh login cookie.
 
 **Request Body (JSON):**
 
@@ -407,6 +438,7 @@ Updates a user's profile information. Requires authentication. Users can only ed
   "realname": "John Doe",
   "email": "john@example.com",
   "passwd": "newpassword",
+  "current_password": "oldpassword",
   "user_doctext": "<p>My bio text</p>",
   "mission": "To node everything",
   "specialties": "Writing, coding",
@@ -424,6 +456,7 @@ Updates a user's profile information. Requires authentication. Users can only ed
 * **realname** - User's real name
 * **email** - User's email address
 * **passwd** - New password (leave blank to keep current)
+* **current_password** - Required when changing your own password or email
 * **user_doctext** - Bio/homenode HTML text
 * **mission** - Mission drive within everything
 * **specialties** - User's specialties
@@ -453,7 +486,7 @@ Updates a user's profile information. Requires authentication. Users can only ed
 
 ### GET /api/user/sanctity
 
-Admin-only endpoint to get a user's sanctity value.
+Admin-only endpoint to get a user's sanctity value. (Older-style errors: 403 not admin, 400 missing username, 404 unknown user, each with a JSON `error`.)
 
 **Query Parameters:**
 
@@ -490,6 +523,14 @@ or
   "username": "existinguser"
 }
 ```
+
+A malformed name returns `available: false` with `reason: "invalid_format"`.
+
+### POST /api/user/upload-image
+
+Uploads a homenode image (`multipart/form-data`, file field `imgsrc_file`; JPEG/PNG/GIF/WebP/HEIC up to 12MB). Logged-in users at level 1+ (or members of the image-privileged group) may upload for themselves unless their homenode-picture privilege is suspended; admins may pass `target_user_id` to upload for someone else. The image is normalized, resized to 200x400 (400x800 above level 4 or for admins), stored, and queued for moderator approval (admin uploads for others skip the queue).
+
+**Returns** `{success: 1, message, imgsrc, imgsrc_url}` or `{success: 0, error}`.
 
 ### POST /api/user/cure
 
@@ -542,7 +583,7 @@ Error - user not found:
 
 ## Usergroups
 
-**Test Coverage: ✅ 90%** (9/10 endpoints tested)
+**Test Coverage: ✅** (most actions covered in t/004_usergroups.t)
 
 ### /api/usergroups/
 
@@ -557,32 +598,26 @@ Returns all of the items returned by /api/nodes/:id, plus the following:
 
 ### /api/usergroups/create
 
-Allows a user to create a usergroup if they are allowed to. This is currently restricted to admins only. Accepts two post parameters:
+Allows a user to create a usergroup if the usergroup nodetype's create permission allows it (admins in practice). Accepts a JSON body:
 
 * **title** (required) - The title of the new usergroup
 * **doctext** - The description of the group
 
 Returns the usergroups/:id display function of the newly created usergroup
 
+Membership-management actions (adduser, removeuser, reorder, description) are allowed for admins, editors, and the group's owner (the `usergroup_owner` parameter). Staff groups (gods, e2gods, Content Editors) are managed by admins only.
+
 ### /api/usergroups/:id/action/adduser
 
-Adds users to the usergroup. Takes an array of node_ids to add as a POST parameter
+**POST** — Adds users or usergroups to the group. Body is a JSON **array** of node_ids; ids that aren't users/usergroups or are already members are skipped.
 
-Returns 403 FORBIDDEN if the user doesn't have permission to do this action
-
-Returns 401 Unauthorized if the user is not logged in
-
-Returns the node reference if successful
+Returns `{ group: [...] }` (enhanced member list with flags, `is_owner`, `is_current`). 403 (no body) if the caller can't manage the group; 404 for a non-usergroup id; 401 for guests.
 
 ### /api/usergroups/:id/action/removeuser
 
-Removes users to the usergroup. Takes an array of node_ids to remove
+**POST** — Removes members. Body is a JSON array of node_ids. The owner can't be removed (`{success: 0, error: "Cannot remove the group owner. Transfer ownership first."}`); transfer ownership first.
 
-Returns 403 FORBIDDEN if the user doesn't have permission on this group
-
-Returns 401 Unauthorized if the user is not logged in
-
-Returns the node reference if successful
+Returns `{ group: [...] }`. Same permission responses as adduser.
 
 ### /api/usergroups/:id/action/leave
 
@@ -618,7 +653,7 @@ Allows a logged-in user to leave a usergroup they are a member of. Unlike `remov
 
 ### /api/usergroups/:id/action/reorder
 
-**POST only** - Requires admin, editor, or owner permission
+**POST** - Requires admin, editor, or owner permission
 
 Reorders members within a usergroup. This is useful for changing the leader (first member) or organizing members in a specific order.
 
@@ -643,28 +678,6 @@ Reorders members within a usergroup. This is useful for changing the leader (fir
 * **403 Forbidden** - User doesn't have permission to manage this group
 
 **Tests:** [t/004_usergroups.t](../t/004_usergroups.t) (Tests 9-11)
-
-### /api/usergroups/:id/action/search
-
-**GET only** - Requires admin, editor, or owner permission
-
-Searches for users and usergroups that can be added to the group. Returns up to 20 results, excluding users already in the group.
-
-**Query Parameters:**
-* **q** - Search query (minimum 2 characters)
-
-**Response on success (200):**
-```json
-{
-  "success": true,
-  "results": [
-    { "node_id": 123, "title": "username", "type": "user" },
-    { "node_id": 456, "title": "groupname", "type": "usergroup" }
-  ]
-}
-```
-
-**Tests:** [t/004_usergroups.t](../t/004_usergroups.t) (Tests 12-13)
 
 ### /api/usergroups/:id/action/description
 
@@ -732,7 +745,7 @@ Transfers ownership of a usergroup to another member. The new owner must already
 
 ### /api/usergroups/:id/action/weblogify
 
-**POST only** - Requires admin permission
+**POST** (set) or **DELETE** (remove) - Requires admin permission
 
 Sets the weblog display name for a usergroup, enabling the "post to usergroup" feature. When a usergroup is weblogified, members can post content to the group's weblog from the AdminModal. The display name appears as the button label (e.g., "Edevify" for E2 Development).
 
@@ -766,11 +779,17 @@ This also updates each member's `can_weblog` setting to include this group.
   { "success": false, "error": "Usergroup not found" }
   ```
 
+A `DELETE` to the same path removes the weblog setting and strips the group from each member's `can_weblog`, returning `{success: 1, message}`.
+
 **Tests:** [t/004_usergroups.t](../t/004_usergroups.t) (Tests 30-35)
+
+### GET /api/usergroups/:id/writeups
+
+Returns the Usergroup Writeups nodelet payload for the given group, `{success: 1, usergroupData}`, so the nodelet can repaint after the user picks a different group (the choice itself is saved via the `nodeletusergroup` preference). Logged-in users only (401 for guests); 404 with `{success: 0, error: "Usergroup not found"}` for a bad id.
 
 ## Writeups
 
-**Test Coverage: ❌ 0%** (0/7 endpoints tested)
+**Test Coverage: ✅** ([t/056_writeups_api.t](../t/056_writeups_api.t))
 
 ### /api/writeups
 
@@ -801,14 +820,20 @@ If a user owns it
 
 Creates a writeup. Requires several parameters:
 
-* **title** - Title that it is being filed under
+* **title** - Title that it is being filed under (an existing e2node title)
 * **writeuptype** - Type of the writeup (place, person, definition, etc)
 * **doctext** - Text of the writeup
 * **notnew** - Whether to hide the writeup from new writeups. Defaults to zero.
 
+Returns 400 if any of title/writeuptype/doctext is missing, the writeup type is unknown, or the e2node doesn't exist. The normal publishing path is the draft flow (`POST /api/drafts/:id/publish`).
+
+### /api/writeups/:id/action/update
+
+Inherited node update; see the whitelist notes under `/api/nodes/:id/action/update`.
+
 ## E2nodes
 
-**Test Coverage: ❌ 0%** (0/7 endpoints tested)
+**Test Coverage: ✅** ([t/061_e2nodes_api.t](../t/061_e2nodes_api.t))
 
 ### /api/e2nodes
 
@@ -832,22 +857,30 @@ Note that due to a quirk in the security model of e2, all e2node owners are set 
 
 Returns the display of e2nodes/:id of the newly created object
 
+### POST /api/e2nodes/bulk-rename
+
+**Editors only.** Body: `{ "renames": [ { "from": "old title", "to": "new title" }, ... ] }`. Returns `{success: 1, results: [{from, to, status, message?}, ...], counts: {status: n}}` with a per-row status of `renamed`, `not_found`, `no_change`, or `target_exists`. Non-editors get `{success: 0, error: "Permission denied"}`.
+
+Editor tools for a single e2node (firmlinks, lock, title, writeup order, softlinks) live under `/api/e2node/:id/...` — see **E2node Editor Tools** below.
+
 ## Drafts
 
-**Test Coverage: ❌ 0%** (0/7 endpoints tested)
+**Test Coverage: ✅** ([t/065_drafts_api.t](../t/065_drafts_api.t))
 
 Current version: *1 (beta)*
 
 Manages user drafts for the E2 Editor Beta. Drafts are nodes of type "draft" that allow users to compose and revise content before publishing. Supports CRUD operations, pagination, and publication status management.
 
-All draft methods require logged-in users and return 401 Unauthorized for Guest User.
+All draft methods require logged-in users and return 401 Unauthorized for Guest User. Most draft errors still use 4xx/5xx statuses with a `{success: 0, error}` body (noted per endpoint); `DELETE` follows the 200 convention.
+
+Routes: `GET|POST /api/drafts`, `GET /api/drafts/search`, `GET|PUT|POST|DELETE /api/drafts/:id`, `POST /api/drafts/:id/parent`, `GET /api/drafts/publishas_options`, `POST /api/drafts/:id/publish`, `POST /api/drafts/:id/republish`, `POST /api/drafts/:id/mark_reviewed`, `POST /api/drafts/preview`. An unsupported method on `/api/drafts` or `/api/drafts/:id` returns 405 `method_not_allowed`.
 
 ### GET /api/drafts
 
 Returns a paginated list of the current user's drafts, ordered by most recently modified first.
 
 **Query Parameters:**
-* **limit** - Number of drafts to return (optional, default: 20, max: 100)
+* **limit** - Number of drafts to return (optional, default: 20; values outside 1–100 fall back to 20)
 * **offset** - Number of drafts to skip for pagination (optional, default: 0)
 
 **Returns:**
@@ -862,8 +895,8 @@ Returns a paginated list of the current user's drafts, ordered by most recently 
       "node_id": 2213271,
       "title": "Test draft to create",
       "createtime": "2025-12-01 06:46:52",
-      "publication_status": 2035425,
-      "status_title": "private"
+      "status": "private",
+      "doctext": "<p>Draft content</p>"
     }
   ],
   "pagination": {
@@ -888,8 +921,8 @@ Returns a paginated list of the current user's drafts, ordered by most recently 
 * **node_id** - Draft's unique identifier
 * **title** - Draft title
 * **createtime** - When the draft was created (MySQL datetime format)
-* **publication_status** - Node ID of the publication status
-* **status_title** - Human-readable status (private, shared, findable, review)
+* **status** - Human-readable publication status (private, shared, findable, review, removed, …), or `unknown`
+* **doctext** - Full draft content
 
 **Example Request:**
 
@@ -901,8 +934,8 @@ curl https://everything2.com/api/drafts?limit=20&offset=0 \
 **Implementation Notes:**
 
 - Drafts are ordered by `createtime DESC` (newest first)
-- Limit is clamped between 1 and 100
-- Offset must be non-negative
+- An out-of-range limit falls back to 20 (not clamped)
+- A negative offset falls back to 0
 - Total count query runs separately for accurate pagination metadata
 
 ### GET /api/drafts/:id
@@ -941,7 +974,7 @@ Retrieves the full content and metadata for a specific draft.
 **Error Responses:**
 
 * **400 Bad Request** - Invalid draft ID
-* **403 Forbidden** - User doesn't own the draft and is not an editor
+* **403 Forbidden** - Caller is neither the author nor allowed to see the draft under its publication status (the same visibility rule the draft page uses)
 * **404 Not Found** - Draft doesn't exist
 
 **Example Request:**
@@ -956,7 +989,7 @@ curl https://everything2.com/api/drafts/2213271 \
 Creates a new draft with the specified title and optional initial content.
 
 **Request Body (JSON):**
-* **title** - Draft title (required, will be cleaned via `cleanNodeName()`)
+* **title** - Draft title (optional, defaults to "Untitled Draft"; cleaned via `cleanNodeName()`)
 * **doctext** - Initial draft content (optional, defaults to empty string)
 
 **Returns:**
@@ -1057,10 +1090,12 @@ When changing status to "review", a node note is automatically created:
 - `noter_user` set to 0 (system note)
 - Timestamp set to NOW()
 
+`POST` to the same path is accepted as an alias for `PUT`. If the draft has already been published, the response is `{success: 1, already_published: 1, writeup_id, message}` (so late autosaves don't error).
+
 **Error Responses:**
 
-* **400 Bad Request** - Invalid draft ID or JSON
-* **403 Forbidden** - User doesn't own the draft
+* **400 Bad Request** - Invalid draft ID or JSON, or node is not a draft (`not_a_draft`)
+* **403 Forbidden** - User doesn't own the draft (author only)
 * **404 Not Found** - Draft doesn't exist
 
 **Example Request:**
@@ -1094,22 +1129,20 @@ Permanently deletes a draft. This action cannot be undone.
 ```json
 {
   "success": 1,
-  "message": "Draft deleted successfully",
-  "draft_id": 2213271
+  "message": "Draft deleted successfully"
 }
 ```
 
 **Response Keys:**
 * **success** - Boolean (1/0) indicating operation succeeded
 * **message** - Human-readable confirmation message
-* **draft_id** - The ID of the deleted draft
 
-**Error Responses:**
+**Error Responses (all HTTP 200 with `success: 0`):**
 
-* **400 Bad Request** - Invalid or missing draft ID
-* **401 Unauthorized** - User is not logged in
-* **403 Forbidden** - User doesn't own the draft (non-editors cannot delete others' drafts)
-* **404 Not Found** - Draft doesn't exist
+* `"Must be logged in to delete drafts"`
+* `"Draft not found"` / `"Node is not a draft"`
+* `"You can only delete your own drafts"` (author or admin only)
+* `"Failed to delete draft"`
 
 **Example Request:**
 
@@ -1120,9 +1153,8 @@ curl -X DELETE https://everything2.com/api/drafts/2213271 \
 
 **Implementation Notes:**
 
-- Editors can delete any user's drafts
-- Regular users can only delete their own drafts
-- Deletion removes the node and all associated data (document content, version history)
+- Authors can delete their own drafts; admins can delete any draft
+- Deletion removes the node and associated data (document content, autosave history, node notes, links)
 - Uses `nukeNode()` for complete removal
 
 ### GET /api/drafts/search
@@ -1132,6 +1164,7 @@ Searches the current user's drafts by title and content.
 **Query Parameters:**
 * **q** - Search query string (required, minimum 2 characters)
 * **limit** - Maximum number of results to return (optional, default: 20, max: 50)
+* **other_user** - Optional username; searches that user's drafts that are visible to the caller instead of your own
 
 **Returns:**
 
@@ -1216,6 +1249,7 @@ Publishes a draft as a writeup, converting it from a draft node to a writeup nod
 * **feedback_policy_id** - Feedback policy ID (optional, default: 0)
 * **notnew** - Set to 1 to hide from New Writeups (optional, default: 0)
 * **publishtime** - Custom publish timestamp (optional, defaults to NOW())
+* **publish_as** - Optional system account to publish as (one of the titles from `GET /api/drafts/publishas_options`); 403 `cannot_publish_as` if not allowed
 
 **Returns:**
 
@@ -1263,7 +1297,9 @@ If the draft was already published (e.g., retry after network failure), returns:
   { "success": 0, "error": "invalid_writeuptype", "message": "Invalid writeuptype ID" }
   ```
 
-* **403 Forbidden** - User doesn't own the draft
+* **200 with `success: 0`** - The writeup type is editor-only (`writeuptype_not_allowed`), or the target e2node is locked against new writeups (`node_locked`)
+
+* **403 Forbidden** - User doesn't own the draft (`permission_denied`), or `publish_as` isn't permitted (`cannot_publish_as`)
   ```json
   { "success": 0, "error": "permission_denied" }
   ```
@@ -1300,15 +1336,35 @@ curl -X POST https://everything2.com/api/drafts/2213271/publish \
 - Idempotent: safe to retry if the first request succeeded but client didn't receive response
 - Client should implement retry logic with exponential backoff for transient failures
 
+### POST /api/drafts/:id/parent
+
+Sets the draft's intended parent e2node (author only). Body: `{ "e2node_id": 123 }` or `{ "e2node_title": "Title" }`; a title that doesn't exist yet creates the e2node. Returns `{success: 1, e2node: {node_id, title, created}, message}`. Errors (4xx with `{success: 0, error}`): `invalid_id`, `invalid_json`, `not_found`, `permission_denied`, `invalid_e2node`, `invalid_title`, `missing_e2node`, `create_failed`.
+
+### GET /api/drafts/publishas_options
+
+Lists the system accounts the current user may publish a writeup as: `{success: 1, options: [{title, node_id}, ...]}` (empty for most users).
+
+### POST /api/drafts/:id/republish
+
+**Editors and admins only.** Republishes a draft whose publication status is `removed` back as a writeup (original createtime becomes the publishtime; hidden from New Writeups; reputation and C!s start from zero). Body: `{ "e2node_title": "...", "e2node_id": 123 (optional), "wrtype_writeuptype": 456 }`; a missing e2node is created. Returns `{success: 1, writeup_id, e2node_id, message}`. Errors are 4xx with `{success: 0, error}` (403 for non-editors; 400 if the draft isn't `removed` or parameters are missing; 409 `node_locked`).
+
+### POST /api/drafts/:id/mark_reviewed
+
+**Editors only.** For a draft in `review` status: sets it back to `private` and adds a system node note ("Marked reviewed by …"), which removes it from the For Review queue. Returns `{success: 1, draft_id, status: "private", message}`. Errors: 403 `permission_denied`, 404 `not_found`, 400 `not_in_review`.
+
+### POST /api/drafts/preview
+
+Renders E2 link syntax for the editor preview. Body: `{ "html": "..." }`. Returns `{success: 1, html}` with `[links]` converted. Logged-in users only.
+
 ## Autosave
 
-**Test Coverage: ❌ 0%** (0/4 endpoints tested)
+**Test Coverage: ✅** ([t/074_autosave_api.t](../t/074_autosave_api.t))
 
 Current version: *1 (beta)*
 
 Handles automatic and manual saving of editor content with version history. The autosave system stores previous versions in the `autosave` table, keeping the last 20 versions per user+node combination. Used by the E2 Editor Beta for both autosave functionality and version history.
 
-All autosave methods require logged-in users with edit permissions on the node.
+All autosave methods require logged-in users (401 for guests). Autosave is for the draft editor: saving and restoring work only on **your own drafts**, history shows only your own versions, and deleting an entry requires being its author (or an admin). Errors use 4xx/5xx statuses with a `{success: 0, error, message}` body. `GET`/`DELETE` are the only methods accepted on `/api/autosave/:id` (others return 405 `method_not_allowed`).
 
 ### POST /api/autosave
 
@@ -1333,7 +1389,7 @@ Saves content for a node, automatically stashing the previous version to history
 
 **Response Keys:**
 * **success** - Boolean (1/0) indicating operation succeeded
-* **saved** - Boolean (1/0) indicating whether content was actually saved (0 if no changes detected)
+* **saved** - Boolean (1/0) indicating whether content was actually saved (0 with `message: "no_changes"` if the content is unchanged)
 * **autosave_id** - ID of the autosave history entry (only present if previous content was stashed)
 * **save_type** - Always "auto" for this endpoint
 * **already_published** - Present and true if the draft was already published as a writeup
@@ -1353,21 +1409,21 @@ If the draft was already published (e.g., autosave fired after publish completed
 
 **Behavior:**
 
-1. **Permission Check**: Verifies user can edit the node (owner, editor, or admin)
+1. **Permission Check**: The node must be a draft authored by the caller
 2. **Change Detection**: Compares new content with current content in `document` table
-3. **No-Op If Unchanged**: Returns `success: 1, saved: 0` if content matches
+3. **No-Op If Unchanged**: Returns `success: 1, saved: 0, message: "no_changes"` if content matches
 4. **Stash Previous Version**: If content differs, saves current content to `autosave` table before updating
 5. **Update Document**: Writes new content to `document` table
 6. **Prune Old Versions**: Keeps only the last 20 autosave entries per user+node
 
 **Error Responses:**
 
-* **400 Bad Request** - Missing or invalid node_id
+* **400 Bad Request** - Invalid JSON (`invalid_json`) or missing/invalid node_id
   ```json
   { "success": 0, "error": "invalid_node_id", "message": "..." }
   ```
 
-* **403 Forbidden** - User doesn't have permission to edit
+* **403 Forbidden** - Node isn't one of the caller's own drafts
   ```json
   { "success": 0, "error": "permission_denied", "message": "..." }
   ```
@@ -1550,7 +1606,7 @@ None required - empty POST request.
 **Behavior:**
 
 1. **Fetch Version**: Retrieves the autosave entry with full content
-2. **Verify Ownership**: Ensures user owns the autosave
+2. **Verify Ownership**: Ensures user owns the autosave, and that the target node is still a draft the user owns
 3. **Stash Current**: Saves current document content to autosave with `save_type = 'manual'` before restoring
 4. **Restore Content**: Updates document table with the restored content
 5. **Prune History**: Keeps only last 20 versions after stash
@@ -1558,9 +1614,9 @@ None required - empty POST request.
 **Error Responses:**
 
 * **400 Bad Request** - Invalid autosave_id
-* **403 Forbidden** - User doesn't own the version
+* **403 Forbidden** - User doesn't own the version, or the node is no longer their draft
 * **404 Not Found** - Version doesn't exist
-* **405 Method Not Allowed** - Used GET/PUT/DELETE instead of POST
+* **405** - Used a method other than POST (`method_not_allowed`)
 
 **Example Request:**
 
@@ -1623,7 +1679,16 @@ curl -X DELETE https://everything2.com/api/autosave/456 \
 
 ## Documents
 
-## Superdocument
+### POST /api/documents/:id
+
+Updates the `doctext` of a document-family node. Body: `{ "doctext": "..." }`. Logged-in users only (401 for guests). Editors may edit any document type; authors may edit their own documents except `oppressor_*` types. Returns `{success: 1, document: {node_id, title, doctext}}`; errors are 200 with `{success: 0, error}` (`Document not found`, `Permission denied`, `Missing doctext`).
+
+Related single-type editors (all logged-in, gated by the node's update permission, 200-convention errors):
+
+* **POST /api/e2clients/:id** — update an e2client: any of `title` (≤240), `version`, `homeurl`, `dlurl`, `clientstr` (≤255 each), `doctext`.
+* **POST /api/podcasts/:id** — update a podcast: `title` (≤240), `link`, `description`, `pubdate`.
+* **POST /api/recordings** — create a recording: `{ title (≤64), appears_in: <podcast id> }`; requires edit permission on the podcast.
+* **POST /api/recordings/:id** — update a recording: `title`, `link`, `read_by_name`, or `writeup_author` + `writeup_title` (resolves the writeup).
 
 ## Messages
 
@@ -1640,10 +1705,12 @@ Returns the top 15 messages ordered by newest first.
 Takes the following optional GET parameters:
 * **limit** - Number of messages to return at a time. If left blank defaults to 15. Maximum of 100
 * **offset** - Offset of the number of messages to return from DESC sorting
-* **for_user** - Node ID of user whose inbox to view. Used for viewing bot inboxes. Requires authorization (user must have access to that bot's inbox via the `bot inboxes` setting - see Bot Inbox Access below)
+* **for_user** - Node ID of user whose inbox to view. Used for viewing bot inboxes. Requires authorization (user must have access to that bot's inbox via the `bot inboxes` setting - see Bot Inbox Access below). With `outbox=1`, shows that bot's sent messages
 * **for_usergroup** - Node ID of usergroup to filter by. Only returns messages sent to the specified usergroup. Must be 0 or a valid usergroup ID
-* **archived** - Set to 1 to retrieve archived messages instead of active messages (default: 0)
-* **box** - Message box type: "inbox" (default) or "outbox" for sent messages
+* **from_user** - (inbox) Only messages from this user id
+* **to_user** - (outbox) Only messages sent to this user id
+* **archive** - Set to 1 to retrieve archived messages instead of active messages (default: 0)
+* **outbox** - Set to 1 for sent messages instead of the inbox (default: 0)
 
 Messages have the following keys:
 
@@ -1668,7 +1735,7 @@ Content_Salvage → CST_Group
 Virgil → e2docs
 ```
 
-Admins have access to all bot inboxes regardless of usergroup membership.
+Admins have access to all bot inboxes. Other users need to be editors **and** members of the usergroup mapped to that bot.
 
 **Example - View Cool Man Eddie's inbox:**
 ```bash
@@ -1677,7 +1744,8 @@ curl https://everything2.com/api/messages?for_user=51&limit=25 \
 ```
 
 **Error Responses:**
-* **403 Forbidden** - User doesn't have access to the requested bot inbox
+* **403 Forbidden** - User doesn't have access to the requested bot inbox (`{"error": "Cannot access this inbox"}`)
+* **400 Bad Request** - `for_user` isn't a valid user
 
 ### /api/messages/:id
 
@@ -1702,6 +1770,10 @@ Return parameters the same as action/delete
 Unarchives the message at :id
 
 Return parameters the same as action/delete
+
+### /api/messages/:id/action/delete_outbox
+
+Deletes one of your own sent (outbox) messages. Returns `{"id": <message_id>}`; 403 if it isn't yours.
 
 ### /api/messages/create
 
@@ -1746,10 +1818,13 @@ The API returns different responses based on whether messages are blocked:
   {"successes": 3}
   ```
 
+Sending to a usergroup also sets `poll_messages: 1` (the sender receives their own copy, so the client should refresh). A copy of every sent message is written to the sender's outbox.
+
 The `errors` array contains one entry per blocked member in a usergroup. The message is still delivered to non-blocking members (tracked in `successes`).
 
 **Error Responses:**
 * **403 Forbidden** - User doesn't have permission to send as the specified bot
+* **400 Bad Request** (no body) - Empty message, or no deliverable recipient
 
 ### /api/messages/count
 
@@ -1758,8 +1833,9 @@ Returns the count of messages in the user's inbox or outbox. Useful for paginati
 Takes the following optional GET parameters:
 * **for_user** - Node ID of user whose inbox to count. Used for viewing bot inbox counts. Requires authorization (see Bot Inbox Access above)
 * **for_usergroup** - Node ID of usergroup to filter by. Only counts messages sent to the specified usergroup
-* **archived** - Set to 1 to count archived messages instead of active messages (default: 0)
-* **box** - Message box type: "inbox" (default) or "outbox" for sent messages
+* **from_user** / **to_user** - Same sender/recipient filters as `/api/messages`
+* **archive** - Set to 1 to count archived messages instead of active messages (default: 0)
+* **outbox** - Set to 1 to count sent messages (default: 0)
 
 **Returns:**
 
@@ -1769,18 +1845,18 @@ Takes the following optional GET parameters:
 {
   "count": 42,
   "box": "inbox",
-  "archived": 0
+  "archive": 0
 }
 ```
 
 **Response Keys:**
 * **count** - Number of messages matching the criteria
 * **box** - The box type counted ("inbox" or "outbox")
-* **archived** - Whether archived messages were counted (0 or 1)
+* **archive** - Whether archived messages were counted (0 or 1)
 
 ## Message Ignores
 
-**Test Coverage: ❌ 0%** (0/4 endpoints tested)
+**Test Coverage: ✅** ([t/059_messageignores_api.t](../t/059_messageignores_api.t))
 
 Current version: *1 (beta)*
 
@@ -1802,25 +1878,27 @@ Accepts a post with one of two parameters
 
 Retrives a node format if you are blocking messages from that node, 404 NOT FOUND otherwise
 
-### /api/messageignores/:id/delete
+### /api/messageignores/:id/action/delete
 
 Stops ignoring a particular node at :id
 
+See also **User Interactions** (`/api/userinteractions`), the unified block list that covers both message blocking and hiding a user's writeups.
+
 ## Preferences
 
-**Test Coverage: ✅ 100%** (2/2 endpoints tested - t/030_preferences_api.t)
+**Test Coverage: ✅** (t/029_preferences_api.t, t/057_preferences_api.t)
 
 Current version: *1 (beta)*
 
 Manages user interface preferences and settings. Preferences control various display and behavior options for the user interface, such as which nodelets to hide, how many new writeups to display, and UI element collapse states.
 
-All preference methods return 401 Unauthorized for Guest User.
+The `set`, `notifications` and `admin` endpoints return 401 Unauthorized for Guest User. `get` is not guest-gated (a guest simply sees the defaults).
 
 ### /api/preferences/get
 
 Returns the current user's preferences as a JSON object containing all allowed preference keys and their values. If a preference has not been explicitly set by the user, the default value is returned.
 
-Returns a JSON object with the following structure:
+Returns a flat JSON object with every allowed key (excerpt):
 
 ```json
 {
@@ -1838,6 +1916,8 @@ Returns a JSON object with the following structure:
 ```
 
 #### Allowed Preferences
+
+The full allowlist (about 70 keys) is the `allowed_preferences` attribute in `ecore/Everything/API/preferences.pm`: List preferences have an enumerated set of values, String preferences a regex. Beyond the nodelet keys below it covers the Settings page options (look-and-feel, writeup hints, vote/C! safety, message and notification toggles, `GPoptout`, …), nodelet state (`nodetrail`, `nodeletusergroup`, ReadThis section toggles), and a few tool-specific keys (`userstyle`, `customstyle` up to 50,000 chars, `EDD_Sort`, `ListNodesOfType_Type`, `sqlprompt_wrap`, `tiptap_editor_raw`, editor-tool display keys `killfloor_showlinks`/`hidenodenotes`). Some examples:
 
 **UI Visibility Preferences (0 = show, 1 = hide):**
 * **vit_hidemaintenance** - Hide maintenance nodelet (default: 0)
@@ -1874,7 +1954,7 @@ Accepts a JSON object with one or more preference keys and their new values:
 **Validation:**
 * All preference keys must be in the allowed preferences list
 * All values must match their allowed values (specific list for List preferences, regex pattern for String preferences)
-* If any key or value fails validation, the entire request is rejected with 401 Unauthorized
+* If any key or value fails validation, the entire request is rejected with `{"success": 0, "error": "Invalid preference value"}` (HTTP 200); an empty body returns `"No preferences provided"`
 * No partial updates occur on validation failure
 
 **Special Behavior:**
@@ -1886,7 +1966,7 @@ Accepts a JSON object with one or more preference keys and their new values:
 
 On success (200 OK), returns the same structure as GET /api/preferences/get with all current preference values, including the newly updated ones.
 
-On validation failure (401 Unauthorized), no preferences are updated.
+On validation failure (200 with `success: 0`), no preferences are updated.
 
 **Example Request:**
 
@@ -1913,6 +1993,14 @@ curl -X POST https://everything2.com/api/preferences/set \
   "collapsedNodelets": ""
 }
 ```
+
+### POST /api/preferences/notifications
+
+Saves the user's notification subscriptions. Body: `{ "notifications": { "<notification node_id>": 1, ... } }`; every key must be the id of a `notification` node. Stored in the user's `settings` var. Returns `{success: 1}`; errors are 200 with `{success: 0, error, message}` (`invalid_data`, `invalid_notifications`, `invalid_notification_id`, `notification_not_found`, `update_failed`).
+
+### POST /api/preferences/admin
+
+**Editors only** (Admin Settings). Body: `{ "settings": { <allowlisted key>: value, ... }, "macros": { "<name>": "text", ... } }`. Settings are validated against the same allowlist (invalid entries are skipped). Macro names are limited to `room`, `newbie`, `html`, `wukill`, `nv`, `misc1`, `misc2`; values are cleaned to printable ASCII, capped at 768 chars, and an empty value deletes the macro. Returns `{success: 1}`; non-editors get `{success: 0, error}`.
 
 ## Node Notes
 
@@ -2231,9 +2319,17 @@ Removes a user from the current user's favorites list (unfollow).
 
 Current version: *1 (beta)*
 
-Manages chatroom operations including room changes, visibility (cloak) status, and room creation. All endpoints return full `otherUsersData` structure to enable real-time UI updates without page reloads.
+Manages chatroom operations including room changes, visibility (cloak) status, and room creation. The room-change/cloak/create endpoints return the full `otherUsersData` structure to enable real-time UI updates without page reloads. Errors here still use 4xx/5xx statuses with a JSON `{error}` body unless noted.
 
 All chatroom methods require logged-in users and return 401 Unauthorized for Guest User.
+
+### GET /api/chatroom
+
+Returns the current `otherUsersData` structure (see below) for the caller — the Other Users nodelet refresh.
+
+### POST /api/chatroom/lock_room
+
+**Admins only.** Body: `{ "room_id": 123, "locked": 1 }`. Sets the room's `roomlocked` flag; returns `{success: 1, room_id, roomlocked}`. 403 for non-admins, 400 for a missing room_id, 404 for an unknown room.
 
 ### POST /api/chatroom/change_room
 
@@ -2428,7 +2524,7 @@ Creates a new chatroom and automatically moves the creating user into it.
 
 **Validation:**
 * `room_title` is required and cannot be empty or whitespace-only
-* `room_title` must be 80 characters or less
+* `room_title` must be 80 characters or less, and can't be a reserved name
 * `room_title` must be unique (no existing room with same title)
 * User must have sufficient level or be admin/chanop
 * User must not be suspended from creating rooms
@@ -2454,9 +2550,10 @@ Creates a new chatroom and automatically moves the creating user into it.
   { "error": "You have been suspended from creating new rooms" }
   ```
 
-* **409 Conflict** - Room title already exists
+* **200 OK with only an `error` key** - Room title already exists (or you're already in it)
   ```json
   { "error": "A room with this title already exists" }
+  { "error": "You are already in this room" }
   ```
 
 * **500 Internal Server Error** - Room creation failed
@@ -2560,11 +2657,33 @@ All chatroom endpoints return the complete `otherUsersData` object to enable rea
   * For "action": **verb** and **noun** fields
   * For "recent": **nodeId**, **nodeTitle**, **parentTitle** fields
 
-## Bookmarks
+## Votes, Cools & Bookmarks
 
-## Votes
+All of these follow the 200 convention (`{success: 0, error}` on failure).
 
-## Cools
+### POST /api/vote/writeup/:id
+
+Casts (or changes) a vote. Body: `{ "weight": 1 }` (upvote) or `{ "weight": -1 }` (downvote). Logged-in users only; you can't vote on your own writeup, repeat the same vote, or vote with no votes left. Returns `{success: 1, message, writeup_id, weight, votes_remaining, reputation, upvotes, downvotes}` (reputation figures are returned because you've now voted).
+
+### GET /api/reputation/votes?writeup_id=N
+
+Vote breakdown over time for a writeup. Visible to the writeup's author, users who have voted on it, and admins; others get `{success: 0, error: "Access denied"}`. Returns `{success: 1, data: {writeup_id, writeup, author, ...}}`.
+
+### POST /api/cool/writeup/:id
+
+Awards a C! to a writeup. Logged-in users with C!s remaining; not on your own writeup, and only once per writeup. Returns `{success: 1, message, writeup_id, cools_remaining}`.
+
+### POST /api/cool/edcool/:id · GET /api/cool/edcool/:id/status
+
+**Editors only.** Toggles the editor cool (star) on any coolable node, returning `{success: 1, action: "cooled"|"uncooled", edcooled, edcooled_by?}`; the status route reports the current state.
+
+### POST /api/cool/bookmark/:id · GET /api/cool/bookmark/:id/status
+
+Toggles a bookmark on any node for the logged-in user, returning `{success: 1, action: "bookmarked"|"unbookmarked", bookmarked}` (bookmarking a writeup can notify its author unless they've opted out); the status route reports the current state.
+
+### POST /api/ilikeit/writeup/:id · GET /api/ilikeit/status/:id
+
+The guest "I like it!" button. **Guests only** (logged-in users are told to vote or C! instead); one like per writeup per client address. `status` returns `{success: 1, available, already_liked?, reason?}` so the button can hide itself. A like notifies the author unless they've opted out.
 
 ## New Writeups
 
@@ -2572,10 +2691,7 @@ All chatroom endpoints return the complete `otherUsersData` object to enable rea
 
 ### /api/newwriteups
 
-Returns a JSON array of new writeups. 
-
-Parameters:
-* **limit** - Limit the number of items returned. Non-guest users can specify this. This defaults to 15, and has a maximum of 40. If you are an editor, this is the effective display limit, not only just visible writeups. 
+Returns a JSON array of new writeups (a bare array, not wrapped in `{success}`), read from the `newwriteups` DataStash and filtered for the caller: it scans the first 40 stash entries, drops writeups by users the caller has unfavorited, and shows hidden (`notnew`) and junk writeups only to editors. Takes no parameters (the display count comes from the `num_newwus` preference on the client).
 
 New writeups keys:
 * **node_id** - Node ID
@@ -2585,6 +2701,8 @@ New writeups keys:
 * **parent** - Node reference for the parent e2node
 * **is_log** - Whether the node is a log of some type (daylog, ed log, etc)
 * **notnew** - If you are an editor, whether the node was hidden from new writeups
+* **is_junk** - Junk flag (editors see these entries)
+* **hasvoted** - (logged-in users) whether you've voted on it
 
 ## Hide Writeups
 
@@ -2944,7 +3062,7 @@ Current version: *1 (beta)*
 
 The Gift Shop API enables users to purchase and give gifts using GP (Gold Points). Users can give stars, votes, C!s, easter eggs, and buy topic tokens. Different actions have different level requirements and costs.
 
-All gift shop methods require logged-in users and return 403 Forbidden for Guest User.
+All gift shop methods require logged-in users; guests get HTTP 200 with `{success: 0, error: "You must be logged in..."}`. Every validation failure (level, GP, recipient) is likewise 200 with `success: 0`. An unknown action path returns 404 `{error: "Unknown route"}`.
 
 ### GET /api/giftshop/status
 
@@ -3290,16 +3408,17 @@ Keys:
   * **newgp** - Any new gp the user has gotten. Once this message is seen once, it goes away
   * **xp_to_level** - The amount of xp until the user reaches the next level
   * **writeups_to_level** - The number of writeups until the user reaches the next level
-* *user** - If the user is not a guest, the output of /api/user for the user_id
+* **user** - If the user is not a guest, the node display of the user (as `/api/users/:id`)
 
 ### /api/sessions/create
-Accepts a POST with two parameters
+Accepts a JSON POST with:
 * **username** - Username of the user
 * **passwd** - Password of the user
+* **expires** - (optional) "Remember me" duration (e.g. `+1y`); without it the cookie is a session cookie
 
-If the login was unsuccessful, a 403 Forbidden is returned.
+If the username/password are missing, 400 Bad Request is returned. If the credentials are wrong, 403 Forbidden is returned.
 
-If the login was successful, the output of /api/sessions is returned, along with the cookie in the headers as Set-Cookie to continue the authentication. The cookie does not have an expiration.
+If the login was successful, the output of /api/sessions is returned, along with the cookie in the headers as Set-Cookie to continue the authentication.
 
 ### /api/sessions/delete
 Tears down the current session. Not explicitly needed since no on-server state is kept for sessions. Simply deletes the cookie. Regardless of its current use, we recommend calling this in case any backend server state does need to be cleaned.
@@ -3308,11 +3427,11 @@ Returns the output of /api/sessions for the new current user, which is probably 
 
 ## System Utilities
 
-**Test Coverage: ❌ 0%** (0/1 endpoints tested)
+**Test Coverage: ✅** ([t/060_systemutilities_api.t](../t/060_systemutilities_api.t))
 
 ### /api/systemutilities/roompurge
 
-(Admin only) Kicks all users "offline" for the purposes of ONO messages. Desirable mostly for testing
+(Admin only) Kicks all users "offline" for the purposes of ONO messages (empties the `room` table). Desirable mostly for testing. Returns `{purged: <count>}`; 403 for non-admins.
 
 ## Developer Variables
 
@@ -3712,7 +3831,7 @@ Sets a single var value on the specified node.
 * **node_id** - The node_id of the node to modify (required)
 
 **POST Data (JSON):**
-* **key** - The var key name (required, must match pattern `^[a-zA-Z_][a-zA-Z0-9_\-]*$`)
+* **key** - The var key name (required, must match pattern `^[a-zA-Z0-9_][a-zA-Z0-9_\-]*$`)
 * **value** - The value to set (required for set, omit to delete)
 
 **Returns:**
@@ -3740,7 +3859,7 @@ Sets a single var value on the specified node.
 * **200 OK with success=0** - Access denied, invalid key format, or node not found
   ```json
   { "success": 0, "error": "Key is required" }
-  { "success": 0, "error": "Invalid key format. Keys must start with a letter or underscore and contain only letters, numbers, underscores, and hyphens." }
+  { "success": 0, "error": "Invalid key format. Use letters, numbers, underscores, and hyphens." }
   ```
 
 **Example Request:**
@@ -3838,7 +3957,7 @@ curl -X POST https://everything2.com/api/nodevars/123456/bulk \
 **Implementation Notes:**
 
 - All endpoints require admin permissions (checked via `isAdmin()`)
-- Key validation enforces alphanumeric keys starting with letter or underscore
+- Key validation allows letters, digits, underscores and hyphens (a hyphen can't be the first character)
 - Uses `Everything::getVars()` and `Everything::setVars()` for persistence
 - Bulk operations validate each key individually; invalid keys are skipped and reported in errors
 - The API is used by the Setting and UserEditVars React components
@@ -3848,6 +3967,16 @@ curl -X POST https://everything2.com/api/nodevars/123456/bulk \
 Category APIs allow users to manage categories and their membership. Categories can be:
 - **Private**: Owned by a specific user or usergroup
 - **Public**: Owned by Guest User (any logged-in user can add to them)
+
+All category endpoints except `create` follow the 200 convention: every error, including "not logged in" and permission denials, is HTTP 200 with `{"success": 0, "error": "..."}`. The error lists below are all returned this way.
+
+### POST /api/category/create
+
+Creates a category. Body: `{ "title": "...", "maintainer": <user or usergroup node_id>, "doctext": "..." }`. `maintainer` defaults to the caller and may only be yourself, the public (Guest User) owner, or a usergroup you belong to. If a category with that title already exists, returns `{success: 1, node_id, existing: 1}` without changing it; otherwise `{success: 1, node_id, maintainer}`. This endpoint uses real statuses for some failures: 401 for guests, 400 for a missing title, 403 for a disallowed maintainer or no create permission.
+
+### GET /api/category/node_categories?node_id=N
+
+Lists the categories that contain a node: `{success: 1, categories: [{node_id, title, author_user, author_username, is_public, can_remove, prev_node, next_node, position, total}, ...]}` (prev/next are the neighbouring members within that category). Works for guests; `can_remove` is only ever set for logged-in users who may manage the category.
 
 ### GET /api/category/list
 
@@ -3889,7 +4018,7 @@ Returns categories the user can add nodes to, separated into "your categories" (
 
 **Error Responses:**
 
-* **401 Unauthorized** - User is not logged in
+* Not logged in
   ```json
   { "success": 0, "error": "Must be logged in" }
   ```
@@ -3916,12 +4045,12 @@ Adds a node to a category. User must have permission to add to the category.
 
 **Error Responses:**
 
-* **401 Unauthorized** - User is not logged in
-* **403 Forbidden** - User cannot add to this category
+* Not logged in
+* User cannot add to this category
   ```json
   { "success": 0, "error": "You cannot add to this category" }
   ```
-* **409 Conflict** - Node is already in the category
+* Node is already in the category
   ```json
   { "success": 0, "error": "Node is already in this category" }
   ```
@@ -3947,8 +4076,8 @@ Removes a node from a category. Only category owners (or editors) can remove mem
 
 **Error Responses:**
 
-* **401 Unauthorized** - User is not logged in
-* **403 Forbidden** - User cannot manage this category
+* Not logged in
+* User cannot manage this category
   ```json
   { "success": 0, "error": "You cannot manage members of this category" }
   ```
@@ -3974,8 +4103,8 @@ Reorders members within a category. Only category owners (or editors) can reorde
 
 **Error Responses:**
 
-* **401 Unauthorized** - User is not logged in
-* **403 Forbidden** - User cannot manage this category
+* Not logged in
+* User cannot manage this category
 
 ### POST /api/category/update
 
@@ -3998,8 +4127,8 @@ Updates a category's description. User must have permission to edit the category
 
 **Error Responses:**
 
-* **401 Unauthorized** - User is not logged in
-* **403 Forbidden** - User cannot edit this category
+* Not logged in
+* User cannot edit this category
 
 ### POST /api/category/update_meta
 
@@ -4023,9 +4152,9 @@ Updates a category's title and/or owner. **Editors only.**
 
 **Error Responses:**
 
-* **401 Unauthorized** - User is not logged in
-* **403 Forbidden** - Only editors can change category settings
-* **409 Conflict** - A category with that title already exists
+* Not logged in
+* Only editors can change category settings
+* A category with that title already exists
 
 ### GET /api/category/lookup_owner
 
@@ -4059,8 +4188,8 @@ Or if not found:
 
 **Error Responses:**
 
-* **401 Unauthorized** - User is not logged in
-* **403 Forbidden** - Only editors can lookup owners
+* Not logged in
+* Only editors can lookup owners
 
 ## Custom Style
 
@@ -4199,12 +4328,14 @@ Error - not admin: `{ "success": 0, "error": "Admin access required" }`.
 
 ### GET /api/randomnode
 
-Returns a random content node from the `randomnodes` DataStash (the same set the Random Nodes nodelet uses — ~12 nodes refreshed roughly every 60s, so no live query). Falls back to a fresh live pick when the stash is empty. Replaces the legacy `op=randomnode` redirect (#4335).
+Returns a random content node from the `randomnodes` DataStash (the same set the Random Nodes nodelet uses, so no live query). Falls back to a fresh live pick when the stash is empty. Replaces the legacy `op=randomnode` redirect (#4335).
 
 **Response (200 OK):**
 ```json
 { "success": 1, "node_id": 1234567, "title": "Some Node" }
 ```
+
+(The live-pick fallback returns only `node_id`.)
 
 Error: `{ "success": 0, "error": "No random node available" }`.
 
@@ -4266,6 +4397,269 @@ Remove **another** user's bounty (refunding their staked GP). **Sheriffs or admi
 **Request body (JSON):** `{ "removee": "Username" }`.
 
 ## Searches
+
+### GET /api/node_search?q=TERM&scope=SCOPE&limit=N
+
+Title-prefix search used by the site's autocomplete widgets. `q` is required (200 `{success: 0}` without it). `scope` (default `users`) is one of `users`, `usergroups`, `users_and_groups`, `group_addable` (needs `group_id`; excludes current members), `nodegroup_addable` (needs `group_id`), `message_recipients` (users who aren't blocking you, usergroups you may message, and forward aliases such as `c_e`), `e2nodes`, `all_nodes`, and `all` (site-wide; some node types are only included for admins/developers). Returns `{success: 1, results: [...], count, scope}`.
+
+### GET /api/user_search?username=NAME
+
+A user's writeup list (the "writeups by user" view). Params: `page` (default 1), `per_page` (default 50), `orderby` (one of `publishtime_desc|asc`, `title_asc|desc`, `reputation_desc|asc`, `type_asc|desc`, `hits_desc|asc`, `cools_desc|asc`, `random`; unknown values fall back to newest first), `filter_hidden`. Returns `{username, user_id, writeups, total, page, per_page, total_pages, orderby, can_see_rep, is_self, is_editor}`; reputation is only included for yourself and editors. A missing username is 400 (older-style error); an unknown user returns 200 with `error: "User not found"` and an empty list.
+
+### GET /api/drafts/search
+
+See **Drafts**.
+
+## Account & Signup
+
+### POST /api/signup
+
+Creates an account. Body: `{ "username", "password", "email", "recaptcha_token" }` (reCAPTCHA is enforced in production). Success: `{success: true, username, linkvalid}` (days the emailed activation link stays valid); the account is activated through `POST /api/users/confirm`. Failures are 200 with `{success: 0, error: <code>}`, e.g. `invalid_username`, `username_taken`, `invalid_password`, `invalid_email`, `recaptcha_missing`/`recaptcha_failed`/`recaptcha_score`, `creation_failed`, plus anti-abuse refusals; an unparseable body is 400 `invalid_json`. Any other method/path under `/api/signup` returns 404.
+
+### POST /api/password/reset-request
+
+Starts a password reset. Body: `{ "who": "<username or email>", "password": "...", "passwordConfirm": "..." }` (new password, at least 6 characters). Emails a confirmation link; the reset is completed through `POST /api/users/confirm` with `action: "reset"`. Returns `{success: 1, message}` or `{success: 0, error}`.
+
+## E2node Editor Tools
+
+`/api/e2node/:id/...` — **editors only**; all errors are 200 with `{success: 0, error}` (`Editor access required`, `E2node not found`, …).
+
+| Endpoint | Body / notes |
+|---|---|
+| `POST /api/e2node/:id/firmlink` | `{ to_node: "<title>", note_text? }` — firmlink this e2node to another node |
+| `DELETE /api/e2node/:id/firmlink/:target` | Remove the firmlink to node `:target` |
+| `POST /api/e2node/:id/repair` | `{ no_reorder? }` — repair the node (and re-sort its writeups unless `no_reorder`) |
+| `POST /api/e2node/:id/orderlock` | `{ unlock? }` — lock or unlock writeup order |
+| `POST /api/e2node/:id/title` | `{ new_title }` — retitle; fails if an e2node with that title exists |
+| `GET`/`POST /api/e2node/:id/lock` | GET (or POST without `action`) returns lock status; POST `{ action: "lock", reason }` or `{ action: "unlock" }` |
+| `POST /api/e2node/:id/reorder` | `{ writeup_ids: [...] }` (must list every writeup in the node), optionally `lock_order`; or `{ reset_to_default: 1 }` |
+| `GET`/`POST /api/e2node/:id/softlinks` | GET (or POST without `delete_ids`) lists softlinks; POST `{ delete_ids: [...] }` removes them |
+
+## Writeup Moderation & Admin Node Editing
+
+`/api/admin/...`. Guests get 401. These endpoints still use 4xx statuses with a JSON `error` for most failures; `remove_writeups` and `users/cleanup` follow the 200 convention.
+
+| Endpoint | Access | Body / notes |
+|---|---|---|
+| `GET /api/admin/node/:id` | admins | Node fields for the admin edit form (editable types only) |
+| `POST /api/admin/node/:id/edit` | admins | `{ title?, maintainedby_user? }`; 409 on a duplicate title |
+| `GET`/`POST /api/admin/node/:id/basicedit` | admins | GET returns the raw node fields; POST `{ fields: { name: value } }` writes them |
+| `POST /api/admin/writeup/:id/insure` | editors | Toggles insurance on a writeup |
+| `POST /api/admin/writeup/:id/remove` | the author, or editors | `{ reason }` (required when an editor removes someone else's writeup). Returns the writeup to draft status (`private` for the author's own removal, `removed` for an editorial one) and records a node note |
+| `POST /api/admin/remove_writeups` | editors | Bulk editorial removal: `{ writeup_ids: [...], reason }` or `{ author_id, reason }` (all of that author's writeups). Skips insured writeups; notifies authors unless they've opted out |
+| `POST /api/admin/writeup/:id/remove_vote` | admins | Removes the caller's own vote from the writeup |
+| `POST /api/admin/writeup/:id/remove_cool` | admins | Removes the caller's own C! from the writeup |
+| `POST /api/admin/user/:id/lock` / `unlock` | admins | Lock or unlock an account; returns `{success, message, user}` |
+| `POST /api/admin/users/cleanup` | editors | Mass account review: `{ usernames: [...] or "newline\nseparated", smite? }`. Deletes accounts that are safe to delete (never logged in, no content), locks the rest; returns per-user `results` and `saved_users` |
+
+Related editor tools:
+
+| Endpoint | Access | Body / notes |
+|---|---|---|
+| `GET /api/writeup_reparent?old_e2node_id=&old_writeup_id=&new_e2node_id=` | editors | Resolves source/destination info for the reparent tool |
+| `POST /api/writeup_reparent/reparent` | editors | `{ new_e2node_id, writeup_ids: [...] }` — move writeups to another e2node; per-writeup results |
+| `POST /api/nodeshells/delete` | editors | `{ nodeshells: ["title", ...] }` — delete empty e2nodes; per-title results |
+| `POST /api/userimages/approve` / `delete` | editors | `{ userId }` — approve or clear a pending homenode image |
+| `GET /api/list_nodes/list?type_id=&sort1=&sort2=&filter_user=&filter_user_not=&offset=` | editors, developers | Paged node listing by type (page size grows with role) |
+
+## Chatter
+
+All chatter endpoints require login (401 for guests).
+
+| Endpoint | Notes |
+|---|---|
+| `GET /api/chatter?limit=&offset=&room=&since=` | Recent chatterbox lines (a JSON array). Asking for a room you can't enter returns `[]` |
+| `POST /api/chatter/create` | `{ message }`; slash-commands are processed server-side. Returns `{success: 1, chatter}` or `{success: 0, error}`; an empty message is 400 |
+| `POST /api/chatter/clear` | `{ scope: "room" }` (default; **chanops**) or `{ scope: "all" }` (**admins**). Returns `{success: 1, deleted, scope}`; denial is 403 `{error}` |
+| `POST /api/chatter/clear_all` | Same as `clear` with `scope: "all"` (admins) |
+
+The Other Users nodelet data lives at `GET /api/chatroom` (see **Chatroom**); mass-moving users between rooms is `POST /api/bouncer` (chanops; `{ usernames: [...], room_title }`).
+
+## Notifications
+
+Logged-in users only (401 for guests).
+
+* **GET /api/notifications** — `{ notifications: [...] }`, the rendered notifications the user can see (same structure as the nodelet's initial render).
+* **POST /api/notifications/dismiss** — `{ notified_id }`. Returns `{success: 1, notified_id, notifications}`. Older-style errors: 400 for a bad id, 404 not found, 403 for someone else's notification.
+
+Notification subscriptions are saved via `POST /api/preferences/notifications`.
+
+## User Interactions
+
+**Test Coverage: ✅** ([t/080_userinteractions_api.t](../t/080_userinteractions_api.t))
+
+The unified per-user block list: `hide_writeups` (hide their writeups from New Writeups etc.) and `block_messages` (ignore their messages). Logged-in users only (401 for guests); errors are 200 with `{success: 0, error}`.
+
+| Endpoint | Notes |
+|---|---|
+| `GET /api/userinteractions` | All of the caller's entries |
+| `GET /api/userinteractions/:id` | Entry for one user/usergroup id |
+| `POST /api/userinteractions/create` | `{ username or node_id, hide_writeups, block_messages }` → `{success: 1, node_id, title, type, hide_writeups, block_messages}` |
+| `POST /api/userinteractions/:id/action/update` | `{ hide_writeups, block_messages }` |
+| `POST /api/userinteractions/:id/action/delete` | Removes the entry |
+
+## Nodelets & Personal Tools
+
+All require login (guests get 401 or `{success: 0, error}`).
+
+| Endpoint | Notes |
+|---|---|
+| `GET /api/nodelets` | `{success: true, nodelets: [{node_id, title}, ...]}` — the caller's nodelet order |
+| `POST /api/nodelets` | `{ nodelet_ids: [...] }` — save a new order; 4xx `{success: 0, error}` for bad ids |
+| `POST /api/notelet/save` | `{ notelet_source, keep_comments? }` — save the Notelet nodelet source |
+| `POST /api/notelet/castrate` | Comment out all JavaScript in the caller's notelet |
+| `POST /api/weblogmenu/update` | `{ nameifyWeblogs?, weblogs?: { "<group id>": 0/1 } }` — Usergroup Weblog menu settings |
+| `POST /api/node_tracker/update` | Saves the caller's current writing stats as the new Node Tracker baseline; returns the refreshed tracker payload |
+| `POST /api/nodebackup/create` | `{ contentType: "writeups"|"drafts"|"both", format: "raw"|"html"|"both" }` — builds a zip of your content and returns `{success: 1, downloadUrl, filename, nodeCount}` (admins may pass `forNoder`). Not available in development |
+| `POST /api/xp/stats` | Caller's XP breakdown (admins may pass `{ username }`) |
+| `POST /api/xp/recalculate` | `{ confirmed: 1 }` — one-time XP recalculation for eligible users (admins may pass `username`) |
+| `POST /api/customstyle/clear` | See **Custom Style** |
+
+## Weblogs
+
+| Endpoint | Access | Notes |
+|---|---|---|
+| `GET /api/weblog/available` | anyone (guests get an empty list) | `{success: 1, groups}` — usergroups the caller can post to |
+| `GET /api/weblog/:id?limit=5&offset=0` | anyone | Entries in a weblog; `can_remove` reflects the caller |
+| `POST /api/weblog/:id` | members of the usergroup | `{ to_node }` — post a document-type node to the group's weblog |
+| `DELETE /api/weblog/:id/:to_node` | admins, the group owner, or whoever linked the entry | Remove an entry |
+| `POST /api/usergrouppicks/unlink` | admins | `{ weblog_id, node_id }` |
+
+## Collaborations, Discussions & Registries
+
+| Endpoint | Access | Notes |
+|---|---|---|
+| `POST /api/collaborations/:id/action/save` | the collaboration's members, CRT leads, editors, admins | `{ doctext?, public? }`; refused while another user holds the edit lock |
+| `POST /api/collaborations/:id/action/unlock` | the lock holder, editors, admins | Release the edit lock |
+| `POST /api/collaborations/:id/action/addmember` | editors, admins | `{ name }` (user or usergroup) |
+| `POST /api/collaborations/:id/action/removemember` | editors, admins | `{ node_id }` |
+| `POST /api/collaborations/:id/action/delete` | users with delete permission on the node | Deletes the collaboration (unless it's marked undeletable); denial is 403 |
+| `POST /api/debatecomments/action/create` | members of the chosen usergroup, admins | `{ title, doctext, restricted: <usergroup id>, announce? }` — start a usergroup discussion |
+| `POST /api/debatecomments/:id/action/reply` | users who can see the discussion | `{ title, doctext }` |
+| `POST /api/debatecomments/:id/action/save` | the comment's author, admins | `{ title?, doctext? }` |
+| `POST /api/debatecomments/:id/action/delete` | admins | Deletes the comment and its replies |
+| `GET /api/create_a_registry` | logged-in | `{can_create, current_level}` — registries need level 8 |
+| `POST /api/create_a_registry/create` | level 8+ | `{ title, description, input_style }` |
+| `GET /api/registrations/:id/entries` | logged-in | Entries in a registry |
+| `POST /api/registrations/:id/action/submit` | logged-in | `{ data (≤255), comments? (≤512), in_user_profile? }` — add or update your entry |
+| `POST /api/registrations/:id/action/delete` | logged-in | Delete your own entry |
+| `POST /api/registrations/:id/action/admin_delete` | admins | `{ user_id }` — delete someone's entry |
+
+All of these use the 200 convention except that guests get 401 and the collaboration-delete denial is 403.
+
+## More Polls
+
+| Endpoint | Access | Notes |
+|---|---|---|
+| `POST /api/poll_creator/create` | logged-in | `{ title (≤64), question (≤255), options: [≥2 strings ≤255] }` |
+| `GET /api/polls/list?status=&startat=&limit=8` | anyone | Paged poll directory |
+| `POST /api/polls/set_current` | admins | `{ poll_id }` — make a poll the current one |
+| `POST /api/polls/delete` | admins | `{ poll_id }` |
+
+## GP, Gifts & Fun
+
+All require login and follow the 200 convention.
+
+| Endpoint | Notes |
+|---|---|
+| `GET /api/sanctify/status` | Eligibility to sanctify (level 11+, or editors) |
+| `POST /api/sanctify/give` | `{ recipient, anonymous? }` — gift 10 GP; notifies via Cool Man Eddie |
+| `POST /api/e2_penny_jar/give` / `take` | Add a penny to, or take one from, the community GP jar |
+| `POST /api/costumes/buy` | `{ costume }` (≤40 chars, not an existing username) — Halloween only; 30 GP |
+| `POST /api/costumes/remove` | **Editors.** `{ username }` — strip someone's costume |
+
+See also **Gift Shop** and **Wheel of Surprise** above.
+
+## Staff Tools
+
+Unless noted, these follow the 200 convention.
+
+| Endpoint | Access | Body / notes |
+|---|---|---|
+| `GET /api/suspension/user/:username` | chanops, editors, admins | A user's suspensions plus the types the caller may manage (chanops: chat/room/topic only) |
+| `POST /api/suspension/suspend` / `unsuspend` | chanops, editors, admins | `{ username, sustype_id }` (older-style 4xx errors) |
+| `POST /api/spamcannon` | editors | `{ recipients: [...] (≤20), message }` — send one message to several users |
+| `POST /api/superbless/grant_gp` | editors | `{ users: [{ username, amount }] }` |
+| `POST /api/superbless/grant_xp` / `grant_cools` / `fiery_hug` | admins | Same body shape (older-style 4xx errors) |
+| `POST /api/teddybear/hug` | admins | `{ users: [...] }` or `{ usernames: [...] }` |
+| `POST /api/easter_eggs/bestow` | admins | `{ users: [{ username, amount? }] }` or `{ usernames: [...] }` |
+| `POST /api/websterbless/bless` | editors, admins | `{ blessings: [...] }` — thank users for Webster 1913 corrections (PM, karma, GP) |
+| `POST /api/the_tokenator/tokenate` | admins | `{ users: [...] }` — give chatterbox-topic tokens |
+| `POST /api/borgclinic/setborg` | admins | `{ user, count }` |
+| `POST /api/nate_s_secret_unborg_doc/unborg` | admins | Unborg yourself |
+| `POST /api/ip_blacklist/list` / `add` / `remove` | admins | `{ offset? }`; add `{ ips: "one per line", reason }`; remove `{ id }`. Each returns the refreshed list page |
+| `POST /api/nodetype_changer/lookup` / `change` | admins | `{ node_id }`; `{ change_id, new_nodetype, confirmed? }` (core types need `confirmed`) |
+| `POST /api/renunciation/transfer` / `nodes` | admins | `{ user_from, user_to, namelist }`; `{ user }` |
+| `POST /api/resurrect/node` | admins | `{ node_id, source: "tomb"|"heaven" }` — restore a deleted node |
+| `GET /api/node_parameter?node_id=` · `POST /api/node_parameter/set` / `delete` | admins | `{ node_id, param_name, param_value }` / `{ node_id, param_name }` |
+| `POST /api/nodegroups/:id/action/addnode` / `removenode` | admins | `{ node_ids: [...] }` |
+| `POST /api/nodegroups/:id/action/reorder` | admins | JSON array of member ids |
+| `POST /api/usergroup_message_archive_manager/apply` | admins | `{ changes: [{ group_id, action: "1" (disable) / "2" (enable) }] }` |
+| `POST /api/sqlprompt/query` | site operators only | `{ query, hide_results? }` — the SQL console |
+
+(The Oracle, Node Forbiddance, Node Vars, Feed EDB and Mark Discussions Read tools have their own sections.)
+
+## Page Read Models
+
+Many documents are now "pure" pages: the server-side page only gates access and the React component fetches its data from a `GET` endpoint that reads its options from the URL. All are 200-convention; a gate failure returns `{success: 0, state: "guest"|"admin"|"staff"|"permission"}` (React supplies the wording), or `{success: 0, error}` for older ones.
+
+| Endpoint | Access | Query params |
+|---|---|---|
+| `/api/betweenthecracks/search` | logged-in | `max_votes` (5), `min_rep` |
+| `/api/caja_de_arena` | admins | `gonesince`, `showlength`, `published`, `extlinks`, `page` |
+| `/api/content_reports`, `/api/content_reports/:driver` | editors | — |
+| `/api/cool_archive` | anyone | `orderby`, `useraction`, `cooluser`, `limit`, `offset` |
+| `/api/edev_documentation_index` | anyone (`is_developer` flag) | — |
+| `/api/editor_endorsements` | anyone | `editor` (user id) |
+| `/api/everything_data_pages` | anyone | — |
+| `/api/everything_document_directory` | logged-in (types shown depend on role) | `filter_nodetype`, `filter_user`, `edd_limit` |
+| `/api/everything_publication_directory` | thepub members, admins | — |
+| `/api/everything_s_best_users` | anyone | `ebu_showdevotion`, `ebu_showaddiction`, `ebu_newusers`, `ebu_showrecent` |
+| `/api/everything_s_best_writeups` | editors | — |
+| `/api/everything_s_biggest_stars` | anyone | — |
+| `/api/everything_s_richest_noders` | admins | — |
+| `/api/everything_statistics` | admins | — |
+| `/api/homenode_inspector` | admins | `gonetime`, `goneunit`, `maxwus`, `showlength`, `extlinks`, `dotstoo`, `page` |
+| `/api/ip_hunter` | admins | `hunt_name` or `hunt_ip` |
+| `/api/level_distribution` | anyone | — |
+| `/api/levels/get_levels` | anyone | `first_level` (0), `second_level` (12); at most 100 levels |
+| `/api/my_big_writeup_list` | logged-in | `usersearch`, `orderby`, `raw`, `delimiter` |
+| `/api/newnodes` | anyone (hidden writeups for editors) | `records` (25) |
+| `/api/news_archives` | logged-in (staff weblogs: editors) | `view_weblog` |
+| `/api/news_for_noders` | anyone | `nextweblog` |
+| `/api/node_notes_by_editor` | admins | `targetUser`, `gotime`, `start`, `limit` |
+| `/api/nodes_of_the_year` | anyone | `year`, `wutype`, `count`, `orderby` |
+| `/api/noding_speedometer` | logged-in | `speedyuser`, `clocknodes` (50) |
+| `/api/page_of_cool/coolnodes` | anyone | `limit`, `offset` |
+| `/api/page_of_cool/endorsements/:editor_id` | anyone | — |
+| `/api/popular_registries` | anyone | — |
+| `/api/recent_node_notes` | editors | `onlymynotes`, `hidesystemnotes`, `page` |
+| `/api/recent_registry_entries` | logged-in | — |
+| `/api/recommendations` | anyone | `signal` (`cool`/`bookmark`), `cooluser`, `maxcools` |
+| `/api/registry_information` | logged-in | — |
+| `/api/the_registries` | logged-in | `include_empty` |
+| `/api/trajectory/get_data` | logged-in (403 for guests) | `back_to_year` |
+| `/api/user_statistics` | admins | — |
+| `/api/usergroup_discussions` | logged-in (your groups) | `show_ug`, `offset` |
+| `/api/usergroup_message_archive` | logged-in group members | `viewgroup`, `max_show`, `startnum` |
+| `/api/voting_data` | admins | `voteday`[, `voteday2`] or `votemonth` + `voteyear` |
+| `/api/who_killed_what` | admins | `heavenuser`, `offset`, `limit` |
+| `/api/writeups_by_type` | anyone | `wutype`, `count`, `page` |
+| `/api/writeuptypes` | anyone | — (`{success: 1, writeuptypes: [{node_id, title}]}`) |
+
+Related mutation: `POST /api/usergroup_message_archive/copy` — group members copy archived group messages to their own inbox (`{ group, message_ids: [...], reset_time? }`).
+
+## Generic Node Creation
+
+### POST /api/node/create
+
+Creates a node of any type by name (replaces the legacy `op=new`). Body: `{ "type": "<nodetype title or id>", "title": "..." }`. Logged-in users only (401 for guests); the type's create permission applies (403 `Permission denied`). If a node of that type and title already exists, its id is returned instead. Returns `{success: 1, node_id, title}`; an unknown type is 200 `{success: 0, error: "Unknown node type"}` and a missing type/title is 400.
+
+## Client Error Reporting
+
+### POST /api/client_errors
+
+Browser-side error telemetry. Body: `{ "error_type", "message" (required), "context"?, "stack"?, "user_agent"? }`. Open to guests. Rate-limited per client (a throttled report returns `{success: 1, rate_limited: 1}`). Returns `{success: 1}`; non-POST is 405, and an empty/invalid body or missing message is 400.
 
 ## Tests
 

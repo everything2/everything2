@@ -2,111 +2,112 @@
 
 This document maps the complete nodetype inheritance hierarchy (node IDs, `extends_nodetype`, and `sqltable`).
 
-**Last Updated**: 2026-06-15
+**Last Updated**: 2026-11-16
+**Last verified: 2026-11-16** against `nodepack/nodetype/*.xml`, the dev DB `nodetype` table, and `ecore/Everything/Controller/*.pm`.
 
-> **Note on the controller labels below.** The "React Controller" / "No Controller" annotations are a historical snapshot of the React-migration state and are *not* the authoritative source — re-derive from `ecore/Everything/Controller/*` and `ecore/Everything/Page/*` if you need current status. The old framing they referenced is gone: `Everything::Delegation::htmlpage` and the `page_header` / `page_actions` htmlcodes **no longer exist**, and tickers are now `Everything::Page` classes (no "legacy htmlpage fallback"). What remains durably accurate in this document is the **inheritance tree itself** (node IDs / `extends_nodetype` / `sqltable`).
+> **Controller labels.** "Controller" means a class `Everything::Controller::<type>` exists in `ecore/Everything/Controller/`. Most extend `Everything::Controller` directly; exceptions are noted (e.g. `superdoc`/`fullpage` extend `Everything::Controller::page`, which dispatches by title to `Everything::Page::*`; `ticker`/`jsonexport` also dispatch by title to `Everything::Page::*`). Controller inheritance does **not** follow nodetype inheritance automatically. Re-derive from the directory if in doubt.
+>
+> **Removed types.** `htmlpage` (5) was removed (`b834dc845`) and `opcode` (415056) was removed with the opcode delegation teardown (`f0fdac976`, #4335). Neither has a nodetype XML or a dev DB row any more. `Everything::Delegation::htmlpage` and the `page_header`/`page_actions` htmlcodes are also gone.
 
 ## Legend
 
-- **React Controller** - Type has a controller that sets `reactPageMode = \1`
-- **Inherits Controller** - Type's controller extends another controller (inherits its behavior)
-- **No Controller** - Type has no dedicated controller class
+- **Controller** - Has its own `Everything::Controller::<type>` class
+- **Controller (→ X)** - Its controller class extends `Everything::Controller::X`
+- **No Controller** - No dedicated controller class
 
 ## Inheritance Tree
 
 ### Root: node (id: 7)
 
-The base type that all nodetypes ultimately inherit from. Has no sqltable of its own.
+The base type that all nodetypes ultimately inherit from. Has no sqltable of its own (`extends_nodetype` 0).
 
 ```
 node (7) - No Controller (base type, handled specially)
-├── nodetype (1) - No Controller
-├── container (2) - React Controller
+├── container (2) - Controller
 │   └── sqltable: container
-├── document (3) - React Controller
-│   └── sqltable: document
-│   ├── superdoc (14) - React Controller (extends page)
-│   │   ├── restricted_superdoc (13) - Inherits Controller (extends superdoc) → React
-│   │   ├── superdocnolinks (1065266) - Inherits Controller (extends superdoc) → React
-│   │   ├── oppressor_superdoc (1144104) - Inherits Controller (extends superdoc) → React
-│   │   ├── fullpage (451267) - React Controller (extends page)
-│   │   ├── ticker (1252389) - Page classes (Everything::Page)
-│   │   │   └── schema (1258942) - React Controller
+├── document (3) - Controller
+│   ├── sqltable: document
+│   ├── superdoc (14) - Controller (→ page)
+│   │   ├── restricted_superdoc (13) - Controller (→ superdoc)
+│   │   ├── superdocnolinks (1065266) - Controller (→ superdoc)
+│   │   ├── oppressor_superdoc (1144104) - Controller (→ superdoc)
+│   │   ├── fullpage (451267) - Controller (→ page)
+│   │   ├── ticker (1252389) - Controller (title → Everything::Page::*)
+│   │   │   └── schema (1258942) - Controller
 │   │   │       └── sqltable: e2schema
-│   │   └── e2poll (1685242) - React Controller
+│   │   └── e2poll (1685242) - Controller
 │   │       └── sqltable: e2poll
-│   ├── draft (2035430) - React Controller
-│   │   └── sqltable: draft
-│   │   └── writeup (117) - React Controller
+│   ├── draft (2035430) - Controller
+│   │   ├── sqltable: draft
+│   │   └── writeup (117) - Controller
 │   │       └── sqltable: writeup
-│   ├── mail (154) - React Controller
+│   ├── mail (154) - Controller
 │   │   └── sqltable: mail
-│   ├── room (545241) - React Controller
+│   ├── room (545241) - Controller
 │   │   └── sqltable: roomdata
-│   ├── edevdoc (854232) - Inherits Controller (extends document) → React
-│   ├── node_forward (1147470) - Legacy Controller (HTTP redirect, no page content)
-│   ├── e2client (1261857) - React Controller
+│   ├── edevdoc (854232) - Controller (→ document)
+│   ├── node_forward (1147470) - Controller (HTTP redirect, no page content)
+│   ├── e2client (1261857) - Controller
 │   │   └── sqltable: e2client
 │   ├── sustype (1399991) - No Controller
-│   ├── stylesheet (1854352) - React Controller
+│   ├── stylesheet (1854352) - Controller
 │   │   └── sqltable: s3content
-│   ├── registry (1876758) - No Controller
+│   ├── registry (1876758) - Controller
 │   │   └── sqltable: registry
-│   ├── oppressor_document (1983713) - Inherits Controller (extends document) → React
+│   ├── oppressor_document (1983713) - Controller (→ document)
 │   └── writeup_feedback (2116380) - No Controller
 │       └── sqltable: writeup_feedback
-├── htmlcode (4) - React Controller
-│   └── sqltable: htmlcode
-│   ├── opcode (415056) - No Controller
-│   └── jsonexport (2100759) - Legacy Controller
-├── htmlpage (5) - React Controller
-│   └── sqltable: htmlpage (implicit)
-├── nodegroup (8) - No Controller
-│   ├── e2node (116) - React Controller
+├── htmlcode (4) - Controller
+│   ├── sqltable: htmlcode
+│   └── jsonexport (2100759) - Controller (title → Everything::Page::*)
+├── nodegroup (8) - Controller
+│   ├── e2node (116) - Controller
 │   │   └── sqltable: e2node
-│   │   └── debatecomment (1156105) - React Controller
-│   │       └── sqltable: debatecomment
-│   │       └── debate (1157413) - Inherits Controller (extends debatecomment) → React
-│   ├── usergroup (16) - React Controller
-│   │   └── sqltable: document
-│   │   └── collaboration (1254859) - React Controller
+│   ├── debatecomment (1156105) - Controller
+│   │   ├── sqltable: debatecomment
+│   │   └── debate (1157413) - Controller (→ debatecomment)
+│   ├── usergroup (16) - Controller
+│   │   ├── sqltable: document
+│   │   └── collaboration (1254859) - Controller
 │   │       └── sqltable: collaboration
-│   └── category (1522375) - React Controller
+│   └── category (1522375) - Controller
 │       └── sqltable: document
-├── nodelet (9) - React Controller
+├── nodelet (9) - Controller
 │   └── sqltable: nodelet
-├── user (15) - React Controller
+├── user (15) - Controller
 │   └── sqltable: user,setting,document
-├── dbtable (148) - React Controller
-├── maintenance (150) - React Controller
+├── dbtable (148) - Controller
+├── maintenance (150) - Controller
 │   └── sqltable: htmlcode,maintenance
-├── setting (153) - React Controller
+├── setting (153) - Controller
 │   └── sqltable: setting
-├── achievement (1917847) - React Controller
+├── achievement (1917847) - Controller
 │   └── sqltable: achievement
-├── notification (1930710) - React Controller
+├── notification (1930710) - Controller
 │   └── sqltable: notification
-├── podcast (1957956) - React Controller
+├── podcast (1957956) - Controller
 │   └── sqltable: podcast
 └── useraction (2032071) - No Controller
 ```
 
-### Standalone Types (no extends_nodetype)
+Note: `debatecomment` extends `nodegroup` (8) directly, not `e2node`.
 
-These types don't extend any other nodetype:
+### Standalone Types (extends_nodetype = 0)
 
 ```
+nodetype (1) - Controller
+    └── sqltable: nodetype
 writeuptype (118) - No Controller
 linktype (169632) - No Controller
 status (1288633) - No Controller
     └── sqltable: status
 ticket_type (1946032) - No Controller
-recording (1957954) - React Controller
+recording (1957954) - Controller
     └── sqltable: recording
 license (1981775) - No Controller
 publication_status (2035423) - No Controller
 feedback_policy (2116371) - No Controller
-datastash (2117441) - React Controller
+datastash (2117441) - Controller
     └── sqltable: setting
 ```
 
@@ -114,64 +115,42 @@ datastash (2117441) - React Controller
 
 These types include the `document` sqltable (either directly or through inheritance):
 
-| Type | Node ID | Controller Status | Notes |
-|------|---------|-------------------|-------|
-| document | 3 | React | Base document type |
-| superdoc | 14 | React | Extends document |
-| restricted_superdoc | 13 | React (via superdoc) | Extends superdoc |
-| superdocnolinks | 1065266 | React (via superdoc) | Extends superdoc |
-| oppressor_superdoc | 1144104 | React (via superdoc) | Extends superdoc |
-| fullpage | 451267 | React | Extends superdoc |
-| ticker | 1252389 | Page classes | Rendered by `Everything::Page` classes |
-| e2poll | 1685242 | React | Extends superdoc |
-| schema | 1258942 | React | Extends ticker |
-| draft | 2035430 | React | Extends document |
-| writeup | 117 | React | Extends draft |
-| mail | 154 | React | Extends document |
-| room | 545241 | React | Extends document |
-| edevdoc | 854232 | React (via document) | Extends document |
-| node_forward | 1147470 | Legacy (redirect) | HTTP redirect, no content |
-| e2client | 1261857 | React | Extends document |
-| sustype | 1399991 | **No Controller** | Extends document |
-| stylesheet | 1854352 | React | Extends document |
-| registry | 1876758 | **No Controller** | Extends document |
-| oppressor_document | 1983713 | React (via document) | Extends document |
-| writeup_feedback | 2116380 | **No Controller** | Extends document |
-| user | 15 | React | Has document in sqltable |
-| usergroup | 16 | React | Has document sqltable |
-| collaboration | 1254859 | React | Extends usergroup |
-| category | 1522375 | React | Has document sqltable |
+| Type | Node ID | Controller | Notes |
+|------|---------|------------|-------|
+| document | 3 | Yes | Base document type |
+| superdoc | 14 | Yes (→ page) | Extends document |
+| restricted_superdoc | 13 | Yes (→ superdoc) | Extends superdoc |
+| superdocnolinks | 1065266 | Yes (→ superdoc) | Extends superdoc |
+| oppressor_superdoc | 1144104 | Yes (→ superdoc) | Extends superdoc |
+| fullpage | 451267 | Yes (→ page) | Extends superdoc |
+| ticker | 1252389 | Yes | Extends superdoc; rendered by `Everything::Page` classes |
+| e2poll | 1685242 | Yes | Extends superdoc |
+| schema | 1258942 | Yes | Extends ticker |
+| draft | 2035430 | Yes | Extends document |
+| writeup | 117 | Yes | Extends draft |
+| mail | 154 | Yes | Extends document |
+| room | 545241 | Yes | Extends document |
+| edevdoc | 854232 | Yes (→ document) | Extends document |
+| node_forward | 1147470 | Yes (redirect) | HTTP redirect, no content |
+| e2client | 1261857 | Yes | Extends document |
+| sustype | 1399991 | **No** | Extends document |
+| stylesheet | 1854352 | Yes | Extends document |
+| registry | 1876758 | Yes | Extends document |
+| oppressor_document | 1983713 | Yes (→ document) | Extends document |
+| writeup_feedback | 2116380 | **No** | Extends document |
+| user | 15 | Yes | Has document in sqltable |
+| usergroup | 16 | Yes | Has document sqltable (extends nodegroup) |
+| collaboration | 1254859 | Yes | Extends usergroup |
+| category | 1522375 | Yes | Has document sqltable (extends nodegroup) |
 
-## Types Without React Controllers
+## Types Without a Controller Class
 
-These types have no dedicated controller class:
-
-### No Controller at All
 - **sustype** (1399991) - Extends document
-- **registry** (1876758) - Extends document
 - **writeup_feedback** (2116380) - Extends document
-- **opcode** (415056) - Extends htmlcode
-- **writeuptype** (118) - Standalone
-- **linktype** (169632) - Standalone
-- **status** (1288633) - Standalone
-- **ticket_type** (1946032) - Standalone
-- **license** (1981775) - Standalone
-- **publication_status** (2035423) - Standalone
-- **feedback_policy** (2116371) - Standalone
 - **useraction** (2032071) - Extends node
+- **writeuptype** (118), **linktype** (169632), **status** (1288633), **ticket_type** (1946032), **license** (1981775), **publication_status** (2035423), **feedback_policy** (2116371) - Standalone metadata types
 
-### Has Controller But Special Behavior
-- **ticker** (1252389) - Controller delegates to Page classes; all tickers currently have Page classes
-- **jsonexport** (2100759) - Legacy controller for JSON exports
+### Controllers With Special Behavior
+- **ticker** (1252389) / **jsonexport** (2100759) - Dispatch by node title to `Everything::Page::*` classes
+- **superdoc** / **fullpage** - Extend `Everything::Controller::page`, which maps title → `Everything::Page::*` (falls back to `Everything::Page::_unimplemented`)
 - **node_forward** (1147470) - Does HTTP redirect, never renders page content
-
-## Types Still Lacking a Dedicated Controller Class
-
-The following document-inheriting types have no dedicated controller class and are the main remaining gaps if a uniform per-type controller surface is ever desired:
-
-1. sustype
-2. registry
-3. writeup_feedback
-4. Various standalone metadata types (if they need display pages)
-
-(The legacy `page_header` / `page_actions` / `weblogform` / `categoryform` htmlcode plumbing that this section previously described no longer exists, so there is no longer a "legacy fallback render path" to deprecate.)

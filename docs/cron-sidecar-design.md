@@ -4,9 +4,14 @@
 > This remains the original design rationale + cost analysis. Note the shipped build uses
 > the **`run_once` periodic model** (each webhead invokes a one-pass runner each minute and
 > contends for the lock per run), **not** the persistent single-leader daemon sketched below.
-> For how the system actually works and how to operate/cut it over, read cron-sidecar.md.
+> For how the system actually works and how to operate it, read cron-sidecar.md.
+> Two other differences from this design: `generate-sitemap` stayed on a dedicated EventBridge →
+> Fargate task (too heavy for a shared webhead, #4431), so `e2cron-family`, `ECSEventsRole`, and
+> `fargate-cron-awslogs` were kept; and the health metric shipped as a single `E2/Cron UnhealthyJobs`
+> count rather than the per-job ages sketched in §4.
 
-**Status**: Design / proposed (June 2026) — see banner above
+**Status**: Historical design record (June 2026). Implemented and live; see banner above.
+**Last verified:** 2026-11-16 (banner only; the body below is the original proposal, and its file/line references are from June 2026)
 **Driver**: cost. The dedicated cron Fargate tasks are ~half the Fargate+IPv4 bill.
 **Owner**: Jay Bonci
 

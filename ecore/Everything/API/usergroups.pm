@@ -165,9 +165,16 @@ sub _group_operation_permissions
 
   unless(ref $data eq 'ARRAY')
   {
-    # Expecting POST to be an array. Returning BAD REQUEST
-    return [$self->BAD_REQUEST];
+    return [$self->HTTP_OK, { success => 0, error => 'Expected a list of node ids' }];
   }
+
+  # Node ids only: whole positive numbers.
+  foreach my $item_id (@{$data}) {
+    unless (defined($item_id) && !ref($item_id) && $item_id =~ /^\d+$/ && $item_id > 0) {
+      return [$self->HTTP_OK, { success => 0, error => 'Expected a list of node ids' }];
+    }
+  }
+  $data = [ map { int($_) } @{$data} ];
 
   return $self->$orig($user, $node, $data);
 }
@@ -214,18 +221,20 @@ sub removeuser
   # Check if owner is trying to remove themselves
   my $owner_id = $self->APP->getParameter($group->NODEDATA, 'usergroup_owner') || 0;
 
-  foreach my $item_id (@{$data}) {
-    # Prevent owner from removing themselves - they must transfer ownership first
-    if ($owner_id && $item_id == $owner_id) {
-      return [$self->HTTP_OK, {
-        success => 0,
-        error => 'Cannot remove the group owner. Transfer ownership first.'
-      }];
-    }
+  # Prevent owner from removing themselves - they must transfer ownership first.
+  # Checked before anything is removed, so the request is all-or-nothing.
+  if ($owner_id && grep { $_ == $owner_id } @{$data}) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Cannot remove the group owner. Transfer ownership first.'
+    }];
+  }
 
-    # Remove directly from nodegroup table
-    $self->DB->sqlDelete('nodegroup',
-      'nodegroup_id=' . $group->node_id . ' AND node_id=' . $item_id);
+  # Remove directly from nodegroup table
+  my $dbh = $self->DB->getDatabaseHandle;
+  foreach my $item_id (@{$data}) {
+    $dbh->do('DELETE FROM nodegroup WHERE nodegroup_id = ? AND node_id = ?',
+      undef, $group->node_id, $item_id);
   }
 
   # Refresh and return updated group with enhanced member data

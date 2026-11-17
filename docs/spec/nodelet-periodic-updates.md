@@ -2,6 +2,7 @@
 
 **Purpose**: Keep nodelet data fresh via background polling with activity awareness
 **Status**: Implemented
+**Last verified**: 2026-11-16
 
 ---
 
@@ -16,9 +17,11 @@ React nodelets use a shared activity detection hook combined with individual pol
 | Component | Location | Purpose |
 |-----------|----------|---------|
 | `useActivityDetection` | `react/hooks/useActivityDetection.js` | Shared sleep/wake + multi-tab detection |
-| `usePolling` | `react/hooks/usePolling.js` | Generic polling hook with activity integration |
+| `usePolling` | `react/hooks/usePolling.js` | Generic polling hook with activity integration (**currently unused** by any component; tests only) |
 | `useChatterPolling` | `react/hooks/useChatterPolling.js` | Chatter-specific polling with incremental updates |
 | `useOtherUsersPolling` | `react/hooks/useOtherUsersPolling.js` | Other Users polling |
+
+Most nodelets (Messages, Notifications, New Writeups, Chatterbox mini-messages) implement the inline pattern below directly with `useActivityDetection` rather than `usePolling`.
 
 ### Design Rationale
 
@@ -60,17 +63,22 @@ Each tab polls independently while in the foreground, and stops polling when the
 
 | Nodelet | Interval | Hook | API Endpoint |
 |---------|----------|------|--------------|
-| **Chatterbox** | 45s active / 2m idle | `useChatterPolling` | `/api/chatter/` |
+| **Chatterbox** | 45s recently-active / 2m otherwise | `useChatterPolling` | `/api/chatter/` |
+| **Chatterbox mini-messages** | 2 minutes (when `showMessagesInChatterbox`) | inline | `/api/messages/` |
 | **Other Users** | 2 minutes | `useOtherUsersPolling` | `/api/chatroom/` |
-| **Messages** | 2 minutes | inline | `/api/messages/` |
+| **Messages** | 2 minutes | inline | `/api/messages/?limit=10` |
 | **Notifications** | 2 minutes | inline | `/api/notifications/` |
-| **New Writeups** | 5 minutes | inline | `/api/cool/new_writeups` |
+| **New Writeups** | 5 minutes (logged-in only) | inline | `/api/newwriteups/` |
+| **Mobile chat modal** | 30 seconds while open | inline (`MobileChatModal.js`) | `/api/chatter/` (+ `/api/chatroom/` on open) |
+| **Mobile notifications modal** | 2 minutes while open | inline (`MobileNotificationsModal.js`) | `/api/notifications/` |
+
+All polling stops when the user is inactive for 10 minutes or the tab is hidden. `E2ReactRoot.scheduleCronNewWriteups` (3-minute legacy refresh) still exists but its call is commented out — dead code.
 
 ---
 
 ## Collapse-Aware Polling
 
-Nodelets stop polling when collapsed to reduce unnecessary requests.
+Nodelets stop polling when collapsed to reduce unnecessary requests. (Applies to Chatterbox, Messages, Notifications, New Writeups. **Other Users does not** — `useOtherUsersPolling` takes no `nodeletIsOpen` argument and keeps polling while collapsed. Chatterbox also stops when public chatter is off.)
 
 ### Behavior
 
@@ -140,7 +148,7 @@ Immediately refreshes when user changes chat rooms instead of waiting for next p
 
 ### Active/Idle Interval
 
-Polls faster when user is recently active (45s) vs idle (2m).
+Polls faster when user is recently active (interaction in last 60s → 45s) vs not (2m).
 
 ---
 
@@ -158,7 +166,7 @@ fetch('/api/chatter/', {
 
 Without this, background polling would make users appear constantly active.
 
-**Backend check**: `ecore/Everything/Request.pm:305-307`
+**Backend check**: `Everything::Request` user resolution (`$self->param('ajaxIdle') || $ENV{HTTP_X_AJAX_IDLE}` skips the lastseen update). Under PSGI, `app.psgi` copies `HTTP_*` headers into a localized `%ENV`, so the header still works.
 
 ---
 
@@ -185,4 +193,4 @@ The `usePolling` and `useChatterPolling` hooks also refresh when the page become
 
 ---
 
-*Last updated: December 2025*
+*Last verified: 2026-11-16*

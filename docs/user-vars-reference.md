@@ -2,7 +2,8 @@
 
 This document catalogs all known user VARS (settings) stored in the `setting` table's `vars` field. As we migrate away from this legacy storage format toward JSON-based settings, this reference helps track what can be cleaned up.
 
-**Last Updated**: 2026-01-17
+**Last Updated**: 2026-11-16
+**Last verified: 2026-11-16** — keys cross-checked against literal reads/writes in `ecore/` and `react/` (`$VARS->{…}`, `$$VARS{…}`, `->VARS->{…}`, `$vars->{…}`, preference whitelists). "Files" lists actual readers/writers; the settings UI (`Page/settings.pm` → `Documents/Settings.js` → `POST /api/preferences/set`, whitelist in `API/preferences.pm`) is implied for any key marked **(pref)**. `Everything::Delegation::document`/`opcode` no longer exist, so earlier `document.pm`/`opcode.pm` attributions were removed.
 
 ## Storage Format
 
@@ -13,21 +14,26 @@ key1=value1&key2=value2&key3=value3
 
 The `setting` table links to users via `setting_id = user.node_id`.
 
+Encoding (`Application::getVarStringFromHash` / `getVarHashFromStringFast`): keys are sorted, values are URL-escaped; `undef` deletes a key; any **false** value (`0`, `''`) is stored as a single space and reads back as `''` — so a stored `0` comes back as empty string, not `"0"`.
+
 ## Access Methods
 
 ```perl
-# Hashref access (legacy delegation code)
+# Hashref access (Application.pm, remaining Delegation modules)
 $VARS->{key_name}
 $$VARS{key_name}
+my $VARS = $APP->getVars($USER_hashref);
 
-# Blessed object access (modern Controller/Page code)
-$REQUEST->user->VARS->{key_name}
+# Blessed object access (Controller/Page/API code) — Everything::Node::helper::setting
+$REQUEST->user->VARS->{key_name}   # lazy, cached on the object
 $user->VARS->{key_name}
 
 # Setters
-Everything::setVars($USER, $VARS);
-$user->set_vars($VARS);
+Everything::setVars($USER_hashref, $VARS);   # merges against a fresh DB read, in a transaction
+$user->set_vars($VARS);                      # wraps Everything::setVars($self->NODEDATA, ...)
 ```
+
+`setVars` deletes keys absent from the passed hash, so always pass the full VARS hash. `Everything::Controller::layout` persists in-memory VARS changes at the end of a logged-in page render (e.g. `oldexp`/`oldGP`).
 
 ---
 
@@ -37,201 +43,188 @@ $user->set_vars($VARS);
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `nodelets` | CSV node_ids | Comma-separated list of enabled nodelet node IDs. If 'Epicenter' nodelet is not selected, its functions are placed in the page header. | Guest defaults | Controller.pm, Application.pm |
-| `personal_nodelet` | HTML | User's custom nodelet HTML content | Empty | htmlcode.pm |
-| `collapsedNodelets` | String | Tracks which nodelets are collapsed | Empty | Controller.pm |
+| `nodelets` | CSV node_ids | Enabled nodelet node IDs. If Epicenter is absent, its functions go in the page header. | `default_nodelets` (conf) | Application.pm, Controller.pm, Node/user.pm |
+| `personal_nodelet` | `<br>`-separated titles | Personal Links nodelet list (not HTML) | Empty | PageState.pm, API/personallinks.pm |
+| `collapsedNodelets` | String of `name!` tokens | Which nodelets are collapsed | Empty | Controller.pm, E2ReactRoot.js **(pref)** |
+| `nodeletusergroup` | String | Usergroup shown in Usergroup Writeups nodelet | Default group | Application.pm **(pref)** |
+| `vit_hide{nodeinfo,maintenance,nodeutil,list,misc}` | Boolean | Hide Vitals nodelet sections | 0 | `Application::display_preferences` → E2ReactRoot.js **(pref)** |
+| `edn_hide{edev,util}` | Boolean | Hide Everything Developer nodelet sections | 0 | same **(pref)** |
+| `rtn_hide{cwu,edc,nws}` | Boolean | Hide ReadThis nodelet sections | 0 | same **(pref)** |
+| `epi_hideces`, `epi_hideadmins` | Boolean | Hide Master Control CE / admin sections | 0 | PageState.pm (`_build_masterControl`) |
+| `hidenodenotes` | Boolean | Hide node notes in Master Control | 0 | PageState.pm **(pref)** |
 
 ### Display Preferences
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `userstyle` | node_id | Stylesheet node selection | System default | Application.pm |
-| `repThreshold` | 0-50 or 'none' | Hide writeups below this reputation in New Writeups and e2nodes | 'none' | document.pm, htmlcode.pm |
-| `num_newwus` | 1-40 | Number of new writeups to show | 15 | Application.pm |
-| `noSoftLinks` | Boolean | Hide softlinks from e2node and writeup pages | 0 | Node/e2node.pm, htmlcode.pm |
-| `hidenodeshells` | Boolean | Hide nodeshell (incomplete) nodes in search results and softlinks | 0 | Application.pm |
-| `hideauthore2node` | Boolean (inverse) | When 1, hides who created a writeup page title (e2node) | 0 (show) | htmlcode.pm |
+| `userstyle` | node_id | Stylesheet selection | System default | Node/user.pm, the_catwalk.pm, theme_nirvana.pm **(pref)** |
+| `customstyle` | CSS | User custom CSS | Empty | Node/user.pm, the_catwalk/theme_nirvana, API/customstyle.pm **(pref)** |
+| `repThreshold` | 0-50 or 'none' | Hide writeups below this reputation | 'none' | **(pref)** — no reader found outside the settings UI |
+| `num_newwus` | 1-40 | Number of new writeups to show | 20 | Application.pm (`display_preferences`), Node/user.pm **(pref)** |
+| `nw_nojunk` | Boolean | Hide junk in New Writeups | 0 | Application.pm, E2ReactRoot.js **(pref)** |
+| `noSoftLinks` | Boolean | Hide softlinks on e2node/writeup pages | 0 | Controller/e2node.pm, Node/e2node.pm **(pref)** |
+| `hidenodeshells` | Boolean | Hide nodeshells in search/softlinks | 0 | **(pref)** — no reader found outside the settings UI |
+| `hideauthore2node` | Boolean (inverse) | Hide who created an e2node | 0 (show) | **(pref)** |
 
 ### Voting & Interactions
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `votesafety` | Boolean | Ask for confirmation when voting | 0 | preferences.pm |
-| `coolsafety` | Boolean | Ask for confirmation when cooling writeups | 0 | preferences.pm |
-| `anonymousvote` | 0/1/2 | Anti-bias voting: 0=always show author, 1=hide until voted, 2=hide with clickable link | 0 | htmlcode.pm, preferences.pm |
+| `votesafety` | Boolean | Confirm before voting | 0 | Controller.pm, PageState.pm (`e2.user`), WriteupDisplay.js **(pref)** |
+| `coolsafety` | Boolean | Confirm before C!ing | 0 (set to 1 at signup) | same **(pref)** |
+| `anonymousvote` | 0/1/2 | Anti-bias voting display | 0 | **(pref)** — no reader found outside the settings UI |
+| `cools` | Integer | C!s remaining (→ `e2.user.coolsleft`) | 0 | PageState.pm, Application.pm, Node/user.pm |
+| `votetime`, `votesrefreshed` | Timestamp / Integer | Daily vote-refresh bookkeeping | - | Application.pm |
 
 ### Writeup Display Format
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `wuhead` | Format codes | Metadata displayed above writeups. Format: comma-separated codes like "c:type,c:author,c:audio,c:length,c:hits,r:dtcreate" | See note | document.pm |
-| `wufoot` | Format codes | Metadata displayed below writeups. Format: comma-separated codes like "l:kill,c:vote,c:cfull,c:sendmsg,c:addto,r:social" | See note | document.pm |
-| `nokillpopup` | Boolean (value=4) | Admin tools always visible, no pop-up. Only for specific gods. | Not set | opcode.pm |
-| `info_authorsince_off` | Boolean (inverse) | When 1, hides how long ago the author was here | 0 (show) | WriteupDisplay.js |
+| `info_authorsince_off` | Boolean (inverse) | Hide how long ago the author was here | 0 (show) | Controller.pm (`build_writeup_viewer_data`), WriteupDisplay.js **(pref)** |
 
-**wuhead options:** audio (links to audio files), length (word count), hits (hit counter, default ON), dtcreate (creation time, default ON)
+`wuhead`/`wufoot`/`nokillpopup` no longer have readers (only listed in `the_oracle`'s var catalog) — see Deprecated.
 
-**wufoot options:** sendmsg (message box, default ON), addto (bookmark/category tool, default ON), social (social sharing, default ON)
-
-### Homenode Privacy
+### Homenode / Profile
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `hidemsgme` | Boolean | Hide the user /msg box on homenodes | 0 | document.pm |
-| `hidemsgyou` | Boolean | Hide the '/msgs from me' link to Message Inbox on homenodes | 0 | document.pm |
-| `hidevotedata` | Boolean | Hide vote and C! data on homenode | 0 | document.pm |
-| `hidehomenodeUG` | Boolean | Hide usergroups list on homenode | 0 | document.pm |
-| `hidehomenodeUC` | Boolean | Hide categories list on homenode | 0 | document.pm |
-| `showrecentwucount` | Boolean | Show recent writeup count on homenode | 0 | document.pm |
-| `hidelastnoded` | Boolean (inverse) | When 1, hides link to user's most recent writeup | 0 (show) | document.pm |
-| `hidelastseen` | Boolean | Hide "last seen" timestamp from other users | 0 | document.pm |
+| `mission`, `motto`, `employment`, `specialties` | String | Homenode profile fields | Empty | Node/user.pm, Page/settings.pm |
+| `hidemsgme` | Boolean | Hide the /msg box on your homenode | 0 | Node/user.pm, UserDisplay.js **(pref)** |
+| `hidemsgyou` | Boolean | Hide "/msgs from me" link | 0 | Controller/user.pm, Controller/usergroup.pm **(pref)** |
+| `hidevotedata` | Boolean | Hide vote/C! data on homenode | 0 | **(pref)** |
+| `hidehomenodeUG` | Boolean | Hide usergroups list on homenode | 0 | **(pref)** |
+| `hidehomenodeUC` | Boolean | Hide categories list on homenode | 0 | **(pref)** |
+| `showrecentwucount` | Boolean | Show recent writeup count | 0 | Controller/user.pm **(pref)** |
+| `hidelastnoded` | Boolean (inverse) | Hide link to most recent writeup | 0 (show) | Controller/user.pm, Node/user.pm **(pref)** |
+| `hidelastseen` | Boolean | Hide "last seen" | 0 | Controller/user.pm, Node/user.pm, Node/writeup.pm **(pref)** |
+| `browser` | String | Last User-Agent (set at login) | - | Request.pm, Controller/user.pm |
+| `bookmarks` | CSV node_ids | Bookmark ids shown on settings page | - | Page/settings.pm |
 
 ### Notifications
 
+Per-notification-type subscriptions live in the `settings` JSON (`settings.notifications`, keyed by notification node_id; `API/preferences.pm::set_notification_preferences`). The flat keys below are separate opt-outs.
+
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `no_notify_kill` | Boolean (inverse) | When 1, don't notify when writeups are deleted | 0 (notify) | Application.pm |
-| `no_editnotification` | Boolean (inverse) | When 1, don't notify when writeups are edited by staff | 0 (notify) | Application.pm |
-| `no_coolnotification` | Boolean (inverse) | When 1, don't notify when writeups get C!ed | 0 (notify) | Application.pm |
-| `no_likeitnotification` | Boolean (inverse) | When 1, don't notify when Guest Users like writeups | 0 (notify) | Application.pm |
-| `no_bookmarknotification` | Boolean (inverse) | When 1, don't notify when writeups get bookmarked | 0 (notify) | Application.pm |
-| `no_bookmarkinformer` | Boolean (inverse) | When 1, don't tell others when you bookmark | 0 (inform) | Application.pm |
-| `anonymous_bookmark` | Boolean | Bookmark anonymously (only applies when informing) | 0 | Application.pm |
-| `no_socialbookmarknotification` | Boolean (inverse) | When 1, don't notify of social bookmarks | 0 (notify) | Application.pm |
-| `no_socialbookmarkinformer` | Boolean (inverse) | When 1, don't inform of your social bookmarks | 0 (inform) | Application.pm |
-| `no_discussionreplynotify` | Boolean (inverse) | When 1, don't notify of usergroup discussion replies | 0 (notify) | Application.pm |
-| `nosocialbookmarking` | Boolean | Disable social sharing buttons on your writeups (also hides on others') | 0 | document.pm |
+| `no_notify_kill` | Boolean (inverse) | Don't notify when writeups are deleted | 0 | API/admin.pm **(pref)** |
+| `no_editnotification` | Boolean (inverse) | Don't notify on staff edits | 0 | **(pref)** — no reader found outside the settings UI |
+| `no_coolnotification` | Boolean (inverse) | Don't notify on C! | 0 | API/cool.pm **(pref)** |
+| `no_likeitnotification` | Boolean (inverse) | Don't notify on guest "I like it" | 0 | API/ilikeit.pm **(pref)** |
+| `no_bookmarknotification` | Boolean (inverse) | Don't notify on bookmarks | 0 | API/cool.pm **(pref)** |
+| `no_bookmarkinformer` | Boolean (inverse) | Don't tell others when you bookmark | 0 | API/cool.pm **(pref)** |
+| `anonymous_bookmark` | Boolean | Bookmark anonymously | 0 | **(pref)** |
+| `no_discussionreplynotify` | Boolean (inverse) | Don't notify of usergroup discussion replies | 0 | API/debatecomments.pm, Delegation/maintenance.pm **(pref)** |
+| `nosocialbookmarking` | Boolean | Hide social share buttons | 0 | Node/writeup.pm **(pref)** |
 
 ### Writeup Publishing
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `defaultpostwriteup` | Boolean | Publish immediately by default (vs. save as draft) | 0 | htmlcode.pm |
-| `HideNewWriteups` | Boolean | Hide your new writeups by default in New Writeups. Some writeups (daylogs, maintenance) always default to hidden. | 0 | htmlcode.pm |
-| `GPoptout` | Boolean | Opt out of the GP (points) system | 0 | Application.pm |
+| `defaultpostwriteup` | Boolean | Publish immediately by default | 0 | **(pref)** — no reader found outside the settings UI |
+| `HideNewWriteups` | Boolean | Hide your new writeups by default | 0 | **(pref)** — no reader found (PublishModal/InlineWriteupEditor default `hideFromNewWriteups` to false) |
+| `GPoptout` | Boolean | Opt out of GP | 0 | Application.pm, PageState.pm, Node/user.pm, gift shop/wheel/bounties/sanctify APIs **(pref)** |
+| `tiptap_editor_raw` | Boolean (0/1) | Default to raw HTML mode in the editor | 0 | API/preferences.pm, Page/e2_editor_beta.pm, Page/drafts.pm, `react/components/Editor/useE2Editor.js` + editor components |
 
 ### Time & Localization
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `localTimeUse` | Boolean | Enable timezone offset calculations | 0 | Application.pm |
-| `localTimeOffset` | Integer | Seconds offset from server time (-43200 to +46800) | 0 | Application.pm |
-| `localTimeDST` | Boolean | Apply Daylight Saving Time adjustment (+1 hour) | 0 | Application.pm |
-| `localTime12hr` | Boolean | Use 12-hour time format (AM/PM) | 0 | Application.pm |
+| `localTimeUse` | Boolean | Enable timezone offset | 0 | Application.pm, PageState.pm, Epicenter.js |
+| `localTimeOffset` | Integer | Seconds offset (-43200..+46800) | 0 | Application.pm, API/nodebackup.pm |
+| `localTimeDST` | Boolean | +1 hour DST | 0 | Application.pm, API/nodebackup.pm |
+| `localTime12hr` | Boolean | 12-hour format | 0 | Application.pm |
 
 ### User Statistics & Tracking
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `oldGP` | Integer | Cached GP for change detection notifications | - | Application.pm |
-| `oldexp` | Integer | Cached XP for change detection notifications | - | Application.pm |
-| `numwriteups` | Integer | Cached writeup count for Node-Fu calculation | - | Application.pm |
+| `oldGP` | Integer | Last-seen GP (Epicenter gain display) | - | PageState.pm (`_build_epicenter`), Node/user.pm |
+| `oldexp` | Integer | Last-seen XP | - | PageState.pm, Node/user.pm |
+| `numwriteups` | Integer | Cached writeup count | - | Application.pm, Controller/user.pm, PageState.pm |
+| `hasRecalculated` | Boolean | XP→GP recalculation done | - | API/xp.pm, Page/recalculate_xp.pm |
+| `ipaddy` | String | Last-seen IP (IP logging also writes `iplog`) | - | Application.pm, API/admin.pm |
+| `recaptcha_score` | Float | Signup reCAPTCHA score | - | Application.pm |
+| `created_on` | Epoch | Account creation stamp | - | API/everything_s_best_users.pm |
+| `preference_last_update_time` | Epoch | Set to 1 at signup; no reader found | - | Application.pm |
 
 ### Game Systems
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `easter_eggs` | Integer | Current Easter Egg count (game currency) | 0 | Application.pm, document.pm |
-| `easter_eggs_bought` | Integer | Lifetime Easter Eggs acquired | 0 | Application.pm |
-| `tokens` | Integer | Virtual tokens from wheel spins | 0 | Application.pm |
-| `tokens_bought` | Integer | Lifetime tokens acquired | 0 | Application.pm |
-| `spin_wheel` | Integer | Total wheel spins (1000+ = achievement) | 0 | API/wheel.pm |
+| `easter_eggs` | Integer | Easter Egg count | 0 | Application.pm, PageState.pm, API/giftshop.pm |
+| `easter_eggs_bought` | Integer | Lifetime eggs acquired | 0 | API/giftshop.pm, API/wheel.pm, Delegation/achievement.pm |
+| `tokens` | Integer | Tokens | 0 | API/giftshop.pm, API/wheel.pm, Page/the_tokenator.pm |
+| `tokens_bought` | Integer | Lifetime tokens acquired | 0 | API/giftshop.pm, API/wheel.pm, Delegation/achievement.pm |
+| `spin_wheel` | Integer | Total wheel spins | 0 | API/wheel.pm, Delegation/achievement.pm |
+| `chingbought` | Timestamp | Last ching purchase (gift shop cooldown) | - | Page/e2_gift_shop.pm, API/giftshop.pm |
+| `Bounty` | Boolean | User has an open bounty | 0 | API/bounties.pm |
+| `costume`, `treats` | String / Integer | Halloween costume + treat counter | - | API/costumes.pm, Application.pm |
 
 ### User State
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `borged` | Timestamp | Unix timestamp when user was "borged" | - | Application.pm |
-| `numborged` | Integer | Borg duration multiplier (300 + 60*N seconds) | 0 | Application.pm |
-| `lockedin` | Timestamp | Unix timestamp until user is locked | - | Application.pm |
-| `infected` | Boolean | User infection status flag | 0 | Application.pm |
+| `borged` | Timestamp | When the user was borged (expiry 300 + 60·2·numborged s) | - | Application.pm (`expire_borg_if_due`), API/feed_edb.pm |
+| `numborged` | Integer | Borg count multiplier | 1 | Application.pm |
+| `lastborg` | Timestamp | Previous borg (set on expiry) | - | Application.pm |
+| `lockedin` | Timestamp | Locked in until | - | Page/go_outside.pm |
+| `infected` | Boolean | Infection flag | 0 | Application.pm, API/user.pm, API/signup.pm, Controller/user.pm |
+| `visible` | Boolean | Cloaked in Other Users (`1` = cloaked) | 0 | Application.pm (`cloak`/`uncloak`) |
+| `publicchatteroff` | Boolean | Public chatter suppressed | 0 | Application.pm |
+| `infravision` | Boolean | See cloaked users in Other Users (editors/chanops implicitly) | 0 | Application.pm, Node/user.pm |
 
 ### Notelet (Personal Nodelet)
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `noteletRaw` | HTML | Raw user notelet content (max 32,768 chars) | Empty | htmlcode.pm |
-| `noteletScreened` | HTML | Processed/rendered notelet for display | Empty | htmlcode.pm |
-| `noteletLocked` | Boolean | Prevent notelet editing | 0 | htmlcode.pm |
-| `noteletKeepComments` | Boolean | Keep HTML comments when editing | 0 | htmlcode.pm |
-| `lockCustomHTML` | Boolean | Prevent custom HTML editing | 0 | htmlcode.pm |
+| `noteletRaw` | HTML | Raw notelet content (max 32,768 chars) | Empty | Roles/Notelet.pm, Application.pm |
+| `noteletScreened` | HTML | Screened notelet for display | Empty | Application.pm (`screen_notelet`), Roles/Notelet.pm |
+| `noteletLocked` | Boolean | Prevent notelet editing | 0 | Application.pm |
+| `lockCustomHTML` | Boolean | Prevent custom HTML editing | 0 | Application.pm |
+| `nodeletKeepComments` / `noteletKeepComments` | Boolean | Keep HTML comments. **Spelling mismatch:** `Roles/Notelet.pm` writes `nodeletKeepComments`, `Application::screen_notelet` reads `noteletKeepComments` | 0 | Roles/Notelet.pm, Application.pm |
 
 ### Chat & Messaging
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `chatmacro_*` | String | User-defined chat macros (dynamic keys) | - | htmlcode.pm |
-| `getofflinemsgs` | Boolean | Get online-only usergroup messages while offline | 0 | Application.pm |
+| `chatmacro_*` | String | User-defined chat macros (dynamic keys) | - | Application.pm, Page/settings.pm, Page/macro_faq.pm |
+| `getofflinemsgs` | Boolean | Get online-only usergroup messages while offline | 0 | Application.pm, Node/user.pm **(pref)** |
+| `ugma_resettime` | Boolean | Usergroup message archive reset-time pref | 0 | API/usergroup_message_archive.pm |
 
-### Vitals Nodelet Preferences
-
-| Key | Type | Description | Default | Files |
-|-----|------|-------------|---------|-------|
-| `vit_hidemaintenance` | Boolean | Hide maintenance sections | 0 | API/preferences.pm |
-| `vit_hidenodeinfo` | Boolean | Hide node info sections | 0 | API/preferences.pm |
-| `vit_hidenodeutil` | Boolean | Hide node utility sections | 0 | API/preferences.pm |
-| `vit_hidelist` | Boolean | Hide list sections | 0 | API/preferences.pm |
-| `vit_hidemisc` | Boolean | Hide miscellaneous sections | 0 | API/preferences.pm |
-
-### Epicenter Preferences
+### Everything's Best Users Page
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `cools` | Integer | "Cool" count displayed in Epicenter | - | htmlcode.pm |
-| `ebu_showdevotion` | Boolean | Show devotion stat | 0 | htmlcode.pm |
-| `ebu_showaddiction` | Boolean | Show addiction stat | 0 | htmlcode.pm |
-| `ebu_newusers` | Boolean | Show new users section | 0 | htmlcode.pm |
-| `ebu_showrecent` | Boolean | Show recent writeups section | 0 | htmlcode.pm |
+| `ebu_showdevotion` | Boolean | Show devotion stat | 0 | API/everything_s_best_users.pm, EverythingsBestUsers.js |
+| `ebu_showaddiction` | Boolean | Show addiction stat | 0 | same |
+| `ebu_newusers` | Boolean | Show new users | 0 | same |
+| `ebu_showrecent` | Boolean | Show recent | 0 | same |
 
 ### Content & Node Relationships
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `nodetrail` | CSV node_ids | Breadcrumb trail of recently visited nodes | - | Application.pm |
-| `unfavoriteusers` | CSV user_ids | Users to hide/deemphasize in New Writeups | - | Application.pm |
-| `can_weblog` | CSV node_ids | Weblog destinations user can post to | - | htmlcode.pm |
-| `bookbucket` | CSV node_ids | Bookmarked nodes | - | document.pm |
-
-### New Writeups Preferences
-
-| Key | Type | Description | Default | Files |
-|-----|------|-------------|---------|-------|
-| `nw_nojunk` | Boolean | Hide junk writeups in New Writeups | 0 | API/preferences.pm |
-| `edn_hideutil` | Boolean | Hide utility sections | 0 | API/preferences.pm |
-| `edn_hideedev` | Boolean | Hide edev sections | 0 | API/preferences.pm |
-
-### UI Behavior
-
-| Key | Type | Description | Default | Files |
-|-----|------|-------------|---------|-------|
-| `autoChat` | Boolean | Auto-chat feature flag | 0 | Controller.pm |
-| `inactiveWindowMarker` | Boolean | Inactive window marker flag | 0 | Controller.pm |
-
-### Editor Preferences
-
-| Key | Type | Description | Default | Files |
-|-----|------|-------------|---------|-------|
-| `tiptap_editor_raw` | Boolean (0/1) | Default to raw HTML mode in E2 Editor Beta (0=rich text, 1=HTML) | 0 | API/preferences.pm, Page/e2_editor_beta.pm |
+| `nodetrail` | CSV node_ids | Recently visited nodes (Recent Nodes nodelet) | - | PageState.pm (`_build_recentNodes`), Application.pm |
+| `unfavoriteusers` | CSV user_ids | Authors hidden in New Writeups | - | Application.pm, API/userinteractions.pm |
+| `can_weblog` | CSV node_ids | Weblog destinations | - | Node.pm, Node/user.pm, API/weblog.pm, API/weblogmenu.pm |
+| `nameifyweblogs`, `hidden_weblog` | Boolean | Weblog menu display prefs | 0 | API/weblogmenu.pm, Page/edit_weblog_menu.pm |
 
 ### Utility Tool Settings
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `alphabetizer_sep` | String | Separator for alphabetizer tool | - | document.pm |
-| `alphabetizer_case` | Boolean | Case-insensitive sorting | 0 | document.pm |
-| `alphabetizer_sortorder` | Boolean | Reverse sort order | 0 | document.pm |
-| `alphabetizer_format` | Boolean | Convert to E2 links | 0 | document.pm |
-| `sqlprompt_wrap` | 0-3 | SQL output format | 0 | document.pm |
-| `sqlprompt_nocount` | Boolean | Hide row count in SQL | 0 | document.pm |
-| `EDD_Sort` | String | Sort order for Everything Document Directory (0=default, idA/idD, nameA/nameD, authorA/authorD, createA/createD) | 0 | API/everything_document_directory.pm (read); written via /api/preferences/set |
-| `ListNodesOfType_Type` | Integer | Last selected node type ID in List Nodes of Type tool | - | Page/list_nodes_of_type.pm |
+| `alphabetizer_sep` / `_case` / `_sortorder` / `_format` | mixed | Alphabetizer tool options | - | Page/alphabetizer.pm |
+| `sqlprompt_wrap` | 0-3 | SQL output format | 0 | Page/sql_prompt.pm, SQLPrompt.js **(pref)** |
+| `EDD_Sort` | String | Everything Document Directory sort (0, idA/idD, nameA/nameD, authorA/authorD, createA/createD) | 0 | API/everything_document_directory.pm; written via /api/preferences/set |
+| `ListNodesOfType_Type` | Integer | Last node type in List Nodes of Type | - | Page/list_nodes_of_type.pm **(pref)** |
+| `ListNodesOfType_Sort` | String | Listing sort (read by The Catwalk) | 0 | Page/the_catwalk.pm |
+| `showuseractions` | Boolean | Show user actions in Other Users | 0 | Application.pm (`buildOtherUsersData`) |
 
 ### Modern Settings (JSON)
 
 | Key | Type | Description | Default | Files |
 |-----|------|-------------|---------|-------|
-| `settings` | JSON | Structured settings object for new features | {} | API/preferences.pm |
-| `preference_last_update_time` | Epoch | Cache invalidation timestamp | - | API/preferences.pm |
+| `settings` | JSON | Structured settings; currently `notifications` map | {} | API/preferences.pm, Application.pm |
 
 ---
 
@@ -251,7 +244,19 @@ Some "preferences" aren't stored in VARS:
 
 ## Deprecated VARS Keys
 
-These keys are no longer used and can be cleaned up from user settings:
+These keys are no longer used and can be cleaned up from user settings.
+
+> **Still wired in code (2026-11-16):** these deprecated keys remain in the `API/preferences.pm`
+> whitelist **and** the `Page/settings.pm` payload, so the settings UI can still write them:
+> `fxDuration`, `noquickvote`, `nonodeletcollapser`, `textareaSize`, `nullvote`, `noreplacevotebuttons`,
+> `nogradlinks`, `sortmyinbox`, `noTypoCheck`, `informmsgignore`, `nohints`, `nohintSpelling`, `nohintHTML`,
+> `hintXHTML`, `hintSilly`; `killfloor_showlinks` is whitelist-only. `noquickvote`/`nonodeletcollapser` are
+> also still emitted as `e2.noquickvote`/`e2.nonodeletcollapser` (no React consumer). `showmessages_replylink`
+> is still set to 1 for new users at signup. Cleanup candidates.
+>
+> **No reader found (not formally deprecated):** `wuhead`, `wufoot`, `nokillpopup`, `bookbucket`,
+> `sqlprompt_nocount`, `autoChat` (only `react/test-utils.js`), `inactiveWindowMarker` — only mentioned in
+> `Page/the_oracle.pm`'s var catalog, if at all.
 
 ### Removed in 2026-06 (socialBookmark opcode retirement, #4332)
 
@@ -313,7 +318,7 @@ both during the JSON conversion** — nothing reads them anymore.
 
 | Key | Status | Notes |
 |-----|--------|-------|
-| `personalRaw` | **DEPRECATED** | Migrated to `noteletRaw` |
+| `personalRaw` | **DEPRECATED** | Migrated to `noteletRaw` on notelet save (`Roles/Notelet.pm`) |
 | `personalScreened` | **DEPRECATED** | Migrated to `noteletScreened` |
 | `editsize` | **DEPRECATED** | Replaced by `textareaSize` |
 | `ebu_showmerit` | **DEPRECATED** | Merit stat display disabled |
@@ -336,10 +341,11 @@ When migrating to JSON storage, the following cleanup should be performed:
 
 ### Phase 1: Remove Dead Code
 - [x] Remove `bucketop` and `addbucket` opcodes (2025-11-30)
-- [ ] Remove `nodebucket` references from showvars display
+- [ ] Remove `nodebucket`/`bookbucket`/`settings_useTinyMCE` entries from `Page/the_oracle.pm`'s var catalog
+- [ ] Drop deprecated keys from the `API/preferences.pm` whitelist and `Page/settings.pm` payload (list above)
 
 ### Phase 2: Consolidate Similar Keys
-- [ ] Merge `personalRaw`/`personalScreened` into `noteletRaw`/`noteletScreened`
+- [~] Merge `personalRaw`/`personalScreened` into `noteletRaw`/`noteletScreened` (on-save migration exists in `Roles/Notelet.pm`)
 - [ ] Standardize boolean values (some use 0/1, others use presence/absence)
 
 ### Phase 3: JSON Migration

@@ -1,5 +1,7 @@
 # One-off maintenance jobs (Fargate + single S3 bucket)
 
+**Last verified:** 2026-11-16
+
 Some maintenance has to run **inside the VPC** (to reach RDS) but we have no direct VPC
 access. This facility (#4282) runs a script inside a one-off Fargate task using the
 deployed **e2app** image — so the job gets Perl, `$DB`, `Everything::S3`, the ECS task
@@ -12,14 +14,20 @@ role, and the same network as the app (RDS-reachable), with no infra changes.
   bucket — never a caller-supplied location.
 - **`CONF->s3->{jobs}`** — the one bucket (`e2-maintenance-jobs`).
 - **`tools/aws/run-fargate-job.sh <script> [KEY=VAL ...]`** — uploads the script to the
-  bucket, `aws ecs run-task`s the e2app task def with a command override + env, in the
-  service's subnets/SGs, then waits + reports the exit code.
+  bucket, `aws ecs run-task`s the `e2app-family` task def with a command override + env, in
+  the service's subnets/SGs, then polls until the task stops (up to `E2_JOB_TIMEOUT`,
+  default 5400 s) and reports the exit code. Override cluster/service/task def/bucket with
+  `E2_CLUSTER`, `E2_SERVICE`, `E2_TASKDEF`, `E2_JOBS_BUCKET`.
+
+For running an existing `cron/*.pl` script on demand, use `ops/cron-runner.rb --job <name>`
+instead (see [cron-sidecar.md](cron-sidecar.md)). Long jobs already in the repo (`jobs/`) run
+on `e2heavyjob-family`.
 
 ## Usage
 ```bash
-tools/aws/run-fargate-job.sh tools/jobs/some_job.pl FOO=bar
+tools/aws/run-fargate-job.sh path/to/some_job.pl FOO=bar
 # -> s3://e2-maintenance-jobs/jobs/<ts>-some_job.pl, runs it in a Fargate task,
-#    output in the e2app CloudWatch log group.
+#    output in /aws/fargate/fargate-app-awslogs, stream e2-fargate/e2app/<task-id>.
 ```
 A job script just needs `use lib qw(/var/everything/ecore /var/libraries/lib/perl5); use Everything; initEverything 'everything';` to get `$DB`/`$APP`, then do its work.
 
@@ -36,22 +44,16 @@ can write to the one bucket**:
 ## Infra (in CloudFormation — `cf/everything2-production.json`)
 Provisioned as code: `MaintenanceJobsBucket` (`e2-maintenance-jobs` — versioned, public
 access blocked, 90-day expiry) plus a read-only `s3:GetObject` grant on it in the
-`E2AppS3Policy` managed policy (the e2app task role). **Deploy the prod stack** to create
-them.
+`E2AppS3Policy` managed policy (the e2app task role). Both are deployed.
 
 **The PutObject perimeter:** no service role is granted `s3:PutObject`, so only IAM
 principals with broad S3 access (admins, via the launcher's own credentials) can upload
 job scripts — that's the control, matching the single-bucket model. For a hard lock you
 can optionally add a bucket policy denying `PutObject` except from a named admin role ARN.
 
-## First job: `tools/jobs/seclog_time_repair.pl`
-Restores `seclog.seclog_time` from a PITR copy after the phase-3 backfill re-stamped it
-(the seclog_time repair runbook is in git history). Because the task is
-in-VPC, one script reaches both prod and the restored instance:
-```bash
-# 1. (out of band) PITR-restore everything2vpc to 2026-06-13T17:58Z as a temp instance.
-# 2. dry-run, then real:
-tools/aws/run-fargate-job.sh tools/jobs/seclog_time_repair.pl E2_TSFIX_HOST=<endpoint> E2_DRYRUN=1
-tools/aws/run-fargate-job.sh tools/jobs/seclog_time_repair.pl E2_TSFIX_HOST=<endpoint>
-# 3. (out of band) delete the temp instance.
-```
+## Past jobs
+
+The first job was `tools/jobs/seclog_time_repair.pl` (restored `seclog.seclog_time` from a
+PITR copy). It ran once and was removed with the seclog retirement; `tools/jobs/` no longer
+exists. See `git log --all -- tools/jobs/seclog_time_repair.pl` for it as an example of the
+pattern (one in-VPC script reaching both prod and a temporary restored instance).

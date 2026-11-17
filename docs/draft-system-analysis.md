@@ -3,6 +3,15 @@
 **Created**: 2025-12-19
 **Purpose**: Comprehensive analysis of the draft system for publication workflow implementation
 
+> **Status (verified 2026-11-16):** historical snapshot (Dec 2025) — don't treat it as current
+> behavior. Since it was written: the `publishdraft`/`unpublishwriteup` htmlcodes are gone (all of
+> `Everything::Delegation::htmlcode` was emptied, #4358); publishing is `POST /api/drafts/:id/publish`
+> (and `/republish`), unpublishing is `Everything::Application::unpublish_writeup` behind the admin API;
+> `Everything::Page::drafts` exists (Recommendation 1); the unified publish API (Recommendation 2) is done.
+> Draft read/visibility checks were revised in Nov 2026, so the visibility sections below are out of
+> date. Read `canSeeDraft` in `Application.pm` and `API/drafts.pm` for current rules. Still open:
+> #4641, #1957, the `draft_update` maintenance hook still reads request params via `$query`.
+
 ---
 
 ## Table of Contents
@@ -270,8 +279,8 @@ CREATE TABLE nodegroup (
 
 ## Publishing and Unpublishing Workflows
 
-### Legacy Publishing: `publishdraft` htmlcode
-**File**: `ecore/Everything/Delegation/htmlcode.pm` (lines 12303-12365)
+### Legacy Publishing: `publishdraft` htmlcode *(removed — now `POST /api/drafts/:id/publish`)*
+**File (historical)**: `ecore/Everything/Delegation/htmlcode.pm` (lines 12303-12365)
 
 ```perl
 sub publishdraft {
@@ -491,10 +500,10 @@ WHERE n.node_id = d.draft_id
 |------|---------|---------------|
 | `ecore/Everything/Node/draft.pm` | Draft node class | Extends writeup type, defines canonical URL |
 | `ecore/Everything/Node/writeup.pm` | Writeup node class | `single_writeup_display()` for JSON serialization |
-| `ecore/Everything/Application.pm` | Core app logic | `canSeeDraft()` (lines 1595-1667) |
-| `ecore/Everything/API/drafts.pm` | E2 Editor Beta API | `create_draft()`, `update_draft()`, `delete_draft()` |
+| `ecore/Everything/Application.pm` | Core app logic | `canSeeDraft()`, `unpublish_writeup()` (line numbers drift; grep) |
+| `ecore/Everything/API/drafts.pm` | E2 Editor Beta API | `create_draft()`, `update_draft()`, `delete_draft()`, `publish_draft()`, `republish_draft()` |
 | `ecore/Everything/API/admin.pm` | Admin operations | `remove_writeup()` (lines 482-527) |
-| `ecore/Everything/Delegation/htmlcode.pm` | Legacy htmlcode functions | `publishdraft()` (12303-12365), `unpublishwriteup()` (12367-12447) |
+| ~~`ecore/Everything/Delegation/htmlcode.pm`~~ | *(emptied, #4358)* | `publishdraft()` / `unpublishwriteup()` moved to the drafts API / `Application::unpublish_writeup` |
 | `ecore/Everything/Page/findings.pm` | Search results page | Draft filtering in search |
 | `ecore/Everything/Page/user.pm` | User profile page | Draft listing |
 

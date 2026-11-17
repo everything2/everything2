@@ -2,6 +2,8 @@
 
 This document describes the testing framework and best practices for testing React components in Everything2.
 
+**Last verified: 2026-11-16** — Jest 29 + jsdom, React Testing Library 14 (React 18.3). ~313 `*.test.js` files under `react/` (recount: `find react -name '*.test.js' | wc -l`).
+
 ## Table of Contents
 
 - [Overview](#overview)
@@ -36,16 +38,20 @@ npm install
 ```
 react/
 ├── components/
-│   ├── TimeDistance.js
-│   ├── TimeDistance.test.js      # Component tests
-│   ├── LinkNode.js
-│   └── LinkNode.test.js
+│   ├── LinkNode.js / LinkNode.test.js   # Tests are co-located: Foo.js + Foo.test.js
+│   ├── Documents/                # Page-level Document components (bulk of the tests)
+│   ├── Nodelets/, Editor/, Layout/, MasterControl/, ...
+├── hooks/                        # Custom hooks (+ *.test.js)
+├── utils/                        # linkParser, dateFormat, ... (+ *.test.js)
+├── __fixtures__/pagestate/       # Captured /api/pagestate payloads (JSON)
 ├── __mocks__/
 │   ├── styleMock.js              # CSS import mocks
 │   └── fileMock.js               # Asset import mocks
-├── test-setup.js                 # Jest setup file
+├── test-setup.js                 # Jest setup file (matchMedia, scrollIntoView, global e2 stubs)
 └── test-utils.js                 # Reusable test utilities
 ```
+
+Jest config lives in `jest.config.js` (roots: `react/`, setup: `react/test-setup.js`); Babel in `babel.config.js`.
 
 ## Running Tests
 
@@ -67,23 +73,20 @@ npm run test:verbose
 
 ### Development Build Integration
 
-React tests are automatically run as part of the development build process:
+`./docker/devbuild.sh` (without `--skip-tests`) runs `tools/parallel-test.sh`, which runs smoke + Perl tests (`t/run.pl` in the container) alongside the Jest suite (`npm test` on the host). Standalone runners:
 
 ```bash
-# Run all tests (Perl + React) - triggered automatically by devbuild
-./docker/run-tests.sh
+# Re-run the full parallel suite (smoke + Perl + React)
+./tools/parallel-test.sh
 
-# Run only React tests
-./docker/run-tests.sh --react-only
-
-# Run only Perl tests
+# Alternative runner with per-language flags
+./docker/run-tests.sh               # Perl + React
+./docker/run-tests.sh --react-only  # Jest only (with --ci --coverage)
 ./docker/run-tests.sh --perl-only
 
-# Build app and run all tests
-./docker/devbuild.sh
+# Browser end-to-end tests (Playwright, tests/e2e/, dev only)
+npm run test:e2e
 ```
-
-The `devbuild.sh` script automatically runs both Perl and React tests after building the application container.
 
 ### Running Specific Tests
 
@@ -163,6 +166,12 @@ it('displays user information', () => {
   expect(screen.getByText('testuser')).toBeInTheDocument();
 });
 ```
+
+### Fixture-Backed Document Tests
+
+Many `Documents/*.test.js` files mount the component against a real, captured `/api/pagestate` payload from `react/__fixtures__/pagestate/` (pattern: `Decloaker.test.js`). Re-capture fixtures after the pagestate contract changes with `tools/capture-pagestate-fixtures.sh [base_url] [node_id[:displaytype] ...]` (set `E2_LOGIN_USER`/`E2_LOGIN_PASS` for authed views).
+
+For API-driven Documents, prefer the submit → result → error interaction pattern over render-only checks; templates: `Documents/TheOldHookedPole.test.js`, `Documents/EverythingsMostWanted.test.js`.
 
 ## Test Utilities
 
@@ -471,8 +480,10 @@ describe('UserGreeting', () => {
 After running `npm run test:coverage`, view the HTML coverage report:
 
 ```bash
-open coverage/lcov-report/index.html
+open coverage/react/lcov-report/index.html
 ```
+
+(`coverageDirectory` is `coverage/react`; a `json-summary` is written there too.) The enforced global thresholds in `jest.config.js` are low (10% lines/branches/statements, 5% functions) — they are a floor, not a target.
 
 The coverage report shows:
 - **Statements** - Individual executable statements

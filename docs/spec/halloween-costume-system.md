@@ -1,12 +1,14 @@
 # Halloween Costume System
 
+**Last verified**: 2026-11-16
+
 ## Overview
 
-The Halloween Costume System allows users to temporarily change their display name during the Halloween period. Users can purchase a "costume" (an alternate display name) that appears in the Other Users nodelet and chatterbox instead of their real username.
+The Halloween Costume System allows users to temporarily change their display name during the Halloween period. Users can purchase a "costume" (an alternate display name) that appears in the Other Users nodelet instead of their real username.
 
 ## Active Period
 
-The Halloween system is active from **October 25 through November 2** each year. This gives users time to:
+The Halloween system (`Application::inHalloweenPeriod()`, server-local time, which is UTC) is active from **October 25 through November 2** each year. This gives users time to:
 - Purchase costumes before Halloween
 - Enjoy costumes on Halloween night (October 31)
 - Continue wearing costumes for a couple days after
@@ -31,15 +33,17 @@ This overrides the date check and enables all Halloween features regardless of t
 - **Cost**: 30 GP (free for admins)
 - **Restrictions**:
   - Maximum 40 characters
-  - Cannot use `[ ] < > &` characters
+  - `[ ] < > &` characters are silently stripped
   - Cannot use an existing username as a costume name
   - One costume per user at a time
 
 ### What Costumes Change
 
 1. **Other Users Nodelet**: Your costume name appears instead of your username
-2. **Chatterbox**: Messages show your costume name with a pipe link (`username|costume`)
-3. **Links still work**: Clicking the costume name still links to your actual user profile
+2. **Links still work**: Clicking the costume name still links to your actual user profile
+3. **Universal Message XML Ticker**: room messages show the costume as the sender name, but only on Oct 31 (uses `isSpecialDate('halloween')`, not `inHalloweenPeriod()`)
+
+> **Note:** The React chatterbox does **not** show costumes. The old htmlcode pipe-link behavior (`username|costume`) went away with the chatter migration and was not re-implemented in the chatter API.
 
 ### What Costumes Don't Change
 
@@ -55,7 +59,7 @@ This overrides the date check and enables all Halloween features regardless of t
 
 Editors can remove abusive costumes from users:
 - Sends an automatic Klaproth message warning the user
-- Logs the removal for moderation tracking
+- (No moderation log entry is written — earlier docs claimed one; `remove_costume` does not log)
 
 ## Technical Implementation
 
@@ -140,15 +144,12 @@ if($costume_name && $this->inHalloweenPeriod()) {
 }
 ```
 
-In chatterbox formatting (htmlcode.pm):
+In `Everything::Page::universal_message_xml_ticker` (room messages only):
 
 ```perl
-if (htmlcode('isSpecialDate','halloween')) {
-  my $costume = getVars($aUser)->{costume};
-  if ($costume gt '') {
-    my $halloweenStr = $$aUser{title}."|".$APP->encodeHTML($costume);
-    $userLink = linkNodeTitle($halloweenStr);
-  }
+if ($self->APP->isSpecialDate('halloween') && $room) {
+  $costume = Everything::getVars($frm)->{costume} ...
+  $username = $costume if $costume gt '';
 }
 ```
 
@@ -158,7 +159,7 @@ if (htmlcode('isSpecialDate','halloween')) {
 
 ```perl
 # Halloween mode testing - set to 1 to force Halloween features regardless of date
-has 'force_halloween_mode' => (isa => 'Bool', is => 'ro', default => 0);
+has 'force_halloween_mode' => (isa => 'Bool', is => 'rw', default => 0);
 ```
 
 ### JSON Config Example
@@ -179,5 +180,5 @@ The costume system was one of E2's earliest seasonal features. Originally implem
 
 ## Related Features
 
-- **isSpecialDate htmlcode**: Legacy date checker for various holidays
+- **`Application::isSpecialDate()`**: date checker for various holidays (`halloween` = Oct 31 only)
 - **Treats system**: Legacy Halloween treat-or-trick system (partially deprecated)

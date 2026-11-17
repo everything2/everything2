@@ -2,6 +2,7 @@
 
 **Purpose**: Display a rotating selection of random e2nodes to encourage content discovery
 **Status**: Implemented (React + DataStash)
+**Last verified**: 2026-11-16
 
 ---
 
@@ -18,16 +19,18 @@ The Random Nodes nodelet shows a list of random e2nodes that have at least one w
 | `RandomNodes.js` | `react/components/Nodelets/RandomNodes.js` | React UI component |
 | `randomnodes.pm` | `ecore/Everything/DataStash/randomnodes.pm` | DataStash generator |
 | `DataStash.pm` | `ecore/Everything/DataStash.pm` | Base class for cached data |
-| `getRandomNodesMany()` | `ecore/Everything/Application.pm:3690` | Random node selection algorithm |
+| `getRandomNodesMany()` | `ecore/Everything/Application.pm` | Random node selection algorithm |
 | `cron_datastash.pl` | `cron/cron_datastash.pl` | Scheduled regeneration trigger |
+| `Everything::Cron::Schedule` | `ecore/Everything/Cron/Schedule.pm` | In-webhead cron sidecar schedule (runs `datastash` every 120s) |
+| `_build_stash()` / `cached_stash()` | `ecore/Everything/PageState.pm`, `ecore/Everything/NodeBase.pm` | Request-path read with per-worker decode cache |
 
 ### Data Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     Data Generation (Cron)                      │
+│              Data Generation (cron sidecar, every 120s)         │
 ├─────────────────────────────────────────────────────────────────┤
-│  cron_datastash.pl                                              │
+│  cron_datastash.pl (leader webhead, Everything::Cron::Runner)   │
 │       │                                                         │
 │       ▼                                                         │
 │  DataStash::randomnodes->generate_if_needed()                   │
@@ -48,10 +51,10 @@ The Random Nodes nodelet shows a list of random e2nodes that have at least one w
 │  Page Request                                                   │
 │       │                                                         │
 │       ▼                                                         │
-│  Application->buildE2Object() checks for nodelet 457857         │
+│  Application->buildNodeInfoStructure() checks nodelet 457857    │
 │       │                                                         │
 │       ▼                                                         │
-│  DB->stashData("randomnodes") retrieves cached list             │
+│  PageState->_build_stash → DB->cached_stash("randomnodes")      │
 │       │                                                         │
 │       ▼                                                         │
 │  e2.randomNodes sent to frontend                                │
@@ -136,7 +139,7 @@ sub generate {
 
 ## Random Selection Algorithm
 
-### `getRandomNodesMany($count)` (Application.pm:3690)
+### `getRandomNodesMany($count)` (Application.pm)
 
 The algorithm selects truly random individual nodes by picking separate random offsets for each:
 
@@ -149,9 +152,9 @@ sub getRandomNodesMany {
   $count = int($count);
   $count = 20 if ($count > 20);  # Max 20 nodes
 
-  # Get total eligible node count (cached 5 minutes)
+  # Get total eligible node count (cached 5 minutes, when $this->{cache} exists)
   my $cache_key = 'random_nodes_total_count';
-  my $total_count = $this->{cache}->get($cache_key);
+  my $total_count = $this->{cache} ? $this->{cache}->get($cache_key) : undef;
 
   unless (defined $total_count) {
     $total_count = $this->{db}->sqlSelect(
@@ -228,6 +231,8 @@ The algorithm tracks already-selected node IDs and retries (up to 3 times) if a 
 
 ## Cron Job
 
+Scheduled by the **in-webhead cron sidecar** (`Everything::Cron::Schedule`, leader-elected via `GET_LOCK`; see `docs/cron-sidecar-design.md`), not system crontab or EventBridge. The `datastash` entry runs `cron_datastash.pl` with `type => 'rate', interval => 120` (timeout 600s); `datastash-lengthy` runs `--lengthy` every 6h. Because the cron cadence (120s) is longer than this stash's 60s interval, randomnodes effectively regenerates on every datastash run (~every 2 minutes).
+
 ### `cron/cron_datastash.pl`
 
 Regenerates all DataStash caches based on their intervals:
@@ -246,11 +251,12 @@ Regenerates all DataStash caches based on their intervals:
 /var/everything/cron/cron_datastash.pl --lengthy
 ```
 
-### Typical Cron Schedule
+### Schedule
 
-```crontab
-# Every minute - regenerate short-interval stashes
-* * * * * /var/everything/cron/cron_datastash.pl
+```perl
+# ecore/Everything/Cron/Schedule.pm
+{ name => 'datastash', argv => _cron('cron_datastash.pl'),
+  type => 'rate', interval => 120, timeout => 600, local => 1 },
 ```
 
 ---
@@ -259,14 +265,16 @@ Regenerates all DataStash caches based on their intervals:
 
 ### Data Injection
 
-In `Application.pm:buildE2Object()`:
+In `Application.pm:buildNodeInfoStructure()`:
 
 ```perl
 # Random Nodes (nodelet ID 457857)
 if ($nodelets =~ /457857/) {
-  $e2->{randomNodes} = $this->{db}->stashData("randomnodes");
+  $e2->{randomNodes} = Everything::PageState->_build_stash($this->{db}, "randomnodes");
 }
 ```
+
+`_build_stash` calls `NodeBase::cached_stash`, a per-worker decode cache keyed on the stash's `last_update` nodeparam (self-tuning window, 30s grace; #4385/#4392). `randomNodes` is part of the page-state chrome partition (`Everything::PageState`), so it is also eligible for guest chrome caching (#4257).
 
 ### React Component
 
@@ -294,7 +302,7 @@ const RandomNodes = (props) => {
 
 ### Random Phrases
 
-Generated client-side for variety (E2ReactRoot.js:49):
+Generated client-side once per page load, in the `E2ReactRoot` constructor (`initialState.randomNodesPhrase = this.getRandomNodesPhrase()`):
 
 ```javascript
 getRandomNodesPhrase = () => {
@@ -363,10 +371,11 @@ Same structure as stored - array of `{node_id, title}` objects.
 
 | Setting | Value | Location |
 |---------|-------|----------|
-| Nodes per regeneration | 12 | `randomnodes.pm:15` |
-| Regeneration interval | 60 seconds | `randomnodes.pm:7` |
-| Count cache TTL | 300 seconds | `Application.pm:3719` |
-| Max nodes per request | 20 | `Application.pm:3695` |
+| Nodes per regeneration | 12 | `randomnodes.pm` (`generate`) |
+| Stash interval | 60 seconds | `randomnodes.pm` (`+interval`) |
+| Cron cadence (effective refresh) | 120 seconds | `Cron/Schedule.pm` (`datastash`) |
+| Count cache TTL | 300 seconds | `Application::getRandomNodesMany` |
+| Max nodes per request | 20 | `Application::getRandomNodesMany` |
 | Nodelet ID | 457857 | `nodepack/nodelet/random_nodes.xml` |
 
 ---
@@ -379,12 +388,14 @@ Same structure as stored - array of `{node_id, title}` objects.
 | `react/components/E2ReactRoot.js` | Phrase generator, state management |
 | `ecore/Everything/DataStash/randomnodes.pm` | Data generator |
 | `ecore/Everything/DataStash.pm` | Base DataStash class |
-| `ecore/Everything/Application.pm` | `getRandomNodesMany()`, `buildE2Object()` |
-| `ecore/Everything/NodeBase.pm` | `stashData()` storage |
-| `cron/cron_datastash.pl` | Scheduled regeneration |
+| `ecore/Everything/Application.pm` | `getRandomNodesMany()`, `buildNodeInfoStructure()` |
+| `ecore/Everything/PageState.pm` | `_build_stash()` |
+| `ecore/Everything/NodeBase.pm` | `stashData()` storage, `cached_stash()` read cache |
+| `cron/cron_datastash.pl` | Regeneration script |
+| `ecore/Everything/Cron/Schedule.pm` | Sidecar schedule |
 | `nodepack/nodelet/random_nodes.xml` | Nodelet definition |
 | `nodepack/datastash/randomnodes.xml` | DataStash node definition |
 
 ---
 
-*Last updated: January 2026*
+*Last verified: 2026-11-16*

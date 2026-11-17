@@ -1,4 +1,11 @@
-# ORM Migration Evaluation (DBIx::Class)
+# Object-Model Plan — DBIx::Class evaluated and REJECTED; finish `Node::*` on Object::Pad
+
+> **Status (verified 2026-11-16):** **DBIx::Class is not the plan.** Decided 2026-06-29: keep NodeBase as the
+> storage engine, finish `Everything::Node::*` as the ORM, and move from Moose to Object::Pad. Read the
+> **DECISION** section; everything from "Ground truth" down is the May 2026 evaluation, kept as the record,
+> and its DBIC "recommendations"/"next steps" are superseded. **Nothing started yet:** no Object::Pad in
+> `ecore/` or `cpanfile`; step 1 (#4178 Globals) is open. The gate it waited on, the mutation thread
+> (#4416), is closed.
 
 **Created**: 2025-12-06 (original)
 **Rewritten**: 2026-05-24 (this revision)
@@ -32,12 +39,12 @@ And we needn't build a node abstraction, because **we already have one: `Everyth
 - **Ditch Moose for Object::Pad** across the codebase. Object::Pad is the prototype for core `class`, and we're on **perl 5.40** (which ships `feature 'class'`) — so this is adopting the idiom Perl OO is *becoming*, not a bespoke bet. Wins: real `field` encapsulation (kills the blessed-vs-hashref footgun — our #1 recurring bug class, the `$USER->{title}` vs `$user->title` split), lower per-object cost (matters at NodeCache scale), a non-dead-end OO system. Object::Pad and Moose **coexist in-process**, so it's incremental, suite-green between each class.
 - **The ergonomics DBIC was wanted for** (relationship navigation, query builder) are a few hundred lines on `Node::*` shaped like *our* model — add the 3–4 patterns we use, skip the DSL.
 
-### The cutover sequence (all post-mutation-thread #4416)
-Convert settled surfaces, not moving ones — the mutation grind is still minting new API endpoints, so it goes first.
+### The cutover sequence (all post-mutation-thread #4416 — closed, so this is now unblocked)
+Convert settled surfaces, not moving ones. The mutation thread had to finish first, and it has.
 1. **`Everything::Globals` / Configuration (#4178)** — *first, and load-bearing.* Scope its "done" to the milestone **"the controller bases no longer consume a Moose role."** Moose-roles → Pad is the one genuinely non-mechanical part of this migration; doing Globals first dissolves it before it reaches the API base.
 2. **Controllers (`Everything::API` + `Everything::Page`)** — mechanical once the role's gone (`class … :isa(...)` + `method`), every one `t/`-guarded; the mutation thread is already thinning the Pages.
-3. **`Everything::Node::*`** — last. Object::Pad fields aren't hash-accessible, so converting a Node class breaks every `$obj->{slot}` poker; the earlier phases pull most call sites into clean blessed-method style first, concentrating the remaining pokes into the real long pole — **`Application.pm`** (raw hashref access by design), *not* the mostly-clean 63 subclasses.
-4. **PluginFactory teardown** — the payoff: once controllers are plain classes, the Moose-flavored factory loses its reason to exist; swap it for a plain dispatch table.
+3. **`Everything::Node::*`** — last. Object::Pad fields aren't hash-accessible, so converting a Node class breaks every `$obj->{slot}` poker; the earlier phases pull most call sites into clean blessed-method style first, concentrating the remaining pokes into the real long pole — **`Application.pm`** (raw hashref access by design), *not* the mostly-clean subclasses (59 as of Nov 2026).
+4. **PluginFactory teardown** (#4261) — the payoff: once controllers are plain classes, the Moose-flavored factory loses its reason to exist; swap it for a plain dispatch table.
 
 ### Schema (sqitch) is a parallel track, not part of this
 Independent of the OO work (schema, not objects). The `nodepack/dbtable/` XML is a jank **dev-bootstrap reference snapshot, not a managed schema applier** — so sqitch has *no* coexistence problem; it becomes the **first** real migration mechanism. Baseline from **prod's actual schema** (dumped — the XML has drifted). Dev-pipeline wiring is an afternoon; the care goes into prod-migration discipline (expand/contract, online DDL on big tables, `sqitch revert`). See Phase 9 + [docs/sqitch-migration-plan.md](sqitch-migration-plan.md).
@@ -47,7 +54,10 @@ The blast-radius math is exactly why this is the answer. Re-counted **2026-06-29
 
 ---
 
-## Ground truth (what the codebase actually looks like, 2026-05-24)
+## Ground truth (what the codebase actually looked like, 2026-05-24 — historical snapshot)
+
+> Counts below are from May 2026. Since then: `Apache::DBI` is gone (NodeBase uses `connect_cached`),
+> NodeBase has a `transactionWrap` helper, there are 59 `Node::*` subclasses and 222 `t/` files.
 
 ### NodeBase
 
@@ -198,7 +208,7 @@ The biggest factual delta is the blast-radius re-evaluation. The prior plan impl
 
 ---
 
-## Sequencing (where this lands in the global roadmap)
+## Sequencing (where this lands in the global roadmap) — SUPERSEDED (see DECISION)
 
 Per [docs/DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md):
 
@@ -208,7 +218,10 @@ Per [docs/DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md):
 
 ---
 
-## What to do next (concrete)
+## What to do next (concrete) — SUPERSEDED by the DECISION section
+
+*(Historical. Items 1 and 3 happened (MySQL first; `connect_cached` landed with PSGI). Item 5's DBIC
+carve-out is dead. Current next step: #4178, then controllers → Object::Pad.)*
 
 If you agree with Path 1 (or Path 1 + 2):
 
@@ -251,14 +264,14 @@ Delegation: **yes**. Delegation target: **the model**, not a type-aware controll
 3. Repeat per type as the domain layer matures (writeup/e2node already carry controller-level logic wanting this).
 4. Optionally add the generic `/api/node/create` dispatcher once a couple of model creators exist.
 
-This is a Path-1-flavored change (modernize the domain layer in place) independent of the DBIC decision — `Node::<type>->create` is the right home whether persistence stays NodeBase or moves to DBIC.
+This is a Path-1-flavored change (modernize the domain layer in place) — `Node::<type>->create` is the right home now that persistence stays on NodeBase. **Status 2026-11-16:** not started; the `<type>_create` hooks in `Everything::Delegation::maintenance` still read request params through `$query`, and `API::category::create` still holds the maintainer rule.
 
 ---
 
 ## References
 
 - [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) — sqitch and schema-migration concerns (the other half of this story)
-- [docs/mysql-migration-plan.md](mysql-migration-plan.md) — MySQL 8.4 migration (current focus)
+- [docs/mysql-migration-plan.md](mysql-migration-plan.md) — MySQL 8.4 migration (done, #4226)
 - PSGI migration — shipped and live in prod (2026-06-08); plan in git history
 - `ecore/Everything/NodeBase.pm` — the persistence layer in question
-- `ecore/Everything/Node.pm` and `ecore/Everything/Node/*.pm` — the 63-subclass domain layer
+- `ecore/Everything/Node.pm` and `ecore/Everything/Node/*.pm` — the domain layer (59 subclasses, Nov 2026)

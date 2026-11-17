@@ -1,5 +1,7 @@
 # Apache2 Production Configuration
 
+**Last verified:** 2026-11-16 (against `etc/templates/apache2.conf.erb` and `docker/e2app/`)
+
 ## Overview
 
 This document describes the Apache2 configuration for Everything2, focusing on production settings optimized for performance, security, and reliability in AWS ECS Fargate environments.
@@ -16,11 +18,11 @@ This ERB template is processed by `docker/e2app/apache2_wrapper.rb` during conta
 
 ### Virtual Host Configuration
 
-**Location:** `etc/templates/everything.erb`
+The virtual host lives in the same template: the `<VirtualHost _default_:80>` block in `apache2.conf.erb`, with the reverse-proxy (`ProxyPass`/`ProxyPassReverse`) directives to Starman and the access-control rules. There is no separate vhost template (the old `everything.erb` is gone; `etc/templates/` holds only `apache2.conf.erb` and `apache2.service.erb`).
 
-Contains the main virtual host configuration, including the reverse-proxy (`ProxyPass`/`ProxyPassReverse`) directives to the Starman backend and access control rules.
+### Enabled modules
 
-**Note:** As of the PSGI cutover, the virtual host configuration lives directly in `apache2.conf.erb` (the `<VirtualHost _default_:80>` block); the older standalone `everything.erb` mod_perl handler template is no longer the dispatcher.
+Set in `docker/e2app/Dockerfile`: deflate, brotli, rewrite, authz_core, proxy, proxy_http, mpm_event, status, evasive, remoteip, headers. The `final` image stage removes mod_perl's `perl.load`.
 
 ## Production Settings
 
@@ -42,7 +44,7 @@ ListenBacklog 511
 **Rationale:**
 - Handles traffic spikes without dropping connections
 - Matches typical Linux kernel maximum (`net.core.somaxconn`)
-- Provides adequate buffer for the configured `MaxRequestWorkers` (40)
+- Provides adequate buffer in front of the configured `MaxRequestWorkers` (100 in prod)
 - Prevents connection refused errors during bursts
 
 **Production Impact:**
@@ -55,7 +57,7 @@ ListenBacklog 511
 ```apache
 Timeout 300
 KeepAlive On
-MaxKeepAliveRequests 100
+MaxKeepAliveRequests 500
 KeepAliveTimeout 15
 ```
 
@@ -68,8 +70,8 @@ KeepAliveTimeout 15
 - Decreases server load from TCP handshakes
 
 **MaxKeepAliveRequests:** Maximum requests per persistent connection
-- 100 requests balances connection reuse with memory management
-- Prevents single connection from monopolizing worker
+- 500 (client connections arrive from the ALB, which reuses them)
+- Cheap under mpm_event; keep-alive connections don't hold a Starman worker
 
 **KeepAliveTimeout:** Seconds to wait for next request on persistent connection
 - 15 seconds balances responsiveness with worker availability
@@ -165,13 +167,17 @@ TraceEnable Off
 - Disables HTTP TRACE method
 - Prevents cross-site tracing (XST) attacks
 
+**Response headers** (vhost, `Header always set`, needs mod_headers):
+- `X-Frame-Options: DENY` and `Content-Security-Policy: frame-ancestors 'none'` (no framing)
+- `Strict-Transport-Security: max-age=86400` (only takes effect over HTTPS, i.e. via the ALB)
+
 ### SSL/TLS Architecture
 
 **Note:** TLS termination is handled at the ALB (no CloudFront):
 - **ALB** terminates client TLS connections (TLS 1.2+ enforced)
 - **Containers** receive HTTP traffic from the ALB on port 80
 
-Apache no longer handles TLS directly. The SSL module configuration remains in the template for potential future use but is not active in the current architecture. This simplifies container configuration and reduces CPU overhead.
+Apache does not handle TLS. mod_ssl is not enabled and the template has no SSL configuration.
 
 ### Environment Variables
 
@@ -188,7 +194,7 @@ PassEnv E2_MAINTENANCE_MESSAGE
 PassEnv E2_DBSERV
 ```
 
-**Purpose:** Pass environment variables from the container into the proxied request environment so the application (running under Starman) can read them.
+**Purpose:** Pass container environment variables into Apache's environment. Under PSGI the app reads its environment from the Starman process, which inherits the container env directly, so these `PassEnv` lines are mostly vestigial.
 
 **AWS Variables:**
 - Enable IAM role-based AWS API access
@@ -209,13 +215,13 @@ PassEnv E2_DBSERV
 
 ### Logging
 
-#### Production (CloudWatch)
+#### Access log format
 
 ```apache
 LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
 ```
 
-**Format:** JSON for structured logging in CloudWatch Logs
+**Format:** JSON. Despite the name, it is used only by the **dev** `CustomLog` (`/var/log/apache2/e2.access.*.log`). Production defines no `CustomLog`, so Apache writes no access log in prod; per-request logs come from the ALB access logs in S3 (`elblogs.everything2.com`). In prod, `ErrorLog` (`/etc/apache2/logs/error_log`) is symlinked to stderr by `apache2_wrapper.rb` and lands in `/aws/fargate/fargate-app-awslogs`.
 
 **Fields:**
 - `time`: ISO 8601 timestamp with milliseconds
@@ -238,17 +244,10 @@ LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\
 #### Health Check Logging
 
 ```apache
-LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%a\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" healthlog
-
 BrowserMatch "^ELB-HealthChecker" loghealthcheck
-#CustomLog /etc/apache2/logs/healthcheck.log healthlog env=loghealthcheck
 ```
 
-**Purpose:** Separate ELB health check traffic from application logs
-
-**Note:** Currently commented out (health checks not logged)
-- Reduces log volume
-- Health check failures logged by application (see [health-checks.md](health-checks.md))
+Only the `loghealthcheck` env flag remains; no log uses it. `/health.pl` is marked `dontlog`. The health app itself does not log (see [health-checks.md](../health-checks.md)).
 
 #### Development Logging
 
@@ -267,7 +266,8 @@ BrowserMatch "^ELB-HealthChecker" loghealthcheck
 **Development Features:**
 - JSON error logs with microsecond timestamps
 - Rotated hourly via rotatelogs
-- Filters out noise (loopback, health checks, favicon, robots.txt)
+- Filters out noise (loopback, `server_live.html`, favicon, robots.txt)
+- The app's own log (Starman, warnings, cron sidecar) is `/tmp/development.log`, not these files
 
 ### Access Control
 
@@ -288,8 +288,7 @@ AccessFileName .htaccess
 - IP addresses logged instead of hostnames
 
 **AccessFileName:**
-- Defines `.htaccess` for directory-level overrides
-- Used for legacy compatibility
+- Names `.htaccess`, but every `<Directory>` sets `AllowOverride None`, so none are read
 
 **Files Protection:**
 - Prevents access to `.htaccess` and `.htpasswd` files
@@ -301,6 +300,12 @@ AccessFileName .htaccess
 ### Capacity Planning
 
 **Post-PSGI, Apache is not the concurrency constraint.** The old "MaxRequestWorkers = available memory / 150MB per mod_perl worker" formula no longer applies — Apache proxy threads are lightweight and hold no Perl interpreter or application memory. Real application concurrency is governed by the number of **Starman workers** (`STARMAN_WORKERS`) at the `127.0.0.1:5000` backend; size that against container CPU/RAM and database connection budget. Apache's `MaxRequestWorkers` (100 in prod) is generous connection headroom in front of that backend.
+
+### Rate Limiting (mod_evasive) and Client IP (mod_remoteip)
+
+- `mod_remoteip` takes the client IP from `X-Forwarded-For` set by the ALB, so mod_evasive sees real client IPs.
+- `mod_evasive` (prod settings in the template) blocks clients that exceed per-page or per-site request rates. Each block runs `tools/log-rate-limit-block.sh`, which logs to `/aws/e2/rate-limit-blocks`. Dev uses thresholds high enough never to trigger. `tools/clear-mod-evasive.sh` clears blocks.
+- Static IP / user-agent bans come from `etc/apache_blocks.json`; see [apache_blocks.md](apache_blocks.md).
 
 ### Monitoring Recommendations
 
@@ -321,8 +326,8 @@ AccessFileName .htaccess
    - If near limit, reduce workers or increase container memory
 
 3. **Connection Queue Depth:**
-   - CloudWatch metrics: `SurgeQueueLength` on ALB
-   - If frequently > 0, may need more workers or ListenBacklog adjustment
+   - ALB has no surge queue; watch `TargetResponseTime` and `RejectedConnectionCount`
+   - In-container: `ss -ltn` on :80 and :5000
 
 4. **Response Times:**
    - CloudWatch metrics: `TargetResponseTime` on ALB
@@ -341,8 +346,7 @@ AccessFileName .htaccess
 - Better fault tolerance
 
 **ListenBacklog Tuning:**
-- If ALB `SurgeQueueLength` frequently > 0, may indicate backlog too small
-- If containers have sustained high CPU but low memory, increase ListenBacklog
+- Rarely the limit; check Starman worker saturation first
 - Maximum effective value limited by kernel `net.core.somaxconn`
 
 ## Troubleshooting
@@ -367,7 +371,7 @@ apache2ctl configtest
 2. **All proxy workers busy:** Check `BusyWorkers` at `/server-status`
 3. **ListenBacklog exceeded:** Increase backlog or add workers
 4. **Container memory limit:** Check `docker stats`, may be OOM killing
-5. **Health check failing:** See [health-checks.md](health-checks.md)
+5. **Health check failing:** See [health-checks.md](../health-checks.md)
 
 **Debug steps:**
 ```bash
@@ -380,8 +384,10 @@ ss -ltn | grep ':80'
 # Check container resources
 docker stats e2devapp
 
-# Check error logs
-tail -f /var/log/apache2/e2.error.*.log
+# Check logs (dev)
+tail -f /tmp/development.log            # app / Starman
+tail -f /var/log/apache2/e2.error.*.log # Apache (proxy errors)
+# Prod: /aws/fargate/fargate-app-awslogs (Apache error log + Starman stderr)
 ```
 
 ### High Memory Usage
@@ -397,16 +403,16 @@ ps aux | grep -E 'starman|perl' | awk '{s+=$6} END {print s/1024 "MB total"}'
 ```
 
 **Solutions:**
-- Tune the Starman worker count and per-worker request limit (workers recycle to bound memory).
+- Tune `STARMAN_WORKERS` (prod 10) and `STARMAN_MAX_REQUESTS` (1000; workers recycle to bound memory). Starman runs with `--preload-app`, so workers share the compiled app copy-on-write.
 - Profile application code with NYTProf to find leaks.
 - Check for circular references in Perl objects.
 
 ## Related Documentation
 
-- [Health Checks](health-checks.md) - Health check configuration and troubleshooting
+- [Health Checks](../health-checks.md) - Health check configuration and troubleshooting
 - [Apache Access Blocks](apache_blocks.md) - IP and user agent blocking
-- [Infrastructure Overview](infrastructure-overview.md) - AWS architecture
-- [Getting Started](GETTING_STARTED.md) - Development environment setup
+- [Infrastructure Overview](../infrastructure-overview.md) - AWS architecture
+- [Getting Started](../GETTING_STARTED.md) - Development environment setup
 
 ## Configuration Templates Reference
 
@@ -427,20 +433,19 @@ The `<VirtualHost _default_:80>` block in `apache2.conf.erb` provides:
 
 ### apache2_wrapper.rb
 
-Ruby script that processes ERB templates at container startup:
-1. Reads environment variables
-2. Loads JSON configuration files
-3. Processes ERB templates
-4. Generates final Apache configuration
-5. Starts Apache with generated config
+Ruby container entrypoint:
+1. In prod, downloads secrets from the private secrets bucket into `/etc/everything/`; in dev, writes the dev DB password and sets up `/tmp/development.log`
+2. Renders `/var/bootstrap/etc/apache2.conf.erb` (a copy of `etc/templates/apache2.conf.erb`) to `/etc/apache2/apache2.conf`; the template reads `etc/apache_blocks.json` and fetches AWS IP ranges
+3. Spawns a supervised Starman loop on `127.0.0.1:5000` (`STARMAN_WORKERS`, `STARMAN_MAX_REQUESTS`)
+4. Spawns the cron sidecar loop (always in dev; in prod only with `E2_CRON_ENABLED=1`)
+5. Execs Apache in the foreground
 
 **Location:** `docker/e2app/apache2_wrapper.rb`
 
 ## Security Best Practices
 
-1. **Keep SSL/TLS Current:**
-   - Update `SSLProtocol` to require TLS 1.2+ minimum
-   - Review `SSLCipherSuite` quarterly against Mozilla SSL Config Generator
+1. **Keep TLS Current:**
+   - TLS is set by the ALB listener's `SslPolicy` in CloudFormation, not by Apache
 
 2. **Minimize Information Disclosure:**
    - Keep `ServerTokens Prod` (never Full)
@@ -453,14 +458,12 @@ Ruby script that processes ERB templates at container startup:
    - Monitor CVEs for Apache and OpenSSL
 
 4. **Access Control:**
-   - Application-level IP blacklist enforcement (no WAF — see [infrastructure-overview.md](infrastructure-overview.md))
+   - `apache_blocks.json` bans plus application-level IP blacklist enforcement (no WAF — see [infrastructure-overview.md](../infrastructure-overview.md))
    - Review `apache_blocks.json` regularly
    - Monitor failed requests in logs
 
 5. **Resource Limits:**
-   - Set `LimitRequestBody` for POST requests
-   - Use `mod_reqtimeout` to prevent slowloris attacks
-   - Rate limiting is handled at the app layer (no WAF tier)
+   - Rate limiting by mod_evasive (above); no WAF tier
 
 ## Future Improvements
 
@@ -480,4 +483,4 @@ Ruby script that processes ERB templates at container startup:
 
 ---
 
-*Last updated: June 2026 (post-PSGI: Apache is a pure mpm_event reverse proxy to Starman; mod_perl removed)*
+*Last verified: 2026-11-16 (post-PSGI: Apache is a pure mpm_event reverse proxy to Starman; mod_perl removed)*
