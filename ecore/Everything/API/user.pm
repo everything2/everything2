@@ -114,7 +114,7 @@ sub check_available
 
   # Check username format first
   my $invalidName = '^\W+$|[\[\]\<\>\&\{\}\|\/\\\]| .*_|_.* |\s\s|^\s|\s$';
-  if ($username =~ /$invalidName/) {
+  if ($username =~ /$invalidName/ || length($username) > $APP->max_username_length) {
     return [$self->HTTP_OK, {
       available => 0,
       username => $username,

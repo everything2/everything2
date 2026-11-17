@@ -41,6 +41,8 @@ sub spooled_to {
 my @made;    # accounts to remove at the end
 END {
     my $root = $DB->getNode( 'root', 'user' );
+    # The user-delete hook logs as the request's user, which a test script has to supply.
+    local $Everything::HTML::USER = $root;
     for my $user ( grep { $_ } map { $DB->getNodeById($_) } @made ) {
         eval { $DB->nukeNode( $user, $root, 1 ); 1 } or diag("cleanup of $user->{title} failed: $@");
     }

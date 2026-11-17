@@ -6754,9 +6754,14 @@ sub is_email_in_locked_account
 }
 
 # Originally in [Sign up]
+# Longest username an account can have (user.nick is varchar(20)).
+sub max_username_length { return 20 }
+
 sub create_user
 {
   my ($this, $username, $pass, $email) = @_;
+
+  return if !defined($username) || $username eq '' || length($username) > $this->max_username_length;
 
   my ($pwhash, $salt) = $this->saltNewPassword($pass);
 

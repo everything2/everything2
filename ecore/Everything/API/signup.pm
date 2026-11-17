@@ -127,11 +127,12 @@ sub create_account {
 
   # Validate username format
   my $invalidName = '^\W+$|[\[\]\<\>\&\{\}\|\/\\\]| .*_|_.* |\s\s|^\s|\s$';
-  if ($username =~ /$invalidName/ || $username eq '') {
+  # user.nick holds 20 characters; the form enforces the same limit.
+  if ($username =~ /$invalidName/ || $username eq '' || length($username) > $APP->max_username_length) {
     return [$self->HTTP_OK, {
       success => 0,
       error => 'invalid_username',
-      message => 'Username contains invalid characters or is empty'
+      message => 'Username must be 1-' . $APP->max_username_length . ' characters, with no invalid characters'
     }];
   }
 
