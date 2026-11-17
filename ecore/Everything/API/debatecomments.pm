@@ -203,8 +203,10 @@ sub reply {
     # Get the created node for nodegroup insertion
     my $created = $DB->getNodeById($new_id);
 
-    # Insert into parent's nodegroup
-    $DB->insertIntoNodegroup($parent->NODEDATA, $user->node_id, $created);
+    # Link it into the parent's thread. Done as the system (-1): the reply was authorized
+    # above (_check_access), and the parent usually belongs to someone else, whom
+    # insertIntoNodegroup's own author-or-admin check would refuse (#4687).
+    $DB->insertIntoNodegroup($parent->NODEDATA, -1, $created);
 
     # Per-member 'newcomment' notification for the discussion's usergroup (opt-in; skips
     # the replier). Done here rather than in the debatecomment_create maintenance hook.

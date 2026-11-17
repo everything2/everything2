@@ -40,14 +40,17 @@ test.describe('Discussion threading', () => {
       expect(replyId).toBeTruthy()
       expect(replyId).not.toBe(discId) // a distinct node, not the discussion itself
 
-      // The reply is a real, addressable node (its page renders).
-      // NB: we deliberately do NOT assert the reply shows up *on the discussion
-      // page* here -- that read goes through the discussion node's cached nodegroup,
-      // which can serve stale (empty) children under concurrent load. The thread
-      // linkage itself (parent_debatecomment / root_debatecomment) is verified
-      // directly in t/163_debate_root_debatecomment.t.
+      // The reply is a real, addressable node (its page renders)...
       const replyView = await page.request.get(`/node/${replyId}`)
       expect(replyView.ok()).toBe(true)
+
+      // ...and it surfaces under its thread on the discussion page. (This used to be skipped
+      // as "stale cached nodegroup"; the real causes were fixed in #4661 and #4687.
+      // Replies between non-admin members: discussion-member-reply.spec.js.)
+      await page.goto(`/node/${discId}`)
+      const thread = page.locator('.debate__replies')
+      await expect(thread).toContainText(`re: ${discTitle}`, { timeout: 10000 })
+      await expect(thread).toContainText(replyMarker)
     } finally {
       // children first
       for (const id of [replyId, discId].filter(Boolean)) {
