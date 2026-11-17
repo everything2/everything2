@@ -36,20 +36,28 @@ test.describe('Writeups by Type — routing parity (Gap C)', () => {
     expect(href).toContain('page=0');
   });
 
-  // SSR == client-router parity. The React router will fetch /api/pagestate/lookup/:type/:title
-  // for a client-side nav; it routes through the SAME buildReactData as the SSR page (via
-  // route_node), so the param-derived state must match. This locks the seam that the $query
-  // sweep relies on — future edits to writeups_by_type's buildReactData can't drift SSR from
-  // the client-router path. (Refs the $query→PageState sweep, T2.)
-  test('routing parity: /api/pagestate (client-router path) yields the same param-derived state', async ({ request }) => {
+  // SSR == client-router parity. Since #4524 the page is a pure gate: the controller (and so
+  // /api/pagestate, the client router's path) ships only { type }, and React reads the filters
+  // off the URL and fetches /api/writeups_by_type. So parity means: the gate carries no
+  // param-derived state, and the URL's filters reach the list API, which reports them back as
+  // integers (#4152).
+  test('routing parity: the page gate ships only its type; the URL filters drive the list API', async ({ page, request }) => {
     const res = await request.get(
       `/api/pagestate/lookup/superdoc/${encodeURIComponent('Writeups by Type')}?wutype=251&count=25&page=1`
     );
     expect(res.ok()).toBe(true);
     const cd = (await res.json()).contentData;
     expect(cd.type).toBe('writeups_by_type');
-    expect(cd.current_type).toBe(251);   // integer contract (#4152), same as SSR
-    expect(cd.current_count).toBe(25);
-    expect(cd.current_page).toBe(1);
+    expect(Object.keys(cd).filter((k) => k.startsWith('current_'))).toEqual([]);
+
+    const listCall = page.waitForResponse((r) => r.url().includes('/api/writeups_by_type'));
+    await page.goto('/title/Writeups+by+Type?wutype=251&count=25&page=1');
+    const list = await listCall;
+    const asked = new URL(list.url()).searchParams;
+    expect([asked.get('wutype'), asked.get('count'), asked.get('page')]).toEqual(['251', '25', '1']);
+    const body = await list.json();
+    expect(body.current_type).toBe(251);   // integer contract (#4152)
+    expect(body.current_count).toBe(25);
+    expect(body.current_page).toBe(1);
   });
 });
