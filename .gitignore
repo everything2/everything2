@@ -12,6 +12,11 @@ coverage/react/
 test-results/
 playwright-report/
 playwright/.cache/
+# tools/e2e-demo.sh videos + stills (kept outside test-results/, which Playwright wipes
+# every run). Recordings are never committed, wherever they end up.
+e2e-demos/
+*.mp4
+*.webm
 
 # Build lock file (prevents concurrent builds)
 .devbuild.lock

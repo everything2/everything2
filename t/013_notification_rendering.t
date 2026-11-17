@@ -125,19 +125,20 @@ sub test_notification {
 #############################################################################
 
 {
-    my $args = { node_id => 789, comment_id => 101 };
+    my $root_user = $DB->getNode('root', 'user');
+    my $args = { node_id => 789, uid => $root_user->{node_id}, root => 101 };
     test_notification(
         'newcomment',
         \&Everything::Delegation::notification::newcomment,
         $args,
-        qr/commented/i,
-        'with node_id and comment_id'
+        qr/^\[root\] replied/,
+        'names the replier'
     );
 
-    # Test without node_id
-    $args = { comment_id => 101 };
-    my $result = Everything::Delegation::notification::newcomment($DB, $APP, $args);
-    ok(defined $result, "newcomment: Handles missing node_id");
+    # Without a replier or a resolvable discussion
+    my $result = Everything::Delegation::notification::newcomment($DB, $APP, { node_id => 789 });
+    ok(defined $result, "newcomment: Handles missing uid");
+    like($result, qr/^New reply/, "newcomment: generic text without a replier");
 }
 
 #############################################################################

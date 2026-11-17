@@ -379,49 +379,8 @@ sub debatecomment_create
     }
   }
 
-  ## BEGIN notification code - runs for both API and legacy
-
-  my $ug_id = $$COMMENT{ 'restricted' };
-  return unless $ug_id;  # Safety check
-
-  #notify *all* usergroup members that we have a new reply
-  my @uids = split ',', $APP->usergroupToUserIds($ug_id);
-
-  my $replyNotification = getNode("newcomment","notification");
-  return unless $replyNotification;  # Safety check
-  $replyNotification = $replyNotification->{node_id};
-
-  foreach my $uid(@uids)
-  {
-    #Don't notify the creator.
-    next if($uid == $$USER{node_id});
-
-    my $v = getVars( getNodeById($uid));
-
-    #This curiously named value of "settings" in the user's vars refers
-    #*only* to the notifications settings.
-    next unless $$v{settings};
-
-    my %notifications = from_json($$v{settings})->{notifications};
-
-    if($notifications{$replyNotification} )
-    {
-      my $notification_id = $replyNotification;
-      my $user_id = $uid;
-      my $argSet = {
-        uid => $$USER{node_id},
-        parent => $PARENT ? $$PARENT{ 'node_id' } : $$COMMENT{parent_debatecomment},
-        reply => $$COMMENT{ 'node_id' },
-        root => $$COMMENT{ 'root_debatecomment' } };
-
-      my $argStr = to_json($argSet);
-
-      my $addNotifier = $APP->add_notification($notification_id, $user_id, $argStr);
-
-    }
-  }
-
-  ## END notification code
+  # The per-member "newcomment" notification is sent by Everything::API::debatecomments
+  # (Application::notify_new_comment, #4661), not here.
 
   # Only do these for legacy form-based creation
   unless ($from_api) {

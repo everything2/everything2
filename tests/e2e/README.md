@@ -62,6 +62,14 @@ The convenience script automatically:
 - ✓ Provides helpful error messages
 - ✓ Suggests debugging tips on failure
 
+### Recording a demo video
+
+Specs built on `fixtures/demo.js` (e.g. `discussion-reply-notification.spec.js`) can be recorded:
+`./tools/e2e-demo.sh discussion-reply-notification` writes `e2e-demos/<spec>.mp4` with
+each user's browser side by side, a step banner per user, and results scrolled into view and
+outlined. Without `E2E_DEMO` the same spec runs as a normal test. Procedure:
+`.claude/skills/e2e-demo/SKILL.md`.
+
 ### Direct NPM Commands
 
 ```bash

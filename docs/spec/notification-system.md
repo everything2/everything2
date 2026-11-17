@@ -73,7 +73,7 @@ The **Producer** column is the code that currently calls `add_notification` for 
 | gp | Direct | Target user | GP awarded | **none** |
 | mostwanted | Direct | Request filler | Most Wanted request filled | **none** |
 | newbiewriteup | Broadcast | Editors | New user published first writeup | `Application::finalize_published_writeup` |
-| newcomment | Direct | Usergroup members | Comment posted | `Delegation::maintenance::debatecomment_create` (see Issue #6) |
+| newcomment | Direct | Usergroup members | Reply posted in a usergroup discussion | `Application::notify_new_comment`, called from `API::debatecomments` (#4661) |
 | newdiscussion | Direct | Usergroup members | New discussion started | `Application::notify_new_discussion` (opt-in) |
 | nodenote | Broadcast | Editors | Node note posted | `API::nodenotes`, `Application::add_nodenote` |
 | voting | Direct | Node author | Writeup voted on | **none** |
@@ -163,7 +163,7 @@ if ($validityCheck) {
 | frontpage | ✓ | Item not removed from News weblog |
 | mostwanted | ✓ | Node exists |
 | newbiewriteup | ✓ | Writeup exists, not a draft, not republished |
-| newcomment | ✓ | Node exists |
+| newcomment | ✓ | Reply (`node_id`) exists |
 | newdiscussion | ✓ | Discussion node exists |
 | nodenote | ✓ | Node exists AND nodenote record exists |
 | voting | ✓ | Node exists |
@@ -301,11 +301,9 @@ return 0 if (!$isChanop && ($$notification{description} =~ /chanop/));
 - `requires_chanop` BOOLEAN
 - `requires_coder` BOOLEAN
 
-### Issue #6: newcomment subscription check never matches (BUG, unfixed)
+### Issue #6: newcomment was never delivered (FIXED, #4661)
 
-**Location**: `Everything::Delegation::maintenance::debatecomment_create`
-
-`my %notifications = from_json($$v{settings})->{notifications};` assigns a hashref to a hash, so `$notifications{$replyNotification}` is always false and no `newcomment` notification is ever sent. Should be `my $notifications = ...; if ($notifications->{$replyNotification})`.
+The `debatecomment_create` maintenance hook read members' notification prefs into a hash from a hashref (never matched) and wrote args (`parent`/`reply`/`root`) the renderer and validity check don't read. The producer is now `Application::notify_new_comment`, called from `API::debatecomments` after a reply is created, with args `{ node_id => reply, uid => replier, root => discussion }`; the renderer shows "[replier] replied in [discussion]". Tested in `t/225_notify_new_comment.t`.
 
 ## Test Coverage
 
@@ -453,5 +451,5 @@ Dismisses a notification.
 
 **Document Version**: 2.2
 **Author**: System audit
-**Last verified**: 2026-11-16 (producer audit added; socialbookmark removed; hourLimit 48; newcomment bug noted)
+**Last verified**: 2026-11-16 (producer audit added; socialbookmark removed; hourLimit 48; newcomment fixed #4661)
 **Next Review**: After remaining migration work complete

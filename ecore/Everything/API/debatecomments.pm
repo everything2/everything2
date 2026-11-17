@@ -206,6 +206,10 @@ sub reply {
     # Insert into parent's nodegroup
     $DB->insertIntoNodegroup($parent->NODEDATA, $user->node_id, $created);
 
+    # Per-member 'newcomment' notification for the discussion's usergroup (opt-in; skips
+    # the replier). Done here rather than in the debatecomment_create maintenance hook.
+    $self->APP->notify_new_comment($user->node_id, $new_id);
+
     # Send notification to parent author (unless replying to self)
     my $parent_author_id = $parent->NODEDATA->{author_user};
     if ($parent_author_id && $parent_author_id != $user->node_id) {
