@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
 import { formatDateTime } from '../../utils/dateFormat'
+import { renderE2Content } from '../Editor/E2HtmlSanitizer'
 
 /**
  * Clientdev Home - E2 Client Development homepage
@@ -222,7 +223,7 @@ const ClientdevHome = ({ data, e2 }) => {
                 </div>
                 <div
                   className="clientdev-home__content"
-                  dangerouslySetInnerHTML={{ __html: entry.content }}
+                  dangerouslySetInnerHTML={{ __html: renderE2Content(entry.content || '').html }}
                 />
               </div>
             ))}

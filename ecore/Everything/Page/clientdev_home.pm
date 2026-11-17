@@ -99,11 +99,9 @@ sub buildReactData {
             my $author_name = $author ? $author->{title} : 'Unknown';
             my $author_id = $author ? $author->{node_id} : 0;
 
-            # Get content - use doctext field
+            # Raw doctext: the client renders it (links and all) through
+            # renderE2Content, like every other doctext surface.
             my $content = $node->{doctext} // '';
-
-            # Parse E2 links in content for display
-            $content = $APP->parseLinks($content);
 
             push @entries, {
                 node_id => int($node->{node_id}),
