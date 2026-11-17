@@ -2134,23 +2134,45 @@ sub isIpRoutable
 	return 1;
 };
 
+# The client's address. Each proxy in front of the app (the load balancer, then Apache)
+# appends the address it received the request from to X-Forwarded-For, and REMOTE_ADDR is
+# the last hop. So the client is the rightmost address that isn't one of our own hops;
+# entries to its left were supplied by the client and are ignored. When every address is
+# one of ours (local development), the leftmost is used.
+#
+# Returns one address: as a one-element list in list context (empty if there's none), or
+# as a string ('' if none).
 sub getIp
 {
 	my ($this) = @_;
 
-	my $forwd = $ENV{HTTP_X_FORWARDED_FOR} || "";
-	my $remote = $ENV{REMOTE_ADDR} || "";
+	my @chain = grep { length }
+		map { my $a = $_; $a =~ s/^\s+|\s+$//g; $a }
+		split /,/, join(',', $ENV{HTTP_X_FORWARDED_FOR} // '', $ENV{REMOTE_ADDR} // '');
 
-	my @addrs =
-		grep { ($this->{conf}->environment eq "production")?($this->isIpRoutable($_)):(1) }
-		grep { /\S/ }
-		split /\s*,\s*/,
-		",$forwd,$remote";
+	my $addr = '';
+	foreach my $candidate (reverse @chain) {
+		$addr = $candidate;
+		last unless $this->is_proxy_hop($candidate);
+	}
 
-	return @addrs if wantarray;
+	return wantarray ? (length($addr) ? ($addr) : ()) : $addr;
+}
 
-	my $addr = '' . join ',', @addrs;
-	return $addr;
+# True for addresses that can only be our own infrastructure (the load balancer inside the
+# VPC, Docker, localhost): private, loopback and link-local IPv4 and IPv6.
+sub is_proxy_hop
+{
+	my ($this, $addr) = @_;
+	return 0 unless defined $addr && length $addr;
+
+	my $v4 = $addr =~ /^::ffff:(\d+\.\d+\.\d+\.\d+)$/i ? $1 : $addr;
+	if ($v4 =~ /^\d+\.\d+\.\d+\.\d+$/) {
+		return $this->isIpRoutable($v4) ? 0 : 1;
+	}
+	# IPv6 loopback, unique-local (fc00::/7) and link-local (fe80::/10)
+	return 1 if $addr =~ /^(?:::1|f[cd][0-9a-f]{0,2}:|fe[89ab][0-9a-f]?:)/i;
+	return 0;
 }
 
 sub isInfectedIp

@@ -70,7 +70,7 @@ sub like_writeup
   }
 
   # Get client IP address
-  my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR};
+  my $addr = $self->APP->getIp;
   unless ($addr) {
     return [$self->HTTP_OK, {
       success => 0,
@@ -194,7 +194,7 @@ sub get_status
   }
 
   # Get client IP
-  my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR};
+  my $addr = $self->APP->getIp;
   unless ($addr) {
     return [$self->HTTP_OK, {
       success => 1,

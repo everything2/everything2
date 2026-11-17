@@ -218,7 +218,7 @@ PassEnv E2_DBSERV
 #### Access log format
 
 ```apache
-LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
+LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%a\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
 ```
 
 **Format:** JSON. Despite the name, it is used only by the **dev** `CustomLog` (`/var/log/apache2/e2.access.*.log`). Production defines no `CustomLog`, so Apache writes no access log in prod; per-request logs come from the ALB access logs in S3 (`elblogs.everything2.com`). In prod, `ErrorLog` (`/etc/apache2/logs/error_log`) is symlinked to stderr by `apache2_wrapper.rb` and lands in `/aws/fargate/fargate-app-awslogs`.
@@ -227,7 +227,7 @@ LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\
 - `time`: ISO 8601 timestamp with milliseconds
 - `process`: Request duration in microseconds
 - `filename`: File that handled request (for static assets; dynamic requests are proxied to Starman)
-- `remoteIP`: Client IP from X-Forwarded-For (ELB provides this)
+- `remoteIP`: client IP as resolved by `mod_remoteip` (`%a`)
 - `host`: Virtual host name
 - `request`: URI path (without query string)
 - `query`: Query string parameters
@@ -303,7 +303,8 @@ AccessFileName .htaccess
 
 ### Rate Limiting (mod_evasive) and Client IP (mod_remoteip)
 
-- `mod_remoteip` takes the client IP from `X-Forwarded-For` set by the ALB, so mod_evasive sees real client IPs.
+- `mod_remoteip` takes the client IP from `X-Forwarded-For` set by the ALB, so mod_evasive and the IP bans see real client IPs. Only our own hops are trusted proxies (10/8, 172.16/12, 192.168/16, 127.0.0.1): the ALB appends the address it received the request from, so the client is the rightmost entry outside those ranges.
+- The app resolves the client the same way: `Application::getIp` returns the rightmost address in `X-Forwarded-For` + `REMOTE_ADDR` that isn't a private/loopback/link-local hop (`is_proxy_hop`), and every IP consumer (IP log, signup and blacklist checks, reCAPTCHA, rate limits, "I like it") uses it.
 - `mod_evasive` (prod settings in the template) blocks clients that exceed per-page or per-site request rates. Each block runs `tools/log-rate-limit-block.sh`, which logs to `/aws/e2/rate-limit-blocks`. Dev uses thresholds high enough never to trigger. `tools/clear-mod-evasive.sh` clears blocks.
 - Static IP / user-agent bans come from `etc/apache_blocks.json`; see [apache_blocks.md](apache_blocks.md).
 

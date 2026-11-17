@@ -74,12 +74,11 @@ sub report_error {
     }
 
     # Get client IP early for rate limiting. Use $REQUEST->get_ip (->APP->getIp,
-    # which resolves X-Forwarded-For + REMOTE_ADDR and filters to a routable
-    # addr); the old $REQUEST->cgi->http()/->remote_addr() are CGI.pm methods the
+    # the single client address resolved from X-Forwarded-For + REMOTE_ADDR); the
+    # old $REQUEST->cgi->http()/->remote_addr() are CGI.pm methods the
     # Plack-backed request doesn't implement -- they died on every report under
     # PSGI, silently killing client-error logging. #4345-adjacent (Plack fix)
     my $client_ip = $REQUEST->get_ip() || 'unknown';
-    $client_ip = (split(/\s*,\s*/, $client_ip))[0] || 'unknown';
 
     # Check rate limit
     if ($self->_is_rate_limited($client_ip)) {
