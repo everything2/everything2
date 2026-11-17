@@ -1438,6 +1438,19 @@ sub securityLog
   });
 }
 
+# A failed password sign-in, written to the security log (Security Monitor: "Failed
+# sign-ins"). $account is the account someone tried (hashref), or undef when no account
+# has that name. The attempted name is never stored: people type their password into the
+# username field by mistake. Recorded as Guest User, since nobody is signed in.
+sub record_failed_signin
+{
+  my ($this, $account, $ip) = @_;
+  my $details = ($ip || 'unknown address') . ($account ? '' : ' (no such account)');
+  my $ok = eval { $this->securityLog(SECLOG_FAILED_SIGNIN, $this->{conf}->guest_user, $details, $account); 1 };
+  $this->devLog("record_failed_signin: $@") unless $ok;    # never let this break signing in
+  return $ok;
+}
+
 # Security-monitor read side (#4272 phase 4). Both key off seclog_event via the
 # Everything::SecurityLog enum -- no node lookups -- so they survive node deletion.
 

@@ -244,6 +244,8 @@ sub get_current_user
   if($username)
   {
     $user = $self->APP->node_by_name($username, 'user');
+    # A password sign-in to a name with no account (not a cookie: those are checked below).
+    $self->APP->record_failed_signin(undef, $self->get_ip) if !$user && !$cookie && $originalpass;
   }
 
   if($user)
@@ -280,6 +282,7 @@ sub get_current_user
         }
         else
         {
+          $self->APP->record_failed_signin($user->NODEDATA, $self->get_ip);
           $user = undef;
         }
       }else{
