@@ -13,5 +13,9 @@ coverage/react/
 test-results/
 playwright-report/
 playwright/.cache/
+# tools/e2e-demo.sh recordings and stills (never part of the image).
+e2e-demos/
+*.mp4
+*.webm
 # Untracked local-only directory; excluded here instead of deleted in the image (#4623).
 local

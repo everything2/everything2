@@ -37,6 +37,7 @@ use Devel::Caller qw(caller_args);
 
 # For add_notification
 use JSON;
+use Time::HiRes ();
 
 # For sitemap_batch_xml
 use XML::Generator;
@@ -368,7 +369,32 @@ sub new_password_salt
 	my $saltLength = 20;
 
 	my @base64 = ('A' .. 'Z', 'a' .. 'z', 0 .. 9, '.', '/');
-	return $shaPrefix.join('', @base64[ map { rand 64 } ( 1 .. $saltLength ) ]);
+	# 64 symbols divide 256 evenly, so masking each byte to 6 bits picks them uniformly.
+	return $shaPrefix.join('', map { $base64[ ord($_) & 63 ] } split //, $this->random_bytes($saltLength));
+}
+
+# Where random_bytes reads from. Only tests change it (to prove it fails closed).
+our $RANDOM_SOURCE = '/dev/urandom';
+
+# $count bytes from the kernel's CSPRNG. Use this (not rand) for anything that has to be
+# unguessable: salts, tokens, private file names. Dies rather than return fewer or weaker
+# bytes; there is deliberately no fallback. t/227 checks the output's statistical quality.
+sub random_bytes
+{
+	my ($this, $count) = @_;
+
+	open(my $fh, '<:raw', $RANDOM_SOURCE) or die "random_bytes: cannot open $RANDOM_SOURCE: $!";
+	my $got = read($fh, my $bytes, $count);
+	close($fh);
+	die "random_bytes: short read from $RANDOM_SOURCE\n" unless defined($got) && $got == $count;
+	return $bytes;
+}
+
+# A random lowercase-hex string carrying $bytes bytes (default 16 = 128 bits).
+sub random_hex
+{
+	my ($this, $bytes) = @_;
+	return unpack('H*', $this->random_bytes($bytes || 16));
 }
 
 #############################################################################
@@ -1729,6 +1755,7 @@ sub node2mail {
 		my $subject = $$node{title} // '(no subject)';
 		my $to = ref $addr eq "ARRAY" ? join(", ", @$addr) : ($addr // '(no address)');
 		$this->devLog("node2mail: Skipping email in development. Subject: $subject, To: $to");
+		$this->dev_mail_spool($addr, $subject, $$node{doctext});
 		return "dev-skipped";
 	}
 
@@ -1767,6 +1794,51 @@ sub node2mail {
 	};
 	return unless $response;
 	return $response->MessageId;
+}
+
+# A mail node ready for node2mail: a copy of the named mail template with its placeholders
+# filled from $values (e.g. { name => ..., link => ..., servername => ... }). Templates write
+# a placeholder as «key», &#171;key&#187;, <key> or &lt;key&gt;; every form is filled.
+# Always a copy: the template is a cached node shared by every later request on the worker,
+# so filling it in place would send one person's link to the next.
+sub mail_from_template
+{
+	my ($this, $title, $values) = @_;
+
+	my $template = $this->{db}->getNode($title, 'mail') or return;
+	my %mail = %$template;
+	my $text = $mail{doctext} // '';
+	foreach my $key (keys %{ $values || {} })
+	{
+		my $value = $values->{$key} // '';
+		$text =~ s/(?:\x{AB}|&#171;|&lt;|<)\Q$key\E(?:\x{BB}|&#187;|&gt;|>)/$value/g;
+	}
+	$mail{doctext} = $text;
+	return \%mail;
+}
+
+# Development only: keep a copy of each email node2mail would have sent, one JSON file per
+# message, so the mail itself (password reset and activation links especially) can be read
+# back and followed: tools/test-password-reset.pl --sent, and the e2e specs through it.
+our $DEV_MAIL_SPOOL = '/tmp/e2-dev-mail';
+my $dev_mail_seq = 0;
+
+sub dev_mail_spool
+{
+	my ($this, $addr, $subject, $body) = @_;
+	return unless $this->inDevEnvironment;
+
+	my @to = ref $addr eq 'ARRAY' ? @$addr : ($addr);
+	my $ok = eval {
+		mkdir $DEV_MAIL_SPOOL unless -d $DEV_MAIL_SPOOL;
+		my $file = sprintf('%s/%d.%06d-%d-%d.json', $DEV_MAIL_SPOOL, Time::HiRes::gettimeofday(), $$, ++$dev_mail_seq);
+		open(my $fh, '>:raw', $file) or die "open $file: $!";
+		print $fh JSON::encode_json({ to => [ map { $_ // '' } @to ], subject => $subject // '', body => $body // '', sent => time() });
+		close($fh);
+		1;
+	};
+	$this->devLog("node2mail: could not spool development mail: $@") unless $ok;
+	return $ok;
 }
 
 # Replaces the htmlcode of the same name

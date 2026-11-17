@@ -153,9 +153,7 @@ sub create_backup {
     my $clean_user = $APP->rewriteCleanEscape($target_user->{title});
     my $format_label = ('text', 'html', 'text-html')[$e2parse - 1];
 
-    # Obfuscate URL
-    my $obfuscate = int(rand(8999999)) + 1000000;
-    my $filename = "$clean_user.$format_label.$obfuscate.$year-$month-$day.zip";
+    my $filename = backup_filename($APP, $clean_user, $format_label, "$year-$month-$day");
 
     $zip->close();
 
@@ -178,6 +176,12 @@ sub create_backup {
     }
 
     return [$self->HTTP_OK, $response];
+}
+
+# <user>.<format>.<random>.<date>.zip. The random part keeps the download link private.
+sub backup_filename {
+    my ($APP, $clean_user, $format_label, $date) = @_;
+    return join('.', $clean_user, $format_label, $APP->random_hex(16), $date, 'zip');
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -1,22 +1,23 @@
 #!/usr/bin/perl
-# Generate password reset email link for testing
+# Show the password reset email, and the link in it, for a development account.
 #
-# Usage: docker exec e2devapp perl /var/everything/tools/test-password-reset.pl <username> [new_password]
+# Development sends no mail: node2mail keeps a copy of each message in the dev mail spool
+# instead (Everything::Application::dev_mail_spool). This tool reads it back.
 #
-# In development, the password reset form sends emails which may not be delivered.
-# This tool generates the reset link that WOULD have been sent, so you can:
-# 1. See what the email looks like
-# 2. Click the reset link to complete the password reset flow
-# 3. Test the 'Confirm password' page
+#   test-password-reset.pl --sent <username>
+#       The newest email already sent to that user, e.g. after using the Reset password form.
 #
-# Arguments:
-#   username      - The username to reset password for (required)
-#   new_password  - The new password to set (default: newpassword123)
+#   test-password-reset.pl <username> [new_password]
+#       Make a reset request first, through the same API code the Reset password form uses
+#       (Everything::API::password), then show the email it sent. new_password defaults to
+#       newpassword123.
 #
-# Example workflow:
-#   1. Run: docker exec e2devapp perl /var/everything/tools/test-password-reset.pl normaluser1 mynewpass
-#   2. Click the reset link in the output
-#   3. Log in with normaluser1 / mynewpass
+# Either way it prints the email and then, under COPY-PASTE URL, the link from it pointed at
+# the local dev server (http://localhost:9080). Exits non-zero if no email is found.
+#
+#   docker exec e2devapp perl /var/everything/tools/test-password-reset.pl normaluser1 mynewpass
+#
+# Used by tests/e2e/password-reset.spec.js. Development only.
 
 use strict;
 use warnings;
@@ -24,112 +25,53 @@ use lib '/var/libraries/lib/perl5';
 use lib '/var/everything/ecore';
 
 use Everything;
+use Everything::API::password;
+use JSON;
 
 initEverything();
 
 my $APP = $Everything::APP;
-my $DB = $APP->{db};
+my $DB  = $APP->{db};
+die "ERROR: development only\n" unless $APP->inDevEnvironment;
 
-my $username = $ARGV[0];
-my $new_password = $ARGV[1] || 'newpassword123';
-my $valid_for_minutes = 20;
+my $sent_only = @ARGV && $ARGV[0] eq '--sent' ? shift(@ARGV) : 0;
+my ( $username, $new_password ) = @ARGV;
+$new_password //= 'newpassword123';
+die "Usage: $0 [--sent] <username> [new_password]\n" unless $username;
 
-unless ($username) {
-    print STDERR "Usage: $0 <username> [new_password]\n";
-    print STDERR "\nExample:\n";
-    print STDERR "  docker exec e2devapp perl /var/everything/tools/test-password-reset.pl normaluser1 mynewpass\n";
-    exit 1;
+my $user = $DB->getNode( $username, 'user' ) or die "ERROR: User '$username' not found\n";
+my $email = $user->{email} or die "ERROR: '$username' has no email address\n";
+
+my $since = time();
+unless ($sent_only) {
+    # reset_request reads only the JSON body from its request.
+    my $request = bless { who => $username, password => $new_password, passwordConfirm => $new_password }, 'ResetToolRequest';
+    my $r = Everything::API::password->new->reset_request($request);
+    die 'ERROR: reset request refused: ' . ( $r->[1]{error} // 'unknown' ) . "\n" unless $r->[1]{success};
+    print "Reset requested for $username: $r->[1]{message}\n\n";
 }
 
-print "=" x 60 . "\n";
-print "PASSWORD RESET TEST TOOL\n";
-print "=" x 60 . "\n\n";
+# The newest spooled message to this user (made by this run's request, unless --sent).
+my $spool = $Everything::Application::DEV_MAIL_SPOOL;
+my ($mail) =
+    grep { $sent_only || $_->{sent} >= $since }
+    grep { grep { lc($_) eq lc($email) } @{ $_->{to} || [] } }
+    map  { my $f = $_; my $m = eval { open( my $fh, '<:raw', $f ) or die; local $/; decode_json(<$fh>) }; $m ? ($m) : () }
+    reverse sort glob("$spool/*.json");
+die "ERROR: no email to $email in $spool\n" unless $mail;
 
-# Find the user
-my $user = $DB->getNode($username, 'user');
+print '-' x 60, "\nEMAIL\n", '-' x 60, "\n";
+print "To: @{ $mail->{to} }\nSubject: $mail->{subject}\n\n$mail->{body}\n\n";
 
-unless ($user) {
-    die "ERROR: User '$username' not found\n";
-}
+# The link a mail client would follow: the href, entities decoded, pointed at local dev.
+my ($href) = $mail->{body} =~ m{href="([^"]*Confirm\+password[^"]*)"}
+    or die "ERROR: no Confirm password link in the email\n";
+( my $link = $href ) =~ s/&amp;/&/g;
+my $host = $Everything::CONF->canonical_web_server;
+$link =~ s{^https?://\Q$host\E}{http://localhost:9080};
 
-print "User: $username (node_id: $user->{node_id})\n";
-print "Email: $user->{email}\n";
-print "New password: $new_password\n\n";
+print '-' x 60, "\nCOPY-PASTE URL\n", '-' x 60, "\n\n$link\n\n";
+print "Open it, enter the new password, then log in as $username with it.\n" unless $sent_only;
 
-# Ensure user has salt
-$APP->updatePassword($user, $user->{passwd}) unless $user->{salt};
-
-# Generate reset link parameters
-print "-" x 60 . "\n";
-print "PASSWORD RESET LINK\n";
-print "-" x 60 . "\n\n";
-
-my $expiry_time = time() + ($valid_for_minutes * 60);
-my $params = $APP->getTokenLinkParameters($user, $new_password, 'reset', $expiry_time);
-
-my $confirm_password_node = $DB->getNode('Confirm password', 'superdoc');
-unless ($confirm_password_node) {
-    die "ERROR: Could not find 'Confirm password' superdoc\n";
-}
-
-my $link = $APP->urlGen($params, 'no quotes', $confirm_password_node);
-
-# Use localhost for dev - prepend if relative, or replace if absolute
-if ($link !~ m|^https?://|) {
-    $link = "http://localhost:9080" . $link;
-} else {
-    $link =~ s|https://everything2\.com|http://localhost:9080|;
-}
-
-print "Reset link (valid for $valid_for_minutes minutes):\n\n";
-print "  $link\n\n";
-
-# Get and format the password reset email template
-print "-" x 60 . "\n";
-print "PASSWORD RESET EMAIL CONTENT\n";
-print "-" x 60 . "\n\n";
-
-my $mail_node = $DB->getNode('Everything2 password reset', 'mail');
-if ($mail_node) {
-    my $mail_content = $mail_node->{doctext};
-    my $name = $user->{realname} || $user->{title};
-
-    # Substitute template variables (using both old and new style)
-    $mail_content =~ s/<name>/$name/g;
-    $mail_content =~ s/«name»/$name/g;
-    $mail_content =~ s/<link>/$link/g;
-    $mail_content =~ s/«link»/$link/g;
-    $mail_content =~ s/<servername>/localhost:9080/g;
-    $mail_content =~ s/«servername»/localhost:9080/g;
-
-    print "Subject: $mail_node->{title}\n";
-    print "To: $user->{email}\n";
-    print "-" x 40 . "\n";
-    print "$mail_content\n";
-} else {
-    print "WARNING: Could not find 'Everything2 password reset' mail template\n";
-    print "The reset link above should still work.\n";
-}
-
-print "\n" . "-" x 60 . "\n";
-print "COPY-PASTE URL\n";
-print "-" x 60 . "\n\n";
-
-# Output the reset link with HTML entities decoded for easy copy-paste
-my $clean_link = $link;
-$clean_link =~ s/&amp;/&/g;
-print "$clean_link\n";
-
-print "\n" . "-" x 60 . "\n";
-print "NEXT STEPS\n";
-print "-" x 60 . "\n\n";
-
-print "1. Copy the URL above\n";
-print "2. Open it in your browser (use incognito mode to be safe)\n";
-print "3. The 'Confirm password' page should confirm the password reset\n";
-print "4. Try logging in with:\n";
-print "   Username: $username\n";
-print "   Password: $new_password\n";
-print "\n";
-
-print "=" x 60 . "\n";
+package ResetToolRequest;
+sub JSON_POSTDATA { return { %{ $_[0] } } }

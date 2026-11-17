@@ -84,6 +84,18 @@ await demo.scenario('feature-name', [alice, bob], async () => {
 - **Stills.** Every `show()` also saves a numbered PNG at that device's resolution to
   `e2e-demos/<name>[-mobile]/` (`demo.snap(page, label)` for an extra one).
   Send the key stills along with the video when the result is easy to miss in motion.
+- **Harness steps go on camera.** Anything the test does outside the browser must show as
+  an amber TEST HARNESS card. Run shell commands with
+  `await demo.shell(actor, command, 'what it is for', { result: out => 'one-line outcome' })`,
+  never bare `execSync`, in recorded tests. Use `demo.note(actor, title, detail)` for other
+  off-camera work, such as setup in an unrecorded browser context. Do that setup inside
+  `scenario()` so the card appears.
+- **Emails:** dev keeps outgoing mail in a spool (`node2mail` → `/tmp/e2-dev-mail`). Specs
+  read it only through the tool: `sentEmail(actor, user)` in `fixtures/email.js` runs
+  `tools/test-password-reset.pl --sent` via `demo.shell` and returns `{ to, subject, link }`.
+  Follow the link from the real email; never rebuild it. Templates: `signup.spec.js`
+  (the plain signup path, kept deliberately simple: signup is fragile), `password-reset.spec.js`,
+  and the edge cases in `signup-confirm.spec.js`. Shared signup steps: `fixtures/signup.js`.
 - Without `E2E_DEMO` the helpers are no-ops, so the spec doubles as a regression test.
 - `scenario()` turns banners green (PASSED) or red with the error (FAILED), holds the
   last frame, closes contexts, runs `cleanup`, and stitches the video.

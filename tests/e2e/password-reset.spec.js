@@ -1,12 +1,20 @@
 /**
  * E2E: Reset password -> Confirm password (#4335 confirm API + #4475 pure-render page).
  *
- * Mirrors signup-confirm.spec.js, for the "forgot password" flow. The reset request
- * (POST /api/password/reset-request) emails a token link to the Confirm password page
- * with action=reset; dev doesn't send mail, so tools/test-password-reset.pl prints the
- * link that WOULD have been sent (the new password is baked into the token). The spec
- * then drives the real confirm form -> POST /api/users/confirm, which validates the
- * token, sets the new password, logs in, and returns success_reset.
+ * The whole "forgot password" path, as an active member goes through it:
+ *   1. the Reset password form (POST /api/password/reset-request) -> the reset email;
+ *   2. the link in that email -> the Confirm password form -> POST /api/users/confirm,
+ *      which sets the new password and signs them in;
+ *   3. a fresh session signs in with the new password, and the old one no longer works.
+ *
+ * Dev sends no mail. node2mail keeps each message in the dev mail spool instead, and
+ * `tools/test-password-reset.pl --sent <user>` prints the newest one and the link in it,
+ * so the spec follows the link from the very email the form produced.
+ *
+ * The account is activated and used first (setup, not recorded): the reset request sends
+ * an activation link instead to an account that has never been used.
+ *
+ * Watch it: `./tools/e2e-demo.sh password-reset` (E2E_DEMO_DEVICE=mobile for phones).
  *
  * Also asserts the #4475 change: an EXPIRED reset link reports 'expired' and does NOT
  * nuke the account.
@@ -27,9 +35,49 @@
  */
 const { test, expect } = require('@playwright/test');
 const { execSync } = require('child_process');
+const { loginAs } = require('./fixtures/auth');
+const demo = require('./fixtures/demo');
 
 function createAccount(uname, pass) {
-  execSync(`docker exec e2devapp perl /var/everything/tools/test-signup.pl ${uname} ${pass}`, { encoding: 'utf8' });
+  return execSync(`docker exec e2devapp perl /var/everything/tools/test-signup.pl ${uname} ${pass}`, { encoding: 'utf8' });
+}
+
+// The newest email sent to a user, read with tools/test-password-reset.pl --sent (shown on the
+// recording as a harness card): { to, subject, link }, link pointed at the local dev server.
+const { sentEmail } = require('./fixtures/email');
+
+// The confirm form on the Confirm password page (the Sign In nodelet also has input[name=passwd]).
+const confirmFormOf = (page) =>
+  page.locator('form').filter({ has: page.locator('button.confirm-password__button') });
+
+// An account that has been activated and used, so a reset request sends a reset link.
+// who: the recorded actor the harness cards appear on.
+async function activeAccount(browser, who, uname, pass) {
+  const out = await demo.shell(
+    who,
+    `docker exec e2devapp perl /var/everything/tools/test-signup.pl ${uname} ${pass}`,
+    `creates the test account ${uname}`,
+    { result: () => 'account created; activation link printed by the tool' }
+  );
+  const links = out.match(/\/node\/superdoc\/Confirm\+password\?[^\s"<]+/g) || [];
+  const activation = links.find((l) => !l.includes('&amp;')) || links[links.length - 1];
+  expect(activation, 'activation link from test-signup.pl').toBeTruthy();
+  const ctx = await browser.newContext();
+  const page = await ctx.newPage();
+  await page.goto(activation);
+  await confirmFormOf(page).locator('input[name="passwd"]').fill(pass);
+  await page.locator('button.confirm-password__button').click();
+  await page.waitForFunction(
+    (u) => window.e2 && window.e2.user && window.e2.user.guest === false && window.e2.user.title === u,
+    uname,
+    { timeout: 15000 }
+  );
+  await page.goto('/'); // a signed-in visit, so the account counts as used
+  await ctx.close();
+  await demo.note(who, `activates ${uname} and signs in once`,
+    'In a separate browser session that is not recorded: followed the activation link, set the password, ' +
+    'and visited the site, so the account counts as active (a reset request for an account never used ' +
+    'sends an activation link instead).');
 }
 
 // Get {token, expiry} from the reset helper for an existing user.
@@ -79,29 +127,90 @@ test.describe('Reset password -> Confirm password (#4335 / #4475)', () => {
   // workers don't race on shared DB/session state (create-and-login is not parallel-safe).
   test.describe.configure({ mode: 'serial' });
 
-  test('a valid reset link + new password updates the password and logs in', async ({ page }) => {
+  test('a member resets a forgotten password with the emailed link', async ({ browser }) => {
+    test.setTimeout(demo.DEMO ? 180000 : 90000);
+    const uname = 'e2r' + Date.now().toString(36); // nick is varchar(20)
+    const oldpass = 'oldpass123';
     const newpass = 'newpass456';
-    const acct = provisionResettableUser('e2r', newpass); // nick is varchar(20)
-    expect(acct, 'resettable user provisioned').toBeTruthy();
-    const uname = acct.uname;
-
-    await page.goto(confirmLink(uname, acct.expiry, acct.token));
-    // scope to the confirm-password form (the Sign In nodelet also has input[name=passwd]);
-    // the user types the NEW password, which must match the one baked into the token.
-    const confirmForm = page.locator('form').filter({ has: page.locator('button.confirm-password__button') });
-    await confirmForm.locator('input[name="passwd"]').fill(newpass);
-
-    const [resp] = await Promise.all([
-      page.waitForResponse((r) => r.url().includes('/api/users/confirm') && r.request().method() === 'POST'),
-      page.locator('button.confirm-password__button').click(),
-    ]);
-    expect(resp.status()).toBe(200);
-    // success_reset logs the user in; assert the real end-state (now that user, not a guest).
-    await page.waitForFunction(
-      (u) => window.e2 && window.e2.user && window.e2.user.guest === false && window.e2.user.title === u,
-      uname,
+    const user = await demo.actor(browser, `${uname} (forgot password)`, '#38495e');
+    const { page } = user;
+    const loggedInAs = (u) => page.waitForFunction(
+      (name) => window.e2 && window.e2.user && window.e2.user.guest === false && window.e2.user.title === name,
+      u,
       { timeout: 15000 }
     );
+
+    // Where the signed-in user shows: the Epicenter nodelet on desktop, the profile menu on phones.
+    const showSignedIn = async (caption) => {
+      const who = user.device === 'mobile' ? page.locator('.e2-header-mobile-auth') : page.locator('#epicenter');
+      if (user.device !== 'mobile') await expect(who).toContainText(uname, { timeout: 10000 });
+      await demo.step(page, caption);
+      await demo.show(who, 2500);
+    };
+
+    await demo.scenario('password-reset', [user], async () => {
+      // Setup (harness): an active account with a known old password.
+      await page.goto('/');
+      await activeAccount(browser, user, uname, oldpass);
+
+      // 1. The Reset password form.
+      await page.goto('/node/superdoc/Reset+password');
+      await demo.step(page, 'forgot their password: opens Reset password');
+      const form = page.locator('.reset-password form');
+      await demo.show(form);
+      await demo.step(page, 'enters their username and a new password');
+      await form.locator('#who').fill(uname);
+      await form.locator('#password').fill(newpass);
+      await form.locator('#passwordConfirm').fill(newpass);
+      const [requested] = await Promise.all([
+        page.waitForResponse((r) => r.url().includes('/api/password/reset-request') && r.request().method() === 'POST'),
+        demo.click(form.locator('button[type="submit"]')),
+      ]);
+      expect((await requested.json()).success).toBeTruthy();
+      const sentNote = page.locator('.reset-password__success');
+      await expect(sentNote).toContainText('Your password reset link is on its way');
+      await demo.step(page, 'told the reset link is on its way');
+      await demo.show(sentNote);
+
+      // 2. The email that request sent, and the link in it.
+      const mail = await sentEmail(user, uname);
+      expect(mail.to).toContain(`${uname}@test.example.com`);
+      expect(mail.subject).toBe('Everything2 password reset');
+      expect(mail.link, 'Confirm password link in the email').toBeTruthy();
+      expect(mail.link).toContain('action=reset');
+
+      await page.goto(mail.link);
+      await demo.step(page, 'opened the link from the reset email');
+      const confirmForm = confirmFormOf(page);
+      await demo.show(confirmForm);
+      await demo.step(page, 'enters the new password');
+      await confirmForm.locator('input[name="passwd"]').fill(newpass);
+      const [confirmed] = await Promise.all([
+        page.waitForResponse((r) => r.url().includes('/api/users/confirm') && r.request().method() === 'POST'),
+        demo.click(page.locator('button.confirm-password__button')),
+      ]);
+      expect(confirmed.status()).toBe(200);
+      // success_reset signs them in and sends them to the front page.
+      await loggedInAs(uname);
+      await showSignedIn('password reset: signed in');
+
+      // 3. A fresh session: the new password works through the normal sign-in form...
+      await demo.step(page, 'starts a fresh session');
+      await page.context().clearCookies();
+      await demo.step(page, 'signs in with the new password');
+      await loginAs(page, uname, newpass);
+      await loggedInAs(uname);
+      await showSignedIn('signed in with the new password');
+
+      // ...and the old password no longer does.
+      const probe = await browser.newContext();
+      const old = await probe.request.post('/api/sessions/create', { data: { username: uname, passwd: oldpass } });
+      const oldWorks = old.status() === 200 && (await old.text()).includes(`"${uname}"`);
+      await probe.close();
+      expect(oldWorks, 'old password rejected').toBe(false);
+      await demo.note(user, 'tries the old password: rejected',
+        `POST /api/sessions/create as ${uname} with the old password, from a separate session -> HTTP ${old.status()}, not signed in`);
+    });
   });
 
   test('an EXPIRED reset link reports expired and does NOT nuke the account (#4475)', async ({ page }) => {

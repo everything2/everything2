@@ -14,13 +14,17 @@
  * Mobile: E2E_DEMO_DEVICE=mobile (or { device: 'mobile' } on one actor) runs that
  * actor as a phone (Pixel 7: 412x839 CSS px, touch, mobile UA) at that resolution.
  *
+ * Work the harness does outside the browser (a shell command such as a tools/ script,
+ * or setup in an unrecorded session) is shown as an amber TEST HARNESS card, so the
+ * video never hides a step: demo.shell() for commands, demo.note() for anything else.
+ *
  * The assertions in the spec are the proof; the video is a way to watch it happen.
  *
  *   await demo.scenario('my-feature', [alice, bob], async () => { ... })
  */
 const fs = require('fs')
 const path = require('path')
-const { execFileSync } = require('child_process')
+const { execFileSync, execSync } = require('child_process')
 const { devices } = require('@playwright/test')
 
 const DEMO = !!process.env.E2E_DEMO
@@ -148,6 +152,69 @@ async function click(locator) {
   await locator.click({ timeout: 10000 })
 }
 
+/**
+ * A TEST HARNESS card over each actor's page: something the test did outside the browser.
+ * title says what it was for; detail can carry the command and what came back. Held long
+ * enough to read, then removed. No-op outside demo mode.
+ */
+async function note(actors, title, detail = '') {
+  if (!DEMO) return
+  const list = [].concat(actors || []).filter(Boolean)
+  if (!list.length) return
+  await Promise.all(list.map(a => a.page.evaluate(([t, d]) => {
+    const old = document.getElementById('__e2e_demo_card')
+    if (old) old.remove()
+    const card = document.createElement('div')
+    card.id = '__e2e_demo_card'
+    card.style.cssText = [
+      'position:fixed', 'left:50%', 'top:42%', 'transform:translate(-50%,-50%)', 'z-index:2147483647',
+      'width:min(92vw,640px)', 'box-sizing:border-box', 'background:#fff8e6', 'color:#3d2a00',
+      'border:3px solid #c77c00', 'border-radius:10px', 'box-shadow:0 8px 30px rgba(0,0,0,.45)',
+      'padding:14px 16px', 'font:15px/1.4 system-ui,sans-serif', 'pointer-events:none',
+    ].join(';')
+    const head = document.createElement('div')
+    head.textContent = 'TEST HARNESS · outside the browser'
+    head.style.cssText = 'font-weight:700;font-size:12px;letter-spacing:.06em;color:#c77c00;margin-bottom:6px'
+    const body = document.createElement('div')
+    body.textContent = t
+    body.style.cssText = 'font-weight:600;margin-bottom:' + (d ? '8px' : '0')
+    card.appendChild(head)
+    card.appendChild(body)
+    if (d) {
+      const pre = document.createElement('pre')
+      pre.textContent = d
+      pre.style.cssText = 'margin:0;white-space:pre-wrap;word-break:break-all;font:12px/1.4 ui-monospace,monospace;background:#2b2b2b;color:#f5f5f5;padding:8px;border-radius:6px'
+      card.appendChild(pre)
+    }
+    document.documentElement.appendChild(card)
+  }, [title, detail]).catch(() => {})))
+  await list[0].page.waitForTimeout(Math.max(PAUSE_MS * 2, 3000))
+  await snap(list[0].page, `harness ${title}`)
+  await Promise.all(list.map(a => a.page.evaluate(() => {
+    const c = document.getElementById('__e2e_demo_card')
+    if (c) c.remove()
+  }).catch(() => {})))
+}
+
+/**
+ * Run a shell command for the test (e.g. `docker exec e2devapp perl /var/everything/tools/...`)
+ * and show it on the recording as a TEST HARNESS card. Use this rather than execSync in demo
+ * specs, so every harness step is visible. purpose: what it's for, in plain words.
+ * opts.result(stdout): one line saying what came back. Returns stdout; throws if it fails.
+ */
+async function shell(actors, command, purpose, { result } = {}) {
+  let out
+  try {
+    out = execSync(command, { encoding: 'utf8' })
+  } catch (err) {
+    await note(actors, `${purpose} (FAILED)`, `$ ${command}\n${String(err.stderr || err.message || err).trim().split('\n').slice(-3).join('\n')}`)
+    throw err
+  }
+  const summary = result ? result(out) : ''
+  await note(actors, purpose, `$ ${command}${summary ? `\n→ ${summary}` : ''}`)
+  return out
+}
+
 /** Short pause in demo mode only (e.g. to let a viewer read a result). */
 async function linger(page, ms = PAUSE_MS) {
   if (DEMO) await page.waitForTimeout(ms)
@@ -226,4 +293,4 @@ async function scenario(name, actors, fn, { cleanup } = {}) {
   if (failure) throw failure
 }
 
-module.exports = { DEMO, actor, step, show, highlight: show, snap, click, linger, scenario, finishDemo }
+module.exports = { DEMO, actor, step, show, highlight: show, snap, click, linger, note, shell, scenario, finishDemo }

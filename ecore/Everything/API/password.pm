@@ -90,40 +90,17 @@ sub reset_request {
 
     my $link = $APP->urlGen($params, 'no quotes', $confirm_page);
 
-    # Get mail template
-    my $mail = $DB->getNode($mail_title, 'mail');
-    return [$self->HTTP_OK, {success => 0, error => 'Email template not found'}]
-        unless $mail;
-
-    my %mail_data = %$mail;
-
-    # Substitute template variables
-    # Templates may use various formats:
-    # - Unicode guillemets: «name»
-    # - HTML entity guillemets: &#171;name&#187;
-    # - Angle brackets: <name> (stored as &lt;name&gt; in XML)
     my $name = $user->{realname} || $user->{title};
     # The site's public host, from configuration. Not $ENV{SERVER_NAME}: under Starman that's
     # the listen address (127.0.0.1), whatever Host the request came in on (#4614).
     my $server_name = $self->CONF->canonical_web_server;
 
-    # Unicode guillemets format
-    $mail_data{doctext} =~ s/«name»/$name/g;
-    $mail_data{doctext} =~ s/«link»/$link/g;
-    $mail_data{doctext} =~ s/«servername»/$server_name/g;
-
-    # HTML entity guillemets format
-    $mail_data{doctext} =~ s/&#171;name&#187;/$name/g;
-    $mail_data{doctext} =~ s/&#171;link&#187;/$link/g;
-    $mail_data{doctext} =~ s/&#171;servername&#187;/$server_name/g;
-
-    # Angle bracket format (HTML encoded)
-    $mail_data{doctext} =~ s/&lt;name&gt;/$name/g;
-    $mail_data{doctext} =~ s/&lt;link&gt;/$link/g;
-    $mail_data{doctext} =~ s/&lt;servername&gt;/$server_name/g;
+    my $mail = $APP->mail_from_template($mail_title, { name => $name, link => $link, servername => $server_name });
+    return [$self->HTTP_OK, {success => 0, error => 'Email template not found'}]
+        unless $mail;
 
     # Send email
-    $APP->node2mail($user->{email}, \%mail_data, 1);
+    $APP->node2mail($user->{email}, $mail, 1);
 
     # Log the action
     my $email_display = $user->{email} // '(no email)';
