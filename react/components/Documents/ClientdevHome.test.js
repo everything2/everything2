@@ -22,6 +22,26 @@ describe('ClientdevHome (real pagestate fixture)', () => {
   })
 })
 
+describe('ClientdevHome weblog', () => {
+  it('renders entry content through the content sanitizer, links included', () => {
+    const content = '<p>See [Coffee] and <form><input name="q"></form><span data-x="1">notes</span></p>'
+    const data = {
+      clients: [],
+      show_weblog: 1,
+      weblog: {
+        weblog_id: 1, can_remove: 0, has_older: 0, has_newer: 0,
+        entries: [{ node_id: 42, title: 'Client news', author: 'alice', author_id: 7,
+          linkedtime: '2026-01-02 10:00:00', type: 'document', content }],
+      },
+    }
+    const { container } = render(<ClientdevHome data={data} e2={{}} user={{}} />)
+    const box = container.querySelector('.clientdev-home__content')
+    expect(box.querySelector('a[href="/title/Coffee"]')).not.toBeNull()
+    expect(box.querySelector('form, input, [data-x]')).toBeNull()
+    expect(box.textContent).toContain('notes')
+  })
+})
+
 // Register-client create-form migration: op=new -> POST /api/node/create (#4340 Phase 2).
 describe('ClientdevHome register-client create form', () => {
   let originalLocation

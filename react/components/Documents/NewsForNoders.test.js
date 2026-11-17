@@ -27,6 +27,17 @@ describe('NewsForNoders — fetch (#4543)', () => {
     expect(global.fetch.mock.calls[0][0]).toMatch(/^\/api\/news_for_noders/)
   })
 
+  it('renders entry content through the content sanitizer, links included', async () => {
+    const content = '<p>Read [Coffee] and <form><input name="q"></form><span data-x="1">more</span></p>'
+    global.fetch = listFetch({ success: 1, entries: [{ ...entry, content }], weblog_id: 1 })
+    const { container } = render(<NewsForNoders />)
+    await waitFor(() => expect(container.querySelector('.news-for-noders__content')).not.toBeNull())
+    const box = container.querySelector('.news-for-noders__content')
+    expect(box.querySelector('a[href="/title/Coffee"]')).not.toBeNull()
+    expect(box.querySelector('form, input, [data-x]')).toBeNull()
+    expect(box.textContent).toContain('more')
+  })
+
   it('renders the empty state', async () => {
     global.fetch = listFetch({ success: 1, entries: [], weblog_id: 1 })
     const { container } = render(<NewsForNoders />)

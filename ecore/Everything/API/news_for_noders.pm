@@ -68,7 +68,9 @@ sub list {
             author     => $author ? $author->{title} : 'Unknown',
             author_id  => $author ? int($author->{node_id}) : 0,
             linkedtime => $row->{linkedtime},
-            content    => $APP->parseLinks($node->{doctext} // ''),
+            # Raw doctext: the client renders it (links and all) through
+            # renderE2Content, like every other doctext surface.
+            content    => $node->{doctext} // '',
             type       => $node->{type}{title},
         };
     }

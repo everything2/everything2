@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { formatDateTime } from '../../utils/dateFormat';
+import { renderE2Content } from '../Editor/E2HtmlSanitizer';
 
 /**
  * News for Noders - Displays announcements from the News usergroup.
@@ -116,7 +117,7 @@ const NewsForNoders = () => {
               </cite>
               <span className="news-for-noders__date">{formatDate(entry.linkedtime)}</span>
             </div>
-            <div className="news-for-noders__content" dangerouslySetInnerHTML={{ __html: entry.content }} />
+            <div className="news-for-noders__content" dangerouslySetInnerHTML={{ __html: renderE2Content(entry.content || '').html }} />
           </div>
         ))}
       </div>

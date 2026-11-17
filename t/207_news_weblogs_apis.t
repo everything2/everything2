@@ -42,6 +42,13 @@ unlike(JSON->new->encode($n->[1]), qr/"weblog_id"\s*:\s*"/, 'news_for_noders: we
 is(ref($n->[1]{has_older}), 'SCALAR', 'news_for_noders: has_older is a JSON boolean');
 is(ref($n->[1]{can_remove}), 'SCALAR', 'news_for_noders: can_remove is a JSON boolean');
 
+# content is the node's doctext as stored; the client renders it (links included)
+ok(@{ $n->[1]{entries} } > 0, 'news_for_noders: seeded entries present');
+for my $e (@{ $n->[1]{entries} }) {
+  my $node = $DB->getNodeById($e->{node_id});
+  is($e->{content}, $node->{doctext} // '', "news_for_noders: entry $e->{node_id} content is its doctext");
+}
+
 # a bare member can't remove; an admin can
 is(${ $nfn->list($member->())->[1]{can_remove} }, 0, 'news_for_noders: non-admin cannot remove');
 is(${ $nfn->list($admin->())->[1]{can_remove} },  1, 'news_for_noders: admin can remove');
