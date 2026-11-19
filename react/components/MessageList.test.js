@@ -248,4 +248,22 @@ describe('MessageList', () => {
       expect(screen.queryByText('Message 5')).not.toBeInTheDocument()
     })
   })
+
+  describe('line breaks (#4006)', () => {
+    it('keeps the message text, newlines included, in the line-break-preserving container', () => {
+      const msgtext = 'first line\nsecond line with a [link]\n\nfourth line'
+      const { container } = render(<MessageList messages={[{ ...mockMessage, msgtext }]} />)
+      const text = container.querySelector('.message-list-content')
+      expect(text).toHaveClass('e2-message-text')
+      expect(text.textContent).toBe('first line\nsecond line with a link\n\nfourth line')
+      expect(text.querySelector('a')).not.toBeNull()
+    })
+
+    it('does the same in the compact list (Messages nodelet, Chatterbox mini messages)', () => {
+      const { container } = render(<MessageList messages={[{ ...mockMessage, msgtext: 'a\nb' }]} compact />)
+      const text = container.querySelector('.message-list-content')
+      expect(text).toHaveClass('e2-message-text')
+      expect(text.textContent).toBe('a\nb')
+    })
+  })
 })

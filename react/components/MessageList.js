@@ -109,7 +109,7 @@ const MessageList = (props) => {
           </div>
         )}
 
-        <div className={contentClass}>
+        <div className={`${contentClass} e2-message-text`}>
           <ParseLinks>{message.msgtext}</ParseLinks>
         </div>
 

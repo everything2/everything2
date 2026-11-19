@@ -248,7 +248,7 @@ const MessageDisplay = ({ selectedGroup, messages, totalMessages, showStart, max
                 {msg.author_id ? <LinkNode id={msg.author_id} display={msg.author_title} /> : '?'}
               </td>
               <td className="usergroup-archive__td--time">{msg.timestamp}</td>
-              <td className="usergroup-archive__td" dangerouslySetInnerHTML={{ __html: msg.text }} />
+              <td className="usergroup-archive__td e2-message-text" dangerouslySetInnerHTML={{ __html: msg.text }} />
             </tr>
           ))}
         </tbody>

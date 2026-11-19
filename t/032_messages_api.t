@@ -296,6 +296,40 @@ subtest 'Create message to user' => sub {
 };
 
 #############################################################################
+# Line breaks are kept and tidied (#4006)
+#############################################################################
+
+subtest 'Create keeps line breaks and tidies the whitespace around them' => sub {
+    my $sender = MockUser->new(node_id => $test_user1->{node_id}, title => $test_user1->{title},
+        is_guest_flag => 0, NODEDATA => $test_user1);
+    my $send = sub {
+        my ($text) = @_;
+        my $req = MockRequest->new(user => $sender);
+        $req->_postdata({ message => $text, for_id => $test_user2->{node_id} });
+        return $api->create($req);
+    };
+    my $latest = sub {
+        my ($table, $where) = @_;
+        return $DB->sqlSelect('msgtext', $table, $where, 'ORDER BY message_id DESC LIMIT 1');
+    };
+
+    my $tag = 'nl' . time();
+    my $result = $send->("  $tag line one  \r\nline two\r\n\r\n\r\n\r\nline three   \n\n");
+    is($result->[0], 200, 'sent');
+    is($latest->('message', "for_user=$test_user2->{node_id} AND author_user=$test_user1->{node_id}"),
+        "$tag line one\nline two\n\nline three",
+        'stored with its line breaks: CRLF to LF, trailing spaces and extra blank lines removed, ends trimmed');
+    is($latest->('message_outbox', "author_user=$test_user1->{node_id}"),
+        qq{you said "$tag line one\nline two\n\nline three" to [$test_user2->{title}]},
+        'the sender\'s Sent copy matches');
+
+    my ($before) = $DB->sqlSelect('COUNT(*)', 'message', "for_user=$test_user2->{node_id}");
+    $result = $send->("  \r\n \n\t ");
+    isnt($result->[0], 200, 'a message of only whitespace is not sent');
+    is($DB->sqlSelect('COUNT(*)', 'message', "for_user=$test_user2->{node_id}"), $before, '... and nothing is stored');
+};
+
+#############################################################################
 # Test 6: Get single message (ownership check)
 #############################################################################
 

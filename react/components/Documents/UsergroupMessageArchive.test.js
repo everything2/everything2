@@ -103,3 +103,20 @@ describe('UsergroupMessageArchive — copy interaction (#4472)', () => {
     await waitFor(() => expect(screen.getByText(/doesn't archive messages/i)).toBeInTheDocument())
   })
 })
+
+describe('UsergroupMessageArchive — line breaks (#4006)', () => {
+  it('shows each message in the line-break-preserving cell', async () => {
+    global.fetch = listFetch({
+      success: 1,
+      archive_groups: [{ node_id: 999, title: 'edev' }],
+      selected_group: { node_id: 999, title: 'edev' },
+      messages: [{ message_id: 21, number: 1, author_id: 5, author_title: 'alice', timestamp: '2026-07-01', text: 'line one\nline two' }],
+      total_messages: 1, show_start: 0, max_show: 25, num_show: 1, reset_time: false
+    })
+    const { container } = render(<UsergroupMessageArchive user={{ admin: false }} />)
+    await waitFor(() => expect(container.textContent).toMatch(/line one/))
+    const cell = [...container.querySelectorAll('td.usergroup-archive__td')].find((td) => td.textContent.includes('line one'))
+    expect(cell).toHaveClass('e2-message-text')
+    expect(cell.textContent).toBe('line one\nline two')
+  })
+})
