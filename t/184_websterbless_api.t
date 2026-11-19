@@ -5,7 +5,7 @@
 # thank-you PM + karma + GP + securityLog per user -- used to run inside
 # Everything::Page::websterbless's buildReactData off webbyblessUser* query params. It
 # now lives here. Tests the gate, empty/missing input, a per-user not-found, and a real
-# bless (with best-effort cleanup of the karma/GP it grants).
+# bless on a throwaway user.
 use strict;
 use warnings;
 
@@ -18,6 +18,7 @@ use Test::More;
 use Everything;
 use Everything::API::websterbless;
 use MockRequest;
+use TestSeed;
 
 initEverything('development-docker');
 ok($DB, 'Database connection established');
@@ -58,28 +59,27 @@ SKIP: {
 }
 
 #############################################################################
-# Admin, a real bless (+1 karma, +3 GP, PM, seclog) -- with best-effort cleanup
+# Admin, a real bless (+1 karma, +3 GP, PM, seclog) on a throwaway user
 #############################################################################
 SKIP: {
     my $webster = $DB->getNode('Webster 1913', 'user');
-    my $target  = $DB->getNode('normaluser1', 'user');
     my $root    = $DB->getNode('root', 'user');
-    skip 'Webster/normaluser1/root not all present', 3 unless ($webster && $target && $root);
-
-    my $karma_before = $target->{karma} // 0;
+    skip 'Webster/root not present', 5 unless ($webster && $root);
+    my $target  = TestSeed::make_user($DB, $APP, label => 'webbybless', GP => 10);
+    my $karma_before = $target->{karma} // 0;   # a scalar: the cached node is updated in place
 
     $r = $api->bless_users(MockRequest->new(
         is_admin_flag => 1, nodedata => $root,
-        postdata => {blessings => [{user => 'normaluser1', writeup => 'Test Writeup'}]}));
+        postdata => {blessings => [{user => $target->{title}, writeup => 'Test Writeup'}]}));
     is($r->[1]{success}, 1, 'admin bless succeeds');
     is($r->[1]{results}[0]{success}, 1, 'per-user bless succeeded');
     like($r->[1]{results}[0]{message}, qr/3 GP/, 'message reports the 3 GP grant');
 
-    # Reverse the +1 karma and the +3 GP so re-runs stay stable.
-    my $after = $DB->getNode('normaluser1', 'user');
-    $after->{karma} = $karma_before;
-    $DB->updateNode($after, -1);
-    $APP->adjustGP($after, -3);
+    my $after = $DB->getNodeById($target->{node_id}, 'force');
+    is($after->{karma}, $karma_before + 1, 'karma +1');
+    is($after->{GP}, 13, 'GP +3');
 }
+
+END { TestSeed::cleanup($DB) }
 
 done_testing;

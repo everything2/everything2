@@ -14,6 +14,7 @@ use Everything;
 use Everything::Application;
 use Everything::API::easter_eggs;
 use MockRequest;
+use TestSeed;
 
 # Initialize Everything
 initEverything('development-docker');
@@ -28,10 +29,10 @@ ok($api, "Created easter_eggs API instance");
 # Test Setup: Get test users
 #############################################################################
 
-my $normal_user = $DB->getNode("normaluser1", "user");
+my $normal_user = TestSeed::make_user($DB, $APP, label => 'eggnormal');
 ok($normal_user, "Got normal user");
 
-my $target_user = $DB->getNode("normaluser2", "user");
+my $target_user = TestSeed::make_user($DB, $APP, label => 'eggtarget');
 ok($target_user, "Got target user");
 
 my $admin_user = $DB->getNode("root", "user");
@@ -226,25 +227,7 @@ $result = $api->bestow($admin_request);
 is($result->[0], $api->HTTP_OK, "Whitespace usernames returns HTTP 200");
 is(scalar(@{$result->[1]{results}}), 0, "No results for whitespace usernames");
 
-#############################################################################
-# Cleanup - restore original easter_eggs count
-#############################################################################
-
-# Use direct DB access for cleanup since setVars isn't available on $APP
-my $updated_vars = $APP->getVars($target_user);
-$updated_vars->{easter_eggs} = $original_eggs;
-my $vars_string = join('&', map { "$_=$updated_vars->{$_}" } keys %$updated_vars);
-$DB->sqlUpdate('setting', { vars => $vars_string },
-    "setting_id = " . $target_user->{node_id});
-
-# Also reset for normal_user if we gave them eggs
-my $normal_vars = $APP->getVars($normal_user);
-if ($normal_vars->{easter_eggs}) {
-    $normal_vars->{easter_eggs} = 0;
-    my $normal_vars_string = join('&', map { "$_=$normal_vars->{$_}" } keys %$normal_vars);
-    $DB->sqlUpdate('setting', { vars => $normal_vars_string },
-        "setting_id = " . $normal_user->{node_id});
-}
+TestSeed::cleanup($DB);
 
 done_testing();
 

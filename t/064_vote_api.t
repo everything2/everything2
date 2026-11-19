@@ -238,14 +238,8 @@ is($result->[1]{downvotes}, 0, "Downvotes count is 0");
 #############################################################################
 
 # Add votes from multiple users and verify reputation is sum of weights
-my $user2_hash = $DB->getNode("normaluser3", "user");
-ok($user2_hash, "Got second voter user");
-
-# Grant votes if needed
-if ($user2_hash->{votesleft} < 5) {
-  $DB->sqlUpdate('user', { votesleft => 10 }, "user_id=" . $user2_hash->{user_id});
-  $user2_hash = $DB->getNode("normaluser3", "user");
-}
+my $user2_hash = TestSeed::make_user($DB, $APP, label => 'voter2', experience => 1000, votesleft => 10);
+ok($user2_hash, "Got second voter user (dedicated)");
 
 # User2 casts upvote
 my $user2_request = TestRequest->new($user2_hash, { weight => 1 });
@@ -266,7 +260,7 @@ is($db_reputation, $calculated_reputation, "Database reputation matches SUM(weig
 is($db_reputation, 0, "Reputation is 0 in database");
 
 # Add more votes to test larger reputation values
-my $user3_hash = $DB->getNode("normaluser4", "user");
+my $user3_hash = TestSeed::make_user($DB, $APP, label => 'voter3', experience => 1000, votesleft => 10);
 if ($user3_hash && $user3_hash->{votesleft} > 0) {
   my $user3_request = TestRequest->new($user3_hash, { weight => 1 });
   $result = $api->cast_vote($user3_request, $writeup_id);

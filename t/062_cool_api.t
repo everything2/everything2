@@ -20,7 +20,8 @@ my $APP = $Everything::APP;
 my $DB = $APP->{db};
 
 # Get test users
-my $editor_user = $DB->getNode('e2e_editor', 'user');
+# Dedicated C!-giver too: the decrement test sets and asserts its 'cools' var.
+my $editor_user = TestSeed::make_user($DB, $APP, label => 'cooler', experience => 1000);
 # Dedicated author so concurrent tests don't collide on e2e_user's reputation/
 # cools or on the eddie->author cool-notification messages (LIMIT 1 query). #4267
 my $regular_user = TestSeed::make_user($DB, $APP, label => 'author', experience => 1000);

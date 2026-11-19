@@ -17,6 +17,7 @@ use Test::More;
 use Everything;
 use Everything::API::renunciation;
 use MockRequest;
+use TestSeed;
 
 initEverything('development-docker');
 ok($DB,  'Database connection established');
@@ -50,8 +51,10 @@ like($r->[1]{error}, qr/No such user/i, 'unknown from-user rejected');
 #############################################################################
 # Round-trip transfer against a temp e2node + writeup
 #############################################################################
-my $A    = $DB->getNode('normaluser25', 'user');
-my $B    = $DB->getNode('normaluser26', 'user');
+my $A    = TestSeed::make_user($DB, $APP, label => 'renounce-from');
+my $B    = TestSeed::make_user($DB, $APP, label => 'renounce-to');
+END { TestSeed::cleanup($DB) }
+my ($ANAME, $BNAME) = ($A->{title}, $B->{title});
 my $ROOT = $DB->getNode('root', 'user');
 my $E2TITLE = 'Chainsaw Test E2 ZZ';
 
@@ -74,33 +77,27 @@ SKIP: {
 
     # transfer A -> B
     $r = $api->transfer_writeups(MockRequest->new(node_id => 113, is_admin_flag => 1,
-        postdata => { user_from => 'normaluser25', user_to => 'normaluser26', namelist => $E2TITLE }));
+        postdata => { user_from => $ANAME, user_to => $BNAME, namelist => $E2TITLE }));
     is($r->[1]{success}, 1, 'transfer A->B succeeds');
     is(scalar(@{$r->[1]{reparented}}), 1, 'one writeup reparented');
     is($DB->sqlSelect('author_user', 'node', "node_id=$wuid"), $B->{node_id}, 'writeup author_user is now B');
-    is(int(Everything::getVars($DB->getNode('normaluser25', 'user'))->{numwriteups}), 4,  'A numwriteups decremented');
-    is(int(Everything::getVars($DB->getNode('normaluser26', 'user'))->{numwriteups}), 11, 'B numwriteups incremented');
+    is(int(Everything::getVars($DB->getNodeById($A->{node_id}, 'force'))->{numwriteups}), 4,  'A numwriteups decremented');
+    is(int(Everything::getVars($DB->getNodeById($B->{node_id}, 'force'))->{numwriteups}), 11, 'B numwriteups incremented');
 
     # transfer back B -> A
     $api->transfer_writeups(MockRequest->new(node_id => 113, is_admin_flag => 1,
-        postdata => { user_from => 'normaluser26', user_to => 'normaluser25', namelist => $E2TITLE }));
+        postdata => { user_from => $BNAME, user_to => $ANAME, namelist => $E2TITLE }));
     is($DB->sqlSelect('author_user', 'node', "node_id=$wuid"), $A->{node_id}, 'writeup author_user is A again');
 
     # node-list for A includes the temp e2node
     $r = $api->list_user_nodes(MockRequest->new(node_id => 113, is_admin_flag => 1,
-        postdata => { user => 'normaluser25' }));
+        postdata => { user => $ANAME }));
     ok((grep { $_->{node_id} == $e2id } @{$r->[1]{generated_list}{nodes}}), 'node-list includes the temp e2node');
 
     # cleanup
     $DB->sqlDelete('writeup', "writeup_id=$wuid");
     my $wun = $DB->getNodeById($wuid); $DB->nukeNode($wun, $ROOT) if $wun;
     my $e2n = $DB->getNodeById($e2id); $DB->nukeNode($e2n, $ROOT) if $e2n;
-    for my $uname ('normaluser25', 'normaluser26') {
-        my $un = $DB->getNode($uname, 'user');
-        my $v = Everything::getVars($un);
-        delete $v->{numwriteups};
-        Everything::setVars($un, $v);
-    }
 }
 
 done_testing;

@@ -16,6 +16,7 @@ use Test::More;
 use Everything;
 use Everything::API::nate_s_secret_unborg_doc;
 use MockRequest;
+use TestSeed;
 
 initEverything('development-docker');
 ok($DB, 'Database connection established');
@@ -35,35 +36,26 @@ like($r->[1]{message}, qr/stay in there/i, 'easter-egg brush-off message');
 #############################################################################
 # Admin: force-unborg clears the active borg
 #############################################################################
-SKIP: {
-    my $root = $DB->getNode('root', 'user');
-    skip 'root not present', 4 unless $root;
+{
+    my $admin = TestSeed::make_user($DB, $APP, label => 'unborg');
+    my $vars  = $APP->getVars($admin);
 
-    my $vars          = $APP->getVars($root);
-    my $orig_borged   = $vars->{borged};
-    my $orig_lastborg = $vars->{lastborg};
-
-    # Borg root (borged = a timestamp).
+    # Borg the user (borged = a timestamp).
     my $when = time();
     $vars->{borged} = $when;
-    Everything::setVars($root, $vars);
-    $DB->updateNode($root, -1);
+    Everything::setVars($admin, $vars);
+    $DB->updateNode($admin, -1);
 
     $r = $api->unborg_self(MockRequest->new(
-        is_admin_flag => 1, is_guest_flag => 0, node_id => $root->{node_id}, nodedata => $root));
+        is_admin_flag => 1, is_guest_flag => 0, node_id => $admin->{node_id}, nodedata => $admin));
     is($r->[1]{success}, 1, 'admin unborg succeeds');
     like($r->[1]{message}, qr/unborged/i, 'unborged message');
 
-    my $after = $APP->getVars($root);
+    my $after = $APP->getVars($DB->getNodeById($admin->{node_id}, 'force'));
     ok(!$after->{borged}, 'borged var cleared');
     is($after->{lastborg}, $when, 'lastborg records the cleared borging');
-
-    # Restore root's vars.
-    my $rv = $APP->getVars($root);
-    if (defined $orig_borged) { $rv->{borged} = $orig_borged } else { delete $rv->{borged} }
-    if (defined $orig_lastborg) { $rv->{lastborg} = $orig_lastborg } else { delete $rv->{lastborg} }
-    Everything::setVars($root, $rv);
-    $DB->updateNode($root, -1);
 }
+
+END { TestSeed::cleanup($DB) }
 
 done_testing;

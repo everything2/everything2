@@ -641,9 +641,11 @@ subtest 'lock_room - missing room_id rejected' => sub {
     is($s, $api->HTTP_BAD_REQUEST, 'missing room_id gets 400');
 };
 
-# Move admin user back to "outside" before cleaning up test room
-$admin_user->{in_room} = 0;
-$DB->updateNode($admin_user, -1);
+# Move admin user back to "outside" before cleaning up test room. Only in_room: a
+# whole-row updateNode would write back this test's stale copy of root over other
+# tests' concurrent changes.
+$DB->sqlUpdate('user', { in_room => 0 }, "user_id=$admin_user->{node_id}");
+$DB->getNodeById($admin_user->{node_id}, 'force');   # refresh the cached copy
 
 # Clean up test data
 $DB->nukeNode($DB->getNodeById($test_room->{node_id}), -1);    # node + roomdata + document rows

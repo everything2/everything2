@@ -18,6 +18,7 @@ use Test::More;
 use Everything;
 use Everything::API::the_tokenator;
 use MockRequest;
+use TestSeed;
 
 initEverything('development-docker');
 ok($DB, 'Database connection established');
@@ -54,28 +55,21 @@ is($r->[1]{results}[0]{success}, 0, 'bogus user reported as a per-user failure')
 like($r->[1]{results}[0]{message}, qr/find/i, 'bogus user "couldn\'t find" message');
 
 #############################################################################
-# Admin, a real tokenation (+1 token var) -- with restore
+# Admin, a real tokenation (+1 token var) on a throwaway user
 #############################################################################
-SKIP: {
-    my $target = $DB->getNode('normaluser1', 'user');
-    skip 'normaluser1 not present', 3 unless $target;
-
+{
+    my $target = TestSeed::make_user($DB, $APP, label => 'tokenator');
     my $before = $APP->getVars($target)->{tokens} || 0;
 
     $r = $api->give_tokens(MockRequest->new(is_admin_flag => 1,
-        postdata => {users => ['normaluser1']}));
+        postdata => {users => [$target->{title}]}));
     is($r->[1]{success}, 1, 'admin tokenation succeeds');
     is($r->[1]{results}[0]{success}, 1, 'per-user tokenation succeeded');
 
-    my $after = $APP->getVars($DB->getNode('normaluser1', 'user'))->{tokens} || 0;
+    my $after = $APP->getVars($DB->getNodeById($target->{node_id}, 'force'))->{tokens} || 0;
     is($after, $before + 1, 'recipient tokens var incremented by 1');
-
-    # Restore the tokens var so re-runs stay stable.
-    my $restore = $DB->getNode('normaluser1', 'user');
-    my $v = $APP->getVars($restore);
-    $v->{tokens} = $before;
-    Everything::setVars($restore, $v);
-    $DB->updateNode($restore, -1);
 }
+
+END { TestSeed::cleanup($DB) }
 
 done_testing;

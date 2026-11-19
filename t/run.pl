@@ -41,15 +41,12 @@ my %serial_tests = (
     "$dirname/042_usergroup_messages.t" => 1, # Modifies message table, creates usergroups
     "$dirname/043_message_ignores_delivery.t" => 1, # Modifies messageignore table (root/guest user), creates usergroups
     "$dirname/044_message_block_notifications.t" => 1, # Modifies messageignore table (root/guest user)
-    "$dirname/049_giftshop_api.t" => 1,   # Uses normaluser1, modifies experience/GP/messages
-    "$dirname/050_sanctify_api.t" => 1,   # Uses normaluser1, modifies experience/GP/messages
-    "$dirname/065_drafts_api.t" => 1,     # Uses normaluser1, queries "most recent writeup" which races with other tests
-    "$dirname/021_nodenotes_api.t" => 1,  # Uses shared root user, modifies nodenote table; races with other root-using tests
     "$dirname/058_notification_preferences_isolation.t" => 1, # Reads/writes user VARS; asserts cross-call preservation which races with other VARS-mutating tests
     "$dirname/193_ugma_api.t" => 1,       # Sets root's ugma_resettime VARS and asserts it persisted; root must be an edev admin so it can't use a throwaway user -> races with other root VARS-writers (same class as 058)
     "$dirname/097_superbless_api.t" => 1, # Self-bestow subtest sets root's VARS and asserts other vars preserved; root must be admin (can't use a throwaway user) -> races with other root VARS-writers (same class as 193)
     "$dirname/221_api_access_rules.t" => 1, # Inserts public chatter rows (same class as 038) and uses normaluser1's drafts (same class as 065)
-    "$dirname/222_homenode_images.t" => 1, # Sets normaluser1's imgsrc + moderation queue row and asserts them (same class as 065)
+    "$dirname/026_test_room_cleaning.t" => 1, # Empties the room table and runs refreshRoomUsers, which drops every room row for users not recently active (including other tests' online throwaway users)
+    "$dirname/049_notifications.t" => 1, # Deletes broadcast notification rows and asserts visibility from root's VARS (same class as 058)
 );
 
 # Separate serial and parallel tests

@@ -15,6 +15,7 @@ use Test::More;
 use Everything;
 use Everything::Application;
 use Everything::API::user;
+use TestSeed;
 use MockRequest;
 use MockUser;
 
@@ -437,8 +438,8 @@ subtest "json_display: cools_spent only, no numcools duplicate (#3957)" => sub {
 # Changing your own password or email requires your current password (#4637)
 #############################################################################
 subtest "edit_profile: current password required for password/email changes" => sub {
-    my $u = $DB->getNode('normaluser28', 'user');
-    ok($u, 'got normaluser28') or return;
+    my $u = TestSeed::make_user($DB, $APP, label => 'reauth', password => 'blah', email => 'reauth@example.com');
+    ok($u, 'got a throwaway user') or return;
     my %saved = map { $_ => $u->{$_} } qw(passwd salt email realname);
 
     my $as = sub {
@@ -475,10 +476,6 @@ subtest "edit_profile: current password required for password/email changes" => 
     my $root = $DB->getNode('root', 'user');
     $r = $as->($root, 1, email => 'admin-set@example.com');
     is($r->{success}, 1, "an admin editing someone else's email isn't asked for a password");
-
-    # Restore the seeded account.
-    $DB->sqlUpdate('user', { passwd => $saved{passwd}, salt => $saved{salt}, email => $saved{email}, realname => $saved{realname} }, "user_id = $u->{node_id}");
-    $APP->node_by_id($u->{node_id})->cache_refresh;
 };
 
 subtest "password_matches" => sub {
@@ -487,5 +484,7 @@ subtest "password_matches" => sub {
     ok(!$u->password_matches('blah2'), 'a wrong one does not');
     ok(!$u->password_matches(''), 'an empty one does not');
 };
+
+END { TestSeed::cleanup($DB) }
 
 done_testing();

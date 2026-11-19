@@ -52,7 +52,7 @@ sub list {
     my $limit = 50;
     my $startat = $page * $limit;
     my $csr = $DB->sqlSelectMany("nodenote.*, node.title", $from,
-        $where . " ORDER by nodenote.timestamp DESC LIMIT $startat,$limit");
+        $where . " ORDER by nodenote.timestamp DESC, nodenote.nodenote_id DESC LIMIT $startat,$limit");
 
     my @notes;
     while (my $row = $csr->fetchrow_hashref) {

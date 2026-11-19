@@ -16,6 +16,7 @@ use Test::More;
 use Everything;
 use Everything::API::oracle;
 use MockRequest;
+use TestSeed;
 
 initEverything('development-docker');
 ok($DB,  'Database connection established');
@@ -59,8 +60,9 @@ like($r->[1]{error}, qr/not found/i, 'user-not-found error');
 #############################################################################
 # Admin, real target -> the var is written (read-modify-write), then clean up
 #############################################################################
-my $TARGET = 'normaluser1';
-my $tnode  = $DB->getNode($TARGET, 'user');
+my $tnode  = TestSeed::make_user($DB, $APP, label => 'oracle');
+my $TARGET = $tnode->{title};
+END { TestSeed::cleanup($DB) }
 SKIP: {
     skip "$TARGET seed user not present", 4 unless $tnode;
 

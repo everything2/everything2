@@ -35,7 +35,8 @@ ok($api, "Created teddybear API instance");
 my $normal_user = TestSeed::make_user($DB, $APP, label => 'teddytarget', experience => 1000);
 ok($normal_user, "Got normal user");
 
-my $admin_user = $DB->getNode("root", "user");
+my $admin_user = $DB->getNode("root", "user");   # the bear checks real admin membership; root only acts here
+my $second_user = TestSeed::make_user($DB, $APP, label => 'teddysecond');
 ok($admin_user, "Got admin user");
 
 my $guest_user = $DB->getNode("guest user", "user");
@@ -199,7 +200,7 @@ $admin_request = MockRequest->new(
     postdata => { users => [
         { username => $normal_user->{title} },
         { username => 'nonexistent_xyz' },
-        { username => 'root' }
+        { username => $second_user->{title} }
     ]}
 );
 
@@ -213,8 +214,6 @@ is($result->[1]{results}[2]{success}, 1, "Third user succeeded");
 # Revert GP changes
 $normal_user = $DB->getNodeById($normal_user->{node_id}, 'force');
 $APP->adjustGP($normal_user, -2);
-$admin_user = $DB->getNode("root", "user");
-$APP->adjustGP($admin_user, -2);
 
 TestSeed::cleanup($DB);
 

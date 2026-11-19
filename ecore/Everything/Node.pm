@@ -278,7 +278,7 @@ sub _build_notes
 {
   my ($self) = @_;
 
-  my $csr = $self->DB->sqlSelectMany("*", "nodenote", "nodenote_nodeid=".$self->node_id." order by timestamp desc");
+  my $csr = $self->DB->sqlSelectMany("*", "nodenote", "nodenote_nodeid=".$self->node_id." order by timestamp desc, nodenote_id desc");
 
   my $outdata = [];
   while(my $row = $csr->fetchrow_hashref)

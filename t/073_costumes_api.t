@@ -38,7 +38,7 @@ ok($api, "Created costumes API instance");
 my $normal_user = TestSeed::make_user($DB, $APP, label => 'buyer', GP => 1000, experience => 1000);
 ok($normal_user, "Got normal user");
 
-my $admin_user = $DB->getNode("root", "user");
+my $admin_user = TestSeed::make_user($DB, $APP, label => 'costumeadmin', GP => 50);
 ok($admin_user, "Got admin user");
 
 my $guest_user = $DB->getNode("guest user", "user");
@@ -209,11 +209,6 @@ is($result->[0], $api->HTTP_OK, "Admin buy returns HTTP 200");
 is($result->[1]{success}, 1, "Admin costume purchase succeeds");
 is($result->[1]{newGP}, $admin_gp_before, "Admin GP was not deducted (free)");
 
-# Clean up admin costume
-$vars = $APP->getVars($admin_user);
-delete $vars->{costume};
-Everything::setVars($admin_user, $vars);
-$DB->updateNode($admin_user, -1);
 
 #############################################################################
 # Test: remove_costume - guest denied
