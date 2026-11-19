@@ -10,7 +10,7 @@
 # relevant) the modern mechanism it reuses.
 #
 # Uses existing seed users (root = admin/authorized; normaluser1 = plain/denied;
-# normaluser3 = the acted-upon target). Side effects (room move, suspension,
+# a throwaway user = the acted-upon target). Side effects (room move, suspension,
 # topic, messages, ignores) are torn down at the end.
 
 use strict;
@@ -24,6 +24,7 @@ use lib "$FindBin::Bin/lib";
 use Test::More;
 use Everything;
 use Everything::Application;
+use TestSeed;
 
 initEverything('development-docker');
 
@@ -36,10 +37,12 @@ my $webster = $DB->getNode('Webster 1913', 'user');
 
 my $admin = $DB->getNode('root', 'user');
 my $plain = $DB->getNode('normaluser1', 'user');
-my $target = $DB->getNode('normaluser3', 'user');
+my $target = TestSeed::make_user($DB, $APP, label => 'chanoptarget');
+END { TestSeed::cleanup($DB) }
+my $TNAME = $target->{title};
 
 unless ($admin && $plain && $target && $edb) {
-    plan skip_all => 'required seed users (root/normaluser1/normaluser3/EDB) not present';
+    plan skip_all => 'required seed users (root/normaluser1/EDB) not present';
 }
 ok($APP->isAdmin($admin), 'root is admin (authorized actor)');
 ok(!$APP->isChanop($plain, "nogods") && !$APP->isAdmin($plain),
@@ -54,7 +57,7 @@ my $vars = {};
 
 #############################################################################
 subtest '/drag moves a user and pins them, chanop/admin only' => sub {
-    my $r = $APP->processMessageCommand($admin, "/drag normaluser3", $vars);
+    my $r = $APP->processMessageCommand($admin, "/drag $TNAME", $vars);
     ok($r && $r->{success}, '/drag succeeds for admin');
     ok($DB->sqlSelect('count(*)', 'message',
         "for_user=$tid AND author_user=$edb->{node_id} AND msgtext LIKE '%dragged%'") >= 1,
@@ -62,7 +65,7 @@ subtest '/drag moves a user and pins them, chanop/admin only' => sub {
     ok($DB->sqlSelect('count(*)', 'suspension', "suspension_user=$tid") >= 1,
         'target is suspended (changeroom)');
 
-    my $denied = $APP->processMessageCommand($plain, "/drag normaluser3", $vars);
+    my $denied = $APP->processMessageCommand($plain, "/drag $TNAME", $vars);
     is($denied->{success}, 0, '/drag denied for non-chanop');
     like($denied->{error}, qr/chanop or admin/i, 'permission error message');
 };
@@ -123,11 +126,11 @@ subtest '/ignore and /unignore toggle messageignore' => sub {
     $DB->sqlDelete('messageignore', "messageignore_id=$plain->{node_id} AND ignore_node=$tid");
     is($ic->(), 0, 'not ignoring before');
 
-    my $r1 = $APP->processMessageCommand($plain, "/ignore normaluser3", $vars);
+    my $r1 = $APP->processMessageCommand($plain, "/ignore $TNAME", $vars);
     ok($r1 && $r1->{success}, '/ignore succeeds for a normal user');
     is($ic->(), 1, 'messageignore row created');
 
-    my $r2 = $APP->processMessageCommand($plain, "/unignore normaluser3", $vars);
+    my $r2 = $APP->processMessageCommand($plain, "/unignore $TNAME", $vars);
     ok($r2 && $r2->{success}, '/unignore succeeds');
     is($ic->(), 0, 'messageignore row removed');
 
@@ -150,7 +153,7 @@ subtest 'borg stores a timestamp and expires on schedule' => sub {
     my $nb_before = $pre->{numborged} || 0;
 
     # /borg (admin) sets the target's `borged` to a RECENT unix timestamp
-    my $r = $APP->processMessageCommand($admin, "/borg normaluser3", $vars);
+    my $r = $APP->processMessageCommand($admin, "/borg $TNAME", $vars);
     ok($r, '/borg ran');
     my $tvars = $APP->getVars($DB->getNodeById($tid));
     ok($tvars->{borged} && $tvars->{borged} > (time - 60) && $tvars->{borged} > 1,

@@ -3,9 +3,11 @@
 use strict;
 use lib qw(/var/everything/ecore);
 use lib qw(/var/libraries/lib/perl5);
+use lib qw(/var/everything/t/lib);
 use Test::More tests => 6;
 use diagnostics;
 use Everything;
+use TestSeed;
 
 initEverything 'everything';
 unless($APP->inDevEnvironment())
@@ -31,9 +33,8 @@ $val->{"lastused_date"} = $long_enough;
 $DB->updateNode($val, -1);
 
 # Someone sitting in the old room, and someone in Valhalla (kept)
-my $sitter = $DB->getNode("normaluser3", "user");
-my $kept   = $DB->getNode("normaluser4", "user");
-my %was_in = ( $sitter->{node_id} => $sitter->{in_room}, $kept->{node_id} => $kept->{in_room} );
+my $sitter = TestSeed::make_user($DB, $APP, label => 'roomsitter');
+my $kept   = TestSeed::make_user($DB, $APP, label => 'roomkept');
 $sitter->{in_room} = $tor->{node_id};
 $DB->updateNode($sitter, -1);
 $kept->{in_room} = $val->{node_id};
@@ -43,11 +44,7 @@ $APP->clean_old_rooms;
 
 is($DB->sqlSelect('in_room', 'user', "user_id=$sitter->{node_id}"), 0, "Someone in the deleted room is moved outside");
 is($DB->sqlSelect('in_room', 'user', "user_id=$kept->{node_id}"), $val->{node_id}, "Someone in a kept room stays put");
-for my $u ($sitter, $kept) {
-  my $fresh = $DB->getNodeById($u->{node_id}, 'force');
-  $fresh->{in_room} = int($was_in{$u->{node_id}} // 0);
-  $DB->updateNode($fresh, -1);
-}
+TestSeed::cleanup($DB);
 
 $tor = $DB->getNode($testname, "room", 'force');
 $val = $DB->getNode("Valhalla","room", 'force');

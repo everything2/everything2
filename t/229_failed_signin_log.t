@@ -10,7 +10,7 @@
 #
 use strict;
 use warnings;
-use lib qw(/var/everything/ecore /var/libraries/lib/perl5);
+use lib qw(/var/everything/ecore /var/libraries/lib/perl5 /var/everything/t/lib);
 use Test::More;
 use Plack::Util;
 use Plack::Test;
@@ -19,6 +19,7 @@ use URI::Escape;
 use JSON;
 use Everything;
 use Everything::SecurityLog;
+use TestSeed;
 
 chdir '/var/everything';
 my $test = Plack::Test->create(Plack::Util::load_psgi('/var/everything/app.psgi'));
@@ -31,8 +32,10 @@ my $guest = $Everything::CONF->guest_user;
 ok($DB, 'app booted');
 
 my $ip      = '203.0.113.' . ( 1 + $$ % 250 );
-my $account = $DB->getNode('normaluser29', 'user');    # password: blah
+my $account = TestSeed::make_user($DB, $APP, label => 'signin', password => 'blah');
 ok($account, 'test account exists');
+END { TestSeed::cleanup($DB) }
+my $name = $account->{title};
 
 sub sign_in {
   my ($username, $password) = @_;
@@ -52,7 +55,7 @@ sub mark { my ($id) = $DB->sqlSelect('MAX(seclog_id)', 'seclog'); return $id // 
 
 subtest 'a wrong password is logged once, with the account and address' => sub {
   my $from = mark();
-  my $res = sign_in('normaluser29', 'not-the-password-7x');
+  my $res = sign_in($name, 'not-the-password-7x');
   is($res->code, 403, 'sign-in refused');
   my @rows = rows_since($from);
   is(scalar(@rows), 1, 'one security log row');
@@ -76,8 +79,8 @@ subtest 'an unknown username is logged without the name' => sub {
 
 subtest 'a successful sign-in and a stale cookie add nothing' => sub {
   my $from = mark();
-  is(sign_in('normaluser29', 'blah')->code, 200, 'right password signs in');
-  my $stale = 'userpass=' . uri_escape('normaluser29|not-the-current-hash');
+  is(sign_in($name, 'blah')->code, 200, 'right password signs in');
+  my $stale = 'userpass=' . uri_escape("$name|not-the-current-hash");
   $test->request(GET '/api/sessions', 'X-Forwarded-For' => $ip, Cookie => $stale);
   is(scalar(rows_since($from)), 0, 'no security log rows');
 };

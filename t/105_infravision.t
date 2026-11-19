@@ -13,6 +13,7 @@ use lib "/var/libraries/lib/perl5";
 
 use Test::More;
 use Everything;
+use TestSeed;
 
 $SIG{__WARN__} = sub {
     my $warning = shift;
@@ -61,26 +62,20 @@ ok($DB, "Database connection established");
 
 # --- The infravision var alone grants it (no role required) ---
 {
-    my $plain = $APP->node_by_name('normaluser2', 'user');
-    ok($plain, 'loaded normaluser2');
-    ok(!$plain->is_editor && !$plain->is_chanop, 'normaluser2 has no role');
+    my $seed  = TestSeed::make_user($DB, $APP, label => 'infravision');
+    my $plain = $APP->node_by_id($seed->{node_id});
+    ok($plain, 'loaded a throwaway user');
+    ok(!$plain->is_editor && !$plain->is_chanop, 'the throwaway user has no role');
 
     my $vars = $plain->VARS;
-    my $had_var = $vars->{infravision};
     $vars->{infravision} = 1;
     Everything::setVars($plain->NODEDATA, $vars);
 
     # Re-fetch fresh so we exercise the accessor against persisted VARS.
     my $reloaded = $APP->node_by_id($plain->node_id, 'force');
     ok($reloaded->infravision, 'infravision var alone grants infravision');
-
-    # Cleanup — restore prior state.
-    my $cv = $reloaded->VARS;
-    if ($had_var) { $cv->{infravision} = $had_var; }
-    else          { delete $cv->{infravision}; }
-    Everything::setVars($reloaded->NODEDATA, $cv);
-    $DB->{dbh}->commit() unless $DB->{dbh}->{AutoCommit};
 }
+END { TestSeed::cleanup($DB) }
 
 # --- The API session property loop surfaces infravision the same way: it calls
 #     $user->infravision and includes it when truthy. Mirror that to prove the

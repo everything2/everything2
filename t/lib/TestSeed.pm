@@ -26,7 +26,23 @@ user race each other. This helper hands out uniquely-named throwaway users
 (name includes the PID so concurrent workers never collide) and nukes them all
 in one C<cleanup> call.
 
-See C<t/README.md> for the full rationale and gotchas.
+Rules of thumb (t/run.pl runs most tests in parallel against one database):
+
+=over
+
+=item * Anything a test writes and then asserts belongs to a throwaway: GP, karma,
+experience, votes, VARS, passwords, rooms, locks. Pass the throwaway's C<title> where
+an API takes a username.
+
+=item * Never write back a whole shared node (C<updateNode>/C<setVars> on root or a
+seed user): the stale copy overwrites other tests' changes. Use a targeted
+C<sqlUpdate> on the one column if a shared user really must change.
+
+=item * Tests that wipe or sweep global rows (the room table, broadcast
+notifications, public chatter) or need root's own VARS go in C<%serial_tests> in
+t/run.pl, with a comment saying why.
+
+=back
 
 =head2 make_user($DB, $APP, %opts)
 
@@ -38,6 +54,11 @@ Creates a real, dedicated user node and returns its (hashref) node. Options:
     votesleft   - starting votesleft     (user-table column)
     numwriteups - VARS numwriteups       (also drives level)
     online      - if true, insert a room row so online-only delivery reaches it
+    password    - a plain-text password the user can sign in with
+    email       - the account's email address
+    lasttime    - last sign-in time (default NULL: never signed in)
+
+Like a real account, the user is its own author (so self-edits are allowed).
 
 Only the user-table PK is NOT NULL-without-default, so the partial insert is
 safe; every other column defaults to 0 and lasttime is NULL (never-logged-in).
@@ -71,7 +92,13 @@ sub make_user {
     $row{GP}         = $o{GP}         if defined $o{GP};
     $row{experience} = $o{experience} if defined $o{experience};
     $row{votesleft}  = $o{votesleft}  if defined $o{votesleft};
+    $row{email}      = $o{email}      if defined $o{email};
+    $row{lasttime}   = $o{lasttime}   if defined $o{lasttime};
+    if (defined $o{password}) {
+        @row{qw(passwd salt)} = $APP->saltNewPassword($o{password});
+    }
     $DB->sqlInsert('user', \%row);
+    $DB->sqlUpdate('node', { author_user => $uid }, "node_id=$uid");
 
     $DB->sqlInsert('room', { member_user => $uid }) if $o{online};
 

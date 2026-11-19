@@ -6,11 +6,12 @@
 #
 use strict;
 use warnings;
-use lib qw(/var/everything/ecore /var/libraries/lib/perl5);
+use lib qw(/var/everything/ecore /var/libraries/lib/perl5 /var/everything/t/lib);
 use Test::More;
 use JSON;
 use URI::Escape qw(uri_escape_utf8);
 use Everything;
+use TestSeed;
 
 initEverything 'everything';
 
@@ -20,10 +21,11 @@ require Plack::Test;
 require HTTP::Request::Common;
 my $test = Plack::Test->create($app);
 
-my $name = 'normaluser29';
-my $user = $DB->getNode( $name, 'user' ) or plan skip_all => "no $name";
+# A returning user (has signed in before); a never-signed-in user hits #4709.
+my $user = TestSeed::make_user( $DB, $APP, label => 'pwchange', password => 'blah', lasttime => '2026-01-01 00:00:00' );
+END { TestSeed::cleanup($DB) }
+my $name = $user->{title};
 my $cookie_name = $Everything::CONF->cookiepass;
-my %saved = map { $_ => $user->{$_} } qw(passwd salt);
 
 my $old_cookie = "$cookie_name=" . uri_escape_utf8("$user->{title}|$user->{passwd}");
 
@@ -34,7 +36,7 @@ my $res = $test->request( HTTP::Request::Common::POST(
     Content        => encode_json( { node_id => $user->{node_id}, passwd => 'changed-pass-219', current_password => 'blah' } ),
 ) );
 my $json = eval { decode_json( $res->content ) } || {};
-is( $json->{success}, 1, 'password change accepted' );
+is( $json->{success}, 1, 'password change accepted' ) or diag explain $json;
 
 my ($set) = grep { /^\Q$cookie_name\E=/ } $res->header('Set-Cookie');
 ok( $set, 'a new login cookie is issued' );
@@ -62,9 +64,5 @@ SKIP: {
     my $stale_session = eval { decode_json( $stale->content ) } || {};
     ok( !$stale_session->{user}, 'the old cookie no longer logs in' );
 }
-
-# Restore the seeded password.
-$DB->sqlUpdate( 'user', { passwd => $saved{passwd}, salt => $saved{salt} }, "user_id = $user->{node_id}" );
-$APP->node_by_id( $user->{node_id} )->cache_refresh;
 
 done_testing();

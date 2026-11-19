@@ -4,9 +4,9 @@
 # The community "penny jar" give/take (a shared GP pot) used to run inside
 # Everything::Page::e2_penny_jar's buildReactData off give/take query params. It now
 # lives here. Tests the guest gate, the GP-opt-out gate, a real give and take (with the
-# GP + jar accounting), and the two soft guards (no GP to give / empty jar). Everything
-# it mutates -- the shared 'penny jar' setting count and normaluser1's GP/vars -- is
-# captured up front and restored at the end so re-runs stay stable.
+# GP + jar accounting), and the two soft guards (no GP to give / empty jar). The giver
+# is a throwaway user; the shared 'penny jar' setting count is captured up front and
+# restored at the end so re-runs stay stable.
 use strict;
 use warnings;
 
@@ -19,6 +19,7 @@ use Test::More;
 use Everything;
 use Everything::API::e2_penny_jar;
 use MockRequest;
+use TestSeed;
 
 initEverything('development-docker');
 ok($DB, 'Database connection established');
@@ -40,10 +41,11 @@ for my $pair (['give', 'give_penny'], ['take', 'take_penny']) {
 }
 
 my $penny = $DB->getNode('penny jar', 'setting');
-my $nu1   = $DB->getNode('normaluser1', 'user');
+my $nu1   = TestSeed::make_user($DB, $APP, label => 'pennyjar', GP => 5);
+END { TestSeed::cleanup($DB) }
 
 SKIP: {
-    skip 'penny jar setting / normaluser1 not present', 1 unless ($penny && $nu1);
+    skip 'penny jar setting / test user not present', 1 unless ($penny && $nu1);
 
     # ---- capture originals ---------------------------------------------------
     my $pvars       = $APP->getVars($penny);

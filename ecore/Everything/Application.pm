@@ -2725,7 +2725,7 @@ sub getNodeNotes
     $notelist = $DB->sqlSelectMany(
       'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp'
       , 'nodenote'
-      , "$where_clause ORDER BY nodenote_nodeid, timestamp");
+      , "$where_clause ORDER BY nodenote_nodeid, timestamp, nodenote_id");
   }
   elsif ($node_type eq 'e2node')
   {
@@ -2737,7 +2737,7 @@ sub getNodeNotes
       . " LEFT OUTER JOIN node ON node.node_id = writeup.writeup_id"
       , "(nodenote_nodeid = $$node{node_id}"
       . " OR writeup.parent_e2node = $$node{node_id})"
-      . " ORDER BY nodenote_nodeid, timestamp");
+      . " ORDER BY nodenote_nodeid, timestamp, nodenote_id");
   }
   else
   {
@@ -2745,7 +2745,7 @@ sub getNodeNotes
       'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp'
       , 'nodenote'
       , "nodenote_nodeid = $$node{node_id}"
-      . " ORDER BY timestamp");
+      . " ORDER BY timestamp, nodenote_id");
   }
 
   my @notes = ();

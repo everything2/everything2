@@ -6,13 +6,14 @@
 #
 use strict;
 use warnings;
-use lib qw(/var/everything/ecore /var/libraries/lib/perl5);
+use lib qw(/var/everything/ecore /var/libraries/lib/perl5 /var/everything/t/lib);
 use Test::More;
 use File::Temp ();
 use JSON;
 use URI::Escape qw(uri_escape_utf8);
 use Everything;
 use Everything::HomenodeImage;
+use TestSeed;
 use Image::Magick;
 
 initEverything 'everything';
@@ -184,12 +185,10 @@ SKIP: {
     require Everything::S3;
     my $test = Plack::Test->create($app);
 
-    my $user = $DB->getNode( 'normaluser1', 'user' );    # level 2: the normal-user limits
-    skip 'no normaluser1', 1 unless $user && $APP->getLevel($user) >= 1;
+    my $user = TestSeed::make_user( $DB, $APP, label => 'imgup', password => 'blah', experience => 1000, numwriteups => 25, lasttime => '2026-01-01 00:00:00' );
+    ok( $APP->getLevel($user) >= 1, 'the uploader is level 1 or more: the normal-user limits' );
     my $cookie_for = sub { my ($u) = @_; $Everything::CONF->cookiepass . '=' . uri_escape_utf8("$u->{title}|$u->{passwd}") };
     my $cookie = $cookie_for->($user);
-    my $saved_imgsrc = $user->{imgsrc};
-    my $had_queue = $DB->sqlSelect( 'newuserimage_id', 'newuserimage', "newuserimage_id = $user->{node_id}" );
 
     my @stored;
     no warnings 'redefine';
@@ -232,8 +231,8 @@ SKIP: {
     is( $stored[0] && ( $stored[0]{ContentType} // $stored[0]{content_type} ), 'image/png', 'stored as PNG' );
 
     @stored = ();
-    my $newbie = $DB->getNode( 'normaluser2', 'user' );
-    if ( $newbie && $APP->getLevel($newbie) < 1 ) {
+    my $newbie = TestSeed::make_user( $DB, $APP, label => 'imgnewbie', password => 'blah', lasttime => '2026-01-01 00:00:00' );
+    if ( $APP->getLevel($newbie) < 1 ) {
         $json = $upload->( 'me.png', 'image/png', $base_png, $newbie );
         like( $json->{error} // '', qr/level 1/, 'a level 0 user is told they need level 1' );
         is( scalar(@stored), 0, 'and nothing is stored' );
@@ -257,7 +256,7 @@ SKIP: {
     is( $refusal && $refusal->{reason}, Everything::HomenodeImage->accepted_formats_message, 'with the reason' );
     is( $refusal && $refusal->{client_type}, 'image/png', "with the browser's claimed type" );
     is( $refusal && $refusal->{client_ext}, 'png', 'and the file extension' );
-    is( $refusal && $refusal->{user}, 'normaluser1', 'and who' );
+    is( $refusal && $refusal->{user}, $user->{title}, 'and who' );
 
     $events = $logged->( sub { $upload->( 'IMG_9.jpg', 'image/jpeg', derive( 'jpeg', width => 1200, height => 900 ) ) } );
     my ($stored_event) = grep { $_->{event} eq 'homenode_image_upload' } @$events;
@@ -284,10 +283,9 @@ SKIP: {
         is( $json->{error}, Everything::HomenodeImage->accepted_formats_message, 'and still refuses what it should' );
     }
 
-    # Restore the seeded user
-    $DB->sqlUpdate( 'user', { imgsrc => $saved_imgsrc // '' }, "user_id = $user->{node_id}" );
-    $DB->sqlDelete( 'newuserimage', "newuserimage_id = $user->{node_id}" ) unless $had_queue;
-    $APP->node_by_id( $user->{node_id} )->cache_refresh;
+    $DB->sqlDelete( 'newuserimage', "newuserimage_id IN ($user->{node_id}, $newbie->{node_id})" );
 }
+
+END { TestSeed::cleanup($DB) if $DB }
 
 done_testing();
