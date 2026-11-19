@@ -4881,6 +4881,67 @@ sub get_unread_message_count
   return int($count || 0);
 }
 
+# SQL restricting message_outbox (Sent) rows to those sent to one user and/or usergroup.
+# Sent rows don't store the recipient, and their text has come in several forms (#4701):
+#   messages API / spam cannon:  you said "..." to [name], [other]   (groups: [name] (usergroup))
+#   before 2026:                 you said "..." to <a href="/user/name">name</a> (sent  to 1 noder)
+#                                ... <a href="/node/usergroup/name">name</a> (sent  to N noders and 1 group)
+#   sendPrivateMessage:          just the message text (only the recipient's copy says who)
+# Each form is matched: names in the recipient list after the last '" to ' (with LOCATE, so % and
+# _ in names and messages are literal), or for plain text the recipient's own copy. Never by
+# timestamp: archiving a Sent row updates its tstamp.
+#
+# The plain-text match compares MD5s against a DISTINCT derived table, which MySQL builds once.
+# A correlated EXISTS comparing the mediumtext per Sent row timed out (25s+) on the busiest
+# production Sent list (~21k rows); this form ran in about 0.1s there.
+sub _sent_recipient_where
+{
+  my ($this, $author_id, $to_user_id, $for_usergroup_id) = @_;
+  my $db  = $this->{db};
+  my $dbh = $db->{dbh};
+  $author_id = int($author_id);
+
+  my $list = q{SUBSTRING_INDEX(message_outbox.msgtext, '" to ', -1)};
+  my $said = q{message_outbox.msgtext LIKE 'you said "%'};
+  my $has  = sub { return 'LOCATE(' . $dbh->quote($_[0]) . ", $list) > 0" };
+  my $link = sub {    # legacy HTML link text, raw or HTML-escaped
+    my ($title) = @_;
+    my %seen;
+    my @forms = grep { !$seen{$_}++ } ($title, $this->encodeHTML($title));
+    return '(' . join(' OR ', map { $has->(">$_</a>") } @forms) . ')';
+  };
+
+  my $same_text = sub {    # plain-text Sent rows: the recipient's copy has the same text
+    my ($who) = @_;
+    return 'MD5(message_outbox.msgtext) IN (SELECT t.h FROM (SELECT DISTINCT MD5(m.msgtext) AS h'
+      . " FROM message m WHERE m.author_user=$author_id AND $who) AS t)";
+  };
+
+  my @clauses;
+  if (defined $to_user_id) {
+    my $user = $db->getNodeById(int($to_user_id));
+    return '0=1' unless $user;
+    my ($t, $id) = ($user->{title}, int($to_user_id));
+    push @clauses, '('
+      . "($said AND " . $has->("[$t]") . ' AND NOT ' . $has->("[$t] (usergroup)") . ')'
+      . " OR ($said AND " . $link->($t) . ' AND ' . $has->('/user/') . ')'
+      . ' OR ' . $same_text->("m.for_user=$id")
+      . ')';
+  }
+  if (defined $for_usergroup_id) {
+    my $group = $db->getNodeById(int($for_usergroup_id));
+    return '0=1' unless $group;
+    my ($g, $id) = ($group->{title}, int($for_usergroup_id));
+    push @clauses, '('
+      . "($said AND " . $has->("[$g] (usergroup)") . ')'
+      . " OR ($said AND " . $link->($g) . ' AND ' . $has->('/node/usergroup/') . ')'
+      . ' OR ' . $same_text->("m.for_usergroup=$id")
+      . ')';
+  }
+  return @clauses ? join(' AND ', @clauses) : '1=1';
+}
+
+
 sub get_sent_messages
 {
   my ($this, $user, $limit, $offset, $archive, $to_user_id, $for_usergroup_id) = @_;
@@ -4903,26 +4964,13 @@ sub get_sent_messages
   my $has_ug     = defined($for_usergroup_id) && $for_usergroup_id ne '' && int($for_usergroup_id) > 0;
   my $dbh = $this->{db}->{dbh};
 
-  # Sent is always backed by message_outbox: one row per send event,
-  # regardless of how many recipients (group sends write 1 outbox row +
-  # N message rows; we want the 1, not the N). When filtering by
-  # recipient or group, we join to `message` only as a semi-lookup —
-  # which (tstamp, msgtext) tuples match the filter — and apply that
-  # restriction to message_outbox.
-  #
-  # Caveat: if the recipient has deleted their copy, the corresponding
-  # `message` row is gone, so a recipient/group filter can't find it.
-  # That row drops out of the filtered Sent view. Unfiltered Sent still
-  # surfaces it (since message_outbox is intact).
+  # Sent is always backed by message_outbox: one row per send event, regardless of how many
+  # recipients (group sends write 1 outbox row + N message rows; we want the 1, not the N).
+  # Recipient/group filters: see _sent_recipient_where.
   my $where = "author_user=$author_id AND archive=$archive";
   if ($has_to_user || $has_ug) {
-    my @inner = ("m.author_user=$author_id",
-                 "m.tstamp = message_outbox.tstamp",
-                 "m.msgtext = message_outbox.msgtext");
-    push @inner, 'm.for_user=' . int($to_user_id) if $has_to_user;
-    push @inner, 'm.for_usergroup=' . int($for_usergroup_id) if $has_ug;
-    my $inner_where = join ' AND ', @inner;
-    $where .= " AND EXISTS (SELECT 1 FROM message m WHERE $inner_where)";
+    $where .= ' AND ' . $this->_sent_recipient_where($author_id,
+      ($has_to_user ? $to_user_id : undef), ($has_ug ? $for_usergroup_id : undef));
   }
 
   # Same reason as get_messages: message_outbox.tstamp has ON UPDATE
@@ -5081,19 +5129,12 @@ sub get_message_count
   if ($box_type eq 'outbox') {
     my $has_to_user = defined($to_user_id) && $to_user_id ne '' && int($to_user_id) > 0;
     my $has_ug      = defined($for_usergroup_id) && $for_usergroup_id ne '' && int($for_usergroup_id) > 0;
-    # Mirror get_sent_messages: Sent is always backed by message_outbox
-    # so the row count == send-event count (no group-send fan-out). For
-    # filtered counts we use an EXISTS join into `message` to restrict
-    # to outbox rows whose recipient/group the filter matches.
+    # Mirror get_sent_messages: Sent is always backed by message_outbox, so the row count is
+    # the send-event count (no group-send fan-out), with the same recipient/group filter.
     $where = "author_user=$user_id AND archive=$archive";
     if ($has_to_user || $has_ug) {
-      my @inner = ("m.author_user=$user_id",
-                   "m.tstamp = message_outbox.tstamp",
-                   "m.msgtext = message_outbox.msgtext");
-      push @inner, 'm.for_user=' . int($to_user_id) if $has_to_user;
-      push @inner, 'm.for_usergroup=' . int($for_usergroup_id) if $has_ug;
-      my $inner_where = join ' AND ', @inner;
-      $where .= " AND EXISTS (SELECT 1 FROM message m WHERE $inner_where)";
+      $where .= ' AND ' . $this->_sent_recipient_where($user_id,
+        ($has_to_user ? $to_user_id : undef), ($has_ug ? $for_usergroup_id : undef));
     }
     return int($this->{db}->sqlSelect("count(*)", "message_outbox", $where) // 0);
   } else {
