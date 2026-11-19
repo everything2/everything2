@@ -520,7 +520,7 @@ const MessageInbox = ({ data }) => {
           </span>
         </div>
 
-        <div className="message-inbox-sent-text">
+        <div className="message-inbox-sent-text e2-message-text">
           {/* Legacy messages contain HTML, new messages use bracket syntax */}
           {message.msgtext && message.msgtext.includes('<a ') ? (
             <span dangerouslySetInnerHTML={{ __html: sanitizeMessageHtml(message.msgtext) }} />

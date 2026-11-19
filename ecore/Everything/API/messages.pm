@@ -82,6 +82,19 @@ sub create
 
   my $data = $REQUEST->JSON_POSTDATA;
 
+  # Messages keep the sender's line breaks (shown with white-space: pre-line, #4006); tidy
+  # them so stray blank lines don't show: Windows line endings, trailing spaces on a line,
+  # more than one blank line in a row, and blank space at either end.
+  if (defined $data->{message} && !ref $data->{message})
+  {
+    my $message = $data->{message};
+    $message =~ s/\r\n?/\n/g;
+    $message =~ s/[ \t]+\n/\n/g;
+    $message =~ s/\n{3,}/\n\n/g;
+    $message =~ s/^\s+|\s+$//g;
+    $data->{message} = $message;
+  }
+
   if($data->{message})
   {
     if($data->{for})

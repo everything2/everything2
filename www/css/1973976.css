@@ -9079,6 +9079,13 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   margin-bottom: 4px;
 }
 
+/* Private message text, wherever it's shown (Messages nodelet, Chatterbox, Message Inbox,
+   mobile inbox, usergroup archive): keep the sender's line breaks, still collapse runs of
+   spaces. Messages are stored with their newlines (#4006). */
+.e2-message-text {
+  white-space: pre-line;
+}
+
 .message-list-content {
   margin-bottom: 6px;
 }

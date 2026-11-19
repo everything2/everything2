@@ -297,7 +297,7 @@ const MobileInboxModal = ({ isOpen, onClose, initialMessages = [], onMessagesUpd
                 )}
 
                 {/* Message body */}
-                <div className="mobile-message-body">
+                <div className="mobile-message-body e2-message-text">
                   <ParseLinks>{message.msgtext}</ParseLinks>
                 </div>
 
