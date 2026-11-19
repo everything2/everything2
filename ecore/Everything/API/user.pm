@@ -499,9 +499,7 @@ sub upload_image {
     }];
   }
 
-  # Build S3 key name from target user's username
-  my $basename = $target_user->title;
-  $basename =~ s/\W/_/gs;
+  my $basename = $self->homenode_image_key($target_user);
 
   # Upload to S3
   # The stored URL carries the upload time, so each upload is a new URL and can be cached hard.
@@ -665,6 +663,15 @@ sub cure_infection {
     message => "Infection cured for user " . $target_user->{title},
     username => $target_user->{title}
   }];
+}
+
+# S3 key for a user's homenode image: their id. (Keys used to be the username with non-word
+# characters turned into '_', so distinct users like 'foo-bar' and 'foo.bar' shared one image.
+# The 'id-' prefix can't occur in those older keys, which stay valid for images already uploaded.)
+sub homenode_image_key
+{
+  my ($self, $user) = @_;
+  return 'id-' . int($user->node_id);
 }
 
 1;

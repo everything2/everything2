@@ -1066,7 +1066,7 @@ sub updateNode
 			if ($field eq 'title' && $$NODE{type}{restrictdupes}
 				&& $this->sqlSelect('node_id', 'node',
 					'title='.$this->quote($$NODE{$field})
-					." AND type_nodetype=$$NODE{type_nodetype} AND node_id!=$$NODE{node_id}"))
+					.' AND type_nodetype=' . int($$NODE{type_nodetype} // 0) . ' AND node_id!=' . int($$NODE{node_id} // 0)))
 			{
 				$NODE->{title} = $ORIGINAL_NODE->{title};
 				next;
@@ -1720,9 +1720,18 @@ sub tableExists
 #	Returns
 #		1 if successful, 0 if failure, -1 if it already exists.
 #
+# A table or column name the DDL helpers will put into SQL: letters, digits and _, starting
+# with a letter or _ (MySQL's unquoted identifier rules, 64 characters at most).
+sub is_sql_identifier
+{
+	my ($this, $name) = @_;
+	return (defined $name && !ref $name && $name =~ /\A[A-Za-z_][A-Za-z0-9_]{0,63}\z/) ? 1 : 0;
+}
+
 sub createNodeTable
 {
 	my ($this, $table) = @_;
+	return 0 unless $this->is_sql_identifier($table);
 	my $tableid = $table . '_id';
 	my $result;
 
@@ -1752,6 +1761,7 @@ sub createNodeTable
 sub dropNodeTable
 {
 	my ($this, $table) = @_;
+	return 0 unless $this->is_sql_identifier($table);
 	
 	# These are the tables that we don't want to drop.  Dropping one
 	# of these, could cause the entire system to break.  If you really
@@ -1811,6 +1821,8 @@ sub addFieldToTable
 	my $sql;
 
 	return 0 if(($table eq '') || ($fieldname eq '') || ($type eq ''));
+	return 0 unless $this->is_sql_identifier($table) && $this->is_sql_identifier($fieldname);
+	return 0 unless $type =~ /\A[A-Za-z]+(?:\(\d+(?:,\d+)?\))?(?: unsigned)?\z/;
 
     if(not defined $default)
 	{
@@ -1830,7 +1842,7 @@ sub addFieldToTable
 	}
 	
 	$sql = "ALTER TABLE $table ADD $fieldname $type";
-	$sql .= " DEFAULT \"$default\" NOT NULL";
+	$sql .= " DEFAULT " . $this->quote($default) . " NOT NULL";
 
 	$this->executeQuery($sql);
 
@@ -1878,8 +1890,7 @@ sub dropFieldFromTable
 	my ($this, $table, $field) = @_;
 	my $sql;
 
-	$table = $this->quote($table);
-	$field = $this->quote($field);
+	return 0 unless $this->is_sql_identifier($table) && $this->is_sql_identifier($field);
 	$sql = "ALTER TABLE $table DROP $field";
 
 	return $this->executeQuery($sql);

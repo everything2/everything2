@@ -159,7 +159,7 @@ sub removenode
 
   my @removed;
 
-  foreach my $item_id (@{$node_ids}) {
+  foreach my $item_id (grep { $_ } map { $self->as_id($_) } @{$node_ids}) {
     # Remove directly from nodegroup table
     $self->DB->sqlDelete('nodegroup',
       'nodegroup_id=' . $group->node_id . ' AND node_id=' . $item_id);

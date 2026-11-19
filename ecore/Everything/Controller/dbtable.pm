@@ -47,21 +47,24 @@ sub display {
 
     # Get index information
     my @indexes;
-    my $idx_sth = $DB->{dbh}->prepare("SHOW INDEX FROM $table_name");
-    $idx_sth->execute();
-    while (my $rec = $idx_sth->fetchrow_hashref()) {
-        push @indexes, {
-            key_name => $rec->{Key_name},
-            seq_in_index => $rec->{Seq_in_index},
-            column_name => $rec->{Column_name},
-            collation => $rec->{Collation},
-            cardinality => $rec->{Cardinality},
-            sub_part => $rec->{Sub_part},
-            packed => $rec->{Packed},
-            comment => $rec->{Comment} // $rec->{Index_comment} // '',
-        };
+    # The table name is the node's title; only a valid identifier goes into SQL.
+    if ($DB->is_sql_identifier($table_name)) {
+      my $idx_sth = $DB->{dbh}->prepare("SHOW INDEX FROM $table_name");
+      $idx_sth->execute();
+      while (my $rec = $idx_sth->fetchrow_hashref()) {
+          push @indexes, {
+              key_name => $rec->{Key_name},
+              seq_in_index => $rec->{Seq_in_index},
+              column_name => $rec->{Column_name},
+              collation => $rec->{Collation},
+              cardinality => $rec->{Cardinality},
+              sub_part => $rec->{Sub_part},
+              packed => $rec->{Packed},
+              comment => $rec->{Comment} // $rec->{Index_comment} // '',
+          };
+      }
+      $idx_sth->finish();
     }
-    $idx_sth->finish();
 
     # Build user data
     my $user_data = {

@@ -1473,14 +1473,35 @@ sub basicedit_node
   }
 
   my $fields_to_update = $data->{fields};
-  my @updated_fields;
+  my (@updated_fields, @skipped_fields);
+
+  # Only this node's real columns, and only plain values: integer columns take digits.
+  # (The node hash also carries things like its type object, which a column edit must
+  # never replace.)
+  my %column_type;
+  my $tables = [ @{ $NODE->{type}{tableArray} || [] }, 'node' ];
+  foreach my $table (values %{ $DB->getFieldsHash($tables) || {} })
+  {
+    $column_type{ $_->{COLUMN_NAME} } = lc($_->{DATA_TYPE} // '') foreach values %$table;
+  }
+  my %integer_type = map { $_ => 1 } qw(int integer tinyint smallint mediumint bigint);
 
   foreach my $field_name (keys %$fields_to_update)
   {
     # Skip node_id - it should never be changed
     next if $field_name eq 'node_id';
 
-    $NODE->{$field_name} = $fields_to_update->{$field_name};
+    my $value = $fields_to_update->{$field_name};
+    my $type  = $column_type{$field_name};
+    if (!defined $type || ref $value
+      || ($integer_type{$type} && !(defined $value && "$value" =~ /\A-?\d{1,19}\z/)))
+    {
+      push @skipped_fields, $field_name;
+      next;
+    }
+    $value = int($value) if $integer_type{$type};
+
+    $NODE->{$field_name} = $value;
     push @updated_fields, $field_name;
   }
 
@@ -1489,7 +1510,8 @@ sub basicedit_node
     return [$self->HTTP_OK, {
       success => 0,
       error => 'No changes',
-      message => 'No fields provided for update'
+      message => 'No fields provided for update',
+      (@skipped_fields ? (skippedFields => \@skipped_fields) : ()),
     }];
   }
 
@@ -1509,6 +1531,7 @@ sub basicedit_node
     title => $NODE->{title},
     nodeType => $nodetype,
     updatedFields => \@updated_fields,
+    (@skipped_fields ? (skippedFields => \@skipped_fields) : ()),
   }];
 }
 
