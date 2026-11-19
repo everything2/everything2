@@ -165,11 +165,14 @@ sub delete_vote
     return [$self->HTTP_NOT_FOUND, { error => 'Poll not found' }];
   }
 
-  # Delete votes
+  # Delete votes. A voter_user that is given must be a user id; never fall through to
+  # deleting every vote because it wasn't one.
   my $deleted_count = 0;
   if (defined $voter_user) {
+    my $voter_id = $self->as_id($voter_user);
+    return [$self->HTTP_OK, { success => 0, error => 'voter_user must be a user id' }] unless $voter_id;
     # Delete vote for specific user
-    my $where = 'voter_user=' . $voter_user . ' AND pollvote_id=' . $poll->{node_id};
+    my $where = 'voter_user=' . $voter_id . ' AND pollvote_id=' . int($poll->{node_id});
     my $vote = $DB->sqlSelect('choice', 'pollvote', $where);
 
     if (defined $vote) {

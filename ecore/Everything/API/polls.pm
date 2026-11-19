@@ -191,7 +191,7 @@ sub set_current_poll {
       ]
       unless $json_ok && $data;
 
-    my $poll_id = $data->{poll_id};
+    my $poll_id = $self->as_id( $data->{poll_id} );
 
     return [
         $self->HTTP_OK,
@@ -268,7 +268,7 @@ sub delete_poll {
       ]
       unless $json_ok && $data;
 
-    my $poll_id = $data->{poll_id};
+    my $poll_id = $self->as_id( $data->{poll_id} );
 
     return [
         $self->HTTP_OK,

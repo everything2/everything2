@@ -666,6 +666,10 @@ sub draft_update
   my ($N) = @_;
   $DB->getRef($N);
 
+  # The ids this hook puts into SQL come from the in-memory node being saved: numbers only.
+  my $as_number = sub { my ($v) = @_; return (defined $v && !ref $v && "$v" =~ /\A\d+\z/) ? int($v) : 0 };
+  my ($author_id, $type_id, $node_id) = map { $as_number->($$N{$_}) } qw(author_user type_nodetype node_id);
+
   # validate new publication_status. Make 'private' if invalid.
   # notify editor(s) if status changed to review:
   if ($query && $query->param('draft_publication_status') &&
@@ -684,22 +688,22 @@ sub draft_update
       my $editor = $DB->sqlSelect(
         'nodelock_user'
         , 'nodelock'
-        , "nodelock_node=$$N{author_user}"
+        , "nodelock_node=$author_id"
       );
 
       $editor ||= $DB->sqlSelect(
         'suspendedby_user'
         , 'suspension'
-        , "suspension_user=$$N{author_user}
+        , "suspension_user=$author_id
         AND suspension_sustype=".getId(getNode('writeup', 'sustype'))
       );
 
       # record event in node history:
       my $note = ''; $note = ' (while suspended by '.$APP->linkNode($editor).') ' if $editor;
-      my $nodenote_id = $APP->add_nodenote($$N{node_id}, "author requested review$note");
+      my $nodenote_id = $APP->add_nodenote($node_id, "author requested review$note");
 
       # Notify. If no $editor, everyone gets it:
-      $APP->add_notification('draft for review', $editor, {draft_id => $$N{node_id}, nodenote_id => $nodenote_id});
+      $APP->add_notification('draft for review', $editor, {draft_id => $node_id, nodenote_id => $nodenote_id});
 
     }
   }
@@ -713,11 +717,11 @@ sub draft_update
       'node_id',
       'node',
       'title='.$DB->quote($title)
-      ."AND type_nodetype=$$N{type_nodetype} AND author_user=$$N{author_user} AND node_id!=$$N{node_id}") or
+      ."AND type_nodetype=$type_id AND author_user=$author_id AND node_id!=$node_id") or
     $DB->sqlSelect(
       'writeup_id',
       'node e2 JOIN writeup ON e2.node_id=parent_e2node JOIN node wu ON wu.node_id=writeup_id',
-      'e2.title='.$DB->quote($title)."AND wu.author_user=$$N{author_user}")
+      'e2.title='.$DB->quote($title)."AND wu.author_user=$author_id")
   ){
     $title = "$urTitle ($count)";
     $count++;
