@@ -49,7 +49,7 @@ sub update_category {
     return [$self->HTTP_OK, { success => 0, error => 'Invalid request body' }];
   }
 
-  my $node_id = $data->{node_id};
+  my $node_id = $self->as_id($data->{node_id});
   my $doctext = $data->{doctext};
 
   unless ($node_id) {
@@ -147,7 +147,7 @@ sub update_category_meta {
     return [$self->HTTP_OK, { success => 0, error => 'Invalid request body' }];
   }
 
-  my $node_id = $data->{node_id};
+  my $node_id = $self->as_id($data->{node_id});
   unless ($node_id) {
     return [$self->HTTP_OK, { success => 0, error => 'node_id is required' }];
   }
@@ -249,7 +249,7 @@ sub reorder_members {
     return [$self->HTTP_OK, { success => 0, error => 'Invalid request body' }];
   }
 
-  my $node_id = $data->{node_id};
+  my $node_id = $self->as_id($data->{node_id});
   my $member_ids = $data->{member_ids};
 
   unless ($node_id) {
@@ -302,7 +302,7 @@ sub reorder_members {
 
   # Update food values for each member in order
   my $food = 10;
-  foreach my $member_id (@$member_ids) {
+  foreach my $member_id (grep { $_ } map { $self->as_id($_) } @$member_ids) {
     $DB->sqlUpdate(
       'links',
       { food => $food },
@@ -340,8 +340,8 @@ sub remove_member {
     return [$self->HTTP_OK, { success => 0, error => 'Invalid request body' }];
   }
 
-  my $node_id = $data->{node_id};
-  my $member_id = $data->{member_id};
+  my $node_id = $self->as_id($data->{node_id});
+  my $member_id = $self->as_id($data->{member_id});
 
   unless ($node_id && $member_id) {
     return [$self->HTTP_OK, { success => 0, error => 'node_id and member_id are required' }];
@@ -457,7 +457,7 @@ sub list_categories {
     return [$self->HTTP_OK, { success => 0, error => 'Must be logged in' }];
   }
 
-  my $target_node_id = $REQUEST->cgi->param('node_id');
+  my $target_node_id = $self->as_id(scalar $REQUEST->cgi->param('node_id'));
 
   my $guest_user_id = $self->CONF->guest_user;
   my $uid = $user->node_id;
@@ -598,8 +598,8 @@ sub add_member {
     return [$self->HTTP_OK, { success => 0, error => 'Invalid request body' }];
   }
 
-  my $category_id = $data->{category_id};
-  my $node_id = $data->{node_id};
+  my $category_id = $self->as_id($data->{category_id});
+  my $node_id = $self->as_id($data->{node_id});
 
   unless ($category_id && $node_id) {
     return [$self->HTTP_OK, { success => 0, error => 'category_id and node_id are required' }];
@@ -711,7 +711,7 @@ sub node_categories {
   my $is_guest = $user->is_guest;
   my $uid = $is_guest ? 0 : $user->node_id;
 
-  my $node_id = $REQUEST->cgi->param('node_id');
+  my $node_id = $self->as_id(scalar $REQUEST->cgi->param('node_id'));
   unless ($node_id) {
     return [$self->HTTP_OK, { success => 0, error => 'node_id is required' }];
   }
@@ -885,7 +885,7 @@ sub create {
 
   # Resolve + validate the maintainer (author_user). Default to the creator.
   my $guest_user_id = $self->CONF->guest_user;
-  my $maint_id = int($data->{maintainer} || 0) || $user->node_id;
+  my $maint_id = $self->as_id($data->{maintainer}) || $user->node_id;
   my $MAINT      = $APP->node_by_id($maint_id);
   my $maint_type = $MAINT ? $MAINT->type->title : '';
 

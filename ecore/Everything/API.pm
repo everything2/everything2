@@ -208,5 +208,15 @@ sub unauthorized_unless_editor
   return $self->unauthorized_unless_type($orig,$REQUEST,"editor", @_);
 }
 
+# A node id from request input (a param, a JSON field, an array element): the integer when the
+# value is all digits, otherwise 0. Use it before an id goes anywhere near SQL; callers already
+# treat 0 as "missing". Quiet on junk input (int() would warn, and accept "12 OR 1=1" as 12).
+sub as_id
+{
+  my ($self, $value) = @_;
+  return 0 unless defined $value && !ref $value;
+  return "$value" =~ /\A\d{1,18}\z/ ? int($value) : 0;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
