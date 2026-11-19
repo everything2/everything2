@@ -16,12 +16,13 @@ const msg = require('./fixtures/messages')
  *     sender, Chatterbox mini messages and a multi-line reply typed from them (desktop), a
  *     multi-line reply through the Inbox's reply dialog, the Archived view;
  *   - sender: both replies in their messages, the Chatterlight page (its header Messages box
- *     shows a reply, and a multi-line message composed there arrives intact), the Sent tab, the
- *     Message Outbox page, and /msg from the Chatterbox (one line) arriving intact (desktop).
+ *     shows a reply, and a multi-line message composed there arrives intact), the Sent tab
+ *     unfiltered and filtered by recipient (#4701), the Message Outbox page, and /msg from the
+ *     Chatterbox (one line) arriving intact (desktop).
  *   The Chatterbox and Chatterlight chat input itself is one line (an <input>); multi-line
  *   typing in the chat components happens in their message dialogs, covered here.
- * Usergroup (genericdev -> edev): the sender's own Inbox copy, the usergroup message archive,
- *   and a multi-line reply-all.
+ * Usergroup (genericdev -> edev): the sender's own Inbox copy, a multi-line reply-all, Sent
+ *   filtered to the group (#4701), and the usergroup message archive.
  *
  * Sidebars are restored and private messages deleted afterwards (the archive is a log).
  * Watch: `./tools/e2e-demo.sh message-newlines` (E2E_DEMO_DEVICE=mobile too).
@@ -144,12 +145,13 @@ test.describe('Message line breaks', () => {
       await lineCheck(recipient.page, fromCl, fromChatterlight.join('\n'), 'the Chatterlight message arrives with its line breaks')
       if (recipient.device === 'mobile') await recipient.page.keyboard.press('Escape')
 
-      // 6. Sender: Sent. (Sent filtered by recipient is its own test below: that filter
-      // currently finds nothing for any message, one line or many.)
+      // 6. Sender: Sent, then filtered by recipient (#4701).
       await sender.page.goto('/title/Message+Inbox')
       await demo.click(sender.page.locator('.message-inbox-tab', { hasText: 'Sent' }))
       const sentItem = () => sender.page.locator('.message-inbox .message-inbox-sent-text', { hasText: `newline check ${stamp}` }).first()
       await lineCheck(sender.page, sentItem(), shown, 'Sent: line breaks show', { contains: true })
+      await filterBy(sender.page, RECIPIENT)
+      await lineCheck(sender.page, sentItem(), shown, `Sent filtered to ${RECIPIENT}: line breaks show`, { contains: true })
 
       // The Message Outbox page: Message Inbox opened straight on Sent.
       await sender.page.goto('/title/Message+Outbox')
@@ -183,28 +185,6 @@ test.describe('Message line breaks', () => {
     }, { cleanup })
   })
 
-  // Known gap (#4701): the Sent tab's recipient filter matches a Sent row to the recipient's copy by
-  // equal text, but Sent copies are stored as 'you said "..." to [name]', so it never matches.
-  // Remove .fixme when that's fixed.
-  test.fixme('Sent filtered by recipient shows the message', async ({ browser }) => {
-    const stamp = Date.now().toString(36)
-    const sender = await demo.actor(browser, `${SENDER} (sends)`, '#38495e')
-    await loginAs(sender.page, SENDER, 'blah')
-    const before = await msg.getNodelets(sender.page)
-    try {
-      await msg.setNodelets(sender.page, [msg.NODELETS.messages, ...before.filter((id) => id !== msg.NODELETS.messages)])
-      await sender.page.reload()
-      await msg.sendMessage(sender, RECIPIENT, [`Sent filter check ${stamp}`, 'second line'])
-      await sender.page.goto('/title/Message+Inbox')
-      await sender.page.locator('.message-inbox-tab', { hasText: 'Sent' }).click()
-      await filterBy(sender.page, RECIPIENT)
-      await lineCheck(sender.page, sender.page.locator('.message-inbox .message-inbox-sent-text', { hasText: stamp }).first(),
-        `Sent filter check ${stamp}\nsecond line`, `Sent filtered to ${RECIPIENT}`, { contains: true })
-    } finally {
-      await msg.setNodelets(sender.page, before).catch(() => {})
-    }
-  })
-
   test('usergroup messages keep their line breaks in the inbox, the archive and reply-all', async ({ browser }) => {
     const stamp = Date.now().toString(36)
     const lines = [`Group newline check ${stamp}`, 'second line for the archive']
@@ -229,6 +209,16 @@ test.describe('Message line breaks', () => {
 
       await demo.step(page, 'replies to all of edev, over two lines')
       await msg.replyTo(page, own, replyAll, { all: true, expectTo: 'edev' })
+
+      // Sent, filtered to the edev group (#4701).
+      await page.goto('/title/Message+Inbox')
+      await demo.click(page.locator('.message-inbox-tab', { hasText: 'Sent' }))
+      await demo.click(page.locator('.message-inbox-filters-toggle'))
+      const groupSelect = page.locator('.message-inbox-filter-group', { hasText: 'Sent to Usergroup' }).locator('select')
+      await groupSelect.selectOption({ label: 'edev' })
+      await expect(page.locator('.message-inbox-filter-chip', { hasText: 'edev' })).toBeVisible({ timeout: 10000 })
+      await lineCheck(page, page.locator('.message-inbox .message-inbox-sent-text', { hasText: `newline check ${stamp}` }).first(),
+        lines.join('\n'), 'Sent filtered to edev: line breaks show', { contains: true })
 
       await page.goto('/title/usergroup+message+archive?viewgroup=edev')
       await lineCheck(page, page.locator('td.usergroup-archive__td', { hasText: `newline check ${stamp}` }).first(),

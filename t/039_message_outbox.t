@@ -192,6 +192,62 @@ subtest '/msg command via chatter API creates outbox' => sub {
     is($outbox_msg->{msgtext}, $inbox_msg->{msgtext}, 'Inbox and outbox have same message text');
 };
 
+#############################################################################
+# Sent filtered by recipient / usergroup (#4701): every Sent text form
+#############################################################################
+
+subtest 'Sent filters by recipient and usergroup across every Sent text form' => sub {
+    my $other = TestSeed::make_user($DB, $APP, label => 'other');
+    my $edev  = $DB->getNode('edev', 'usergroup');
+    ok($other && $edev, 'a second recipient and a usergroup');
+    my ($me, $r, $o) = ($sender->{user_id}, $recipient->{title}, $other->{title});
+    $DB->sqlDelete('message_outbox', "author_user=$me");
+
+    my %id;
+    my $add = sub {
+        my ($key, $text, $archive) = @_;
+        $DB->sqlInsert('message_outbox', { author_user => $me, msgtext => $text, archive => $archive // 0 });
+        $id{$key} = $DB->sqlSelect('LAST_INSERT_ID()');
+    };
+    (my $r_href = $r) =~ s/ /+/g;
+    $add->(api_user     => qq{you said "api 100% done_now" to [$r]});
+    $add->(api_group    => qq{you said "api group" to [edev] (usergroup)});
+    $add->(cannon       => qq{you said "cannon" to [$o], [$r]});
+    $add->(legacy_user  => qq{you said "old one" to <a href="/user/$r_href">$r</a> (sent  to 1 noder)});
+    $add->(legacy_group => qq{you said "old group" to <a href="/node/usergroup/edev">edev</a> (sent  to 5 noders and 1 group)});
+    $add->(api_other    => qq{you said "to the other" to [$o]});
+    # The message itself mentions the recipient; it was sent to the other user.
+    $add->(decoy        => qq{you said "this mentions" to [$r]" to [$o]});
+    $add->(archived     => qq{you said "archived one" to [$r]}, 1);
+    # Archiving updates a Sent row's tstamp; the filter must not depend on it.
+    $DB->{dbh}->do("UPDATE message_outbox SET tstamp = tstamp + INTERVAL 1 HOUR WHERE message_id=$id{archived}");
+
+    # sendPrivateMessage stores the plain text; only the recipient's copy says who it was for.
+    $APP->sendPrivateMessage($sender, $recipient, "plain to recipient $$");
+    $id{plain_user} = $DB->sqlSelect('MAX(message_id)', 'message_outbox', "author_user=$me");
+    $APP->sendPrivateMessage($sender, $other, "plain to other $$");
+    $id{plain_other} = $DB->sqlSelect('MAX(message_id)', 'message_outbox', "author_user=$me");
+
+    my $ids = sub {
+        my ($archive, $to, $ug) = @_;
+        my $rows = $APP->get_sent_messages($sender, 50, 0, $archive, $to, $ug);
+        my %rev = reverse %id;
+        return [ sort map { $rev{ $_->{message_id} } // "unexpected:$_->{message_id}" } @$rows ];
+    };
+    my $count = sub { my ($archive, $to, $ug) = @_; return $APP->get_message_count($sender, 'outbox', $archive, $ug, undef, $to) };
+
+    is_deeply($ids->(0, $recipient->{user_id}), [sort qw(api_user cannon legacy_user plain_user)], 'to the recipient: API, spam cannon, pre-2026 and plain forms');
+    is($count->(0, $recipient->{user_id}), 4, '... and the count agrees');
+    is_deeply($ids->(0, $other->{user_id}), [sort qw(cannon api_other decoy plain_other)], 'to the other user, including the one whose text mentions the recipient');
+    is($count->(0, $other->{user_id}), 4, '... and the count agrees');
+    is_deeply($ids->(0, undef, $edev->{node_id}), [sort qw(api_group legacy_group)], 'to the edev group: API and pre-2026 forms');
+    is($count->(0, undef, $edev->{node_id}), 2, '... and the count agrees');
+    is_deeply($ids->(1, $recipient->{user_id}), ['archived'], 'archived Sent rows filter too, whatever their timestamp');
+    is(scalar @{ $APP->get_sent_messages($sender, 50, 0, 0) }, 9, 'unfiltered Sent still lists every active row (7 inserted + 2 plain)');
+
+    $DB->sqlDelete('message', "author_user=$me");
+};
+
 # Clean up
 $DB->sqlDelete('message', "for_user=$sender->{user_id} OR for_user=$recipient->{user_id}");
 $DB->sqlDelete('message_outbox', "author_user=$sender->{user_id}");
