@@ -17,13 +17,20 @@ sub _build_base_controller {
   return Everything::Controller->new;
 }
 
+# The display types a request may ask for (?displaytype=). Each is a view method a controller
+# implements; route_node calls the method by this name, so only these names may reach it.
+# Anything else (including legacy names crawlers still send) gets the node's 'display' view.
+my %DISPLAYTYPES = map { $_ => 1 } qw(display edit xml basicedit editvars softlinks useredit compact replyto atom);
+
+sub is_displaytype { my ($self, $name) = @_; return defined $name && $DISPLAYTYPES{$name} ? 1 : 0 }
+
 sub can_route
 {
   my ($self, $NODE, $displaytype) = @_;
 
   $displaytype ||= "display";
 
-  unless(grep { $displaytype eq $_ } ("display","edit","xml","basicedit","editvars","softlinks","useredit","compact","replyto","atom"))
+  unless($self->is_displaytype($displaytype))
   {
     $self->devLog("Using banned displaytype: '$displaytype', falling back");
     return 0;
@@ -51,6 +58,7 @@ sub route_node
 {
   my ($self, $NODE, $displaytype, $REQUEST) = @_;
   $displaytype ||= "display";
+  $displaytype = 'display' unless $self->is_displaytype($displaytype);
 
   # Get the nodetype title from the already-loaded $NODE hashref
   # Don't use $node->type->title as it triggers node_by_id which has cache issues
