@@ -21,8 +21,8 @@ require Plack::Test;
 require HTTP::Request::Common;
 my $test = Plack::Test->create($app);
 
-# A returning user (has signed in before); a never-signed-in user hits #4709.
-my $user = TestSeed::make_user( $DB, $APP, label => 'pwchange', password => 'blah', lasttime => '2026-01-01 00:00:00' );
+# Never signed in before: this request is their first (the case #4709 broke).
+my $user = TestSeed::make_user( $DB, $APP, label => 'pwchange', password => 'blah' );
 END { TestSeed::cleanup($DB) }
 my $name = $user->{title};
 my $cookie_name = $Everything::CONF->cookiepass;

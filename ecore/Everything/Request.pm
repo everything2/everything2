@@ -318,7 +318,8 @@ sub get_current_user
     $sth->execute($user_id);
     ($seconds_since_last, $now) = $sth->fetchrow_array();
 
-    $dbh->do("UPDATE user SET lasttime = NOW() WHERE user_id = ?", undef, $user_id);
+    # Write the same NOW() the SELECT read, so the copy updated below matches the row exactly.
+    $dbh->do("UPDATE user SET lasttime = ? WHERE user_id = ?", undef, $now, $user_id) if defined $now;
 
     $dbh->commit;
     1;
@@ -336,7 +337,20 @@ sub get_current_user
     $seconds_since_last = 0;
   }
 
-  $user->NODEDATA->{lastseen} = $now;
+  # This is the one writer of lasttime (updateNode never writes it: NodeBase %UPDATE_NEVER_WRITES).
+  # Like the other targeted user writes (Application::updatePassword), bump the node version so
+  # every other worker reloads its cached copy instead of showing an old "last seen", and
+  # re-cache this worker's copy with the new time.
+  if ($txn_ok && defined $now)
+  {
+    my $node = $user->NODEDATA;
+    $node->{lasttime} = $now;
+    if (my $cache = $self->DB->{cache})
+    {
+      $cache->incrementGlobalVersion($node);
+      $cache->cacheNode($node);
+    }
+  }
 
   $self->APP->insertIntoRoom($user->in_room, $user->NODEDATA, $user->VARS) if($force_room_insert || $seconds_since_last > $TIMEOUT_SECONDS || $self->APP->inDevEnvironment);
   if($ENV{HTTP_USER_AGENT})

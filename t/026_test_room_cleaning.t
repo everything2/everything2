@@ -18,14 +18,18 @@ my $long_enough = $Everything::CONF->logged_in_threshold+100;
 
 $DB->executeQuery("DELETE from room");
 
+# lasttime has one writer (Everything::Request); updateNode never writes it, so set it directly.
+my $set_lasttime = sub {
+  my ($u, $expr) = @_;
+  $DB->sqlUpdate('user', { -lasttime => $expr }, "user_id=" . int($u->{node_id}));
+};
+
 my $cme = $DB->getNode("Cool Man Eddie","user");
-$cme->{lasttime} = $DB->sqlSelect("DATE_SUB(NOW(),INTERVAL $long_enough second)");
+$set_lasttime->($cme, "DATE_SUB(NOW(),INTERVAL $long_enough second)");
 $APP->changeRoom($cme,0);
-$DB->updateNode($cme, -1);
 
 my $webby = $DB->getNode("Webster 1913","user");
-$webby->{lasttime} = $DB->sqlSelect("NOW()");
-$DB->updateNode($webby, -1);
+$set_lasttime->($webby, "NOW()");
 
 my $actions = $APP->refreshRoomUsers;
 my $expected_results = [0,0];
@@ -43,7 +47,7 @@ my $pa = getNode("Political Asylum","room");
 ok(exists($pa->{node_id}), "PA exists");
 
 # We can't use changeRoom here because it updates room. We have to artificially time the user out
-$cme->{lasttime} = $DB->sqlSelect("NOW()");
+$set_lasttime->($cme, "NOW()");
 $cme->{in_room} = $pa->{node_id};
 $DB->updateNode($cme, -1);
 
@@ -57,8 +61,7 @@ foreach my $action(@$actions)
 
 ok($expected_results->[0] == 1, "CME entered PA correctly");
 
-$cme->{lasttime} = $DB->sqlSelect("DATE_SUB(NOW(),INTERVAL $long_enough second)");
-$DB->updateNode($cme, -1);
+$set_lasttime->($cme, "DATE_SUB(NOW(),INTERVAL $long_enough second)");
 
 $actions = $APP->refreshRoomUsers;
 $expected_results = [0];
