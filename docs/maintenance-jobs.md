@@ -1,6 +1,6 @@
 # One-off maintenance jobs (Fargate + single S3 bucket)
 
-**Last verified:** 2026-11-16
+**Last verified:** 2026-11-21
 
 Some maintenance has to run **inside the VPC** (to reach RDS) but we have no direct VPC
 access. This facility (#4282) runs a script inside a one-off Fargate task using the
@@ -54,6 +54,16 @@ can optionally add a bucket policy denying `PutObject` except from a named admin
 ## Past jobs
 
 The first job was `tools/jobs/seclog_time_repair.pl` (restored `seclog.seclog_time` from a
-PITR copy). It ran once and was removed with the seclog retirement; `tools/jobs/` no longer
-exists. See `git log --all -- tools/jobs/seclog_time_repair.pl` for it as an example of the
-pattern (one in-VPC script reaching both prod and a temporary restored instance).
+PITR copy). It ran once and was removed with the seclog retirement. See
+`git log --all -- tools/jobs/seclog_time_repair.pl` for it as an example of the pattern (one
+in-VPC script reaching both prod and a temporary restored instance).
+
+## Current jobs
+
+- **`tools/jobs/tomb_stale_rows.pl`** (#4715) prunes tomb rows that belong to live nodes
+  (left behind by old resurrections). A row is deleted only once it's validated as an older
+  copy of the live node: same type and createtime, and where both have an edittime, the live
+  node's is no older. Rows that don't validate are listed with the reason and left alone. It
+  does a dry run that only lists them unless `E2_APPLY=1`; `E2_TOMB_ONLY=<ids>` limits it to
+  particular nodes. It never prints stored contents, and running it again finds nothing.
+  Covered by `t/236_tomb_stale_rows.t`.

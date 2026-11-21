@@ -1282,6 +1282,10 @@ sub insertNode
 #       if we ever need to restore it, we can
 #       take same params as nukeNode
 #
+#   returns
+#       true if the copy was stored. A node deleted before (and brought back)
+#       may still have an older tomb row; this copy replaces it.
+#
 sub tombstoneNode {
     my ($this, $NODE, $USER) = @_;
 
@@ -1299,8 +1303,8 @@ sub tombstoneNode {
 
     use Data::Dumper;
     $N{data} = Data::Dumper->Dump([\%data]);
-    $this->sqlInsert('tomb', \%N);
-    return;
+    my %replace = map { $_ => $N{$_} } grep { $_ ne 'node_id' } keys %N;
+    return $this->sqlInsert('tomb', \%N, \%replace) ? 1 : 0;
 }
 
 
@@ -1331,7 +1335,12 @@ sub nukeNode
 
 	return unless ($this->canDeleteNode($USER, $NODE));
 
-	$this->tombstoneNode($NODE, $USER) unless $NOTOMB;
+	# Never delete a node whose copy couldn't be stored. Production's handle
+	# doesn't die on a failed write, so check the result.
+	unless ($NOTOMB)
+	{
+		return 0 unless $this->tombstoneNode($NODE, $USER);
+	}
 
 	# This node is about to be deleted.  Do any maintenance if needed.
 	$this->nodeMaintenance($NODE, 'delete') unless $skip_maintenance;
