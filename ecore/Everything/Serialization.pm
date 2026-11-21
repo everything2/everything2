@@ -9,33 +9,37 @@ package Everything::Serialization;
 #
 # Everything::Serialization
 #
-# Safe deserialization utilities for legacy data
-#
-# This module provides safe alternatives to eval() for deserializing
-# legacy Perl data structures stored in Data::Dumper format in the database.
+# Reading back legacy data stored as Data::Dumper output (the tomb copies
+# nukeNode writes, and the heaven table).
 #
 #############################################################################
 
 use Safe;
-use Opcode qw(opset opdesc full_opset);
 use Exporter 'import';
 
 our @EXPORT_OK = qw(safe_deserialize_dumper);
 
+# Data::Dumper output only builds data: constants, anonymous hashes and arrays, references,
+# element reads/assignments (for $VAR1->{...} back-references), lexical variables, and bless.
+# The compartment permits exactly those operations and nothing else, so anything beyond plain
+# data fails to compile instead of running.
+my @PERMITTED = (':base_core', ':base_mem', qw(padany srefgen refgen bless));
+
+# :base_core also carries calling subs and methods and regex matching; plain data needs neither.
+my @DENIED = qw(
+    entersub leavesub leavesublv rv2cv anoncode anonconst prototype coreargs
+    method method_named method_super method_redir method_redir_super
+    match qr split
+);
+
 #############################################################################
 # safe_deserialize_dumper
 #
-# Safely deserialize Data::Dumper format data using Safe compartment
-#
 # Arguments:
-#   $data - String containing Perl code in Data::Dumper format
-#           (e.g., "$VAR1 = { ... };" or "my $VAR1 = { ... };")
+#   $data - Data::Dumper output ("$VAR1 = { ... };" or "my $VAR1 = { ... };")
 #
 # Returns:
-#   Hashref containing the deserialized data, or undef on error
-#
-# This uses Safe.pm to evaluate the data in a restricted compartment
-# with only safe operations allowed (no system calls, file I/O, etc.)
+#   The rebuilt data structure, or undef if it is empty or not plain Dumper data
 #############################################################################
 
 sub safe_deserialize_dumper
@@ -45,48 +49,33 @@ sub safe_deserialize_dumper
     return unless defined $data;
     return unless length($data) > 0;
 
-    # Create a restricted Safe compartment
     my $compartment = Safe->new();
+    $compartment->permit_only(@PERMITTED);
+    $compartment->deny(@DENIED);
 
-    # Start with full operation set, then deny dangerous operations
-    # This is more maintainable than trying to permit every needed operation
-    my $opset = full_opset();
-
-    # Deny dangerous operations: system calls, exec, file I/O, etc.
-    $opset = opset(':dangerous', qw(
-        syscall
-        backtick
-        system
-        exec
-        fork
-        wait
-        waitpid
-        glob
-        require
-        dofile
-        entereval
-    ));
-
-    $compartment->deny_only($opset);
-
-    # Prepare the code for evaluation
-    # Data::Dumper format is typically: $VAR1 = { ... };
-    # We want to return the value, so wrap it appropriately
     my $code = $data;
 
-    # If the data doesn't start with 'my', prepend it for lexical scope
+    # Data::Dumper writes any code reference as this placeholder: there was never code to rebuild
+    # (old htmlcode copies carry a cached compiledCode), so it reads back as undef.
+    $code =~ s/(=>\s*)sub \{ "DUMMY" \}(?=\s*[,}\]])/${1}undef/g;
+
+    # A copy stored in Dumper's terse form is a bare { ... } / [ ... ] with no "$VAR1 =".
+    # Callers prefix "my ", so drop that and assign it.
+    if ($code =~ s/^\s*(?:my\s+)?(?=[\{\[])/my \$VAR1 = /) {
+        $code =~ s/;?\s*\z/;/;
+    }
+
+    # Evaluate in lexical scope
     unless ($code =~ /^\s*my\s+/) {
         $code = "my $code";
     }
 
-    # Ensure we return the value
-    # Look for $VAR1 or similar variable and return it
+    # Return the assigned variable ($VAR1)
     if ($code =~ /\$(\w+)\s*=/) {
         my $varname = $1;
         $code .= "\n\$$varname;";
     }
 
-    # Evaluate in the safe compartment
     my $result = $compartment->reval($code);
 
     if ($@) {
