@@ -23,6 +23,14 @@ use Scalar::Util ();   # called fully-qualified: Test::Deep::NoTest already expo
 
 ## no critic (ProhibitAutomaticExportation,RequireUseWarnings)
 
+# Columns updateNode never writes. Each has one dedicated writer that sets it with its own
+# targeted UPDATE, so a node copy loaded earlier (often the long-lived cached one) holds a stale
+# value; writing that back would roll the column back. user.lasttime, the "last seen" time, is
+# set only by Everything::Request when a signed-in user makes a request, and old accounts keep it
+# as a memorial, so ordinary saves (profile, VARS, GP, admin edits) must never touch it.
+# insertNode still sets these on a brand-new node.
+our %UPDATE_NEVER_WRITES = ( user => { lasttime => 1 } );
+
 sub BEGIN
 {
 	use Exporter ();
@@ -1056,6 +1064,13 @@ sub updateNode
 
 			# we don't want to chance mucking with the primary key
 			next if $field eq $table . '_id';
+			# columns with their own dedicated writer: keep the caller's copy in step with the
+			# database instead of writing the copy's (possibly stale) value
+			if (($UPDATE_NEVER_WRITES{$table} || {})->{$field})
+			{
+				$NODE->{$field} = $ORIGINAL_NODE->{$field} if UNIVERSAL::isa($ORIGINAL_NODE, 'HASH');
+				next;
+			}
 			# don't write a value if we haven't changed it since we read the node
 			if(UNIVERSAL::isa($ORIGINAL_NODE,'HASH') and eq_deeply($ORIGINAL_NODE->{$field}, $NODE->{$field}))
 			{
@@ -1242,6 +1257,15 @@ sub insertNode
 
 	if ($NODEDATA)
 	{
+		# updateNode leaves %UPDATE_NEVER_WRITES columns alone, so set any of those given for this
+		# new node directly first (updateNode then keeps the copy in step with them).
+		my %node_tables = map { $_ => 1 } @{$NODE->{type}{tableArray} || []};
+		foreach my $table (grep { $node_tables{$_} } keys %UPDATE_NEVER_WRITES)
+		{
+			my %set = map { $_ => $NODEDATA->{$_} } grep { exists $NODEDATA->{$_} } keys %{$UPDATE_NEVER_WRITES{$table}};
+			$this->sqlUpdate($table, \%set, "${table}_id=" . int($node_id)) if %set;
+		}
+
 		@$NODE{keys %$NODEDATA} = values %$NODEDATA;
 		$this->updateNode($NODE, $USER, undef, $skip_maintenance); 
 	}

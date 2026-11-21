@@ -1103,6 +1103,7 @@ sub cleanup_test_nodes {
         my ( $create_status, $create_response ) =
           @{ $api->create_draft($regular_request) };
         my $draft_id = $create_response->{draft}{node_id};
+        ok( $draft_id, "Draft $i created" ) or diag explain $create_response;
         push @draft_ids, $draft_id;
 
         $regular_request->set_postdata(
@@ -1115,6 +1116,7 @@ sub cleanup_test_nodes {
         my ( $publish_status, $publish_response ) =
           @{ $api->publish_draft( $regular_request, $draft_id ) };
         is( $publish_status, $api->HTTP_OK, "Writeup $i published" );
+        ok( $publish_response->{success}, "Writeup $i publish succeeded" ) or diag explain $publish_response;
 
         # MySQL datetime has 1-second resolution, so we need at least 1 second
         # between publishes to ensure distinct publishtimes
@@ -1132,7 +1134,13 @@ sub cleanup_test_nodes {
 
     # The last published writeup should be the most recent
     is( $last_writeup_id, $draft_ids[2],
-        'Third (most recent) writeup is returned as last writeup' );
+        'Third (most recent) writeup is returned as last writeup' )
+      or diag explain {
+        published => \@draft_ids,
+        writeups  => $DB->{dbh}->selectall_arrayref(
+            'SELECT node_id, title, CAST(publishtime AS CHAR) AS publishtime FROM node JOIN writeup ON node_id=writeup_id WHERE author_user=? ORDER BY publishtime DESC, node_id DESC',
+            { Slice => {} }, $regular_user->{node_id} ),
+      };
 
     # Verify all three have distinct publishtimes in correct order
     my $times = $DB->{dbh}->selectcol_arrayref(

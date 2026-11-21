@@ -185,7 +185,7 @@ SKIP: {
     require Everything::S3;
     my $test = Plack::Test->create($app);
 
-    my $user = TestSeed::make_user( $DB, $APP, label => 'imgup', password => 'blah', experience => 1000, numwriteups => 25, lasttime => '2026-01-01 00:00:00' );
+    my $user = TestSeed::make_user( $DB, $APP, label => 'imgup', password => 'blah', experience => 1000, numwriteups => 25 );
     ok( $APP->getLevel($user) >= 1, 'the uploader is level 1 or more: the normal-user limits' );
     my $cookie_for = sub { my ($u) = @_; $Everything::CONF->cookiepass . '=' . uri_escape_utf8("$u->{title}|$u->{passwd}") };
     my $cookie = $cookie_for->($user);
@@ -231,7 +231,7 @@ SKIP: {
     is( $stored[0] && ( $stored[0]{ContentType} // $stored[0]{content_type} ), 'image/png', 'stored as PNG' );
 
     @stored = ();
-    my $newbie = TestSeed::make_user( $DB, $APP, label => 'imgnewbie', password => 'blah', lasttime => '2026-01-01 00:00:00' );
+    my $newbie = TestSeed::make_user( $DB, $APP, label => 'imgnewbie', password => 'blah' );
     if ( $APP->getLevel($newbie) < 1 ) {
         $json = $upload->( 'me.png', 'image/png', $base_png, $newbie );
         like( $json->{error} // '', qr/level 1/, 'a level 0 user is told they need level 1' );
