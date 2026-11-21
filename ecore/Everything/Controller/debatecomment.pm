@@ -559,11 +559,12 @@ sub atom {
     my $updated_timestamp = $self->_format_atom_date($latest_update);
 
     my $xml = qq{<?xml version="1.0" encoding="UTF-8"?>\n};
-    $xml .= qq{<feed xmlns="http://www.w3.org/2005/Atom" xml:base="$host/">\n};
+    my ($base, $self_url, $alt_url) = map { $self->_xml_escape($_) } ("$host/", $feed_url, $html_url);
+    $xml .= qq{<feed xmlns="http://www.w3.org/2005/Atom" xml:base="$base">\n};
     $xml .= qq{  <title>} . $self->_xml_escape($usergroup_title . ": " . $root->title) . qq{</title>\n};
-    $xml .= qq{  <link rel="alternate" type="text/html" href="$html_url"/>\n};
-    $xml .= qq{  <link rel="self" type="application/atom+xml" href="$feed_url"/>\n};
-    $xml .= qq{  <id>$html_url</id>\n};
+    $xml .= qq{  <link rel="alternate" type="text/html" href="$alt_url"/>\n};
+    $xml .= qq{  <link rel="self" type="application/atom+xml" href="$self_url"/>\n};
+    $xml .= qq{  <id>$alt_url</id>\n};
     $xml .= qq{  <updated>$updated_timestamp</updated>\n};
 
     # Add entries for each comment
@@ -614,11 +615,11 @@ sub _build_atom_entry {
     my ($self, $comment, $host) = @_;
 
     my $node_id = $comment->{node_id};
-    my $url = "$host/?node_id=$node_id";
+    my $url = $self->_xml_escape("$host/?node_id=$node_id");
 
     my $author = $self->DB->getNodeById($comment->{author_user});
-    my $author_name = $author ? $author->{title} : 'Unknown';
-    my $author_url = $author ? "$host/user/" . _uri_escape_e2($author->{title}) : '';
+    my $author_name = $self->_xml_escape($author ? $author->{title} : 'Unknown');
+    my $author_url = $author ? $self->_xml_escape("$host/user/" . _uri_escape_e2($author->{title})) : '';
 
     my $timestamp = $comment->{publishtime} || $comment->{createtime};
     my $formatted_time = $self->_format_atom_date($timestamp);
