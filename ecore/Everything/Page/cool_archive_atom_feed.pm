@@ -79,7 +79,10 @@ sub display {
     my $user = $query->param('cooluser');
     if($user) {
         my $U = $self->DB->getNode($user, 'user');
-        return [$self->HTTP_OK, $str . "<br />Sorry, no '$user' is found on the system!</feed>", {type => $self->mimetype}] unless $U;
+        unless ($U) {
+            my $shown = $self->APP->encodeHTML($user);
+            return [$self->HTTP_OK, $str . "<br />Sorry, no '$shown' is found on the system!</feed>", {type => $self->mimetype}];
+        }
 
         if($useraction eq 'cooled') {
             $wherestr .= ' AND cooledby_user='.$self->DB->getId($U);

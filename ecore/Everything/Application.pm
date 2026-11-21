@@ -4365,12 +4365,13 @@ sub atomise_node {
     $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
     $timestamp = sprintf('%04d-%02d-%02dT%02d:%02d:%02dZ', $1, $2, $3, $4, $5, $6);
 
+    $url = $this->encodeHTML($url);
     return '<title>' . $this->encodeHTML($$N{title}) . '</title>' .
       '<link rel="alternate" type="text/html" href="' . $url . '"/>' .
       '<id>' . $url . '</id>' .
       '<author>' .
-      '<name>' . $$author{title} . '</name>' .
-      '<uri>' . $authorurl . '</uri>' .
+      '<name>' . $this->encodeHTML($$author{title}) . '</name>' .
+      '<uri>' . $this->encodeHTML($authorurl) . '</uri>' .
       '</author>' .
       '<published>' . $timestamp . '</published>' .
       '<updated>' . $timestamp . '</updated>';
@@ -4421,6 +4422,9 @@ sub user_atom_feed {
   my $u = $db->getNode($foruser, 'user');
   return unless $u;
 
+  my $name  = $this->encodeHTML($$u{title});
+  my $param = $this->encodeHTML(_uri_escape_e2($$u{title}));
+
   my $csr = $db->sqlSelectMany('node.node_id, publishtime',
     'node JOIN writeup on node_id=writeup_id',
     'author_user=' . $db->getId($u) . ' order by publishtime desc limit 6');
@@ -4430,10 +4434,10 @@ sub user_atom_feed {
 
   my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
   $str .= "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:base=\"http://everything2.com/\">\n";
-  $str .= "    <title>" . $foruser . "'s New Writeups</title>\n";
-  $str .= "    <link rel=\"alternate\" type=\"text/html\" href=\"http://everything2.com/index.pl?node=Everything%20User%20Search&amp;usersearch=" . $foruser . "\" />\n";
-  $str .= "    <link rel=\"self\" type=\"application/atom+xml\" href=\"?node=New%20Writeups%20Atom%20Feed&amp;type=ticker&amp;foruser=" . $foruser . "\" />\n";
-  $str .= "    <id>http://everything2.com/?node=New%20Writeups%20Atom%20Feed&amp;foruser=" . $foruser . "</id>\n";
+  $str .= "    <title>" . $name . "'s New Writeups</title>\n";
+  $str .= "    <link rel=\"alternate\" type=\"text/html\" href=\"http://everything2.com/index.pl?node=Everything%20User%20Search&amp;usersearch=" . $param . "\" />\n";
+  $str .= "    <link rel=\"self\" type=\"application/atom+xml\" href=\"?node=New%20Writeups%20Atom%20Feed&amp;type=ticker&amp;foruser=" . $param . "\" />\n";
+  $str .= "    <id>http://everything2.com/?node=New%20Writeups%20Atom%20Feed&amp;foruser=" . $param . "</id>\n";
 
   my $timestamp = $$row{publishtime};
   $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
