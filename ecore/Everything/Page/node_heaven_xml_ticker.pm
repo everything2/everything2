@@ -4,6 +4,8 @@ use Moose;
 extends 'Everything::Page';
 with 'Everything::XMLTicker';
 
+use Everything::Serialization qw(safe_deserialize_dumper);
+
 has 'mimetype' => (default => 'application/xml', is => 'ro');
 
 =head1 NAME
@@ -51,7 +53,7 @@ sub generate_xml {
         {
             my $content = '';
             if($visitid){
-                my $data = $self->APP->safe_deserialize_dumper('my '.$$row{data});
+                my $data = safe_deserialize_dumper('my '.$$row{data});
                 if ($data) {
                     my $txt = $$data{doctext};
                     $txt = $self->APP->parseLinks($txt) unless($query->param('links_noparse'));

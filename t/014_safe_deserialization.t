@@ -94,4 +94,64 @@ use Everything::Serialization qw(safe_deserialize_dumper);
     is($result->{reputation}, 42, "Reputation correct");
 }
 
+# Real Data::Dumper output (as tombstoneNode writes it) reads back exactly
+{
+    use Data::Dumper;
+    local $Data::Dumper::Sortkeys = 1;
+    my $shared = { 'id' => 7 };
+    my %node = (
+        doctext   => "Line one\n'quoted' and \"double\" \\ backslash \$VAR1 sub { 1 } \x{e9}t\x{e9} \x{1F600}",
+        negative  => -12, float => 3.25, nothing => undef, empty_h => {}, empty_a => [],
+        group     => [ 1, 2, [ 3, { deep => 'yes' } ] ],
+        first     => $shared, second => $shared,    # Dumper writes $VAR1->{...} for the repeat
+        obj       => bless({ k => 'v' }, 'Some::Class'),
+    );
+    my $dump = Data::Dumper->Dump([\%node]);
+    like($dump, qr/\$VAR1->/, 'fixture includes a back-reference');
+    my $back = safe_deserialize_dumper('my ' . $dump);
+    is_deeply({ %$back, first => undef, second => undef }, { %node, first => undef, second => undef },
+        'every value reads back the same');
+    is_deeply($back->{first}, { id => 7 }, 'the first copy of a repeated reference reads back');
+    isa_ok($back->{obj}, 'Some::Class', 'a blessed value');
+}
+
+# Dumper's terse form (a bare structure, no "$VAR1 =")
+{
+    my $terse = "{\n  'totalvotes' => '',\n  'createdby_user' => 7392,\n  'e2node_id' => 2186552\n}\n";
+    is_deeply(safe_deserialize_dumper('my ' . $terse), { totalvotes => '', createdby_user => 7392, e2node_id => 2186552 },
+        'a terse copy reads back');
+    is_deeply(safe_deserialize_dumper('[ 1, 2 ]'), [ 1, 2 ], 'a terse array reads back');
+}
+
+# Dumper writes code references as a placeholder; it reads back as undef
+{
+    my $dump = q{$VAR1 = { 'code' => 'return 1;', 'compiledCode' => sub { "DUMMY" }, 'z' => 1 };};
+    my $back = safe_deserialize_dumper('my ' . $dump);
+    ok($back, 'a copy with the placeholder reads back');
+    ok(exists $back->{compiledCode} && !defined $back->{compiledCode}, 'the placeholder is undef');
+    is($back->{code}, 'return 1;', 'other fields are intact');
+    my $text = safe_deserialize_dumper(q{my $VAR1 = { 'doctext' => 'Dumper prints sub { "DUMMY" } for code' };});
+    is($text->{doctext}, 'Dumper prints sub { "DUMMY" } for code', 'the same words inside a string are left alone');
+}
+
+# Only plain data is read: anything else comes back undef
+{
+    local $SIG{__WARN__} = sub { };
+    my %not_data = (
+        'reading a file'   => q{$VAR1 = { 'x' => do { open(my $fh, '<', '/dev/null'); 1 } };},
+        'a file operation' => q{$VAR1 = { 'x' => unlink('/nonexistent/e2-test-path') };},
+        'a signal'         => q{$VAR1 = { 'x' => kill(0, $$) };},
+        'a sub'            => q{$VAR1 = { 'x' => sub { 1 } };},
+        'calling a sub'    => q{$VAR1 = { 'x' => main::thing() };},
+        'a method call'    => q{$VAR1 = { 'x' => Some::Class->new };},
+        'a loop'           => q{$VAR1 = { 'x' => do { my $i = 0; $i++ while $i < 3; $i } };},
+        'a pattern match'  => q{$VAR1 = { 'x' => ('abc' =~ /b/) };},
+        'string eval'      => q{$VAR1 = { 'x' => eval '1' };},
+        'loading a module' => q{$VAR1 = { 'x' => do { require POSIX; 1 } };},
+    );
+    for my $what (sort keys %not_data) {
+        ok(!defined safe_deserialize_dumper($not_data{$what}), "not plain data: $what");
+    }
+}
+
 done_testing;
