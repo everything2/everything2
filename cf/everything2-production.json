@@ -32,7 +32,26 @@
       "DeletionPolicy": "Retain",
       "Properties": {
         "BucketName": "assets.everything2.com",
-        "AccessControl": "PublicRead"
+        "OwnershipControls": {"Rules": [{"ObjectOwnership": "BucketOwnerEnforced"}]},
+        "PublicAccessBlockConfiguration": {"BlockPublicAcls": true, "IgnorePublicAcls": true, "BlockPublicPolicy": false, "RestrictPublicBuckets": false},
+        "WebsiteConfiguration": {"IndexDocument": "index.htm", "ErrorDocument": "error.htm"}
+      }
+    },
+    "AssetsS3BucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Bucket": {"Ref": "AssetsS3Bucket"},
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Sid": "PublicReadForGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": {"Fn::Join": ["", [{"Fn::GetAtt": ["AssetsS3Bucket", "Arn"]}, "/*"]]}
+          }]
+        }
       }
     },
     "CFBucket": {
@@ -40,7 +59,8 @@
       "DeletionPolicy": "Retain",
       "Properties": {
         "BucketName": "cloudformation.everything2.com",
-        "AccessControl": "PublicRead"
+        "OwnershipControls": {"Rules": [{"ObjectOwnership": "BucketOwnerEnforced"}]},
+        "PublicAccessBlockConfiguration": {"BlockPublicAcls": true, "IgnorePublicAcls": true, "BlockPublicPolicy": true, "RestrictPublicBuckets": true}
       }
     },
     "NodeBackupBucket": {
@@ -138,7 +158,26 @@
       "DeletionPolicy": "Retain",
       "Properties": {
         "BucketName": "hnimagew.everything2.com",
-        "AccessControl": "PublicRead"
+        "OwnershipControls": {"Rules": [{"ObjectOwnership": "BucketOwnerEnforced"}]},
+        "PublicAccessBlockConfiguration": {"BlockPublicAcls": true, "IgnorePublicAcls": true, "BlockPublicPolicy": false, "RestrictPublicBuckets": false},
+        "WebsiteConfiguration": {"IndexDocument": "index.htm", "ErrorDocument": "error.htm"}
+      }
+    },
+    "HomenodeImagesS3BucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Bucket": {"Ref": "HomenodeImagesS3Bucket"},
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Sid": "PublicReadForGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": {"Fn::Join": ["", [{"Fn::GetAtt": ["HomenodeImagesS3Bucket", "Arn"]}, "/*"]]}
+          }]
+        }
       }
     },
     "GlacierS3Bucket": {
@@ -153,7 +192,26 @@
       "DeletionPolicy": "Retain",
       "Properties": {
         "BucketName": "sitemap.everything2.com",
-        "AccessControl": "PublicRead"
+        "OwnershipControls": {"Rules": [{"ObjectOwnership": "BucketOwnerEnforced"}]},
+        "PublicAccessBlockConfiguration": {"BlockPublicAcls": true, "IgnorePublicAcls": true, "BlockPublicPolicy": false, "RestrictPublicBuckets": false},
+        "WebsiteConfiguration": {"IndexDocument": "index.htm", "ErrorDocument": "error.htm"}
+      }
+    },
+    "SitemapS3BucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Bucket": {"Ref": "SitemapS3Bucket"},
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Sid": "PublicReadForGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": {"Fn::Join": ["", [{"Fn::GetAtt": ["SitemapS3Bucket", "Arn"]}, "/*"]]}
+          }]
+        }
       }
     },
     "PodcastS3Bucket": {
@@ -802,7 +860,8 @@
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "BucketName": "secrets.everything2.com"
+        "BucketName": "secrets.everything2.com",
+        "VersioningConfiguration": {"Status": "Enabled"}
       }
     },
     "E2AppWebheadSecurityGroup": {
@@ -933,6 +992,7 @@
         "DBInstanceIdentifier": "everything2vpc",
         "Engine": "mysql",
         "EngineVersion": "8.4.9",
+        "AutoMinorVersionUpgrade": false,
         "EnableCloudwatchLogsExports": ["slowquery","error"],
         "MultiAZ": false,
         "CACertificateIdentifier": "rds-ca-rsa2048-g1",
@@ -1072,6 +1132,7 @@
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": "e2-readonly-query",
+        "ReservedConcurrentExecutions": 2,
         "Description": "Ad-hoc read-only SQL queries against the production database. Code is deployed separately via tools/aws/readonly-query-lambda/deploy-code.sh — CFN only manages the placeholder + surrounding infra.",
         "Runtime": "python3.11",
         "Handler": "index.handler",
@@ -1448,9 +1509,9 @@
         "BucketName": "elblogs.everything2.com",
         "LifecycleConfiguration": {
           "Rules": [{
-            "Id": "DeleteAfter30",
+            "Id": "DeleteAfter90",
             "Status": "Enabled",
-            "ExpirationInDays": "30"
+            "ExpirationInDays": "90"
           }]
         }
       }
@@ -1504,6 +1565,7 @@
     },
     "WriteupExportBucket": {
       "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "BucketName": "e2-writeup-exports"
       }
@@ -1805,6 +1867,14 @@
           {
             "Key": "access_logs.s3.bucket",
             "Value": {"Ref": "ELBLogsBucket"}
+          },
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "true"
+          },
+          {
+            "Key": "routing.http.drop_invalid_header_fields.enabled",
+            "Value": "true"
           }
         ]
       }
@@ -1849,7 +1919,7 @@
         "LoadBalancerArn": {"Ref": "ContainerizedFrontendELB"},
         "Port": "443",
         "Protocol": "HTTPS",
-        "SslPolicy": "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
+        "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-2021-06"
       }
     },
     "ELBContainerizedAppRewriteAltDomains": {
@@ -2158,15 +2228,15 @@
     "AppHighLatencyAlarm": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
-        "AlarmName": "e2-app-high-p99-latency",
-        "AlarmDescription": "Front-end p99 response time > 1s for 3 min. Real user-facing slowness; on a DB-bound app this usually means the database is the bottleneck -- autoscaling more app tasks will NOT fix it. Investigate RDS / per-page query load.",
+        "AlarmName": "e2-app-high-p95-latency",
+        "AlarmDescription": "Front-end p95 response time > 1s for 3 min (p99 fired on crawler bursts against uncached long-tail pages). Real user-facing slowness; on a DB-bound app this usually means the database is the bottleneck -- autoscaling more app tasks will NOT fix it. Investigate RDS / per-page query load.",
         "Namespace": "AWS/ApplicationELB",
         "MetricName": "TargetResponseTime",
         "Dimensions": [
           {"Name": "LoadBalancer", "Value": {"Fn::GetAtt": ["ContainerizedFrontendELB","LoadBalancerFullName"]}},
           {"Name": "TargetGroup", "Value": {"Fn::GetAtt": ["FargateTargetGroupHTTP","TargetGroupFullName"]}}
         ],
-        "ExtendedStatistic": "p99",
+        "ExtendedStatistic": "p95",
         "Period": 60,
         "EvaluationPeriods": 3,
         "Threshold": 1.0,
@@ -2362,13 +2432,8 @@
       "DeletionPolicy": "Retain",
       "Properties": {
         "BucketName": "deployed.everything2.com",
-        "AccessControl": "PublicRead",
-        "PublicAccessBlockConfiguration": {
-          "BlockPublicAcls": false,
-          "BlockPublicPolicy": false,
-          "IgnorePublicAcls": false,
-          "RestrictPublicBuckets": false
-        }
+        "OwnershipControls": {"Rules": [{"ObjectOwnership": "BucketOwnerEnforced"}]},
+        "PublicAccessBlockConfiguration": {"BlockPublicAcls": true, "IgnorePublicAcls": true, "BlockPublicPolicy": false, "RestrictPublicBuckets": false}
       }
     },
     "DeployedAssetsBucketReadPolicy": {
