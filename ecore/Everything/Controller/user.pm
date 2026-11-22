@@ -69,19 +69,13 @@ sub display {
         ) ? 1 : 0;
     }
 
-    # Get usergroup memberships
-    my @groups;
-    foreach my $group ( @{ $node->usergroup_memberships || [] } ) {
-        push @groups, $group->json_reference;
-    }
-    $profile->{groups} = \@groups;
+    # Usergroup memberships, as this viewer may see them (#4659)
+    $profile->{groups} = [ map { $_->json_reference } @{ $node->usergroups_visible_to($user) } ];
 
-    # Get categories maintained by this user (excludes public/guest_user categories)
-    my @categories;
-    foreach my $cat ( @{ $node->maintained_categories || [] } ) {
-        push @categories, $cat->json_reference;
-    }
-    $profile->{categories} = \@categories;
+    # Categories maintained by this user (excludes public/guest_user categories), unless they hide
+    # them from this viewer (#4659)
+    $profile->{categories} =
+        [ map { $_->json_reference } @{ $node->categories_visible_to( $user, $node->maintained_categories ) } ];
 
     # Get registration entries (profile data like location, etc.)
     # Only shown to logged-in users who are not ignoring
@@ -224,6 +218,11 @@ sub display {
 
     $content_data->{recent_writeup_count} = $recent_writeup_count
         if defined $recent_writeup_count;
+
+    # Your daily votes and C!s, on your own homenode only, unless you hide them (hidevotedata)
+    if ( $is_own and my $daily = $node->daily_votes_and_cools ) {
+        $content_data->{daily_votes_and_cools} = $daily;
+    }
 
     # Set node on REQUEST for buildNodeInfoStructure
     $REQUEST->node($node);

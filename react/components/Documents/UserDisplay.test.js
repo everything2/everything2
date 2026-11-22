@@ -148,3 +148,21 @@ describe('UserDisplay viewer-flag truthy handling', () => {
     expect(allText).not.toMatch(/(^|[>\s])0([<\s]|$)/)
   })
 })
+
+describe('UserDisplay daily votes and C!s (#4659)', () => {
+  it('shows your daily votes and C!s when the server sends them (own homenode)', () => {
+    const props = {
+      ...baseProps,
+      data: { ...baseProps.data, is_own: 1, daily_votes_and_cools: { votes_left: 7, votes: 25, cools_left: 2, cools: 3 } },
+    }
+    const { container } = render(<UserDisplay {...props} />)
+    expect(screen.getByText('your daily votes and C!s')).toBeInTheDocument()
+    const row = container.querySelector('.user-display__daily-votes')
+    expect(row.textContent.replace(/\s+/g, ' ')).toMatch(/7 \/ 25 votes \| 2 \/ 3 C!s/)
+  })
+
+  it('shows nothing when the server leaves them out (someone else, or hidevotedata)', () => {
+    render(<UserDisplay {...baseProps} />)
+    expect(screen.queryByText('your daily votes and C!s')).not.toBeInTheDocument()
+  })
+})

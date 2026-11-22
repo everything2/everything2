@@ -216,6 +216,8 @@ Looking up the a node_id under a wrong type API throws a 404 NOT FOUND; for inst
 
 The same base controller backs `/api/users`, `/api/usergroups`, `/api/writeups`, `/api/e2nodes` and `/api/nodegroups`; each subclass adds its own routes (documented in its section).
 
+A user's JSON (`/api/nodes/:id`, `/api/users/:id`, the homenode) lists their `groups` and `categories` as the viewer may see them: guests see only staff-group memberships (gods, Content Editors, edev), and a member's "Don't list my usergroups / categories on my homenode" settings (`hidehomenodeUG` / `hidehomenodeUC`) hide them from everyone but that member and admins (#4659).
+
 ### /api/nodes
 
 Always returns UNIMPLEMENTED
