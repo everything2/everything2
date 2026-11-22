@@ -101,16 +101,16 @@ override 'json_display' => sub
     }
   }
 
-  # Usergroup memberships
+  # Usergroup memberships, as this viewer may see them
   my @groups;
-  foreach my $group (@{$self->usergroup_memberships || []}) {
+  foreach my $group (@{$self->usergroups_visible_to($viewer)}) {
     push @groups, $group->json_reference;
   }
   $values->{groups} = \@groups if @groups;
 
-  # Categories maintained
+  # Categories maintained, unless this member hides them from this viewer
   my @categories;
-  foreach my $cat (@{$self->editable_categories || []}) {
+  foreach my $cat (@{$self->categories_visible_to($viewer, $self->editable_categories)}) {
     push @categories, $cat->json_reference;
   }
   $values->{categories} = \@categories if @categories;
@@ -676,6 +676,65 @@ sub editable_categories
 
   my $sorted_categories = [sort {$a->title cmp $b->title} @$categories];
   return $sorted_categories;
+}
+
+# Usergroups whose membership is always shown: to guests, and when a member hides their groups.
+my %STAFF_USERGROUPS = map { $_ => 1 } ('gods', 'Content Editors', 'edev');
+
+# True if this viewer sees everything on this member's homenode: the member themselves, or an admin.
+sub _shows_all_to
+{
+  my ($self, $viewer) = @_;
+  return 0 unless $viewer && !$viewer->is_guest;
+  return 1 if $viewer->node_id == $self->node_id;
+  return $viewer->is_admin ? 1 : 0;
+}
+
+# The usergroups this viewer may see this member belongs to. Guests, and other members when this
+# member has "Don't list my usergroups on my homenode" (hidehomenodeUG) set, see only the staff
+# groups. No viewer is treated as a guest.
+sub usergroups_visible_to
+{
+  my ($self, $viewer) = @_;
+  my $groups = $self->usergroup_memberships || [];
+  return $groups if $self->_shows_all_to($viewer);
+
+  my $staff_only = !$viewer || $viewer->is_guest || $self->VARS->{hidehomenodeUG};
+  return $staff_only ? [ grep { $STAFF_USERGROUPS{ $_->title } } @$groups ] : $groups;
+}
+
+# The given categories, or none when this member has "Don't list my categories on my homenode"
+# (hidehomenodeUC) set and the viewer is someone else.
+sub categories_visible_to
+{
+  my ($self, $viewer, $categories) = @_;
+  $categories ||= [];
+  return $categories unless $self->VARS->{hidehomenodeUC};
+  return $self->_shows_all_to($viewer) ? $categories : [];
+}
+
+# Votes and C!s left today against this member's daily allowance at their level, as shown on their
+# own homenode ("your daily votes and C!s"). Undef when they've set hidevotedata.
+sub daily_votes_and_cools
+{
+  my ($self) = @_;
+  return if $self->VARS->{hidevotedata};
+
+  my $level = $self->APP->getLevel($self->NODEDATA) || 0;
+  my %allowance;
+  foreach my $kind ('votes', 'cools') {
+    my $setting = $self->DB->getNode("level $kind", 'setting');
+    my $table = $setting ? Everything::getVars($setting) : {};
+    my $n = $table->{$level} // 0;
+    $allowance{$kind} = $n =~ /^\d+$/ ? int($n) : 0;
+  }
+
+  return {
+    votes_left => int($self->votesleft || 0),
+    votes      => $allowance{votes},
+    cools_left => $self->coolsleft,
+    cools      => $allowance{cools},
+  };
 }
 
 # Returns categories maintained by this user (excludes public/guest_user categories)

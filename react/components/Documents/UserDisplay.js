@@ -32,7 +32,7 @@ const UserDisplay = ({ data, e2 }) => {
 
   if (!data || !data.user) return null
 
-  const { user, viewer, is_own, is_ignored, message_count, recent_writeup_count, is_infected } = data
+  const { user, viewer, is_own, is_ignored, message_count, recent_writeup_count, is_infected, daily_votes_and_cools: daily } = data
 
   // Shared UTC-aware date helpers (utils/dateFormat). Return JSX fallback here
   // because legacy E2 used `forever` as the sentinel for "no date".
@@ -293,6 +293,18 @@ const UserDisplay = ({ data, e2 }) => {
             <>
               <dt>GP</dt>
               <dd>{user.GP}</dd>
+            </>
+          )}
+
+          {/* Your daily votes and C!s: own homenode only, unless hidden (hidevotedata) */}
+          {daily && (
+            <>
+              <dt>your daily votes and C!s</dt>
+              <dd className="user-display__daily-votes">
+                <strong>{daily.votes_left}</strong>
+                <small> / {daily.votes}</small> votes &nbsp;|&nbsp; <strong>{daily.cools_left}</strong>
+                <small> / {daily.cools}</small> C!s
+              </dd>
             </>
           )}
 

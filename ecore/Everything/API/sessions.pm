@@ -47,7 +47,7 @@ sub user_api_structure
       }
     } 
      
-    $userinfo->{user} = $user->json_display;
+    $userinfo->{user} = $user->json_display($user);
   }
 
   return $userinfo;

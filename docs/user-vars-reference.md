@@ -91,9 +91,9 @@ $user->set_vars($VARS);                      # wraps Everything::setVars($self->
 | `mission`, `motto`, `employment`, `specialties` | String | Homenode profile fields | Empty | Node/user.pm, Page/settings.pm |
 | `hidemsgme` | Boolean | Hide the /msg box on your homenode | 0 | Node/user.pm, UserDisplay.js **(pref)** |
 | `hidemsgyou` | Boolean | Hide "/msgs from me" link | 0 | Controller/user.pm, Controller/usergroup.pm **(pref)** |
-| `hidevotedata` | Boolean | Hide vote/C! data on homenode | 0 | **(pref)** |
-| `hidehomenodeUG` | Boolean | Hide usergroups list on homenode | 0 | **(pref)** |
-| `hidehomenodeUC` | Boolean | Hide categories list on homenode | 0 | **(pref)** |
+| `hidevotedata` | Boolean | Hide "your daily votes and C!s" on your own homenode | 0 | Node/user.pm (`daily_votes_and_cools`), Controller/user.pm **(pref)** |
+| `hidehomenodeUG` | Boolean | Hide your usergroups from other members (admins and you still see them; staff groups always show) | 0 | Node/user.pm (`usergroups_visible_to`) **(pref)** |
+| `hidehomenodeUC` | Boolean | Hide your categories from other members (admins and you still see them) | 0 | Node/user.pm (`categories_visible_to`) **(pref)** |
 | `showrecentwucount` | Boolean | Show recent writeup count | 0 | Controller/user.pm **(pref)** |
 | `hidelastnoded` | Boolean (inverse) | Hide link to most recent writeup | 0 (show) | Controller/user.pm, Node/user.pm **(pref)** |
 | `hidelastseen` | Boolean | Hide "last seen" | 0 | Controller/user.pm, Node/user.pm, Node/writeup.pm **(pref)** |
