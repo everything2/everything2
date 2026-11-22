@@ -37,6 +37,7 @@ const { test, expect } = require('@playwright/test');
 const { execSync } = require('child_process');
 const { loginAs } = require('./fixtures/auth');
 const demo = require('./fixtures/demo');
+const { activeAccount } = require('./fixtures/signup');
 
 function createAccount(uname, pass) {
   return execSync(`docker exec e2devapp perl /var/everything/tools/test-signup.pl ${uname} ${pass}`, { encoding: 'utf8' });
@@ -49,36 +50,6 @@ const { sentEmail } = require('./fixtures/email');
 // The confirm form on the Confirm password page (the Sign In nodelet also has input[name=passwd]).
 const confirmFormOf = (page) =>
   page.locator('form').filter({ has: page.locator('button.confirm-password__button') });
-
-// An account that has been activated and used, so a reset request sends a reset link.
-// who: the recorded actor the harness cards appear on.
-async function activeAccount(browser, who, uname, pass) {
-  const out = await demo.shell(
-    who,
-    `docker exec e2devapp perl /var/everything/tools/test-signup.pl ${uname} ${pass}`,
-    `creates the test account ${uname}`,
-    { result: () => 'account created; activation link printed by the tool' }
-  );
-  const links = out.match(/\/node\/superdoc\/Confirm\+password\?[^\s"<]+/g) || [];
-  const activation = links.find((l) => !l.includes('&amp;')) || links[links.length - 1];
-  expect(activation, 'activation link from test-signup.pl').toBeTruthy();
-  const ctx = await browser.newContext();
-  const page = await ctx.newPage();
-  await page.goto(activation);
-  await confirmFormOf(page).locator('input[name="passwd"]').fill(pass);
-  await page.locator('button.confirm-password__button').click();
-  await page.waitForFunction(
-    (u) => window.e2 && window.e2.user && window.e2.user.guest === false && window.e2.user.title === u,
-    uname,
-    { timeout: 15000 }
-  );
-  await page.goto('/'); // a signed-in visit, so the account counts as used
-  await ctx.close();
-  await demo.note(who, `activates ${uname} and signs in once`,
-    'In a separate browser session that is not recorded: followed the activation link, set the password, ' +
-    'and visited the site, so the account counts as active (a reset request for an account never used ' +
-    'sends an activation link instead).');
-}
 
 // Get {token, expiry} from the reset helper for an existing user.
 //

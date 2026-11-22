@@ -59,6 +59,7 @@ const DrNatesSecretLab = ({ data }) => {
           nodeId: data.node_id,
           title: data.title,
           e2nodeAttached: data.e2nodeAttached,
+          passwordResetNeeded: data.passwordResetNeeded,
         })
         setNodeId('')
       } else {
@@ -173,6 +174,13 @@ const DrNatesSecretLab = ({ data }) => {
               </p>
               {result.e2nodeAttached && (
                 <p><em>The writeup was re-attached to its e2node.</em></p>
+              )}
+              {result.passwordResetNeeded && (
+                <p className="dr-nates-lab__password-note">
+                  The account has no password. Its owner can set a new one with{' '}
+                  <a href="/title/Reset%20password">Reset password</a>, which emails a link to the
+                  address on the account.
+                </p>
               )}
             </>
           ) : (

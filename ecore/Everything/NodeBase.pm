@@ -31,6 +31,11 @@ use Scalar::Util ();   # called fully-qualified: Test::Deep::NoTest already expo
 # insertNode still sets these on a brand-new node.
 our %UPDATE_NEVER_WRITES = ( user => { lasttime => 1 } );
 
+# Columns a tomb copy never keeps, by table: an account's credentials. A resurrected account
+# comes back with no usable password and sets a new one through a password reset (its email
+# address stays in the copy for that).
+our %TOMB_NEVER_STORES = ( user => [qw(passwd salt user_salt validationkey session_id)] );
+
 sub BEGIN
 {
 	use Exporter ();
@@ -1300,11 +1305,19 @@ sub tombstoneNode {
         delete $N{$_};
     }
     delete $data{type};
+    delete @data{ $this->tomb_never_stores($N{type_nodetype}) };
 
     use Data::Dumper;
     $N{data} = Data::Dumper->Dump([\%data]);
     my %replace = map { $_ => $N{$_} } grep { $_ ne 'node_id' } keys %N;
     return $this->sqlInsert('tomb', \%N, \%replace) ? 1 : 0;
+}
+
+# The fields (%TOMB_NEVER_STORES) a tomb copy of this nodetype leaves out.
+sub tomb_never_stores {
+    my ($this, $TYPE) = @_;
+    my $tables = $this->getNodetypeTables($TYPE) || [];
+    return map { @{ $TOMB_NEVER_STORES{$_} || [] } } @$tables;
 }
 
 
@@ -1467,6 +1480,19 @@ sub resurrectNode
 
 		# Primary key may not be in the data if new tables added since nuke
 		$insertref->{"${table}_id"} = $node_id;
+
+		# Credentials never come back, even from an older copy that kept them. A resurrected
+		# account has no usable password until it is reset; the salt lets a reset set one.
+		foreach my $field (@{ $TOMB_NEVER_STORES{$table} || [] })
+		{
+			$insertref->{$field} = undef if exists $insertref->{$field};
+		}
+		if ($table eq 'user')
+		{
+			my $app = Everything::Application->new($this, $Everything::CONF);
+			$insertref->{passwd} = $app->NO_PASSWORD;
+			$insertref->{salt}   = $app->new_password_salt;
+		}
 
 		# Clean out any existing data and insert fresh
 		$this->sqlDelete($table, "${table}_id=" . $this->quote($node_id));

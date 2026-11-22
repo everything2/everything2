@@ -71,6 +71,9 @@ sub _view_coffin {
     @$N{keys %$DATA} = values %$DATA;
     delete $N->{data};
 
+    # Credentials aren't shown, even from an older copy that still has them.
+    delete @$N{ $DB->tomb_never_stores($N->{type_nodetype}) };
+
     # Check if already resurrected
     my $existing = $DB->getNodeById($coffin_id);
     my $is_resurrected = $existing ? 1 : 0;
