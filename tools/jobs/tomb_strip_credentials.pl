@@ -28,6 +28,7 @@ use lib qw(/var/everything/ecore /var/libraries/lib/perl5);
 use Everything;
 use Everything::Serialization qw(safe_deserialize_dumper);
 use Data::Dumper;
+use Scalar::Util qw(reftype refaddr);
 
 initEverything 'everything';
 
@@ -49,7 +50,25 @@ my $rows  = $dbh->selectall_arrayref(
   'SELECT node_id, data FROM tomb WHERE type_nodetype = ?' . $limit . ' ORDER BY node_id',
   { Slice => {} }, int($user_type->{node_id}));
 
-sub canonical { local $Data::Dumper::Sortkeys = 1; local $Data::Dumper::Indent = 1; return Dumper($_[0]) }
+# A copy's text can come back with its strings flagged as characters or not (older copies hold
+# them literally, newer ones as \x{} escapes, which read back unflagged). Flag every non-ASCII
+# string as characters so Data::Dumper writes it as an escape (the text stored is plain ASCII)
+# and comparisons see the characters rather than Perl's internal encoding.
+sub as_characters {
+  my ($seen) = $_[1] || {};
+  my $type = reftype($_[0]) // '';
+  if ($type eq 'HASH')  { return if $seen->{refaddr $_[0]}++; as_characters($_, $seen) for values %{ $_[0] } }
+  elsif ($type eq 'ARRAY') { return if $seen->{refaddr $_[0]}++; as_characters($_, $seen) for @{ $_[0] } }
+  elsif ($type eq 'SCALAR' || $type eq 'REF') { return if $seen->{refaddr $_[0]}++; as_characters(${ $_[0] }, $seen) }
+  elsif (!$type && defined $_[0] && $_[0] =~ /[^\x00-\x7f]/) { utf8::upgrade($_[0]) }
+  return;
+}
+
+sub canonical {
+  as_characters($_[0]);
+  local $Data::Dumper::Sortkeys = 1; local $Data::Dumper::Indent = 1;
+  return Dumper($_[0]);
+}
 
 my (%count, @work, @unreadable);
 for my $r (@$rows) {
@@ -62,10 +81,11 @@ for my $r (@$rows) {
 
   my %stripped = %$copy;
   delete @stripped{@present};
+  as_characters(\%stripped);
   my $text = Data::Dumper->Dump([\%stripped]);
 
-  # Write it back only if it reads back as exactly the original minus those fields.
-  my $check = safe_deserialize_dumper('my ' . $text);
+  # Write it back only if it is plain ASCII and reads back as exactly the original minus those fields.
+  my $check = $text =~ /[^\x00-\x7f]/ ? undef : safe_deserialize_dumper('my ' . $text);
   unless (ref $check eq 'HASH' && canonical($check) eq canonical(\%stripped)) {
     push @unreadable, $r->{node_id};
     next;
@@ -84,9 +104,12 @@ exit 0 unless $apply;
 my $done = 0;
 for my $w (@work) {
   # Only if the copy hasn't changed since it was read.
-  my $updated = $dbh->do('UPDATE tomb SET data = ? WHERE node_id = ? AND data = ?',
-    undef, $w->{new}, $w->{node_id}, $w->{old});
-  if ($updated == 1) {
+  # A failed write is reported and the run goes on. DBI's message quotes stored data, so it isn't printed.
+  my $updated = eval { $dbh->do('UPDATE tomb SET data = ? WHERE node_id = ? AND data = ?',
+    undef, $w->{new}, $w->{node_id}, $w->{old}) };
+  if (!defined $updated) {
+    print "[tomb_strip_credentials] node $w->{node_id}: the write failed, left alone\n";
+  } elsif ($updated == 1) {
     $done++;
   } else {
     print "[tomb_strip_credentials] node $w->{node_id}: changed since it was read, left alone\n";

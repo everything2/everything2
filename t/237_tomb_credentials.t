@@ -181,4 +181,49 @@ subtest 'the cleanup job strips credentials from deleted-account copies' => sub 
     like($again, qr/0 deleted-account copies with credentials/, 'and finds nothing to do');
 };
 
+subtest 'the cleanup job handles copies with non-ASCII text' => sub {
+    my $nick = "Andr\x{e9}";        # Latin-1 only: an escape for it reads back without the UTF-8 flag
+    my $realname = "\x{263a} Andr\x{e9}";
+    utf8::upgrade($_) for $nick, $realname;
+    # Older copies hold the characters literally; Data::Dumper writes them as \x{} escapes.
+    for my $form (qw(literal escaped)) {
+        my $user = member("u8$form");
+        my $id   = $user->{node_id};
+        $DB->nukeNode($user, $root, 1);
+        my %data = (
+            nick => $nick, realname => $realname, email => $user->{email}, lasttime => $user->{lasttime},
+            passwd => $user->{passwd}, salt => $user->{salt}, validationkey => 'akey',
+            session_id => 42, user_salt => 7,
+        );
+        my $text;
+        if ($form eq 'literal') {
+            my %bytes = %data;
+            utf8::encode($bytes{$_}) for qw(nick realname);
+            $text = Data::Dumper->Dump([\%bytes]);
+            utf8::decode($text);
+            ok($text !~ /\\x\{/ && $text =~ /\x{e9}/, 'the copy holds the characters literally');
+        } else {
+            $text = Data::Dumper->Dump([\%data]);
+            like($text, qr/\\x\{/, 'the copy holds the characters as escapes');
+        }
+        $DB->sqlInsert('tomb', {
+            node_id => $id, type_nodetype => $user->{type_nodetype}, title => $user->{title},
+            author_user => $id, killa_user => $root->{node_id}, createtime => $user->{createtime},
+            data => $text,
+        });
+
+        my $out = `E2_TOMB_ONLY=$id E2_APPLY=1 perl $JOB 2>&1`;
+        is($? >> 8, 0, "$form: applying succeeds") or diag $out;
+        unlike($out, qr/could not be read/, "$form: the copy is read");
+        my $copy = tomb_copy($id);
+        ok(!exists $copy->{$_}, "$form: the copy no longer has $_") for @CREDENTIALS;
+        is($copy->{nick}, $nick, "$form: the nick is unchanged");
+        is($copy->{realname}, $realname, "$form: and the real name");
+        is($copy->{email}, $user->{email}, "$form: and the email address");
+
+        my $again = `E2_TOMB_ONLY=$id E2_APPLY=1 perl $JOB 2>&1`;
+        like($again, qr/0 deleted-account copies with credentials/, "$form: a second run finds nothing to do");
+    }
+};
+
 done_testing();
