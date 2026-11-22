@@ -7492,6 +7492,8 @@ sub display_preferences
 
   $prefs->{num_newwus} = $vars->{num_newwus} || 20;
   $prefs->{nw_nojunk} = ($vars->{nw_nojunk})?(\1):(\0);
+  # The page header leaves out who created an e2node for a viewer who hides it (#4733).
+  $prefs->{hideauthore2node} = ($vars->{hideauthore2node})?(\1):(\0);
 
   return $prefs;
 }

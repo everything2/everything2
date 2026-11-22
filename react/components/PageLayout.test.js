@@ -42,9 +42,9 @@ jest.mock('./Layout/Header', () => {
 })
 
 jest.mock('./Layout/PageHeader', () => {
-  return function MockPageHeader({ node, children }) {
+  return function MockPageHeader({ node, hideCreatedBy, children }) {
     return (
-      <div data-testid="pageheader">
+      <div data-testid="pageheader" data-hide-createdby={hideCreatedBy ? '1' : '0'}>
         <h1 data-testid="pageheader-title">{node?.title}</h1>
         {children}
       </div>
@@ -218,6 +218,23 @@ describe('PageLayout', () => {
         window.dispatchEvent(new CustomEvent('e2:nodeTitleUpdate', { detail: {} }))
       })
       expect(screen.getByTestId('pageheader-title')).toHaveTextContent('Hippopotamus (thing)')
+    })
+  })
+
+  describe('who created an e2node (#4733)', () => {
+    it('asks the page header to hide it when the viewer set hideauthore2node', () => {
+      render(<PageLayout e2={{ contentData: { type: 'e2node' }, display_prefs: { hideauthore2node: true } }} />)
+      expect(screen.getByTestId('pageheader')).toHaveAttribute('data-hide-createdby', '1')
+    })
+
+    it('shows it otherwise', () => {
+      render(<PageLayout e2={{ contentData: { type: 'e2node' }, display_prefs: { hideauthore2node: false } }} />)
+      expect(screen.getByTestId('pageheader')).toHaveAttribute('data-hide-createdby', '0')
+    })
+
+    it('shows it when there are no display preferences (e.g. guests)', () => {
+      render(<PageLayout e2={{ contentData: { type: 'e2node' } }} />)
+      expect(screen.getByTestId('pageheader')).toHaveAttribute('data-hide-createdby', '0')
     })
   })
 

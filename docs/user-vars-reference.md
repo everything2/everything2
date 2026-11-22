@@ -64,7 +64,7 @@ $user->set_vars($VARS);                      # wraps Everything::setVars($self->
 | `nw_nojunk` | Boolean | Hide junk in New Writeups | 0 | Application.pm, E2ReactRoot.js **(pref)** |
 | `noSoftLinks` | Boolean | Hide softlinks on e2node/writeup pages | 0 | Controller/e2node.pm, Node/e2node.pm **(pref)** |
 | `hidenodeshells` | Boolean | Hide nodeshells in search/softlinks | 0 | **(pref)** — no reader found outside the settings UI |
-| `hideauthore2node` | Boolean (inverse) | Hide who created an e2node | 0 (show) | **(pref)** |
+| `hideauthore2node` | Boolean (inverse) | Hide who created an e2node: the page header leaves out "created by" for you | 0 (show) | Application.pm `display_preferences` → `e2.display_prefs` → PageHeader **(pref)** |
 
 ### Voting & Interactions
 
