@@ -67,10 +67,13 @@ in-VPC script reaching both prod and a temporary restored instance).
   does a dry run that only lists them unless `E2_APPLY=1`; `E2_TOMB_ONLY=<ids>` limits it to
   particular nodes. It never prints stored contents, and running it again finds nothing.
   Covered by `t/236_tomb_stale_rows.t`.
-- **`tools/jobs/tomb_strip_credentials.pl`** (#4716) removes credentials (`passwd`, `salt`,
+- **`tools/jobs/tomb_strip_credentials.pl`** (#4716, #4724, #4726) removes credentials (`passwd`, `salt`,
   `user_salt`, `validationkey`, `session_id`: NodeBase `%TOMB_NEVER_STORES`) from the tomb
-  copies of deleted accounts written before tombstoneNode stopped storing them. Each copy is
-  written back only after it reads back as exactly the original minus those fields; the email
-  address stays, since a resurrected account resets its password by email. Dry run unless
+  copies of deleted accounts written before tombstoneNode stopped storing them, along with the
+  `_ORIGINAL_VALUES` snapshot some old copies hold (`@TOMB_NEVER_STORES_ANY`), which carries its own
+  copy of them. Each copy is written back only after it reads back as exactly the original minus
+  those keys; a copy that would still hold a credential field anywhere in its nested data is
+  reported and left alone. The email address stays, since a resurrected account resets its
+  password by email. Dry run unless
   `E2_APPLY=1`; `E2_TOMB_ONLY=<ids>` limits it. Prints only field names and counts. Covered by
   `t/237_tomb_credentials.t`.

@@ -71,7 +71,7 @@ sub _view_coffin {
     @$N{keys %$DATA} = values %$DATA;
     delete $N->{data};
 
-    # Credentials aren't shown, even from an older copy that still has them.
+    # Credentials and the old _ORIGINAL_VALUES snapshot aren't shown, even from an older copy that has them.
     delete @$N{ $DB->tomb_never_stores($N->{type_nodetype}) };
 
     # Check if already resurrected
