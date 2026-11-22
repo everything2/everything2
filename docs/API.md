@@ -4590,7 +4590,7 @@ Unless noted, these follow the 200 convention.
 | `POST /api/ip_blacklist/list` / `add` / `remove` | admins | `{ offset? }`; add `{ ips: "one per line", reason }`; remove `{ id }`. Each returns the refreshed list page |
 | `POST /api/nodetype_changer/lookup` / `change` | admins | `{ node_id }`; `{ change_id, new_nodetype, confirmed? }` (core types need `confirmed`) |
 | `POST /api/renunciation/transfer` / `nodes` | admins | `{ user_from, user_to, namelist }`; `{ user }` |
-| `POST /api/resurrect/node` | admins | `{ node_id, source: "tomb"|"heaven" }` — restore a deleted node. Returns `{ success, message, node_id, title, source, e2nodeAttached, passwordResetNeeded }`; a resurrected account has no usable password (`passwordResetNeeded`) until its owner resets it |
+| `POST /api/resurrect/node` | admins | `{ node_id, source: "tomb"|"heaven" }` — restore a deleted node. Returns `{ success, message, node_id, title, source, e2nodeAttached, passwordResetNeeded }`; a resurrected account has no usable password (`passwordResetNeeded`) until its owner resets it. A copy whose type no longer exists or is retired (NodeBase `%RETIRED_NODETYPES`), or that can't be read back, is refused with `success: 0` and the reason in `error` (`$DB->resurrect_refusal`) |
 | `GET /api/node_parameter?node_id=` · `POST /api/node_parameter/set` / `delete` | admins | `{ node_id, param_name, param_value }` / `{ node_id, param_name }` |
 | `POST /api/nodegroups/:id/action/addnode` / `removenode` | admins | `{ node_ids: [...] }` |
 | `POST /api/nodegroups/:id/action/reorder` | admins | JSON array of member ids |

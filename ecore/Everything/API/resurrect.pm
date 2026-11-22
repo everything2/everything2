@@ -58,6 +58,13 @@ sub resurrect_node {
     # Validate source
     my $burial_ground = ($source eq 'heaven') ? 'heaven' : 'tomb';
 
+    if (my $reason = $DB->resurrect_refusal($node_id, $burial_ground)) {
+        return [$self->HTTP_OK, {
+            success => 0,
+            error   => "Node $node_id can't be resurrected. $reason",
+        }];
+    }
+
     # Attempt resurrection
     my $resurrected_node = $DB->resurrectNode($node_id, $burial_ground);
 

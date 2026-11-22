@@ -18,6 +18,7 @@ const TheNodeCrypt = ({ data }) => {
     is_resurrected,
     existing_title,
     lab_id,
+    resurrect_refusal,
     fields = [],
     field_count = 0
   } = data
@@ -45,7 +46,13 @@ const TheNodeCrypt = ({ data }) => {
           </>
         )}
 
-        {!Boolean(is_resurrected) && lab_id && (
+        {!Boolean(is_resurrected) && resurrect_refusal && (
+          <p className="node-crypt__refusal">
+            This node can&apos;t be resurrected. {resurrect_refusal}
+          </p>
+        )}
+
+        {!Boolean(is_resurrected) && !resurrect_refusal && lab_id && (
           <h2 className="node-crypt__heading">
             <a href={`/?node_id=${lab_id}&olde2nodeid=${coffin_id}`}>RESURRECT</a>
           </h2>

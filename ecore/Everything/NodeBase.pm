@@ -40,6 +40,10 @@ our %TOMB_NEVER_STORES = ( user => [qw(passwd salt user_salt validationkey sessi
 # node as loaded (old code stored it, credentials and all); nothing reads it back.
 our @TOMB_NEVER_STORES_ANY = qw(_ORIGINAL_VALUES);
 
+# Nodetypes that still exist but nothing routes any more: a stored copy of one isn't resurrected.
+# (Most htmlcode copies are blank and would be harmless; the type just isn't used.)
+our %RETIRED_NODETYPES = ( htmlcode => 1 );
+
 sub BEGIN
 {
 	use Exporter ();
@@ -1404,6 +1408,49 @@ sub nukeNode
 
 #############################################################################
 #	Sub
+#		resurrect_refusal
+#
+#	Purpose
+#		Says why a stored copy can't be resurrected: there is none, it can't be
+#		read back, or its type no longer exists or is retired (%RETIRED_NODETYPES).
+#
+#	Parameters
+#		$node_id - the node_id of the stored copy
+#		$burialground - optional, 'tomb' or 'heaven' (defaults to 'tomb')
+#
+#	Returns
+#		The reason as a sentence, or undef if it can be resurrected
+#
+sub resurrect_refusal
+{
+	my ($this, $node_id, $burialground) = @_;
+	$burialground = ($burialground // '') eq 'heaven' ? 'heaven' : 'tomb';
+
+	my $copy = $this->sqlSelectHashref('type_nodetype, data', $burialground,
+		'node_id=' . $this->quote($node_id));
+	return "There is no copy of it in the $burialground." unless $copy;
+
+	require Everything::Serialization;
+	my $data = length($copy->{data} // '')
+		? Everything::Serialization::safe_deserialize_dumper('my ' . $copy->{data}) : undef;
+	return "Its stored copy can't be read back." unless ref($data) eq 'HASH';
+
+	my $type_id = $copy->{type_nodetype};
+	my $TYPE = ($type_id // '') =~ /\A\d+\z/ ? $this->getType($type_id) : undef;
+	unless ($TYPE && $TYPE->{node_id}) {
+		# A deleted nodetype may have its own copy in the tomb, which still has its name.
+		my $name = ($type_id // '') =~ /\A\d+\z/
+			? $this->sqlSelect('title', 'tomb', 'node_id=' . int($type_id)) : undef;
+		return $name ? "Its type, $name, no longer exists." : "Its type no longer exists.";
+	}
+	return "Its type, $TYPE->{title}, is retired." if $RETIRED_NODETYPES{ $TYPE->{title} };
+
+	return;
+}
+
+
+#############################################################################
+#	Sub
 #		resurrectNode
 #
 #	Purpose
@@ -1428,23 +1475,15 @@ sub resurrectNode
 	my $existing = $this->getNodeById($node_id);
 	return if $existing;
 
-	# Retrieve the tombstone record
+	# Nothing is written for a copy that can't come back (see resurrect_refusal).
+	return if $this->resurrect_refusal($node_id, $burialground);
+
 	my $tomb = $this->sqlSelectHashref('*', $burialground, 'node_id=' . $this->quote($node_id));
-	return unless $tomb;
-	return unless $tomb->{data};
-
-	# Deserialize the node data using safe deserialization
-	require Everything::Serialization;
-	Everything::Serialization->import('safe_deserialize_dumper');
-
-	my $nodeproto = safe_deserialize_dumper('my ' . $tomb->{data});
-	return unless $nodeproto;
-	return unless ref($nodeproto) eq 'HASH';
+	my $nodeproto = Everything::Serialization::safe_deserialize_dumper('my ' . $tomb->{data});
 
 	# Get the tables for this node type
 	# Copy the array to avoid mutating the cached TYPE object
 	my $typetables = [@{$this->getNodetypeTables($tomb->{type_nodetype}) || []}];
-	return unless @$typetables || $tomb->{type_nodetype};
 
 	push @$typetables, 'node';
 
