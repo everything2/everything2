@@ -33,6 +33,7 @@ sub room_create
   $canCreate = 0 if $APP->isSuspended($USER, 'room');
 
   if (!$canCreate) {
+    # The system undoing a room the user couldn't create, so it's removed as the superuser.
     $DB->nukeNode($N, -1);
     return;
   }
@@ -104,6 +105,7 @@ sub writeup_create
   # when handed a writeup with no writeup_doctext. Non-web contexts (no CGI
   # object: cron, bulk import) are left untouched, as before.
   return unless $query;
+  # The system rejecting the insert (no tomb copy), so it's removed as the superuser.
   $DB->nukeNode($WRITEUP, -1, 1);
   return;
 }
@@ -340,14 +342,14 @@ sub debatecomment_create
     my $restrictNode = getNodeById($restrict);
     unless($restrictNode)
     {
-      #ack! no group permission somehow!
+      #ack! no group permission somehow! The system undoes the comment, as the superuser.
       $DB->nukeNode($COMMENT, -1);
       return;
     }
 
     unless(Everything::isApproved($USER, $restrictNode) || $APP->inUsergroup($USER,$restrictNode) )
     {
-      #not allowed to view parent, so can't post child
+      #not allowed to view parent, so can't post child. The system undoes it, as the superuser.
       $DB->nukeNode($COMMENT, -1);
       return;
     }
@@ -569,6 +571,7 @@ sub category_create
   # belong to the current or guest user, remove it
   if ($maintType eq 'user' && $$MAINTAINER{node_id} != $$USER{user_id} && $$MAINTAINER{node_id} != $guestuserId)
   {
+    # The system undoing the category (no tomb copy), so it's removed as the superuser.
     $DB->nukeNode($CATEGORY, -1, 1);
     return;
   }
@@ -577,6 +580,7 @@ sub category_create
   # current user does not belong to that usergroup, remove it
   if ($maintType eq 'usergroup' && ! $APP->inUsergroup($USER, $MAINTAINER) )
   {
+    # The system undoing the category (no tomb copy), so it's removed as the superuser.
     $DB->nukeNode($CATEGORY, -1, 1);
     return;
   }

@@ -266,6 +266,12 @@ Delegation: **yes**. Delegation target: **the model**, not a type-aware controll
 
 This is a Path-1-flavored change (modernize the domain layer in place) — `Node::<type>->create` is the right home now that persistence stays on NodeBase. **Status 2026-11-16:** not started; the `<type>_create` hooks in `Everything::Delegation::maintenance` still read request params through `$query`, and `API::category::create` still holds the maintainer rule.
 
+### Node deletion: the same split
+
+**Added 2026-11-22** (#4718). `nukeNode($NODE, $USER)` uses `$USER` twice: `canDeleteNode` checks it against the type's `deleters_user` group, and the tomb records it as `killa_user`. The type-level group can't express "the author may delete their own", so the drafts API checks author-or-admin itself, authorizes the delete as the superuser (`-1`), and passes the real person in a fifth argument, `$KILLA`, only so the tomb names them. That argument has exactly one caller (`API::drafts::delete_draft`).
+
+The right shape is `Node::<type>->delete($actor)`: the class owns who may delete it (a draft: its author or an admin), its own cleanup (a draft's autosave and nodenote rows, which `delete_draft` does by hand today and the generic `/api/nodes/:id/action/delete` skips), and calls `nukeNode` with one actor that is both checked and recorded. When `Node::draft` has that, repoint `delete_draft` at it and drop `$KILLA`. The tests in `t/239_nuke_records_killa.t` that check the API (the right person is recorded; a member still can't delete someone else's draft) carry over; only its `$KILLA` subtest goes. The system deletions (`clean_old_rooms`, the create-hook rejections in `Delegation::maintenance`) keep `-1`.
+
 ---
 
 ## References

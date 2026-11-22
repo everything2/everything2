@@ -329,8 +329,8 @@ sub delete_comment {
         return [$self->HTTP_OK, {success => 0, error => 'Comment not found'}];
     }
 
-    # Delete the node and all children recursively
-    my $deleted_count = $self->_delete_recursive($node->NODEDATA);
+    # Delete the node and all children recursively, as the admin
+    my $deleted_count = $self->_delete_recursive($node->NODEDATA, $user->NODEDATA);
 
     return [$self->HTTP_OK, {
         success => 1,
@@ -341,7 +341,7 @@ sub delete_comment {
 
 # Recursively delete a comment and all its children
 sub _delete_recursive {
-    my ($self, $node) = @_;
+    my ($self, $node, $actor) = @_;
 
     my $DB = $self->DB;
     my $count = 0;
@@ -353,11 +353,11 @@ sub _delete_recursive {
     foreach my $child_id (@$group) {
         my $child = $DB->getNodeById($child_id);
         next unless $child;
-        $count += $self->_delete_recursive($child);
+        $count += $self->_delete_recursive($child, $actor);
     }
 
     # Delete this node
-    $DB->nukeNode($node, -1);
+    $DB->nukeNode($node, $actor);
     $count++;
 
     return $count;
