@@ -68,8 +68,14 @@ The CodeBuild project has no GitHub webhook, so nothing deploys on push. A FAILE
 **CloudFormation Template:**
 - Location: `cf/everything2-production.json` (stack `everything2-production`)
 - Defines: VPC/subnets, ALB, ECS cluster/service/task definitions, RDS, S3 buckets, Route53, alarms, EventBridge rules, CodeBuild project, read-only query Lambda
-- Stack policy: `cf/stack-policy.json`
-- Deploy: `tools/cf-deploy.rb` / `ops/cf.rb`
+- Stack policy: `cf/stack-policy.json` (denies replacing or deleting the database; the deploy tool re-applies it when the live policy differs)
+- Deploy: `tools/cf-deploy.rb` is the only tool that updates the stack (stdlib Ruby + the AWS CLI; no gems). `ops/cf.rb` and `ops/quickcf.rb` were retired in #4730.
+  - `./tools/cf-deploy.rb diff production`: preview what a deploy would change. It creates a change set and deletes it again, so nothing changes.
+  - `./tools/cf-deploy.rb production`: creates a change set and prints every change with its Replacement column, the properties the template changes, and, for knock-on changes, what they follow (e.g. `follows: EverythingDB.Endpoint.Address`). It executes only after you type `yes`. Any possible replacement or removal needs the stack name typed instead. It refuses outright a change set that definitely replaces (`Replacement: True`) or deletes the database.
+  - CloudFormation marks most RDS instance properties `Conditional`. For our standalone instance these have always applied in place (the 8.4 engine upgrade included), and the stack policy denies an actual replacement at execution.
+  - `./tools/cf-deploy.rb drift production`: lists resources whose live configuration no longer matches the template.
+  - `./tools/cf-deploy.rb protect production` / `unprotect`: stack termination protection.
+  - Tests: `ruby tools/test/cf_deploy_test.rb` (runs against a fake `aws` on PATH; nothing talks to AWS).
 
 **CodeBuild Configuration:**
 - Location: `docker/buildspec.yml`
@@ -87,7 +93,10 @@ The CodeBuild project has no GitHub webhook, so nothing deploys on push. A FAILE
 - Autoscaling: min 2 / max 8, target tracking on 2xx-per-target and on CPU (60%)
 
 **Storage:**
-- RDS MySQL 8.4.9, `db.t4g.medium`, single-AZ, gp3, 7-day automated backups, deletion protection
+- RDS MySQL 8.4.9, `db.t4g.medium`, single-AZ, gp3, 7-day automated backups, deletion protection, encrypted at rest; minor-version auto-upgrade off (the template pins the version)
+  - **Rebuild note:** the template does not say `StorageEncrypted`, because adding it to the live stack reads as a database replacement (the live instance is encrypted; it was created that way in 2019). A from-scratch rebuild must add `"StorageEncrypted": true` to `EverythingDB` before creating the stack, or the new database comes up unencrypted.
+  - The instance sits in the subnet group `e2-app-db-subnet-group`, not the template's `e2-app-db-subnet-group-2` (same two subnets; the template's group was replaced in 2021 and the database never moved). Don't delete the old group.
+- S3 buckets have ACLs disabled (`BucketOwnerEnforced`, #4730); public reads go through bucket policies in the template (`assets`, `hnimagew`, `sitemap`, `deployed`, `podcast`), and `assets`/`hnimagew`/`sitemap` are S3 static websites (HTTP; Route53 aliases to `s3-website-us-west-2`). Nothing that writes to S3 sends an object ACL; keep it that way, since an ACL header is rejected. `cloudformation.everything2.com` blocks all public access.
 - S3 buckets (main ones): `deployed.everything2.com` (built JS/CSS), `hnimagew.everything2.com` (homenode images), `sitemap.everything2.com`, `nodebackup.everything2.com`, `elblogs.everything2.com` (ALB access logs), `secrets.everything2.com`, `e2-maintenance-jobs`, `nodepack.everything2.com`. See the template for the full list.
 
 **Networking:**
@@ -295,7 +304,7 @@ what changes is the image digest. Each ECS deployment records the digest it reso
 
 Most groups keep 3 days (client-errors and rate-limit-blocks keep 7). 500s from malformed requests that fail before the app's handlers run show up only in the ALB access logs in S3 (`elblogs.everything2.com`).
 
-**Alarms → SNS `e2-alerts` (email):** `e2-app-5xx-errors`, `e2-app-high-p99-latency`, `e2-app-unhealthy-hosts`, `e2-rds-high-cpu`, `e2-rds-high-connections`, `e2-rds-low-freeable-memory`, `e2-cron-wedged-jobs`, plus the `e2-ecs-deployment-failed` EventBridge rule. The two autoscaling `AlarmLow` alarms normally sit in ALARM; that is expected.
+**Alarms → SNS `e2-alerts` (email):** `e2-app-5xx-errors`, `e2-app-high-p95-latency`, `e2-app-unhealthy-hosts`, `e2-rds-high-cpu`, `e2-rds-high-connections`, `e2-rds-low-freeable-memory`, `e2-cron-wedged-jobs`, plus the `e2-ecs-deployment-failed` EventBridge rule. The two autoscaling `AlarmLow` alarms normally sit in ALARM; that is expected.
 
 **Other:** Container Insights on the cluster; awslogs non-blocking mode with a 25 MB buffer; ECS managed tags and tag propagation. Memory: use Container Insights `MemoryUtilized`, not `MemoryUtilization` (the latter counts page cache and reads high).
 

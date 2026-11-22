@@ -4,12 +4,14 @@
 # CloudFormation Deployment Tool for Everything2
 #
 # Usage:
-#   ./tools/cf-deploy.rb production          # Deploy main stack to us-west-2
+#   ./tools/cf-deploy.rb production          # Preview, confirm, then update the main stack (us-west-2)
 #   ./tools/cf-deploy.rb cloudfront          # Deploy CloudFront stack to us-east-1
 #   ./tools/cf-deploy.rb status              # Check status of both stacks
 #   ./tools/cf-deploy.rb outputs             # Show stack outputs
 #   ./tools/cf-deploy.rb validate            # Validate templates
 #   ./tools/cf-deploy.rb diff production     # Show changeset preview
+#   ./tools/cf-deploy.rb drift production    # Compare live resources with the template
+#   ./tools/cf-deploy.rb protect production  # Turn on stack termination protection
 #
 # Environment:
 #   AWS_PROFILE - AWS profile to use (optional)
@@ -24,7 +26,11 @@ class CFDeploy
       name: 'everything2-production',
       template: 'cf/everything2-production.json',
       region: 'us-west-2',
-      capabilities: ['CAPABILITY_NAMED_IAM']
+      capabilities: ['CAPABILITY_NAMED_IAM'],
+      # Denies replacing or deleting the database. Applied on every deploy so a recreated
+      # stack is never left without it.
+      stack_policy: 'cf/stack-policy.json',
+      tags: { 'app' => 'e2' }
     },
     'cloudfront' => {
       name: 'everything2-cloudfront',
@@ -58,6 +64,12 @@ class CFDeploy
       validate(target)
     when 'diff'
       diff(target || 'production')
+    when 'drift'
+      drift(target || 'production')
+    when 'protect'
+      termination_protection(target || 'production', true)
+    when 'unprotect'
+      termination_protection(target || 'production', false)
     when 'cache-stats'
       cache_stats
     when 'ecs-status'
@@ -78,85 +90,266 @@ class CFDeploy
   S3_TEMPLATE_BUCKET = 'cloudformation.everything2.com'
   S3_TEMPLATE_PREFIX = 'templates'
 
+  # A change set that definitely replaces or removes one of these is refused outright. CloudFormation
+  # marks most RDS instance properties "Conditional" (some instance setups need recreating for
+  # them); for our standalone instance those have always applied in place (engine upgrades
+  # included), so a Conditional change needs the stack name typed, and the stack policy denies an
+  # actual replacement at execution.
+  NEVER_REPLACE = ['AWS::RDS::DBInstance'].freeze
+
   def deploy(stack_key)
+    config = stack_config(stack_key)
+    puts "Deploying #{config[:name]} to #{config[:region]}..."
+
+    params = build_parameters(stack_key, config)
+    template = template_args(config)
+
+    unless stack_exists?(config[:name], config[:region])
+      create_stack(config, template, params)
+      return
+    end
+
+    changeset = create_change_set(config, template, params, 'deploy')
+    if changeset == :no_changes
+      puts "No changes: #{config[:name]} already matches the template."
+      apply_stack_policy(config)
+      return
+    end
+
+    changes = changeset['Changes'] || []
+    print_changes(changes)
+
+    refused = refused_changes(changes)
+    if refused.any?
+      puts
+      puts "REFUSED: this change set would replace or delete:"
+      refused.each { |c| puts "  #{c['LogicalResourceId']} (#{c['ResourceType']})" }
+      puts "Nothing was changed. Fix the template; a database is never replaced through this tool."
+      delete_change_set(config, changeset['ChangeSetName'])
+      exit 1
+    end
+
+    risky = risky_changes(changes)
+    puts
+    if risky.any?
+      puts "WARNING: #{risky.size} resource(s) may be replaced or removed (marked !! above)."
+      risky.select { |c| NEVER_REPLACE.include?(c['ResourceType']) }.each do |c|
+        puts "  #{c['LogicalResourceId']}: CloudFormation can't rule out replacing it. The stack policy denies an"
+        puts "  actual replacement, which would fail the update and roll it back."
+      end
+      answer = ask("Type the stack name (#{config[:name]}) to execute this change set: ")
+      confirmed = answer == config[:name]
+    else
+      answer = ask("Execute this change set on #{config[:name]}? Type 'yes': ")
+      confirmed = answer == 'yes'
+    end
+
+    unless confirmed
+      puts "Not executed. The change set has been deleted; nothing was changed."
+      delete_change_set(config, changeset['ChangeSetName'])
+      exit 1
+    end
+
+    apply_stack_policy(config)
+    execute_change_set(config, changeset['ChangeSetName'])
+  end
+
+  def stack_config(stack_key)
     config = STACKS[stack_key]
     unless config
       puts "Unknown stack: #{stack_key}"
       exit 1
     end
-
     template_path = File.join(@project_root, config[:template])
     unless File.exist?(template_path)
       puts "Template not found: #{template_path}"
       exit 1
     end
+    config
+  end
 
-    puts "Deploying #{config[:name]} to #{config[:region]}..."
-
-    # Check if stack exists
-    exists = stack_exists?(config[:name], config[:region])
-
-    # Build parameters
-    params = build_parameters(stack_key, config)
-
-    # Check template size - use S3 for large templates
+  # --template-body for small templates; larger ones (over CloudFormation's 51,200-byte
+  # inline limit) are uploaded to S3 and passed as --template-url.
+  def template_args(config)
+    template_path = File.join(@project_root, config[:template])
     template_size = File.size(template_path)
-    use_s3 = template_size > 51200
+    return ['--template-body', "file://#{template_path}"] if template_size <= 51200
 
-    if use_s3
-      s3_key = "#{S3_TEMPLATE_PREFIX}/#{File.basename(config[:template])}"
-      s3_url = "https://#{S3_TEMPLATE_BUCKET}.s3.amazonaws.com/#{s3_key}"
-
-      puts "Template too large for inline (#{template_size} bytes), uploading to S3..."
-      upload_cmd = [
-        'aws', 's3', 'cp', template_path,
-        "s3://#{S3_TEMPLATE_BUCKET}/#{s3_key}",
-        '--region', 'us-west-2'
-      ]
-      unless system(*upload_cmd)
-        puts "Failed to upload template to S3"
-        exit 1
-      end
-      puts "Uploaded to: #{s3_url}"
-    end
-
-    # Build command
-    cmd = [
-      'aws', 'cloudformation',
-      exists ? 'update-stack' : 'create-stack',
-      '--stack-name', config[:name],
-      '--region', config[:region]
-    ]
-
-    if use_s3
-      cmd += ['--template-url', s3_url]
-    else
-      cmd += ['--template-body', "file://#{template_path}"]
-    end
-
-    if config[:capabilities].any?
-      cmd += ['--capabilities', *config[:capabilities]]
-    end
-
-    if params.any?
-      param_strings = params.map { |k, v| "ParameterKey=#{k},ParameterValue=#{v}" }
-      cmd += ['--parameters', *param_strings]
-    end
-
-    puts "Running: #{cmd.join(' ')}"
-    puts
-
-    success = system(*cmd)
-
-    if success
-      puts
-      puts "Stack #{exists ? 'update' : 'create'} initiated."
-      puts "Monitor progress with: ./tools/cf-deploy.rb status"
-      wait_for_stack(config[:name], config[:region])
-    else
-      puts "Deployment failed!"
+    s3_key = "#{S3_TEMPLATE_PREFIX}/#{File.basename(config[:template])}"
+    s3_url = "https://#{S3_TEMPLATE_BUCKET}.s3.amazonaws.com/#{s3_key}"
+    puts "Template too large for inline (#{template_size} bytes), uploading to S3..."
+    upload_cmd = ['aws', 's3', 'cp', template_path, "s3://#{S3_TEMPLATE_BUCKET}/#{s3_key}", '--region', 'us-west-2']
+    unless system(*upload_cmd, out: File::NULL)
+      puts "Failed to upload template to S3"
       exit 1
     end
+    puts "Uploaded to: #{s3_url}"
+    ['--template-url', s3_url]
+  end
+
+  def stack_args(config, params)
+    args = []
+    args += ['--capabilities', *config[:capabilities]] if config[:capabilities].any?
+    if params.any?
+      args += ['--parameters', *params.map { |k, v| "ParameterKey=#{k},ParameterValue=#{v}" }]
+    end
+    if config[:tags]&.any?
+      args += ['--tags', *config[:tags].map { |k, v| "Key=#{k},Value=#{v}" }]
+    end
+    args
+  end
+
+  def create_stack(config, template, params)
+    cmd = ['aws', 'cloudformation', 'create-stack',
+           '--stack-name', config[:name], '--region', config[:region]] +
+          template + stack_args(config, params)
+    if config[:stack_policy]
+      # Born protected: the stack policy, and termination protection.
+      cmd += ['--stack-policy-body', "file://#{File.join(@project_root, config[:stack_policy])}",
+              '--enable-termination-protection']
+    end
+    puts "Creating #{config[:name]}..."
+    unless system(*cmd)
+      puts "Stack create failed!"
+      exit 1
+    end
+    wait_for_stack(config[:name], config[:region], 'stack-create-complete')
+  end
+
+  # Creates a change set and waits for it. Returns its description (with every page of
+  # Changes), or :no_changes when the template matches the stack.
+  def create_change_set(config, template, params, purpose)
+    name = "#{purpose}-#{Time.now.to_i}"
+    cmd = ['aws', 'cloudformation', 'create-change-set',
+           '--stack-name', config[:name], '--change-set-name', name,
+           '--region', config[:region]] + template + stack_args(config, params)
+    _, err, status = Open3.capture3(*cmd)
+    unless status.success?
+      puts "Failed to create change set: #{err.strip}"
+      exit 1
+    end
+
+    puts "Waiting for change set #{name}..."
+    wait_cmd = ['aws', 'cloudformation', 'wait', 'change-set-create-complete',
+                '--stack-name', config[:name], '--change-set-name', name, '--region', config[:region]]
+    system(*wait_cmd, err: File::NULL)
+
+    changeset = describe_change_set(config, name)
+    if changeset['Status'] == 'FAILED'
+      reason = changeset['StatusReason'].to_s
+      delete_change_set(config, name)
+      return :no_changes if reason.include?("didn't contain changes") || reason.include?('No updates are to be performed')
+
+      puts "Change set failed: #{reason}"
+      exit 1
+    end
+    changeset
+  end
+
+  def describe_change_set(config, name)
+    changes = []
+    token = nil
+    loop do
+      cmd = ['aws', 'cloudformation', 'describe-change-set',
+             '--stack-name', config[:name], '--change-set-name', name,
+             '--region', config[:region], '--output', 'json']
+      cmd += ['--next-token', token] if token
+      out, err, status = Open3.capture3(*cmd)
+      unless status.success?
+        puts "Failed to describe change set: #{err.strip}"
+        exit 1
+      end
+      page = JSON.parse(out)
+      changes.concat((page['Changes'] || []).map { |c| c['ResourceChange'] }.compact)
+      token = page['NextToken']
+      return page.merge('Changes' => changes) unless token
+    end
+  end
+
+  def delete_change_set(config, name)
+    system('aws', 'cloudformation', 'delete-change-set',
+           '--stack-name', config[:name], '--change-set-name', name, '--region', config[:region],
+           out: File::NULL, err: File::NULL)
+  end
+
+  def execute_change_set(config, name)
+    cmd = ['aws', 'cloudformation', 'execute-change-set',
+           '--stack-name', config[:name], '--change-set-name', name, '--region', config[:region]]
+    unless system(*cmd)
+      puts "Failed to execute change set!"
+      exit 1
+    end
+    puts "Change set #{name} executing."
+    wait_for_stack(config[:name], config[:region], 'stack-update-complete')
+  end
+
+  # Applies the stack's policy file when the live policy differs from it.
+  def apply_stack_policy(config)
+    return unless config[:stack_policy]
+
+    path = File.join(@project_root, config[:stack_policy])
+    wanted = JSON.parse(File.read(path))
+    out, status = Open3.capture2('aws', 'cloudformation', 'get-stack-policy',
+                                 '--stack-name', config[:name], '--region', config[:region], '--output', 'json')
+    live_body = status.success? ? JSON.parse(out)['StackPolicyBody'] : nil
+    live = live_body ? JSON.parse(live_body) : nil
+    return if live == wanted
+
+    puts "Applying stack policy from #{config[:stack_policy]}..."
+    ok = system('aws', 'cloudformation', 'set-stack-policy', '--stack-name', config[:name],
+                '--region', config[:region], '--stack-policy-body', "file://#{path}")
+    unless ok
+      puts "Failed to apply the stack policy; not continuing."
+      exit 1
+    end
+  end
+
+  def replaces?(change)
+    %w[True Conditional].include?(change['Replacement'].to_s)
+  end
+
+  def removes?(change)
+    change['Action'] == 'Remove'
+  end
+
+  def refused_changes(changes)
+    changes.select { |c| NEVER_REPLACE.include?(c['ResourceType']) && (c['Replacement'].to_s == 'True' || removes?(c)) }
+  end
+
+  def risky_changes(changes)
+    changes.select { |c| replaces?(c) || removes?(c) }
+  end
+
+  def print_changes(changes)
+    puts
+    puts "Proposed changes (#{changes.size}):"
+    puts '-' * 100
+    puts format('   %-8s %-40s %-36s %s', 'Action', 'Resource', 'Type', 'Replacement')
+    changes.each do |c|
+      flag = replaces?(c) || removes?(c) ? '!!' : '  '
+      replacement = c['Action'] == 'Modify' ? c['Replacement'].to_s : ''
+      puts format('%s %-8s %-40s %-36s %s', flag, c['Action'], c['LogicalResourceId'], c['ResourceType'], replacement)
+      details = c['Details'] || []
+      direct, knock_on = details.partition { |d| d['ChangeSource'] == 'DirectModification' }
+      props = direct.map do |d|
+        name = d.dig('Target', 'Name') || d.dig('Target', 'Attribute')
+        recreation = d.dig('Target', 'RequiresRecreation')
+        name && recreation && recreation != 'Never' ? "#{name} (recreation: #{recreation})" : name
+      end.compact.uniq
+      puts "            changes: #{props.join(', ')}" if props.any?
+      # Changes that only follow from another resource (a reference or attribute it uses).
+      causes = knock_on.map { |d| d['CausingEntity'] || d['ChangeSource'] }.compact.uniq
+      puts "            follows: #{causes.join(', ')}" if causes.any?
+    end
+    direct_count = changes.count { |c| (c['Details'] || []).any? { |d| d['ChangeSource'] == 'DirectModification' } }
+    puts "#{direct_count} changed directly by the template; the rest follow from those." if direct_count < changes.size
+    puts '-' * 100
+  end
+
+  def ask(prompt)
+    print prompt
+    $stdout.flush
+    ($stdin.gets || '').strip
   end
 
   def build_parameters(stack_key, config)
@@ -227,18 +420,17 @@ class CFDeploy
     status.success?
   end
 
-  def wait_for_stack(stack_name, region)
+  def wait_for_stack(stack_name, region, waiter)
     puts
     puts "Waiting for stack operation to complete..."
-
-    cmd = [
-      'aws', 'cloudformation', 'wait', 'stack-update-complete',
-      '--stack-name', stack_name,
-      '--region', region
-    ]
-
-    # Try update-complete first, then create-complete
-    system(*cmd) || system(*cmd.map { |c| c == 'stack-update-complete' ? 'stack-create-complete' : c })
+    ok = system('aws', 'cloudformation', 'wait', waiter, '--stack-name', stack_name, '--region', region)
+    unless ok
+      puts "Stack operation did not complete successfully. Most recent failures:"
+      system('aws', 'cloudformation', 'describe-stack-events', '--stack-name', stack_name, '--region', region,
+             '--max-items', '15', '--output', 'table',
+             '--query', "StackEvents[?contains(ResourceStatus, 'FAILED')].[Timestamp,LogicalResourceId,ResourceStatusReason]")
+      exit 1
+    end
 
     puts "Stack operation complete!"
     show_outputs(stack_name, region)
@@ -699,77 +891,79 @@ class CFDeploy
     exit(all_valid ? 0 : 1)
   end
 
+  # Shows what a deploy would change, then deletes the change set. Changes nothing.
   def diff(stack_key)
-    config = STACKS[stack_key]
-    unless config
-      puts "Unknown stack: #{stack_key}"
-      exit 1
-    end
-
-    template_path = File.join(@project_root, config[:template])
-    changeset_name = "preview-#{Time.now.to_i}"
-
-    puts "Creating changeset preview for #{config[:name]}..."
-
-    # Build parameters
+    config = stack_config(stack_key)
+    puts "Creating change set preview for #{config[:name]}..."
     params = build_parameters(stack_key, config)
-
-    # Create changeset
-    cmd = [
-      'aws', 'cloudformation', 'create-change-set',
-      '--stack-name', config[:name],
-      '--template-body', "file://#{template_path}",
-      '--change-set-name', changeset_name,
-      '--region', config[:region]
-    ]
-
-    if config[:capabilities].any?
-      cmd += ['--capabilities', *config[:capabilities]]
+    changeset = create_change_set(config, template_args(config), params, 'preview')
+    if changeset == :no_changes
+      puts "No changes: #{config[:name]} already matches the template."
+      return
     end
 
-    if params.any?
-      param_strings = params.map { |k, v| "ParameterKey=#{k},ParameterValue=#{v}" }
-      cmd += ['--parameters', *param_strings]
-    end
+    changes = changeset['Changes'] || []
+    print_changes(changes)
+    refused = refused_changes(changes)
+    puts "A deploy would REFUSE this: it replaces or deletes #{refused.map { |c| c['LogicalResourceId'] }.join(', ')}." if refused.any?
+    delete_change_set(config, changeset['ChangeSetName'])
+  end
 
-    _, status = Open3.capture2(*cmd)
+  # Runs CloudFormation's drift detection on the whole stack and lists the resources whose live
+  # configuration no longer matches the template. Changes nothing.
+  def drift(stack_key)
+    config = stack_config(stack_key)
+    puts "Detecting drift on #{config[:name]}..."
+    out, err, status = Open3.capture3('aws', 'cloudformation', 'detect-stack-drift',
+                                      '--stack-name', config[:name], '--region', config[:region], '--output', 'json')
     unless status.success?
-      puts "Failed to create changeset"
+      puts "Failed to start drift detection: #{err.strip}"
       exit 1
     end
+    detection_id = JSON.parse(out)['StackDriftDetectionId']
 
-    # Wait for changeset
-    puts "Waiting for changeset..."
-    wait_cmd = [
-      'aws', 'cloudformation', 'wait', 'change-set-create-complete',
-      '--stack-name', config[:name],
-      '--change-set-name', changeset_name,
-      '--region', config[:region]
-    ]
-    system(*wait_cmd)
+    result = nil
+    loop do
+      out, status = Open3.capture2('aws', 'cloudformation', 'describe-stack-drift-detection-status',
+                                   '--stack-drift-detection-id', detection_id, '--region', config[:region], '--output', 'json')
+      unless status.success?
+        puts 'Failed to read drift detection status'
+        exit 1
+      end
+      result = JSON.parse(out)
+      break unless result['DetectionStatus'] == 'DETECTION_IN_PROGRESS'
 
-    # Describe changeset
-    describe_cmd = [
-      'aws', 'cloudformation', 'describe-change-set',
-      '--stack-name', config[:name],
-      '--change-set-name', changeset_name,
-      '--region', config[:region],
-      '--query', 'Changes[].{Action:ResourceChange.Action,Resource:ResourceChange.LogicalResourceId,Type:ResourceChange.ResourceType}',
-      '--output', 'table'
-    ]
+      sleep 3
+    end
 
-    puts
-    puts "Proposed changes:"
-    system(*describe_cmd)
+    puts "Stack drift: #{result['StackDriftStatus']} (#{result['DetectionStatus']})"
+    puts "  #{result['DetectionStatusReason']}" if result['DetectionStatus'] == 'DETECTION_FAILED'
 
-    # Clean up changeset
-    cleanup_cmd = [
-      'aws', 'cloudformation', 'delete-change-set',
-      '--stack-name', config[:name],
-      '--change-set-name', changeset_name,
-      '--region', config[:region]
-    ]
-    system(*cleanup_cmd, out: '/dev/null', err: '/dev/null')
+    out, status = Open3.capture2('aws', 'cloudformation', 'describe-stack-resource-drifts',
+                                 '--stack-name', config[:name], '--region', config[:region],
+                                 '--stack-resource-drift-status-filters', 'MODIFIED', 'DELETED', '--output', 'json')
+    return unless status.success?
+
+    drifts = JSON.parse(out)['StackResourceDrifts'] || []
+    puts '  No resource has drifted.' if drifts.empty?
+    drifts.each do |d|
+      puts "  #{d['StackResourceDriftStatus'].ljust(9)} #{d['LogicalResourceId']} (#{d['ResourceType']})"
+      (d['PropertyDifferences'] || []).each do |pd|
+        puts "            #{pd['DifferenceType'].ljust(10)} #{pd['PropertyPath']}"
+      end
+    end
+  end
+
+  def termination_protection(stack_key, enabled)
+    config = stack_config(stack_key)
+    flag = enabled ? '--enable-termination-protection' : '--no-enable-termination-protection'
+    ok = system('aws', 'cloudformation', 'update-termination-protection', flag,
+                '--stack-name', config[:name], '--region', config[:region], out: File::NULL)
+    unless ok
+      puts 'Failed to change termination protection'
+      exit 1
+    end
+    puts "Termination protection on #{config[:name]} is now #{enabled ? 'ON' : 'OFF'}."
   end
 
   def help
@@ -780,12 +974,16 @@ class CFDeploy
         ./tools/cf-deploy.rb <command> [stack]
 
       Commands:
-        production     Deploy main stack to us-west-2
+        production     Update the main stack (us-west-2): preview the change set,
+                       confirm, then execute. Refuses to replace or delete the database
         cloudfront     Deploy CloudFront stack to us-east-1
         status         Show status of all stacks
         outputs [stack] Show stack outputs
         validate [stack] Validate templates
-        diff <stack>   Preview changes (create changeset)
+        diff <stack>   Preview changes (a change set, deleted afterwards; changes nothing)
+        drift <stack>  List resources whose live configuration differs from the template
+        protect <stack>   Turn stack termination protection on
+        unprotect <stack> Turn it off (needed only to delete the stack)
         cache-stats    Show CloudFront cache hit rate and metrics
         ecs-status     Show ECS service health and resource utilization
         invalidate [paths] Invalidate CloudFront cache (default: /*)
@@ -820,4 +1018,4 @@ class CFDeploy
   end
 end
 
-CFDeploy.new.run(ARGV)
+CFDeploy.new.run(ARGV) if $PROGRAM_NAME == __FILE__

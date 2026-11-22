@@ -406,7 +406,7 @@ Health check failures are visible through:
 Live alarms that cover health (SNS `e2-alerts`, email):
 1. `e2-app-unhealthy-hosts` — target group unhealthy hosts
 2. `e2-app-5xx-errors` — target 5xx
-3. `e2-app-high-p99-latency`
+3. `e2-app-high-p95-latency`
 4. `e2-ecs-deployment-failed` (EventBridge rule, not an alarm)
 
 See [tools/diagnose-health-checks.rb](../tools/diagnose-health-checks.rb) for automated diagnostics.
