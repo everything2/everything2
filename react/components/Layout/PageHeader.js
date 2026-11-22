@@ -9,7 +9,7 @@ import { decodeHtmlEntities } from '../../utils/textUtils'
  *
  * This component replaces the server-side Mason/Perl rendering of:
  * - Node title (h1)
- * - "created by" attribution (e2nodes only, logged-in users)
+ * - "created by" attribution (e2nodes only, logged-in users; hideCreatedBy leaves it out)
  * - Parent link for writeups ("See all of [parent]")
  * - Firmlinks ("See also:" section)
  * - "Is also a" (when title matches other node types)
@@ -17,7 +17,7 @@ import { decodeHtmlEntities } from '../../utils/textUtils'
  *
  * Data comes from e2.pageheader (built by Application.pm buildPageheaderData)
  */
-const PageHeader = ({ node, pageheader, user, feedUrl, children }) => {
+const PageHeader = ({ node, pageheader, user, feedUrl, hideCreatedBy = false, children }) => {
   if (!node) return null
 
   const { createdby, parentLink, firmlinks, isAlso } = pageheader || {}
@@ -48,8 +48,9 @@ const PageHeader = ({ node, pageheader, user, feedUrl, children }) => {
         {children && <div className="page-header__actions-wrapper">{children}</div>}
       </div>
 
-      {/* Created by - only for e2nodes and logged-in users */}
-      {createdby && (
+      {/* Created by - only for e2nodes and logged-in users, unless the viewer hides it
+          (Settings: "Show who created a writeup page title", hideauthore2node) */}
+      {createdby && !hideCreatedBy && (
         <div className="page-header__createdby-wrapper">
           <span
             className="createdby page-header__createdby"

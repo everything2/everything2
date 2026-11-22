@@ -126,6 +126,7 @@ const PageLayout = ({ e2 }) => {
               pageheader={e2.pageheader}
               user={user}
               feedUrl={e2.contentData?.feed_url}
+              hideCreatedBy={!!e2.display_prefs?.hideauthore2node}
             >
               <PageActions />
             </PageHeader>
