@@ -56,19 +56,15 @@ sub _view_coffin {
         };
     }
 
-    # Deserialize the stored data
-    my $DATA = safe_deserialize_dumper('my ' . $N->{data});
+    # Why it can't be resurrected, if it can't: shown in place of the RESURRECT link.
+    my $refusal = $DB->resurrect_refusal($coffin_id, 'tomb');
 
-    unless ($DATA) {
-        return {
-            type      => 'the_node_crypt',
-            error     => "Deserialization failed for node $coffin_id",
-            node_id   => $page_node_id
-        };
-    }
+    # Deserialize the stored data. A copy that can't be read still shows its tomb columns.
+    my $stored = safe_deserialize_dumper('my ' . $N->{data});
+    $stored = {} unless ref($stored) eq 'HASH';
 
     # Merge data into main hash
-    @$N{keys %$DATA} = values %$DATA;
+    @$N{keys %$stored} = values %$stored;
     delete $N->{data};
 
     # Credentials and the old _ORIGINAL_VALUES snapshot aren't shown, even from an older copy that has them.
@@ -115,6 +111,7 @@ sub _view_coffin {
         is_resurrected  => $is_resurrected,
         existing_title  => $existing_title,
         lab_id          => $lab_id,
+        resurrect_refusal => $refusal,
         fields          => \@fields,
         field_count     => scalar(@fields)
     };

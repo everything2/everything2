@@ -18262,6 +18262,11 @@ a.node-toolset__btn {
   text-align: center;
 }
 
+.node-crypt__refusal {
+  text-align: center;
+  font-weight: bold;
+}
+
 .node-crypt__text-right {
   text-align: right;
 }
@@ -18290,6 +18295,12 @@ a.node-toolset__btn {
   border: 1px solid var(--e2-border-color-light, #eee);
   vertical-align: top;
   font-size: 14px;
+}
+
+/* Titles and stored values can be long unbroken strings; let them wrap so the table fits its column. */
+.node-crypt__coffin-td--value,
+.node-crypt__list-td:first-child {
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 600px) {
