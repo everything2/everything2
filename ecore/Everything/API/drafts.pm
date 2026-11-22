@@ -684,9 +684,10 @@ sub delete_draft {
     # Delete links to/from this draft
     $dbh->do( 'DELETE FROM links WHERE from_node = ? OR to_node = ?', {}, $id, $id );
 
-    # Delete the draft node itself
-    # Pass -1 as user (superuser) since we already verified permissions above
-    my $success = $DB->nukeNode($draft, -1);
+    # Delete the draft node itself. The author or an admin was checked above, and a draft's type
+    # has no deleters, so the delete is authorized as the superuser (-1); the person deleting it
+    # is recorded as the one who did.
+    my $success = $DB->nukeNode($draft, -1, undef, undef, $user->NODEDATA);
 
     if ($success) {
         return [

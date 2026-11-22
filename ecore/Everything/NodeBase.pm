@@ -1293,7 +1293,7 @@ sub insertNode
 #   purpose
 #       save a soon-to-be-nuked node to the tomb table, so that
 #       if we ever need to restore it, we can
-#       take same params as nukeNode
+#       $USER is the one deleting it, recorded as killa_user
 #
 #   returns
 #       true if the copy was stored. A node deleted before (and brought back)
@@ -1340,14 +1340,22 @@ sub tomb_never_stores {
 #
 #	Parameters
 #		$NODE - the node in which we wish to delete
-#		$USER - the user trying to do this (used for authorization)
+#		$USER - the user trying to do this (used for authorization, and recorded
+#			as the one who deleted it unless $KILLA is given)
+#		$NOTOMB - true to keep no tomb copy
+#		$skip_maintenance - true to skip the type's delete maintenance
+#		$KILLA - optional: the person recorded as deleting it, when the caller has
+#			already checked their permission and authorizes the delete as the
+#			superuser (-1), e.g. a member deleting their own draft. Interim: goes
+#			away once Node::draft owns its delete (docs/orm-migration-plan.md,
+#			"Node deletion")
 #
 #	Returns
 #		True if successful, false otherwise.
-#	
+#
 sub nukeNode
 {
-	my ($this, $NODE, $USER, $NOTOMB, $skip_maintenance) = @_;
+	my ($this, $NODE, $USER, $NOTOMB, $skip_maintenance, $KILLA) = @_;
 	my $tableArray;
 	my $result = 0;
 	my $groupTable;
@@ -1360,7 +1368,7 @@ sub nukeNode
 	# doesn't die on a failed write, so check the result.
 	unless ($NOTOMB)
 	{
-		return 0 unless $this->tombstoneNode($NODE, $USER);
+		return 0 unless $this->tombstoneNode($NODE, $KILLA // $USER);
 	}
 
 	# This node is about to be deleted.  Do any maintenance if needed.

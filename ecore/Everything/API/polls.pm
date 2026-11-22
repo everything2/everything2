@@ -296,7 +296,7 @@ sub delete_poll {
     $DB->sqlDelete( 'pollvote', "pollvote_id=$poll_id" );
 
     # Delete the poll node
-    my $result = $DB->nukeNode( $poll, -1 );
+    my $result = $DB->nukeNode( $poll, $USER );
 
     return [
         $self->HTTP_OK,

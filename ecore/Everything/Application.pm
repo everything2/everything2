@@ -7281,6 +7281,7 @@ sub clean_old_rooms
     next unless $N;
     next if $exceptions{$N->{node_id}};
 
+    # Removed by the system (cron), not by a person.
     $this->{db}->nukeNode($N, -1);
     push @removed, $N->{node_id};
   }
