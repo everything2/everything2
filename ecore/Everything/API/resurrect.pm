@@ -70,9 +70,11 @@ sub resurrect_node {
 
     # If it's a writeup, try to re-attach to its e2node
     my $e2node_attached = 0;
+    my $type_title = '';
     if ($resurrected_node->{type_nodetype}) {
         my $type = $DB->getNodeById($resurrected_node->{type_nodetype});
-        if ($type && $type->{title} eq 'writeup') {
+        $type_title = $type ? $type->{title} : '';
+        if ($type_title eq 'writeup') {
             # Strip the author suffix from title to find e2node
             my $e2node_title = $resurrected_node->{title};
             $e2node_title =~ s/ \(\w+\)$//;
@@ -103,6 +105,8 @@ sub resurrect_node {
         title          => $resurrected_node->{title},
         source         => $burial_ground,
         e2nodeAttached => $e2node_attached ? \1 : \0,
+        # An account comes back with no usable password; its owner sets one with a reset.
+        passwordResetNeeded => $type_title eq 'user' ? \1 : \0,
     }];
 }
 
