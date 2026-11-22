@@ -5,12 +5,13 @@
 #
 # tombstoneNode no longer stores an account's credentials (NodeBase %TOMB_NEVER_STORES), and
 # resurrecting an account gives it no usable password until it is reset. Copies written before
-# that still carry them; this job takes them out. Everything else in each copy stays, including
-# the email address a reset link goes to.
+# that still carry them; this job takes them out, along with the _ORIGINAL_VALUES snapshot some
+# old copies hold (it carries its own copy of the credentials, #4726). Everything else in each
+# copy stays, including the email address a reset link goes to.
 #
-# Each copy is read, the credential fields removed, and the result written back only after it
-# reads back as exactly the original minus those fields. A copy that can't be read is reported
-# and left alone.
+# Each copy is read, those keys removed, and the result written back only after it reads back as
+# exactly the original minus them. A copy that can't be read, or that would still hold a
+# credential field anywhere in its nested data, is reported and left alone.
 #
 # Runs via the maintenance-job facility (cron/run_s3_job.pl; see docs/maintenance-jobs.md):
 #   bash tools/aws/run-fargate-job.sh tools/jobs/tomb_strip_credentials.pl              # dry run
@@ -42,8 +43,10 @@ local $dbh->{RaiseError} = 1;
 local $dbh->{PrintError} = 0;
 
 my $user_type = $DB->getType('user') or die "[tomb_strip_credentials] no user nodetype\n";
-my @fields    = $DB->tomb_never_stores($user_type);
-die "[tomb_strip_credentials] no credential fields defined for user\n" unless @fields;
+# The keys an account's tomb copy leaves out: its credentials and the old _ORIGINAL_VALUES snapshot.
+my @fields     = $DB->tomb_never_stores($user_type);
+my %credential = map { $_ => 1 } @{ $Everything::NodeBase::TOMB_NEVER_STORES{user} || [] };
+die "[tomb_strip_credentials] no credential fields defined for user\n" unless %credential;
 
 my $limit = @only ? ' AND node_id IN (' . join(',', map { int } @only) . ')' : '';
 my $rows  = $dbh->selectall_arrayref(
@@ -64,23 +67,48 @@ sub as_characters {
   return;
 }
 
+# True if a credential field appears anywhere in the copy, nested data included.
+sub holds_credentials {
+  my ($v, $seen) = @_;
+  $seen ||= {};
+  my $type = reftype($v) // '';
+  return 0 unless $type =~ /\A(?:HASH|ARRAY|SCALAR|REF)\z/;
+  return 0 if $seen->{refaddr $v}++;
+  if ($type eq 'HASH') {
+    for my $k (keys %$v) { return 1 if $credential{$k} || holds_credentials($v->{$k}, $seen) }
+    return 0;
+  }
+  if ($type eq 'ARRAY') {
+    for my $e (@$v) { return 1 if holds_credentials($e, $seen) }
+    return 0;
+  }
+  return holds_credentials(${$v}, $seen);
+}
+
 sub canonical {
   as_characters($_[0]);
   local $Data::Dumper::Sortkeys = 1; local $Data::Dumper::Indent = 1;
   return Dumper($_[0]);
 }
 
-my (%count, @work, @unreadable);
+my (%count, @work, @unreadable, @nested);
 for my $r (@$rows) {
   my $copy = safe_deserialize_dumper('my ' . ($r->{data} // ''));
   unless (ref $copy eq 'HASH') { push @unreadable, $r->{node_id}; next }
 
   my @present = grep { exists $copy->{$_} } @fields;
-  next unless @present;
-  $count{$_}++ for @present;
+  unless (@present) {
+    push @nested, $r->{node_id} if holds_credentials($copy);
+    next;
+  }
 
   my %stripped = %$copy;
   delete @stripped{@present};
+  # Never write a copy that would still hold a credential field somewhere.
+  if (holds_credentials(\%stripped)) {
+    push @nested, $r->{node_id};
+    next;
+  }
   as_characters(\%stripped);
   my $text = Data::Dumper->Dump([\%stripped]);
 
@@ -90,6 +118,7 @@ for my $r (@$rows) {
     push @unreadable, $r->{node_id};
     next;
   }
+  $count{$_}++ for @present;
   push @work, { node_id => $r->{node_id}, old => $r->{data}, new => $text, fields => \@present };
 }
 
@@ -98,6 +127,8 @@ printf "[tomb_strip_credentials] %d deleted-account copies; %d deleted-account c
 printf "[tomb_strip_credentials]   %s: %d\n", $_, $count{$_} || 0 for @fields;
 printf "[tomb_strip_credentials] %d could not be read and are left alone: %s\n",
   scalar(@unreadable), join(', ', @unreadable) if @unreadable;
+printf "[tomb_strip_credentials] %d still hold credentials in nested data and are left alone: %s\n",
+  scalar(@nested), join(', ', @nested) if @nested;
 
 exit 0 unless $apply;
 

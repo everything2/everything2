@@ -181,6 +181,75 @@ subtest 'the cleanup job strips credentials from deleted-account copies' => sub 
     like($again, qr/0 deleted-account copies with credentials/, 'and finds nothing to do');
 };
 
+subtest 'tomb copies never keep the _ORIGINAL_VALUES snapshot' => sub {
+    my $user = member('snap');
+    $user->{_ORIGINAL_VALUES} = { passwd => $user->{passwd}, email => $user->{email} };
+    ok($DB->nukeNode($user, $root), 'the account is deleted');
+    my $copy = tomb_copy($user->{node_id});
+    ok($copy, 'and has a tomb copy');
+    ok(!exists $copy->{_ORIGINAL_VALUES}, 'without the snapshot');
+    is($copy->{email}, $user->{email}, 'keeping the email address');
+
+    my $old = member('snapcrypt');
+    $DB->nukeNode($old, $root, 1);
+    plant_old_copy($old, _ORIGINAL_VALUES => { passwd => $old->{passwd}, email => $old->{email} });
+    my $page = Everything::Page::the_node_crypt->new->_view_coffin($DB, $old->{node_id}, 0);
+    my %shown = map { $_->{key} => 1 } @{ $page->{fields} || [] };
+    ok(%shown, 'the coffin lists fields');
+    ok(!$shown{_ORIGINAL_VALUES}, 'The Node Crypt does not list the snapshot');
+};
+
+subtest 'the cleanup job removes credentials held in an old snapshot' => sub {
+    # As the copies were after the first cleanup: no top-level credentials, but a snapshot holding them.
+    my $user = member('snapjob');
+    my $id   = $user->{node_id};
+    $DB->nukeNode($user, $root, 1);
+    my %data = (
+        nick => $user->{title}, email => $user->{email}, lasttime => $user->{lasttime},
+        _ORIGINAL_VALUES => {
+            nick => $user->{title}, email => $user->{email}, passwd => $user->{passwd},
+            user_salt => 7, validationkey => 'akey', session_id => 42,
+            type => { title => 'user', tableArray => [qw(user setting document)] },
+        },
+    );
+    $DB->sqlInsert('tomb', {
+        node_id => $id, type_nodetype => $user->{type_nodetype}, title => $user->{title},
+        author_user => $id, killa_user => $root->{node_id}, createtime => $user->{createtime},
+        data => Data::Dumper->Dump([\%data]),
+    });
+
+    # One where a credential field sits somewhere the job doesn't know to look.
+    my $odd = member('snapodd');
+    my $odd_id = $odd->{node_id};
+    $DB->nukeNode($odd, $root, 1);
+    my $odd_text = Data::Dumper->Dump([{ nick => $odd->{title}, email => $odd->{email},
+        something => { passwd => $odd->{passwd} } }]);
+    $DB->sqlInsert('tomb', {
+        node_id => $odd_id, type_nodetype => $odd->{type_nodetype}, title => $odd->{title},
+        author_user => $odd_id, killa_user => $root->{node_id}, createtime => $odd->{createtime},
+        data => $odd_text,
+    });
+
+    my $env = "E2_TOMB_ONLY=$id,$odd_id";
+    my $dry = `$env perl $JOB 2>&1`;
+    is($? >> 8, 0, 'the dry run succeeds') or diag $dry;
+    like($dry, qr/1 deleted-account cop(?:y|ies) with credentials/, 'it counts the copy with a snapshot');
+    like($dry, qr/_ORIGINAL_VALUES: 1/, 'and reports the snapshot');
+    like($dry, qr/1 still hold.* credential.*left alone: $odd_id/, 'and reports the copy it cannot clean');
+    unlike($dry, qr/\Q$user->{passwd}\E|akey/, 'stored values are never printed');
+
+    `$env E2_APPLY=1 perl $JOB 2>&1`;
+    my $copy = tomb_copy($id);
+    ok(!exists $copy->{_ORIGINAL_VALUES}, 'the snapshot is gone');
+    is($copy->{email}, $user->{email}, 'the email address is kept');
+    is($copy->{lasttime}, $user->{lasttime}, 'and the last login time');
+    is($DB->sqlSelect('data', 'tomb', 'node_id=' . int($odd_id)), $odd_text, 'the copy it cannot clean is untouched');
+
+    my $again = `E2_TOMB_ONLY=$id E2_APPLY=1 perl $JOB 2>&1`;
+    like($again, qr/0 deleted-account copies with credentials/, 'a second run finds nothing to do');
+    $DB->sqlDelete('tomb', 'node_id=' . int($odd_id));
+};
+
 subtest 'the cleanup job handles copies with non-ASCII text' => sub {
     my $nick = "Andr\x{e9}";        # Latin-1 only: an escape for it reads back without the UTF-8 flag
     my $realname = "\x{263a} Andr\x{e9}";

@@ -36,6 +36,10 @@ our %UPDATE_NEVER_WRITES = ( user => { lasttime => 1 } );
 # address stays in the copy for that).
 our %TOMB_NEVER_STORES = ( user => [qw(passwd salt user_salt validationkey session_id)] );
 
+# Keys no tomb copy keeps, whatever its type: _ORIGINAL_VALUES is an in-memory snapshot of the
+# node as loaded (old code stored it, credentials and all); nothing reads it back.
+our @TOMB_NEVER_STORES_ANY = qw(_ORIGINAL_VALUES);
+
 sub BEGIN
 {
 	use Exporter ();
@@ -1313,11 +1317,11 @@ sub tombstoneNode {
     return $this->sqlInsert('tomb', \%N, \%replace) ? 1 : 0;
 }
 
-# The fields (%TOMB_NEVER_STORES) a tomb copy of this nodetype leaves out.
+# The fields a tomb copy of this nodetype leaves out (@TOMB_NEVER_STORES_ANY, %TOMB_NEVER_STORES).
 sub tomb_never_stores {
     my ($this, $TYPE) = @_;
     my $tables = $this->getNodetypeTables($TYPE) || [];
-    return map { @{ $TOMB_NEVER_STORES{$_} || [] } } @$tables;
+    return (@TOMB_NEVER_STORES_ANY, map { @{ $TOMB_NEVER_STORES{$_} || [] } } @$tables);
 }
 
 
