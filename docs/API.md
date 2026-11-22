@@ -2681,7 +2681,7 @@ Awards a C! to a writeup. Logged-in users with C!s remaining; not on your own wr
 
 ### POST /api/cool/bookmark/:id · GET /api/cool/bookmark/:id/status
 
-Toggles a bookmark on any node for the logged-in user, returning `{success: 1, action: "bookmarked"|"unbookmarked", bookmarked}` (bookmarking a writeup can notify its author unless they've opted out); the status route reports the current state.
+Toggles a bookmark on any node for the logged-in user, returning `{success: 1, action: "bookmarked"|"unbookmarked", bookmarked}` (bookmarking a writeup or e2node sends its author(s) a Cool Man Eddie message naming the bookmarker, unless the author opted out (`no_bookmarknotification`) or the bookmarker did (`no_bookmarkinformer`); with the bookmarker's `anonymous_bookmark`, or to an author ignoring the bookmarker, the message leaves the name out); the status route reports the current state.
 
 ### POST /api/ilikeit/writeup/:id · GET /api/ilikeit/status/:id
 

@@ -85,6 +85,49 @@ my $bself = eddie_msgs_to($authorA->{node_id}, 'your writeup');
 $api->_notify_bookmark($APP->node_by_id($wuA), $APP->node_by_id($authorA->{node_id}));
 is(eddie_msgs_to($authorA->{node_id}, 'your writeup'), $bself, 'self-bookmark sends no message');
 
+# --- who bookmarked it (#4732): named, unless the bookmarker asked to be anonymous ---
+my $bm_title = $bookmarker->{title};
+my $named = "bookmarked by [$bm_title\[user]]";
+sub set_bookmarker_var {
+  my ($key, $value) = @_;
+  my $u = $DB->getNodeById($bookmarker->{node_id}, 'force');
+  my $v = Everything::getVars($u);
+  $v->{$key} = $value;
+  Everything::setVars($u, $v);
+  $DB->updateNode($u, -1);
+}
+
+my $bn = eddie_msgs_to($authorA->{node_id}, $named);
+$api->_notify_bookmark($APP->node_by_id($wuA), $APP->node_by_id($bookmarker->{node_id}));
+is(eddie_msgs_to($authorA->{node_id}, $named), $bn + 1, 'the message names the bookmarker');
+
+my $be = eddie_msgs_to($authorB->{node_id}, $named);
+$api->_notify_bookmark($APP->node_by_id($e2node_id), $APP->node_by_id($bookmarker->{node_id}));
+is(eddie_msgs_to($authorB->{node_id}, $named), $be + 1, 'so does the message for a whole e2node');
+
+set_bookmarker_var(anonymous_bookmark => 1);
+my ($ba, $bna) = (eddie_msgs_to($authorA->{node_id}, $mark), eddie_msgs_to($authorA->{node_id}, $named));
+$api->_notify_bookmark($APP->node_by_id($wuA), $APP->node_by_id($bookmarker->{node_id}));
+is(eddie_msgs_to($authorA->{node_id}, $mark), $ba + 1, 'an anonymous bookmark still tells the author');
+is(eddie_msgs_to($authorA->{node_id}, $named), $bna, 'without naming the bookmarker');
+set_bookmarker_var(anonymous_bookmark => 0);
+
+# An author who ignores the bookmarker still hears about the bookmark, but not who made it.
+$DB->sqlInsert('messageignore', { messageignore_id => $authorA->{node_id}, ignore_node => $bookmarker->{node_id} });
+($ba, $bna) = (eddie_msgs_to($authorA->{node_id}, $mark), eddie_msgs_to($authorA->{node_id}, $named));
+my $bnb = eddie_msgs_to($authorB->{node_id}, $named);
+$api->_notify_bookmark($APP->node_by_id($e2node_id), $APP->node_by_id($bookmarker->{node_id}));
+is(eddie_msgs_to($authorA->{node_id}, $mark), $ba + 1, 'an author ignoring the bookmarker is still told');
+is(eddie_msgs_to($authorA->{node_id}, $named), $bna, 'without the name');
+is(eddie_msgs_to($authorB->{node_id}, $named), $bnb + 1, 'other authors of the e2node still see the name');
+$DB->sqlDelete('messageignore', "messageignore_id=$authorA->{node_id} AND ignore_node=$bookmarker->{node_id}");
+
+set_bookmarker_var(no_bookmarkinformer => 1);
+($ba) = eddie_msgs_to($authorA->{node_id}, $mark);
+$api->_notify_bookmark($APP->node_by_id($wuA), $APP->node_by_id($bookmarker->{node_id}));
+is(eddie_msgs_to($authorA->{node_id}, $mark), $ba, 'no message at all when the bookmarker opts out of telling');
+set_bookmarker_var(no_bookmarkinformer => 0);
+
 # --- cleanup: messages (text carries $mark via the node title), then nodes ---
 $DB->sqlDelete('message', "msgtext LIKE " . $DB->{dbh}->quote("%$mark%"));
 $DB->nukeNode($DB->getNodeById($wuA), -1) if $DB->getNodeById($wuA);

@@ -323,6 +323,7 @@ sub toggle_bookmark
 #   * e2node  -> notify EVERY writeup author in the group ("the entire node ...")
 # Opt-outs: the bookmarker's no_bookmarkinformer suppresses all; each recipient's
 # no_bookmarknotification (and self-bookmarking) is skipped; recipients are de-duped.
+# The message names the bookmarker unless they set anonymous_bookmark (#4732).
 # The structured 'bookmark' notification is intentionally omitted in the API layer --
 # addNotification requires htmlcode delegation that isn't available here, the same
 # decision as Application.pm's nodenote path (Application.pm:1417).
@@ -390,8 +391,21 @@ sub _notify_bookmark
     $eddiemessage = $type eq 'writeup' ? "your writeup [$title]" : "your nodeshell [$title]";
   }
 
-  $APP->sendPrivateMessage($eddie, \@recipients,
-    "Yo, $eddiemessage was bookmarked. Dig it, baby.");
+  # Name the bookmarker (the opcode sent the message "via" them until #4292) unless they
+  # asked to bookmark anonymously; an author who ignores the bookmarker gets the unnamed one.
+  my $anonymous = $user->VARS->{anonymous_bookmark};
+  my $by = ' by [' . $user->title . '[user]]';
+  my (@named, @unnamed);
+  foreach my $author_id (@recipients) {
+    my $author = $APP->node_by_id($author_id);
+    if ($anonymous || ($author && $author->is_ignoring_messages($user_id))) {
+      push @unnamed, $author_id;
+    } else {
+      push @named, $author_id;
+    }
+  }
+  $APP->sendPrivateMessage($eddie, \@named, "Yo, $eddiemessage was bookmarked$by. Dig it, baby.") if @named;
+  $APP->sendPrivateMessage($eddie, \@unnamed, "Yo, $eddiemessage was bookmarked. Dig it, baby.") if @unnamed;
   return;
 }
 

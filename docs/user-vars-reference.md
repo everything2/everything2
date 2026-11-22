@@ -112,7 +112,7 @@ Per-notification-type subscriptions live in the `settings` JSON (`settings.notif
 | `no_likeitnotification` | Boolean (inverse) | Don't notify on guest "I like it" | 0 | API/ilikeit.pm **(pref)** |
 | `no_bookmarknotification` | Boolean (inverse) | Don't notify on bookmarks | 0 | API/cool.pm **(pref)** |
 | `no_bookmarkinformer` | Boolean (inverse) | Don't tell others when you bookmark | 0 | API/cool.pm **(pref)** |
-| `anonymous_bookmark` | Boolean | Bookmark anonymously | 0 | **(pref)** |
+| `anonymous_bookmark` | Boolean | Bookmark anonymously: Cool Man Eddie's bookmark message doesn't name you (it does by default) | 0 | API/cool.pm **(pref)** |
 | `no_discussionreplynotify` | Boolean (inverse) | Don't notify of usergroup discussion replies | 0 | API/debatecomments.pm, Delegation/maintenance.pm **(pref)** |
 | `nosocialbookmarking` | Boolean | Hide social share buttons | 0 | Node/writeup.pm **(pref)** |
 
