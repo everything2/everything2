@@ -75,6 +75,7 @@ subtest 'changing the title and owner' => sub {
     my $r = $api->update_category_meta(CategoryTestRequest->new($root,
         { node_id => $id, title => "$title renamed", author_user => $new_owner->node_id }));
     ok($r->[1]{success}, 'an editor renames it and hands it to another member') or diag explain $r->[1];
+    is($r->[1]{title}, "$title renamed", 'the response has the title as saved, for the edit page to show');
 
     my $seen = other_copy();
     is($seen->{title}, "$title renamed", 'the other worker has the new title');

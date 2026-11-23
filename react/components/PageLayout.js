@@ -52,6 +52,8 @@ const PageLayout = ({ e2 }) => {
       if (!title) return
       setNode(prev => ({ ...(prev || {}), title }))
       if (window.e2?.node) window.e2.node.title = title
+      // The browser tab title is the node title too (HTMLShell::_build_pagetitle)
+      document.title = title
     }
     window.addEventListener('e2:nodeTitleUpdate', onNodeTitleUpdate)
     return () => window.removeEventListener('e2:nodeTitleUpdate', onNodeTitleUpdate)

@@ -212,7 +212,7 @@ sub update_category_meta {
   my $result = $DB->updateNode($NODE, -1);
 
   if ($result) {
-    return [$self->HTTP_OK, { success => 1, message => 'Category settings updated' }];
+    return [$self->HTTP_OK, { success => 1, message => 'Category settings updated', title => $NODE->{title} }];
   }
   else {
     return [$self->HTTP_OK, { success => 0, error => 'Failed to update category settings' }];
