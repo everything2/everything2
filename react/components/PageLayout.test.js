@@ -204,6 +204,7 @@ describe('PageLayout', () => {
         }))
       })
       expect(screen.getByTestId('pageheader-title')).toHaveTextContent('Hippopotamus (idea)')
+      expect(document.title).toBe('Hippopotamus (idea)')
     })
 
     it('ignores an event with no title', () => {

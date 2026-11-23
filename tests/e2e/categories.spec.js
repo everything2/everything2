@@ -97,14 +97,13 @@ test('a member adds to, prunes and reorders their category', async ({ browser })
     const titleInput = page.locator('.category-edit__form-row', { has: page.locator('label', { hasText: 'Title:' }) }).locator('input')
     await titleInput.fill(renamed)
     const metaSaved = page.waitForResponse((r) => r.url().includes('/api/category/update_meta'))
-    // A rename reloads the edit page a moment after saving; wait for that before typing.
-    const reloaded = page.waitForEvent('load')
+    // The page must not reload after the save (#4742): a marker on window would be lost if it did.
+    await page.evaluate(() => { window.__sameEditPage = true })
     await demo.step(page, 'renames it and saves the settings')
     await demo.click(page.locator('.category-edit__save-settings-btn', { hasText: 'Save Settings' }))
     expect((await (await metaSaved).json()).success).toBeTruthy()
-    await reloaded
     await expect(page.locator('h1.page-header__title')).toHaveText(renamed, { timeout: 10000 })
-    await demo.step(page, 'the edit page reloads with the new title')
+    await demo.step(page, 'the page header shows the new title straight away, without reloading')
     await demo.show(page.locator('h1.page-header__title'))
 
     // The description editor is rich text or raw HTML, depending on the user's saved preference.
@@ -117,6 +116,9 @@ test('a member adds to, prunes and reorders their category', async ({ browser })
       await rich.fill(description)
       await expect(rich).toHaveText(description)
     }
+    // Well past the moment the old code reloaded the page: still the same page, edits intact.
+    await page.waitForTimeout(1500)
+    expect(await page.evaluate(() => window.__sameEditPage === true), 'the edit page did not reload').toBe(true)
     const descSaved = page.waitForResponse((r) => r.url().includes('/api/category/update') && !r.url().includes('update_meta'))
     await demo.step(page, 'rewrites the description and saves it')
     await demo.click(page.locator('.category-edit__save-btn'))

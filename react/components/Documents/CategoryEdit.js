@@ -380,14 +380,12 @@ const CategoryEdit = ({ data }) => {
       if (result.success) {
         setMetaSaveStatus({ type: 'success', message: 'Settings saved!' })
         setHasMetaChanges(false)
-        // If title changed, we may need to update the URL
-        if (categoryTitle !== title) {
-          setTimeout(() => {
-            // ?displaytype=edit is the live edit route (the old ?op=edit opcode
-            // dispatch was removed in #4335); matches CategoryDisplay's Edit link.
-            window.location.href = `/node/${node_id}?displaytype=edit`
-          }, 1000)
-        }
+        // Show the title as saved (the server cleans it) here and in the page header, in place:
+        // the edit URL is by node id, so nothing needs reloading, and a reload would throw away
+        // unsaved description or member-order edits (#4742).
+        const savedTitle = result.title || categoryTitle
+        setCategoryTitle(savedTitle)
+        window.dispatchEvent(new CustomEvent('e2:nodeTitleUpdate', { detail: { title: savedTitle } }))
       } else {
         setMetaSaveStatus({ type: 'error', message: result.error || 'Failed to save' })
       }

@@ -65,4 +65,36 @@ describe('CategoryEdit interaction', () => {
     })
     await waitFor(() => expect(screen.getByText(/settings saved/i)).toBeInTheDocument())
   })
+
+  it('after a title save, updates the page header in place and keeps unsaved description edits (#4742)', async () => {
+    jest.useFakeTimers()
+    const errors = []
+    jest.spyOn(console, 'error').mockImplementation((...a) => errors.push(a.join(' ')))
+    const events = []
+    const onTitle = (e) => events.push(e.detail)
+    window.addEventListener('e2:nodeTitleUpdate', onTitle)
+    // the server reports the title as it saved it (cleaned)
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ success: 1, title: 'Renamed Category' }) })
+
+    try {
+      render(<CategoryEdit data={makeData()} />)
+      fireEvent.change(screen.getByDisplayValue('My Category'), { target: { value: '  Renamed Category ' } })
+      fireEvent.click(screen.getByRole('button', { name: /save settings/i }))
+      await waitFor(() => expect(screen.getByText(/settings saved/i)).toBeInTheDocument())
+
+      // the description is edited straight after, before it's saved
+      const description = document.querySelector('.category-edit__html-textarea')
+      fireEvent.change(description, { target: { value: '<p>Half-written description</p>' } })
+      jest.advanceTimersByTime(3000)
+
+      expect(events).toEqual([{ title: 'Renamed Category' }])
+      expect(screen.getByDisplayValue('Renamed Category')).toBeInTheDocument()
+      expect(document.querySelector('.category-edit__html-textarea').value).toBe('<p>Half-written description</p>')
+      // jsdom reports any attempt to navigate away as a "not implemented" error
+      expect(errors.filter((x) => /navigation/i.test(x))).toEqual([])
+    } finally {
+      window.removeEventListener('e2:nodeTitleUpdate', onTitle)
+      jest.useRealTimers()
+    }
+  })
 })
