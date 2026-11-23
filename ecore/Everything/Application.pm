@@ -330,8 +330,7 @@ sub updatePassword
 	my $updated = $db->sqlUpdate('user', { passwd => $user->{passwd}, salt => $user->{salt} }, "user_id=$user_id");
 	return 0 unless $updated;
 	if (ref($user->{type}) eq 'HASH' && $db->{cache}) {
-		$db->{cache}->incrementGlobalVersion($user);
-		$db->{cache}->cacheNode($user);
+		$db->{cache}->bumpVersionAndRecache($user);
 	} else {
 		$db->sqlInsert('version', { version_id => $user_id, version => 1 }, { -version => 'version + 1' });
 	}

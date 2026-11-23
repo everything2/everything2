@@ -3,7 +3,7 @@
 **Author**: Claude Code / Jay Bonci
 **Date**: December 2025
 **Status**: Technical Analysis
-**Last verified: 2026-11-16** against `ecore/Everything/NodeCache.pm`, `NodeBase.pm`, `Configuration.pm`, `app.psgi`.
+**Last verified: 2026-11-22** (stamp ordering, #4735) against `ecore/Everything/NodeCache.pm`, `NodeBase.pm`, `Configuration.pm`, `app.psgi`.
 
 > **Changes since Dec 2025 (summary):** `incrementGlobalVersion` is now an atomic upsert
 > (`INSERT ... ON DUPLICATE KEY UPDATE version=version+1`); `getGlobalVersion`'s first-version insert
@@ -172,8 +172,12 @@ CREATE TABLE version (
 ```
 
 **How it works:**
-1. When a node is cached, its global version is fetched and stored locally
-2. When retrieving a cached node, `isSameVersion()` compares local vs global
+1. When a node is cached, its global version is stored locally as its stamp. A node loaded from the
+   database is stamped with the version read **before** its rows (`peekGlobalVersion`, passed to
+   `cacheNode`; by title, `getNode` looks up the id first so it can do the same). Reading it after
+   the rows would let a change committed between the two reads stamp the old rows with the new
+   version, and this worker would serve them as current (#4735)
+2. When retrieving a cached node, `isSameVersion()` compares local vs global (no row counts as 0)
 3. If versions differ, the cached node is stale and re-fetched from database
 4. When a node is updated, `incrementGlobalVersion()` bumps the global version via an atomic upsert:
    `INSERT INTO version (version_id, version) VALUES (N, 1) ON DUPLICATE KEY UPDATE version = version + 1`
@@ -276,8 +280,19 @@ updateNode(NODE)
     │              UPDATE typeversion SET version=version+1 WHERE typeversion_id=type_id
     │         (typeversion is empty in dev, so this is a SELECT-only no-op per update)
     │
-    └─ cacheNode(NODE) -- Re-cache with new version
+    └─ bumpVersionAndRecache(NODE)
+           │
+           ├─ incrementGlobalVersion(NODE) (as above)
+           │
+           ├─ Version now exactly this worker's stamp + 1? → cacheNode(NODE) with it
+           │
+           └─ Otherwise another process changed the node too → drop it; the next read reloads
 ```
+
+The targeted user writers (`Everything::Request` recording `lasttime`, `Application::updatePassword`,
+the password-reset migration) use `bumpVersionAndRecache` the same way. Re-stamping with whatever
+version is current after the bump would mark a copy missing the other change as current (#4735).
+Hydration-bundle residents are version-exempt and keep the plain bump + re-cache.
 
 ### Per-Pageload Reset Flow
 

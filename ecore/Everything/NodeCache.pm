@@ -291,10 +291,16 @@ sub getCachedNodeById
 #		$NODE - the node hashref to put in the cache
 #		$permanent - True if this node is to never be removed from the
 #			cache when purging.
+#		$version - (optional) the version to stamp it with. A caller that has just read the node
+#			from the database passes the version it read BEFORE reading the node's rows
+#			(peekGlobalVersion): a change committed between the two reads then shows up as a
+#			mismatch on the next check. Reading the version afterwards instead would stamp the
+#			old rows with the new version, and this worker would serve them as current.
+#			Without it, the current version is read here.
 #
 sub cacheNode
 {
-	my ($this, $NODE, $permanent) = @_;
+	my ($this, $NODE, $permanent, $version) = @_;
 	my ($type, $title) = ($$NODE{type}{title}, $$NODE{title});
 	my $data;
 
@@ -316,7 +322,7 @@ sub cacheNode
 	# Store hash keys for its "name" and numeric Id, and set the version.
 	$this->{typeCache}{$type}{$title} = $data;
 	$this->{idCache}{$$NODE{node_id}} = $data;
-	$this->{version}{$$NODE{node_id}} = $this->getGlobalVersion($NODE);
+	$this->{version}{$$NODE{node_id}} = defined $version ? $version : $this->getGlobalVersion($NODE);
 
 	$this->purgeCache();
 
@@ -825,7 +831,8 @@ sub isSameVersion
 
 	my $ver = $this->getGlobalVersion($NODE);
 
-	if($ver == $this->{version}{$$NODE{node_id}}) {
+	# No version row reads as version 0 (every write makes it at least 1).
+	if(($ver // 0) == ($this->{version}{$$NODE{node_id}} // 0)) {
 		$$this{verified}{$$NODE{node_id}} = 1;
 	    return 1;
 	}
@@ -867,6 +874,76 @@ sub incrementGlobalVersion
 		{ -version => 'version + 1' });
 	return $this->{nodeBase}->sqlUpdate('typeversion', {-version => 'version+1'}, "typeversion_id=".$$NODE{type}{node_id}) if $this->{nodeBase}->sqlSelect("version", "typeversion", "typeversion_id=".$$NODE{type}{node_id});
         return;
+}
+
+#############################################################################
+#	Sub
+#		peekGlobalVersion
+#
+#	Purpose
+#		The version of the node with this id, or 0 if it has no version row.
+#		Unlike getGlobalVersion this never creates the row, so it can be read
+#		for an id before knowing whether the node exists.
+#
+sub peekGlobalVersion
+{
+	my ($this, $node_id) = @_;
+	return $this->{nodeBase}->sqlSelect('version', 'version', 'version_id=' . int($node_id)) || 0;
+}
+
+
+#############################################################################
+#	Sub
+#		bumpVersionAndRecache
+#
+#	Purpose
+#		Call after this worker has changed a node's rows, in place of
+#		incrementGlobalVersion followed by cacheNode. Bumps the node's version
+#		so every other worker reloads it. This worker keeps $NODE as its
+#		current copy only if its bump was the only change since its cached
+#		copy was stamped: the version went from that stamp to exactly one
+#		more. Otherwise another process changed the node too, and $NODE may
+#		not have that change, so it's dropped and the next read reloads it.
+#		(Re-stamping it with whatever version is there now would mark a copy
+#		missing the other change as current.)
+#
+#	Returns
+#		1 if $NODE was kept as this worker's current copy, 0 if dropped.
+#
+sub bumpVersionAndRecache
+{
+	my ($this, $NODE) = @_;
+	my $node_id = $$NODE{node_id};
+
+	# Hydration-bundle residents (Guest User and the core nodes, #4423) are never version-checked,
+	# so their stamp means nothing: keep the old behaviour for them.
+	if (exists $this->{hydrationExempt}{$node_id})
+	{
+		$this->incrementGlobalVersion($NODE);
+		$this->cacheNode($NODE);
+		return 1;
+	}
+
+	my $was_cached = defined $this->{idCache}{$node_id};
+	my $stamp = $this->{version}{$node_id} // 0;
+
+	$this->incrementGlobalVersion($NODE);
+	my $now = $this->peekGlobalVersion($node_id);
+
+	if ($was_cached && $now == $stamp + 1)
+	{
+		$this->cacheNode($NODE, undef, $now);
+		return 1;
+	}
+
+	# Drop whatever this worker has cached for the node (by its cached copy, whose title keys the
+	# name index, in case $NODE is a different copy or was renamed).
+	if ($was_cached)
+	{
+		my $cached = $this->{nodeQueue}->getItem($this->{idCache}{$node_id});
+		$this->removeNode($cached || $NODE);
+	}
+	return 0;
 }
 
 sub clearSessionCache
