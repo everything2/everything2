@@ -102,12 +102,10 @@ sub update_category {
   # doctext can be empty/undefined - that's valid
   $doctext //= '';
 
-  # Update the document table
-  my $result = $DB->sqlUpdate(
-    'document',
-    { doctext => $doctext },
-    "document_id = $node_id"
-  );
+  # updateNode writes the change and bumps the category's version, so every worker reloads it.
+  my $NODE = $category->NODEDATA;
+  $NODE->{doctext} = $doctext;
+  my $result = $DB->updateNode($NODE, -1);
 
   if ($result) {
     return [$self->HTTP_OK, { success => 1, message => 'Category updated successfully' }];
@@ -201,19 +199,17 @@ sub update_category_meta {
       return [$self->HTTP_OK, { success => 0, error => 'Owner must be a user or usergroup' }];
     }
 
-    $updates{author_user} = $new_author_id;
+    $updates{author_user} = $new_owner->node_id;
   }
 
   unless (%updates) {
     return [$self->HTTP_OK, { success => 1, message => 'No changes to save' }];
   }
 
-  # Update the node table
-  my $result = $DB->sqlUpdate(
-    'node',
-    \%updates,
-    "node_id = $node_id"
-  );
+  # updateNode writes the change and bumps the category's version, so every worker reloads it.
+  my $NODE = $category->NODEDATA;
+  @$NODE{keys %updates} = values %updates;
+  my $result = $DB->updateNode($NODE, -1);
 
   if ($result) {
     return [$self->HTTP_OK, { success => 1, message => 'Category settings updated' }];

@@ -12197,11 +12197,10 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   margin-right: 10px;
 }
 
-.category-edit__title {
-  font-size: 20px;
+.category-edit__mode {
+  font-size: 15px;
   font-weight: bold;
   color: var(--e2-color-primary, #38495e);
-  margin: 0;
 }
 
 .category-edit__view-btn {
@@ -24564,24 +24563,6 @@ a.node-toolset__btn {
   margin-bottom: 25px;
   padding-bottom: 15px;
   border-bottom: 2px solid #e0e0e0;
-}
-
-.category-display__title-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.category-display__folder-icon {
-  color: #4060b0;
-  margin-right: 10px;
-}
-
-.category-display__title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #38495e;
-  margin: 0;
 }
 
 .category-display__meta {

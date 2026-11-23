@@ -36,3 +36,11 @@ describe('CategoryDisplay description', () => {
     expect(box.textContent).toContain('this')
   })
 })
+
+describe('CategoryDisplay header', () => {
+  it('leaves the title to the page header (no second h1)', () => {
+    const { container } = render(<CategoryDisplay data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
+    expect(container.querySelector('h1')).toBeNull()
+    expect(container.querySelector('.category-display__header')).not.toBeNull()
+  })
+})

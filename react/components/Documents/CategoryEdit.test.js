@@ -19,3 +19,11 @@ describe('CategoryEdit (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+describe('CategoryEdit header', () => {
+  it('leaves the title to the page header (no second h1)', () => {
+    const { container } = render(<CategoryEdit data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
+    expect(container.querySelector('h1')).toBeNull()
+    expect(container.querySelector('.category-edit__mode').textContent).toBe('Editing category')
+  })
+})
