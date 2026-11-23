@@ -339,16 +339,16 @@ sub get_current_user
 
   # This is the one writer of lasttime (updateNode never writes it: NodeBase %UPDATE_NEVER_WRITES).
   # Like the other targeted user writes (Application::updatePassword), bump the node version so
-  # every other worker reloads its cached copy instead of showing an old "last seen", and
-  # re-cache this worker's copy with the new time.
+  # every other worker reloads its cached copy instead of showing an old "last seen". This
+  # worker's copy gets the new time and stays cached, unless something else changed the user
+  # meanwhile, in which case it's dropped and reloaded (NodeCache::bumpVersionAndRecache).
   if ($txn_ok && defined $now)
   {
     my $node = $user->NODEDATA;
     $node->{lasttime} = $now;
     if (my $cache = $self->DB->{cache})
     {
-      $cache->incrementGlobalVersion($node);
-      $cache->cacheNode($node);
+      $cache->bumpVersionAndRecache($node);
     }
   }
 

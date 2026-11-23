@@ -508,24 +508,38 @@ sub getNode
 
 	# If it looks like there's a double encoded character, try looking up both this title and the title
 	#  with an additional decode
+	my $WHERE;
 	if ($title !~ /%/) {
-		($NODE) = $this->getNodeWhere({ 'title' => $title }, $TYPE);
+		$WHERE = { 'title' => $title };
 	} else {
 		# URL-decode the title for the fallback lookup. Replaces CGI::unescape
 		# (CGI is no longer loaded): '+' -> space, then %XX -> char, matching
 		# CGI's exact behaviour.
 		(my $decoded_title = $title) =~ tr/+/ /;
 		$decoded_title =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
-		($NODE) = $this->getNodeWhere({ 'title' => [ $title, $decoded_title ] }, $TYPE);
+		$WHERE = { 'title' => [ $title, $decoded_title ] };
 	}
 
-	if(defined $NODE and $selectop ne 'nocache')
+	if ($selectop eq 'nocache')
+	{
+		($NODE) = $this->getNodeWhere($WHERE, $TYPE);
+		return $NODE;
+	}
+
+	# Find the id, read the version, then read the node's rows by id: the version has to be read
+	# before the rows, for the cache stamp (see NodeCache::cacheNode).
+	my $node_id = $this->sqlSelect('node_id', 'node', $this->genWhereString($WHERE, $TYPE));
+	return $NODE unless $node_id;    # undef, as before: not an empty list, which would shift a hash built from this call
+	my $version = $this->{cache}->peekGlobalVersion($node_id);
+	($NODE) = $this->getNodeWhere({ 'node_id' => $node_id }, $TYPE);
+
+	if(defined $NODE)
 	{
 		my $perm = 0;
 		my $type_title = $$NODE{type}{title};
 		$perm = 1 if exists $Everything::CONF->static_cache->{$type_title}
 		          || exists $Everything::CONF->permanent_cache->{$type_title};
-		$this->{cache}->cacheNode($NODE, $perm);
+		$this->{cache}->cacheNode($NODE, $perm, $version);
 	}
 
 	return $NODE;
@@ -578,6 +592,10 @@ sub getNodeById
 		return $cachedNode unless ($selectop eq 'force' or not $cachedNode);
 	}
 
+	# Read the version before the rows, for the cache stamp (see NodeCache::cacheNode).
+	my $version;
+	$version = $this->{cache}->peekGlobalVersion($N) if $selectop ne 'nocache' and $selectop ne 'light';
+
 	$NODE = $this->sqlSelectHashref('*', 'node', "node_id=$N");
 	return if(not defined $NODE);
 
@@ -615,7 +633,7 @@ sub getNodeById
 		$perm = 1 if exists $Everything::CONF->static_cache->{$type_title}
 		          || exists $Everything::CONF->permanent_cache->{$type_title};
 
-		$this->{cache}->cacheNode($NODE, $perm);
+		$this->{cache}->cacheNode($NODE, $perm, $version);
 	}
 
 	return $NODE;
@@ -1149,10 +1167,9 @@ sub updateNode
 
 		$this->executeQuery($sqlString);
 
-		# Cache this node since it has been updated.  This way the cached
-		# version will be the same as the node in the db.
-		$this->{cache}->incrementGlobalVersion($NODE);
-		$this->{cache}->cacheNode($NODE) if(defined $this->{cache});
+		# Bump the version so every worker reloads the node, and keep this copy as this worker's
+		# cached one if no other change landed since it was stamped (else it's dropped and reloaded).
+		$this->{cache}->bumpVersionAndRecache($NODE);
 
 	}
 	$ORIGINAL_NODE = undef;

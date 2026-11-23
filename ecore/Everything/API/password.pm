@@ -59,8 +59,11 @@ sub reset_request {
     unless ($user->{salt}) {
         ($user->{passwd}, $user->{salt}) = $APP->migrated_legacy_password($user);
         $DB->sqlUpdate('user', { passwd => $user->{passwd}, salt => $user->{salt} }, 'user_id=' . int($user->{node_id}));
-        $DB->sqlInsert('version', { version_id => int($user->{node_id}), version => 1 }, { -version => 'version + 1' });
-        $DB->{cache}->cacheNode($user) if $DB->{cache};
+        if ($DB->{cache}) {
+            $DB->{cache}->bumpVersionAndRecache($user);
+        } else {
+            $DB->sqlInsert('version', { version_id => int($user->{node_id}), version => 1 }, { -version => 'version + 1' });
+        }
     }
 
     my $valid_for_minutes = 20;
