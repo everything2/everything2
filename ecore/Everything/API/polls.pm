@@ -215,13 +215,16 @@ sub set_current_poll {
       ]
       unless $poll && $poll->{type}{title} eq 'e2poll';
 
-    # Close current poll(s)
-    $DB->sqlUpdate( 'e2poll', { poll_status => 'closed' },
-        "poll_status='current'" );
+    # Close the current poll(s) and open this one. updateNode bumps each poll's version, so every
+    # worker reloads it (and accepts or refuses votes accordingly).
+    foreach my $current ( $DB->getNodeWhere( { poll_status => 'current' }, 'e2poll' ) ) {
+        next if $current->{node_id} == $poll->{node_id};
+        $current->{poll_status} = 'closed';
+        $DB->updateNode( $current, -1 );
+    }
 
-    # Set new current poll
-    $DB->sqlUpdate( 'e2poll', { poll_status => 'current' },
-        "e2poll_id=$poll_id" );
+    $poll->{poll_status} = 'current';
+    $DB->updateNode( $poll, -1 );
 
     # Add notification
     $APP->add_notification( 'e2poll', '', { e2poll_id => $poll_id } );

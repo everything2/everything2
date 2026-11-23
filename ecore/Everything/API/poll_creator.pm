@@ -142,30 +142,19 @@ sub create_poll {
         }];
     }
 
-    # Get the poll node and set the poll_author to creator
+    # Fill in the poll and hand the node to Content Editors, keeping the creator as poll_author
+    # (matches legacy e2poll_create maintenance behavior). One updateNode writes every table and
+    # keeps the cached copy current.
     my $poll_node = $DB->getNodeById($poll_id);
-
-    # Set poll_author to creator, then transfer ownership to Content Editors
-    # (matches legacy e2poll_create maintenance behavior)
     my $content_editors = $DB->getNode('Content Editors', 'usergroup');
 
-    # Use sqlUpdate to set all poll fields directly (avoid maintenance)
-    $DB->sqlUpdate('e2poll', {
-        question => $question,
-        e2poll_results => $initial_results,
-        poll_status => 'new',
-        poll_author => $USER->{node_id}
-    }, "e2poll_id = $poll_id");
-
-    # Update node author to Content Editors
-    $DB->sqlUpdate('node', {
-        author_user => $content_editors->{node_id}
-    }, "node_id = $poll_id");
-
-    # Set the poll options in document table
-    $DB->sqlUpdate('document', {
-        doctext => $options_text
-    }, "document_id = $poll_id");
+    $poll_node->{question}       = $question;
+    $poll_node->{e2poll_results} = $initial_results;
+    $poll_node->{poll_status}    = 'new';
+    $poll_node->{poll_author}    = $USER->{node_id};
+    $poll_node->{doctext}        = $options_text;
+    $poll_node->{author_user}    = $content_editors->{node_id};
+    $DB->updateNode($poll_node, -1);
 
     return [$self->HTTP_OK, {
         success => 1,
