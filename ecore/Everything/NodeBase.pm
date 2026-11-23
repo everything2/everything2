@@ -2861,7 +2861,8 @@ sub removeFromNodegroup
 
 	if($success)
 	{
-	 $this->{cache}->incrementGlobalVersion($NODE);
+		# The group changed, not the node: bump the group so every worker reloads it.
+		$this->{cache}->incrementGlobalVersion($GROUP);
 		# If the delete did something, we need to refresh this group node.	
 		$_[1] = $this->getNodeById($GROUP, 'force'); #refresh the group
 	}
