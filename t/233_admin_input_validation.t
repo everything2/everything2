@@ -57,7 +57,9 @@ subtest 'removing nodes from a nodegroup' => sub {
   recording { post_json("/api/nodegroups/$group/action/removenode", { node_ids => ['5 OR 1=1', 'abc', ' 7'] }) };
   is(scalar(grep { /^DELETE nodegroup/ } @recorded), 0, 'ids that are not numbers delete nothing');
   recording { post_json("/api/nodegroups/$group/action/removenode", { node_ids => [12345] }) };
-  is_deeply([grep { /^DELETE nodegroup/ } @recorded], ["DELETE nodegroup WHERE nodegroup_id=$group AND node_id=12345"], 'a numeric id deletes just that row');
+  my @deletes = grep { /^DELETE nodegroup/ } @recorded;
+  is(scalar(@deletes), 1, 'a numeric id deletes one row');
+  like($deletes[0] // '', qr/^DELETE nodegroup WHERE nodegroup_id=$group (?:AND|&&) node_id=12345$/, '... just that one');
 };
 
 subtest 'deleting a poll vote' => sub {

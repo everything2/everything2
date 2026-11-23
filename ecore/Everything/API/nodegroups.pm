@@ -120,7 +120,7 @@ sub addnode
   my @added;
 
   foreach my $item_id (@{$node_ids}) {
-    next if $current_members{$item_id};
+    next if $current_members{$item_id}++;
 
     # Verify the item exists
     my $item = $self->APP->node_by_id($item_id);
@@ -128,20 +128,11 @@ sub addnode
       next;
     }
 
-    # Insert directly into nodegroup table
-    my $rank = $self->DB->sqlSelect('MAX(nodegroup_rank)', 'nodegroup',
-      'nodegroup_id=' . $group->node_id) // -1;
-    $rank++;
-
-    $self->DB->sqlInsert('nodegroup', {
-      nodegroup_id => $group->node_id,
-      nodegroup_rank => $rank,
-      node_id => $item_id,
-      orderby => 0
-    });
-
     push @added, $item_id;
   }
+
+  # -1: the caller's permission was checked above (canUpdateNode only allows the author)
+  $self->DB->insertIntoNodegroup($group->NODEDATA, -1, [@added]) if @added;
 
   # Refresh and return updated group
   $group->cache_refresh;
@@ -160,9 +151,7 @@ sub removenode
   my @removed;
 
   foreach my $item_id (grep { $_ } map { $self->as_id($_) } @{$node_ids}) {
-    # Remove directly from nodegroup table
-    $self->DB->sqlDelete('nodegroup',
-      'nodegroup_id=' . $group->node_id . ' AND node_id=' . $item_id);
+    $self->DB->removeFromNodegroup($group->NODEDATA, $item_id, -1);
     push @removed, $item_id;
   }
 
@@ -209,22 +198,7 @@ sub reorder
     }
   }
 
-  my $group_id = $group->node_id;
-
-  # Delete all current members from nodegroup table
-  $self->DB->sqlDelete('nodegroup', "nodegroup_id=$group_id");
-
-  # Re-insert in the new order
-  my $rank = 0;
-  foreach my $item_id (@{$new_order}) {
-    $self->DB->sqlInsert('nodegroup', {
-      nodegroup_id => $group_id,
-      nodegroup_rank => $rank,
-      node_id => $item_id,
-      orderby => 0
-    });
-    $rank++;
-  }
+  $self->DB->replaceNodegroup($group->NODEDATA, $new_order, -1);
 
   # Refresh and return updated group
   $group->cache_refresh;

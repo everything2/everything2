@@ -186,27 +186,20 @@ sub adduser
   # Get current group members to avoid duplicates
   my %current_members = map { $_ => 1 } @{$group->NODEDATA->{group} || []};
 
+  my @to_add;
   foreach my $item_id (@{$data}) {
-    next if $current_members{$item_id};
+    next if $current_members{$item_id}++;
 
     # Verify the item exists and is a user or usergroup
     my $item = $self->APP->node_by_id($item_id);
     next unless $item;
     my $item_type = $item->type->title;
     next unless $item_type eq 'user' || $item_type eq 'usergroup';
-
-    # Insert directly into nodegroup table (bypassing canUpdateNode which checks author)
-    my $rank = $self->DB->sqlSelect('MAX(nodegroup_rank)', 'nodegroup',
-      'nodegroup_id=' . $group->node_id) // -1;
-    $rank++;
-
-    $self->DB->sqlInsert('nodegroup', {
-      nodegroup_id => $group->node_id,
-      nodegroup_rank => $rank,
-      node_id => $item_id,
-      orderby => 0
-    });
+    push @to_add, $item->NODEDATA;
   }
+
+  # -1: the caller's permission was checked above (canUpdateNode only allows the author)
+  $self->DB->insertIntoNodegroup($group->NODEDATA, -1, \@to_add) if @to_add;
 
   # Refresh and return updated group with enhanced member data
   $group->cache_refresh;
@@ -230,11 +223,8 @@ sub removeuser
     }];
   }
 
-  # Remove directly from nodegroup table
-  my $dbh = $self->DB->getDatabaseHandle;
-  foreach my $item_id (@{$data}) {
-    $dbh->do('DELETE FROM nodegroup WHERE nodegroup_id = ? AND node_id = ?',
-      undef, $group->node_id, $item_id);
+  foreach my $item_id (grep { $_ } map { $self->as_id($_) } @{$data}) {
+    $self->DB->removeFromNodegroup($group->NODEDATA, $item_id, -1);
   }
 
   # Refresh and return updated group with enhanced member data
@@ -321,22 +311,7 @@ sub reorder
     }
   }
 
-  my $group_id = $group->node_id;
-
-  # Delete all current members from nodegroup table
-  $self->DB->sqlDelete('nodegroup', "nodegroup_id=$group_id");
-
-  # Re-insert in the new order
-  my $rank = 0;
-  foreach my $item_id (@{$new_order}) {
-    $self->DB->sqlInsert('nodegroup', {
-      nodegroup_id => $group_id,
-      nodegroup_rank => $rank,
-      node_id => $item_id,
-      orderby => 0
-    });
-    $rank++;
-  }
+  $self->DB->replaceNodegroup($group->NODEDATA, $new_order, -1);
 
   # Refresh and return updated group with enhanced member data
   $group->cache_refresh;
@@ -370,11 +345,8 @@ sub update_description
 {
   my ($self, $user, $group, $doctext) = @_;
 
-  # Update the doctext in the document table
-  $self->DB->{dbh}->do(
-    'UPDATE document SET doctext = ? WHERE document_id = ?',
-    {}, $doctext, $group->node_id
-  );
+  $group->NODEDATA->{doctext} = $doctext;
+  $self->DB->updateNode($group->NODEDATA, -1);
 
   # Refresh the node cache
   $group->cache_refresh;

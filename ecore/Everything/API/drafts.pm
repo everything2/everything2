@@ -1219,51 +1219,23 @@ sub publish_draft {
     # Add to e2node's nodegroup, preserving the legacy publishwriteup ordering
     # (#4314): lede writeups go to the top of the e2node; everything else is
     # appended, but any "Webster 1913" entry is kept last. Display order is the
-    # nodegroup.orderby column (NodeBase selects the group ORDER BY orderby);
-    # nodegroup_rank stays monotonic by insertion order.
-    my ($max_rank) = $DB->sqlSelect( 'MAX(nodegroup_rank)', 'nodegroup',
-        "nodegroup_id=$parent_e2node_id" );
-    my $new_rank = defined($max_rank) ? $max_rank + 1 : 0;
-
+    # nodegroup.orderby column; insertIntoNodegroup makes room at $orderby (or
+    # appends when it is undef), keeps nodegroup_rank monotonic, and bumps the
+    # e2node's version so every worker reloads its writeup list.
     my $orderby;
     if ( $writeuptype->{title} eq 'lede' ) {
-        # Top of the e2node: shift everything down, take orderby 0.
-        $DB->sqlUpdate( 'nodegroup', { '-orderby' => 'orderby+1' },
-            "nodegroup_id=$parent_e2node_id" );
         $orderby = 0;
     }
-    else {
+    elsif ( my $webster = $DB->getNode( 'Webster 1913', 'user' ) ) {
         # Keep a Webster 1913 entry (if present) last by inserting just ahead of it.
-        my $webster = $DB->getNode( 'Webster 1913', 'user' );
-        my $webster_orderby;
-        if ($webster) {
-            $webster_orderby = $DB->sqlSelect(
-                'ng.orderby',
-                'nodegroup ng JOIN node n ON ng.node_id=n.node_id',
-                "ng.nodegroup_id=$parent_e2node_id AND n.author_user=$webster->{node_id}"
-            );
-        }
-        if ( defined $webster_orderby ) {
-            $DB->sqlUpdate( 'nodegroup', { '-orderby' => 'orderby+1' },
-                "nodegroup_id=$parent_e2node_id AND orderby>=$webster_orderby" );
-            $orderby = $webster_orderby;
-        }
-        else {
-            my ($max_orderby) = $DB->sqlSelect( 'MAX(orderby)', 'nodegroup',
-                "nodegroup_id=$parent_e2node_id" );
-            $orderby = defined($max_orderby) ? $max_orderby + 1 : 0;
-        }
+        $orderby = $DB->sqlSelect(
+            'ng.orderby',
+            'nodegroup ng JOIN node n ON ng.node_id=n.node_id',
+            "ng.nodegroup_id=$parent_e2node_id AND n.author_user=$webster->{node_id}"
+        );
     }
 
-    $DB->sqlInsert(
-        'nodegroup',
-        {
-            nodegroup_id   => $parent_e2node_id,
-            node_id        => $draft_id,
-            nodegroup_rank => $new_rank,
-            orderby        => $orderby
-        }
-    );
+    $DB->insertIntoNodegroup( $e2node, -1, $draft, $orderby );
 
     # Add to newwriteup table for tracking
     $DB->sqlInsert(
@@ -1611,20 +1583,8 @@ sub republish_draft {
         collaborators => ''
     }, "draft_id=$draft_id" );
 
-    # Add to e2node's nodegroup
-    my ($max_rank) = $DB->sqlSelect( 'MAX(nodegroup_rank)', 'nodegroup',
-        "nodegroup_id=$parent_e2node_id" );
-    my $new_rank = defined($max_rank) ? $max_rank + 1 : 0;
-
-    $DB->sqlInsert(
-        'nodegroup',
-        {
-            nodegroup_id   => $parent_e2node_id,
-            node_id        => $draft_id,
-            nodegroup_rank => $new_rank,
-            orderby        => $new_rank
-        }
-    );
+    # Append to the e2node's writeups (bumps the e2node's version for every worker)
+    $DB->insertIntoNodegroup( $e2node, -1, $draft );
 
     # Add to newwriteup table with notnew=1
     $DB->sqlInsert(
