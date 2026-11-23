@@ -6,7 +6,7 @@ const demo = require('./fixtures/demo')
  * Admin node tools, as an admin uses them:
  *   - basic edit: change a node's title on its basicedit page;
  *   - nodegroups: remove a member in the group's "Edit Members" editor;
- *   - polls: vote, then use the admin "delete vote" control;
+ *   - polls: make a poll current in the Poll Directory, vote, then use the admin "delete vote" control;
  *   - dbtable pages: the table's columns and indexes are listed.
  *
  * Fixtures are throwaway (a document and a nodegroup created through the API, deleted after).
@@ -16,7 +16,7 @@ test('an admin edits a node, prunes a nodegroup, resets a poll vote and views a 
   test.setTimeout(demo.DEMO ? 240000 : 90000)
   const admin = await demo.actor(browser, 'e2e_admin', '#38495e')
   const { page } = admin
-  const stamp = Date.now().toString(36)
+  const stamp = Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
   const made = []
   const polls = []
 
@@ -77,20 +77,33 @@ test('an admin edits a node, prunes a nodegroup, resets a poll vote and views a 
     await demo.step(page, `the group keeps only "${other.title}"`)
     await demo.show(list)
 
-    // 3. Polls: vote, then remove the vote with the admin "delete vote" control. A throwaway
-    // poll is made current for this (dev has no current poll; set_current only closes a poll
-    // that is already current) and deleted afterwards.
-    const created = await post('/api/poll_creator/create', { title: `Admin poll check ${stamp}`, question: 'Pick one', options: ['Apples', 'Pears'] })
+    // 3. Polls: make a throwaway poll current with the Poll Directory's "make current" button,
+    // vote on it, then remove the vote with the admin "delete vote" control. The poll is deleted
+    // afterwards. The vote can land on any worker, so it also shows every worker sees it as current.
+    const pollTitle = `Admin poll check ${stamp}`
+    const created = await post('/api/poll_creator/create', { title: pollTitle, question: 'Pick one', options: ['Apples', 'Pears'] })
     expect(created.success, JSON.stringify(created)).toBeTruthy()
     const pollId = Number(created.poll_id)
     polls.push(pollId)
-    expect((await post('/api/polls/set_current', { poll_id: pollId })).success).toBeTruthy()
+    await page.goto('/title/Everything%20Poll%20Directory')
+    const pollRow = page.locator('.poll-directory__item', { has: page.locator('.poll-display__title', { hasText: pollTitle }) })
+    const makeCurrent = pollRow.locator('button', { hasText: 'make current' })
+    await expect(makeCurrent).toBeVisible({ timeout: 10000 })
+    await demo.step(page, `opens the Poll Directory and makes "${pollTitle}" current`)
+    const setCurrent = page.waitForResponse((r) => r.url().includes('/api/polls/set_current'))
+    await demo.click(makeCurrent)
+    expect((await (await setCurrent).json()).success).toBeTruthy()
+    await expect(pollRow.locator('.poll-display__title')).toContainText('(current)', { timeout: 10000 })
+    await expect(makeCurrent).toHaveCount(0)
+    await demo.step(page, 'the directory lists it as current')
+    await demo.show(pollRow.locator('.poll-display__title'))
     await page.goto(`/node/${pollId}`)
     await demo.step(page, 'opens the current poll and votes')
     await page.locator('.poll-display__radio').first().check()
     const voted = page.waitForResponse((r) => /\/api\/poll\/vote/.test(r.url()))
     await demo.click(page.locator('.poll-display__vote-btn'))
-    expect((await voted).status()).toBe(200)
+    const voteBody = await (await voted).json()
+    expect(voteBody.success, JSON.stringify(voteBody)).toBeTruthy()
     const deleteBtn = page.locator('.poll-display__delete-btn')
     await expect(deleteBtn).toBeVisible({ timeout: 10000 })
     const deleted = page.waitForResponse((r) => r.url().includes('/api/poll/delete_vote'))

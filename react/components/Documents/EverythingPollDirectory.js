@@ -257,7 +257,7 @@ const EverythingPollDirectory = ({ user }) => {
             <div className="poll-directory__loading">No polls found.</div>
           ) : (
             polls.map((poll) => (
-              <div key={poll.poll_id}>
+              <div key={poll.poll_id} className="poll-directory__item">
                 <PollDisplay
                   poll={poll}
                   showStatus={true}

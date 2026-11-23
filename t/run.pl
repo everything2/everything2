@@ -47,6 +47,9 @@ my %serial_tests = (
     "$dirname/221_api_access_rules.t" => 1, # Inserts public chatter rows (same class as 038) and uses normaluser1's drafts (same class as 065)
     "$dirname/026_test_room_cleaning.t" => 1, # Empties the room table and runs refreshRoomUsers, which drops every room row for users not recently active (including other tests' online throwaway users)
     "$dirname/049_notifications.t" => 1, # Deletes broadcast notification rows and asserts visibility from root's VARS (same class as 058)
+    "$dirname/034_poll_api.t" => 1,       # Votes on a poll it makes current; making another poll current (070, 243) closes it
+    "$dirname/070_polls_api.t" => 1,      # Makes a poll current, which closes the site's current poll (same class as 034)
+    "$dirname/243_poll_changes_all_workers.t" => 1, # Makes a poll current (same class as 034/070)
 );
 
 # Separate serial and parallel tests
