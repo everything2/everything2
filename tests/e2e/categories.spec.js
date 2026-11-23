@@ -6,8 +6,8 @@ const demo = require('./fixtures/demo')
  * Categories, as a member uses them:
  *   - add a node to your category from the node's "Add to Category" button;
  *   - on the category's edit page, remove a member, move another to the top (keyboard drag),
- *     and save the order;
- *   - the category page then lists what's left;
+ *     and save the order; rename it and rewrite its description;
+ *   - the category page then shows the new title and description, and lists what's left;
  *   - a node page still renders normally when an old link asks for ?displaytype=printable.
  *
  * e2e_editor owns the category (created through the API as setup; Add to Category shows for
@@ -91,8 +91,46 @@ test('a member adds to, prunes and reorders their category', async ({ browser })
     await demo.click(page.locator('.category-edit__save-settings-btn', { hasText: 'Save Order' }))
     expect((await (await saved).json()).success).toBeTruthy()
 
-    // 3. The category page lists what's left.
+    // Rename it and rewrite its description (owner + editor).
+    const renamed = `${title} (renamed)`
+    const description = `Things to read next, ${Date.now().toString(36)}.`
+    const titleInput = page.locator('.category-edit__form-row', { has: page.locator('label', { hasText: 'Title:' }) }).locator('input')
+    await titleInput.fill(renamed)
+    const metaSaved = page.waitForResponse((r) => r.url().includes('/api/category/update_meta'))
+    // A rename reloads the edit page a moment after saving; wait for that before typing.
+    const reloaded = page.waitForEvent('load')
+    await demo.step(page, 'renames it and saves the settings')
+    await demo.click(page.locator('.category-edit__save-settings-btn', { hasText: 'Save Settings' }))
+    expect((await (await metaSaved).json()).success).toBeTruthy()
+    await reloaded
+    await expect(page.locator('h1.page-header__title')).toHaveText(renamed, { timeout: 10000 })
+    await demo.step(page, 'the edit page reloads with the new title')
+    await demo.show(page.locator('h1.page-header__title'))
+
+    // The description editor is rich text or raw HTML, depending on the user's saved preference.
+    const html = page.locator('.category-edit__html-textarea')
+    if (await html.isVisible()) {
+      await html.fill(`<p>${description}</p>`)
+      await expect(html).toHaveValue(`<p>${description}</p>`)
+    } else {
+      const rich = page.locator('.category-edit__editor-container .ProseMirror')
+      await rich.fill(description)
+      await expect(rich).toHaveText(description)
+    }
+    const descSaved = page.waitForResponse((r) => r.url().includes('/api/category/update') && !r.url().includes('update_meta'))
+    await demo.step(page, 'rewrites the description and saves it')
+    await demo.click(page.locator('.category-edit__save-btn'))
+    expect((await (await descSaved).json()).success).toBeTruthy()
+
+    // 3. The category page shows the new title and description, and lists what's left. Views can
+    // land on any web worker, so this also shows every worker has the edit.
     await page.goto(`/node/${cat}`)
+    await expect(page.locator('h1.page-header__title')).toHaveText(renamed, { timeout: 10000 })
+    await expect(page.locator('h1')).toHaveCount(1)
+    await expect(page.locator('.category-display__description-box')).toContainText(description)
+    await demo.step(page, 'the category page has the new title (once) and description')
+    await demo.show(page.locator('h1.page-header__title'))
+    await demo.show(page.locator('.category-display__description-box'), 2000)
     const members = page.locator('.category-display__members-section')
     await expect(members).toContainText(topTitle, { timeout: 10000 })
     await expect(members).not.toContainText(first.title)

@@ -493,9 +493,10 @@ const CategoryEdit = ({ data }) => {
       {/* Header */}
       <div className="category-edit__header">
         <div className="category-edit__header-top">
+          {/* The page header above already shows the title */}
           <div className="category-edit__title-row">
-            <FaFolder size={20} className="category-edit__title-icon" />
-            <h1 className="category-edit__title">Editing: {title}</h1>
+            <FaFolder size={16} className="category-edit__title-icon" />
+            <span className="category-edit__mode">Editing category</span>
           </div>
           <a
             href={`/node/${node_id}`}

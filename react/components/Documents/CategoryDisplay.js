@@ -2,7 +2,7 @@ import React from 'react'
 import LinkNode from '../LinkNode'
 import TimeDistance from '../TimeDistance'
 import { renderE2Content } from '../Editor/E2HtmlSanitizer'
-import { FaEdit, FaFolder, FaUser, FaGlobe, FaUsers, FaClock } from 'react-icons/fa'
+import { FaEdit, FaUser, FaGlobe, FaUsers, FaClock } from 'react-icons/fa'
 
 /**
  * CategoryDisplay - Display component for category nodes
@@ -25,7 +25,6 @@ const CategoryDisplay = ({ data }) => {
 
   const {
     node_id,
-    title,
     raw_description: description,
     author,
     author_id,
@@ -44,13 +43,8 @@ const CategoryDisplay = ({ data }) => {
 
   return (
     <div className="category-display">
-      {/* Header section */}
+      {/* Header section (the page header above already shows the title) */}
       <div className="category-display__header">
-        <div className="category-display__title-row">
-          <FaFolder size={24} className="category-display__folder-icon" />
-          <h1 className="category-display__title">{title}</h1>
-        </div>
-
         <div className="category-display__meta">
           <div className="category-display__meta-item">
             {is_public ? (
