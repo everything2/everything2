@@ -296,7 +296,10 @@ sub getCachedNodeById
 #			(peekGlobalVersion): a change committed between the two reads then shows up as a
 #			mismatch on the next check. Reading the version afterwards instead would stamp the
 #			old rows with the new version, and this worker would serve them as current.
-#			Without it, the current version is read here.
+#			0 means the node had no version row yet: it's stamped so that its first check
+#			reloads it, as before #4735 (getGlobalVersion creates the row on that check). Code
+#			that creates a node and then fixes up its rows without a version bump relies on that.
+#			Without $version, the current version is read here.
 #
 sub cacheNode
 {
@@ -322,7 +325,7 @@ sub cacheNode
 	# Store hash keys for its "name" and numeric Id, and set the version.
 	$this->{typeCache}{$type}{$title} = $data;
 	$this->{idCache}{$$NODE{node_id}} = $data;
-	$this->{version}{$$NODE{node_id}} = defined $version ? $version : $this->getGlobalVersion($NODE);
+	$this->{version}{$$NODE{node_id}} = defined $version ? ($version || -1) : $this->getGlobalVersion($NODE);
 
 	$this->purgeCache();
 
@@ -831,8 +834,7 @@ sub isSameVersion
 
 	my $ver = $this->getGlobalVersion($NODE);
 
-	# No version row reads as version 0 (every write makes it at least 1).
-	if(($ver // 0) == ($this->{version}{$$NODE{node_id}} // 0)) {
+	if($ver == $this->{version}{$$NODE{node_id}}) {
 		$$this{verified}{$$NODE{node_id}} = 1;
 	    return 1;
 	}
@@ -925,7 +927,10 @@ sub bumpVersionAndRecache
 	}
 
 	my $was_cached = defined $this->{idCache}{$node_id};
+	# -1 (no version row when loaded, see cacheNode) is version 0 here: a new node's first bump
+	# takes it to 1, and the copy just written is kept, as before.
 	my $stamp = $this->{version}{$node_id} // 0;
+	$stamp = 0 if $stamp < 0;
 
 	$this->incrementGlobalVersion($NODE);
 	my $now = $this->peekGlobalVersion($node_id);

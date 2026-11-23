@@ -145,6 +145,16 @@ subtest 'saving with nothing else changing keeps the copy cached' => sub {
     is($copy->{doctext}, 'second', 'with the change');
 };
 
+subtest 'a node changed right after it was created, without a version bump' => sub {
+    # insertNode caches the new node; code that then fixes up its rows directly relies on the
+    # node's first version check reloading it (#4747).
+    my $id = $DB->insertNode("Cache stamp fix-up $$", 'document', $root, undef, 'skip maintenance');
+    push @planted, $id;
+    ok(!$DB->sqlSelect('version', 'version', "version_id=$id"), 'the new node has no version row yet');
+    $DB->sqlUpdate('document', { doctext => 'fixed up' }, "document_id=$id");
+    is(next_request($id)->{doctext}, 'fixed up', "this worker's next read sees the fix-up");
+};
+
 subtest 'a change landing while a signed-in request records "last seen"' => sub {
     my $u = TestSeed::make_user($DB, $APP, label => 'stamp', password => 'stamp-pass', lasttime => '2020-01-01 00:00:00');
     ok($u, 'a throwaway member');

@@ -176,7 +176,9 @@ CREATE TABLE version (
    database is stamped with the version read **before** its rows (`peekGlobalVersion`, passed to
    `cacheNode`; by title, `getNode` looks up the id first so it can do the same). Reading it after
    the rows would let a change committed between the two reads stamp the old rows with the new
-   version, and this worker would serve them as current (#4735)
+   version, and this worker would serve them as current (#4735). A node with no version row yet is
+   stamped -1, so its first check reloads it (the check creates the row): code that creates a node
+   and then fixes up its rows without a bump relies on that reload (#4747)
 2. When retrieving a cached node, `isSameVersion()` compares local vs global (no row counts as 0)
 3. If versions differ, the cached node is stale and re-fetched from database
 4. When a node is updated, `incrementGlobalVersion()` bumps the global version via an atomic upsert:
