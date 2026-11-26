@@ -296,6 +296,13 @@ the password-reset migration) use `bumpVersionAndRecache` the same way. Re-stamp
 version is current after the bump would mark a copy missing the other change as current (#4735).
 Hydration-bundle residents are version-exempt and keep the plain bump + re-cache.
 
+Everything else saves through `updateNode`, not raw SQL on a node table: a raw write leaves every
+other worker's copy current until something bumps the version (#4749 tracks the remaining sites).
+`updateNode` writes each field that differs from the stored row, so load the node fresh
+(`getNodeById($id, 'force')`) when the save runs alongside other writers to the same node, as
+draft saves do (#4750); a copy older than the request could otherwise put back a change made
+meanwhile on another worker.
+
 ### Per-Pageload Reset Flow
 
 At the start of each request, `Everything::initEverything()` (called from `HTML::mod_perlInit` and the API dispatch path in `app.psgi`) calls `clearSessionCache()`:
