@@ -490,8 +490,10 @@ sub update_draft {
     my $DB      = $self->DB;
     my $APP     = $self->APP;
 
-    # Get the draft
-    my $draft = $DB->getNodeById($draft_id);
+    # Get the draft, fresh from the database: the save below writes every field that differs
+    # from the stored row, so a copy older than this request could put back a change made
+    # meanwhile on another worker (an editor marking it reviewed, say).
+    my $draft = $DB->getNodeById( $draft_id, 'force' );
     return [ $self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' } ]
       unless $draft;
 
@@ -522,6 +524,7 @@ sub update_draft {
     }
 
     my $updated = {};
+    my $notify_review;
 
     # Update doctext if provided
     if ( exists $data->{doctext} ) {
@@ -544,9 +547,7 @@ sub update_draft {
             $self->_prune_version_history( $user_id, $draft_id );
         }
 
-        # Update the main document
-        $DB->{dbh}->do( 'UPDATE document SET doctext = ? WHERE document_id = ?',
-            {}, $data->{doctext}, $draft_id );
+        $draft->{doctext} = $data->{doctext};
         $updated->{doctext} = 1;
     }
 
@@ -573,8 +574,7 @@ sub update_draft {
             $count++;
         }
 
-        $DB->{dbh}->do( 'UPDATE node SET title = ? WHERE node_id = ?',
-            {}, $new_title, $draft_id );
+        $draft->{title} = $new_title;
         $updated->{title} = $new_title;
     }
 
@@ -587,19 +587,23 @@ sub update_draft {
                 'SELECT publication_status FROM draft WHERE draft_id = ?',
                 {}, $draft_id );
 
-            $DB->{dbh}->do(
-                'UPDATE draft SET publication_status = ? WHERE draft_id = ?',
-                {}, $status_node->{node_id}, $draft_id );
+            $draft->{publication_status} = $status_node->{node_id};
             $updated->{status} = $data->{status};
-
-            # If changing to review, notify editors
-            if (   $data->{status} eq 'review'
-                && $old_status != $status_node->{node_id} )
-            {
-                $self->_notify_review( $draft_id, $user_id );
-            }
+            $notify_review = $data->{status} eq 'review'
+              && $old_status != $status_node->{node_id};
         }
     }
+
+    # One save for everything above. updateNode bumps the draft's version, so every worker's
+    # cached copy is reloaded; a raw write would leave the old text current on the others.
+    # The draft_update maintenance hook is skipped: its title and review handling are done here.
+    if (%$updated) {
+        $DB->updateNode( $draft, -1, undef, 'skip maintenance' )
+          or return [ $self->HTTP_OK, { success => 0, error => 'update_failed' } ];
+    }
+
+    # If changing to review, notify editors
+    $self->_notify_review( $draft_id, $user_id ) if $notify_review;
 
     # Fetch current doctext from database to return as source of truth
     my $current_doctext = $DB->{dbh}->selectrow_array(
@@ -1698,7 +1702,9 @@ sub mark_reviewed {
         ];
     }
 
-    my $draft = $DB->getNodeById($draft_id);
+    # Fresh from the database, as in update_draft: the save below writes every
+    # field that differs from the stored row.
+    my $draft = $DB->getNodeById( $draft_id, 'force' );
     return [ $self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' } ]
       unless $draft && $draft->{type}{title} eq 'draft';
 
@@ -1711,11 +1717,8 @@ sub mark_reviewed {
         ];
     }
 
-    # Read publication_status directly from the draft table rather than from
-    # the cached node — update_draft (where the status flip to 'review'
-    # happens) writes the draft row without ticking the node cache, so a
-    # request that arrived close behind it would see stale state on the
-    # blessed/hashref node copy.
+    # Read publication_status directly from the draft table: the check is
+    # against the stored state, whatever this worker has cached.
     my $current_status = $DB->{dbh}->selectrow_array(
         'SELECT publication_status FROM draft WHERE draft_id = ?',
         {}, $draft_id );
@@ -1751,18 +1754,12 @@ sub mark_reviewed {
         $draft_id, "Marked reviewed by $editor_title"
     );
 
-    # Status reset. Same shape as the inline status update in update_draft,
-    # but we don't go through update_draft because that endpoint requires
-    # author ownership.
-    $DB->{dbh}->do(
-        'UPDATE draft SET publication_status = ? WHERE draft_id = ?',
-        {}, $private_status->{node_id}, $draft_id
-    );
-
-    # Cache invalidation across webheads. Same pattern as
-    # publish_draft / republish_draft.
-    $DB->getCache->incrementGlobalVersion($draft);
-    $DB->getCache->removeNode($draft);
+    # Status reset, saved like update_draft's (which this doesn't call: that
+    # endpoint requires author ownership). updateNode bumps the version, so
+    # every worker reloads the draft.
+    $draft->{publication_status} = $private_status->{node_id};
+    $DB->updateNode( $draft, -1, undef, 'skip maintenance' )
+      or return [ $self->HTTP_OK, { success => 0, error => 'update_failed' } ];
 
     return [
         $self->HTTP_OK,
