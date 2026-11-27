@@ -3,14 +3,14 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import EditorModeToggle from '../Editor/EditorModeToggle'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
-import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
-import { normalizeEditorHtml } from '../Editor/E2HtmlSanitizer'
+import { convertRawBracketsToEntities } from '../Editor/RawBracketExtension'
+
 import MenuBar from '../Editor/MenuBar'
 import PreviewContent from '../Editor/PreviewContent'
 import LinkNode from '../LinkNode'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 import '../Editor/E2Editor.css'
-import setEditorContent from '../Editor/setEditorContent'
+import { loadEditorContent } from '../Editor/setEditorContent'
 
 /**
  * Create Category - Form for creating new categories
@@ -86,9 +86,7 @@ const CreateCategory = ({ data, user = {} }) => {
       const cleanedHtml = convertRawBracketsToEntities(e2Html)
       setHtmlContent(cleanedHtml)
     } else {
-      // Apply breakTags to convert plain-text newlines to proper HTML paragraphs
-      const withBreaks = normalizeEditorHtml(htmlContent)
-      setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks))
+      loadEditorContent(editor, htmlContent)
     }
 
     setEditorMode(newMode)

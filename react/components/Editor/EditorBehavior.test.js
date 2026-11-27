@@ -146,9 +146,10 @@ describe('update events', () => {
 // must not fire onUpdate: the editors treat onUpdate as "the user changed something" and use
 // it to mark content unsaved, create drafts and schedule autosaves. TipTap v3 changed
 // setContent() to emit an update by default, so every call has to opt out explicitly.
-describe('programmatic content loads go through setEditorContent', () => {
+describe('programmatic content loads go through the shared load pipeline', () => {
   // setEditorContent (#4639) passes { emitUpdate: false } and skips an editor TipTap has
-  // already destroyed. Every content load should use it rather than editor.commands directly.
+  // already destroyed; loadEditorContent / prepareEditorContent (#4756) also run stored content
+  // through normalizeEditorHtml + convertEntitiesToRawBrackets, so a literal [ stays literal.
   const root = path.resolve(__dirname, '..')
   const sourceFiles = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name)
@@ -176,11 +177,33 @@ describe('programmatic content loads go through setEditorContent', () => {
     return found
   })
 
-  const helperCalls = scan(/\bsetEditorContent\(/g)
+  const setCalls = scan(/\bsetEditorContent\(/g)
+  const loadCalls = scan(/\bloadEditorContent\(/g)
   const directCalls = scan(/\.commands\.(setContent|clearContent)\(/g)
+  // The initial content handed to useEditor: `content: <expression>,` on one line.
+  const initialContents = sourceFiles(root).filter((file) => file !== helper).flatMap((file) =>
+    fs.readFileSync(file, 'utf8').split('\n').flatMap((line, i) => {
+      const m = line.match(/^\s*content:\s*(.+?),?\s*$/)
+      return m && /useEditor\(/.test(fs.readFileSync(file, 'utf8'))
+        ? [{ where: `${path.relative(root, file)}:${i + 1}`, expr: m[1] }] : []
+    }))
+  const LITERAL = /^\s*(''|""|defaultContent|editor,\s*''|editor,\s*defaultContent|bioEditor,\s*'')\s*$/
 
   it('finds the editor content loads (guards against scanning nothing)', () => {
-    expect(helperCalls.length).toBeGreaterThan(10)
+    expect(loadCalls.length).toBeGreaterThan(10)
+    expect(initialContents.length).toBeGreaterThan(8)
+  })
+
+  it('loads stored content with loadEditorContent; setEditorContent only sets literal content', () => {
+    const notLiteral = setCalls.filter(({ args }) => !LITERAL.test(args)).map(({ where, args }) => `${where} (${args})`)
+    expect(notLiteral).toEqual([])
+  })
+
+  it('prepares the initial useEditor content with prepareEditorContent', () => {
+    const unprepared = initialContents
+      .filter(({ expr }) => !/^prepareEditorContent\(/.test(expr) && !/^(''|""|isReadOnly \? '' : defaultContent)$/.test(expr))
+      .map(({ where, expr }) => `${where} (${expr})`)
+    expect(unprepared).toEqual([])
   })
 
   it('loads content through setEditorContent, not editor.commands directly', () => {

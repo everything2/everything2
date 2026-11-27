@@ -7,7 +7,7 @@ import { E2Link, convertToE2Syntax } from './E2LinkExtension'
 import { E2TextAlign } from './E2TextAlignExtension'
 import { RawBracket, convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './RawBracketExtension'
 import { normalizeEditorHtml } from './E2HtmlSanitizer'
-import setEditorContent from './setEditorContent'
+import { loadEditorContent } from './setEditorContent'
 
 // TipTap v3 table cells keep their alignment, but render it as style="text-align: …".
 // E2's sanitizer doesn't allow the style attribute (see E2TextAlignExtension), but it does
@@ -127,7 +127,7 @@ export const useEditorMode = ({
         // whitespace) prevents mixed content from round-tripping into a stray
         // leading space, and convertEntitiesToRawBrackets restores literal
         // bracket/angle spans for TipTap — matching the per-component editors.
-        setEditorContent(editor, convertEntitiesToRawBrackets(normalizeEditorHtml(htmlContent)))
+        loadEditorContent(editor, htmlContent)
       }
     }
 

@@ -1,8 +1,9 @@
 import { Editor } from '@tiptap/core'
 import { getE2EditorExtensions } from './useE2Editor'
 import { convertToE2Syntax } from './E2LinkExtension'
-import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './RawBracketExtension'
+import { convertRawBracketsToEntities } from './RawBracketExtension'
 import { normalizeEditorHtml } from './E2HtmlSanitizer'
+import { prepareEditorContent, loadEditorContent } from './setEditorContent'
 
 // Round-trip fidelity for the real E2 editor schema (#4598).
 //
@@ -17,7 +18,8 @@ import { normalizeEditorHtml } from './E2HtmlSanitizer'
 // - default colspan="1" / rowspan="1" on cells and type="1" on <ol> are no longer written;
 // - table cell alignment is kept (as align=) instead of being dropped.
 
-const load = (html) => convertEntitiesToRawBrackets(normalizeEditorHtml(html))
+// The shared load pipeline every editor uses (#4756).
+const load = prepareEditorContent
 const save = (editor) => convertRawBracketsToEntities(convertToE2Syntax(editor.getHTML()))
 
 const CASES = [
@@ -129,11 +131,22 @@ describe('E2 editor HTML round trip (real schema)', () => {
     }
   })
 
-  it.each(CASES)('%s (loaded via setContent)', (_name, input, expected) => {
+  it.each(CASES)('%s (loaded via loadEditorContent)', (_name, input, expected) => {
     const editor = new Editor({ extensions: getE2EditorExtensions(), content: '' })
     try {
-      editor.commands.setContent(load(input))
+      expect(loadEditorContent(editor, input)).toBe(true)
       expect(save(editor)).toBe(expected)
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  // Why the bracket step is part of the pipeline: loading without it (as five editors did before
+  // #4756) turns literal brackets into a live link on the next save.
+  it('without the bracket step, a literal bracket comes back as a link', () => {
+    const editor = new Editor({ extensions: getE2EditorExtensions(), content: normalizeEditorHtml('<p>&#91;not a link&#93;</p>') })
+    try {
+      expect(save(editor)).toBe('<p>[not a link]</p>')
     } finally {
       editor.destroy()
     }

@@ -19,15 +19,15 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
-import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
-import { normalizeEditorHtml } from '../Editor/E2HtmlSanitizer'
+import { convertRawBracketsToEntities } from '../Editor/RawBracketExtension'
+
 import MenuBar from '../Editor/MenuBar'
 import PreviewContent from '../Editor/PreviewContent'
 import LinkNode from '../LinkNode'
 import { FaFolder, FaSave, FaTimes, FaGripVertical, FaTrash, FaCheck, FaSpinner, FaEye } from 'react-icons/fa'
 import { fetchWithErrorReporting } from '../../utils/reportClientError'
 import '../Editor/E2Editor.css'
-import setEditorContent from '../Editor/setEditorContent'
+import { loadEditorContent, prepareEditorContent } from '../Editor/setEditorContent'
 
 /**
  * CategoryEdit - Edit component for category nodes
@@ -160,7 +160,7 @@ const CategoryEdit = ({ data }) => {
   // Initialize TipTap editor
   const editor = useEditor({
     extensions: getE2EditorExtensions(),
-    content: description || '',
+    content: prepareEditorContent(description),
     editable: true,
     onUpdate: ({ editor }) => {
       const newContent = editor.getHTML()
@@ -184,9 +184,7 @@ const CategoryEdit = ({ data }) => {
       const cleanedHtml = convertRawBracketsToEntities(e2Html)
       setHtmlContent(cleanedHtml)
     } else {
-      // Apply breakTags to convert plain-text newlines to proper HTML paragraphs
-      const withBreaks = normalizeEditorHtml(htmlContent)
-      setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks))
+      loadEditorContent(editor, htmlContent)
     }
 
     setEditorMode(newMode)

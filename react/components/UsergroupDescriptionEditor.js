@@ -2,12 +2,12 @@ import React, { useState, useCallback, useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import { getE2EditorExtensions } from './Editor/useE2Editor'
 import { convertToE2Syntax } from './Editor/E2LinkExtension'
-import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './Editor/RawBracketExtension'
-import { normalizeEditorHtml } from './Editor/E2HtmlSanitizer'
+import { convertRawBracketsToEntities } from './Editor/RawBracketExtension'
+
 import MenuBar from './Editor/MenuBar'
 import EditorModeToggle from './Editor/EditorModeToggle'
 import './Editor/E2Editor.css'
-import setEditorContent from './Editor/setEditorContent'
+import { loadEditorContent, prepareEditorContent } from './Editor/setEditorContent'
 
 /**
  * UsergroupDescriptionEditor - Inline editor for usergroup descriptions
@@ -43,7 +43,7 @@ const UsergroupDescriptionEditor = ({
   // Initialize TipTap editor
   const editor = useEditor({
     extensions: getE2EditorExtensions(),
-    content: normalizeEditorHtml(initialContent),
+    content: prepareEditorContent(initialContent),
     editorProps: {
       attributes: {
         class: 'e2-editor-content'
@@ -68,7 +68,7 @@ const UsergroupDescriptionEditor = ({
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
         // Switching to rich - load HTML into editor
-        setEditorContent(editor, normalizeEditorHtml(htmlContent))
+        loadEditorContent(editor, htmlContent)
       }
     }
 

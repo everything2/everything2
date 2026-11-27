@@ -3,7 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
 import { convertRawBracketsToEntities } from '../Editor/RawBracketExtension'
-import { normalizeEditorHtml } from '../Editor/E2HtmlSanitizer'
+
 import MenuBar from '../Editor/MenuBar'
 import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
@@ -12,7 +12,7 @@ import { FaUsers, FaUser, FaLock, FaSave, FaSpinner, FaTrash, FaEye, FaLockOpen,
 import { useAutocompleteSearch } from '../../hooks/useAutocompleteSearch'
 import { useClickOutside } from '../../hooks/useClickOutside'
 import '../Editor/E2Editor.css'
-import setEditorContent from '../Editor/setEditorContent'
+import { loadEditorContent, prepareEditorContent } from '../Editor/setEditorContent'
 
 /**
  * CollaborationEdit - Edit page for collaboration nodes
@@ -90,7 +90,7 @@ const CollaborationEdit = ({ data }) => {
   // Initialize TipTap editor
   const editor = useEditor({
     extensions: getE2EditorExtensions(),
-    content: normalizeEditorHtml(collaboration.doctext || ''),
+    content: prepareEditorContent(collaboration.doctext),
     editorProps: {
       attributes: {
         class: 'e2-editor-content'
@@ -126,7 +126,7 @@ const CollaborationEdit = ({ data }) => {
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
         // Switching to rich - load HTML into editor
-        setEditorContent(editor, normalizeEditorHtml(htmlContent))
+        loadEditorContent(editor, htmlContent)
       }
     }
 

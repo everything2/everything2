@@ -3,7 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import EditorModeToggle from './Editor/EditorModeToggle';
 import { getE2EditorExtensions } from './Editor/useE2Editor';
 import { convertToE2Syntax } from './Editor/E2LinkExtension';
-import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './Editor/RawBracketExtension';
+import { convertRawBracketsToEntities } from './Editor/RawBracketExtension';
 import { normalizeEditorHtml } from './Editor/E2HtmlSanitizer';
 import MenuBar from './Editor/MenuBar';
 import PreviewContent from './Editor/PreviewContent';
@@ -12,7 +12,7 @@ import { fetchWithErrorReporting } from '../utils/reportClientError';
 import { decodeHtmlEntities } from '../utils/textUtils';
 import PublishAsPicker from './PublishAsPicker';
 import './Editor/E2Editor.css';
-import setEditorContent from './Editor/setEditorContent';
+import setEditorContent, { loadEditorContent, prepareEditorContent } from './Editor/setEditorContent';
 
 /**
  * Parse a draft title to extract e2node title and writeuptype
@@ -234,7 +234,7 @@ const InlineWriteupEditor = ({
   // Preprocess to convert &#91; and &#93; entities back to parseable spans for TipTap
   const editor = useEditor({
     extensions: getE2EditorExtensions(),
-    content: convertEntitiesToRawBrackets(normalizedInitialContent),
+    content: prepareEditorContent(initialContent),
     editorProps: {
       attributes: {
         'aria-label': 'Writeup content',
@@ -600,8 +600,7 @@ const InlineWriteupEditor = ({
       // "<p>Hello</p>\n\nHello" doesn't round-trip into "<p>Hello</p><p> Hello</p>"
       // (stray leading space). Then convert &#91;/&#93; entities back to
       // parseable spans for TipTap.
-      const withBreaks = normalizeEditorHtml(htmlContent);
-      setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks));
+      loadEditorContent(editor, htmlContent);
     }
 
     setEditorMode(newMode);
