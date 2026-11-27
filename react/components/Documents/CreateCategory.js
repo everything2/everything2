@@ -10,6 +10,7 @@ import PreviewContent from '../Editor/PreviewContent'
 import LinkNode from '../LinkNode'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 import '../Editor/E2Editor.css'
+import setEditorContent from '../Editor/setEditorContent'
 
 /**
  * Create Category - Form for creating new categories
@@ -87,7 +88,7 @@ const CreateCategory = ({ data, user = {} }) => {
     } else {
       // Apply breakTags to convert plain-text newlines to proper HTML paragraphs
       const withBreaks = normalizeEditorHtml(htmlContent)
-      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks), { emitUpdate: false })
+      setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks))
     }
 
     setEditorMode(newMode)

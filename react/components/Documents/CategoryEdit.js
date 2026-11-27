@@ -27,6 +27,7 @@ import LinkNode from '../LinkNode'
 import { FaFolder, FaSave, FaTimes, FaGripVertical, FaTrash, FaCheck, FaSpinner, FaEye } from 'react-icons/fa'
 import { fetchWithErrorReporting } from '../../utils/reportClientError'
 import '../Editor/E2Editor.css'
+import setEditorContent from '../Editor/setEditorContent'
 
 /**
  * CategoryEdit - Edit component for category nodes
@@ -185,7 +186,7 @@ const CategoryEdit = ({ data }) => {
     } else {
       // Apply breakTags to convert plain-text newlines to proper HTML paragraphs
       const withBreaks = normalizeEditorHtml(htmlContent)
-      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks), { emitUpdate: false })
+      setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks))
     }
 
     setEditorMode(newMode)

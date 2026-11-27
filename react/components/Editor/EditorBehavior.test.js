@@ -146,18 +146,20 @@ describe('update events', () => {
 // must not fire onUpdate: the editors treat onUpdate as "the user changed something" and use
 // it to mark content unsaved, create drafts and schedule autosaves. TipTap v3 changed
 // setContent() to emit an update by default, so every call has to opt out explicitly.
-describe('programmatic setContent calls opt out of update events', () => {
+describe('programmatic content loads go through setEditorContent', () => {
+  // setEditorContent (#4639) passes { emitUpdate: false } and skips an editor TipTap has
+  // already destroyed. Every content load should use it rather than editor.commands directly.
   const root = path.resolve(__dirname, '..')
   const sourceFiles = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name)
     if (entry.isDirectory()) return sourceFiles(full)
     return /\.js$/.test(entry.name) && !/\.test\.js$/.test(entry.name) ? [full] : []
   })
+  const helper = path.join(__dirname, 'setEditorContent.js')
 
-  const calls = sourceFiles(root).flatMap((file) => {
+  const scan = (re) => sourceFiles(root).filter((file) => file !== helper).flatMap((file) => {
     const src = fs.readFileSync(file, 'utf8')
     const found = []
-    const re = /\.commands\.(setContent|clearContent)\(/g
     let m
     while ((m = re.exec(src))) {
       // Capture the argument list by matching parentheses from the opening one.
@@ -174,12 +176,19 @@ describe('programmatic setContent calls opt out of update events', () => {
     return found
   })
 
+  const helperCalls = scan(/\bsetEditorContent\(/g)
+  const directCalls = scan(/\.commands\.(setContent|clearContent)\(/g)
+
   it('finds the editor content loads (guards against scanning nothing)', () => {
-    expect(calls.length).toBeGreaterThan(10)
+    expect(helperCalls.length).toBeGreaterThan(10)
   })
 
-  it('passes { emitUpdate: false } on every call', () => {
-    const missing = calls.filter(({ args }) => !/emitUpdate:\s*false/.test(args)).map(({ where }) => where)
+  it('loads content through setEditorContent, not editor.commands directly', () => {
+    expect(directCalls.map(({ where }) => where)).toEqual([])
+  })
+
+  it('passes { emitUpdate: false } on any direct call', () => {
+    const missing = directCalls.filter(({ args }) => !/emitUpdate:\s*false/.test(args)).map(({ where }) => where)
     expect(missing).toEqual([])
   })
 })

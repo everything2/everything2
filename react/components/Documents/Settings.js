@@ -28,6 +28,7 @@ import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
 import CurrentPasswordModal, { describeCredentialChange } from '../CurrentPasswordModal'
 import '../Editor/E2Editor.css'
+import setEditorContent from '../Editor/setEditorContent'
 
 // Maximum length for macros (from legacy system)
 const MAX_MACRO_LENGTH = 768
@@ -296,11 +297,10 @@ function Settings({ data, user }) {
 
   // Set editor content when it's ready
   useEffect(() => {
-    // useEditor can hand back an instance it has since destroyed (it re-creates on remount);
-    // its replacement re-runs this effect.
-    if (bioEditor && !bioEditor.isDestroyed && data.profileData?.doctext) {
-      const withBrackets = convertEntitiesToRawBrackets(data.profileData.doctext)
-      bioEditor.commands.setContent(withBrackets, { emitUpdate: false })
+    // setEditorContent skips a destroyed editor (useEditor can hand one back on first render);
+    // the replacement re-runs this effect.
+    if (data.profileData?.doctext) {
+      setEditorContent(bioEditor, convertEntitiesToRawBrackets(data.profileData.doctext))
     }
   }, [bioEditor, data.profileData?.doctext])
 
@@ -425,7 +425,7 @@ function Settings({ data, user }) {
     } else if (editorMode === 'html' && bioEditor && !bioEditor.isDestroyed) {
       // Switching to rich mode - load HTML content into editor
       const withBrackets = convertEntitiesToRawBrackets(htmlContent)
-      bioEditor.commands.setContent(withBrackets, { emitUpdate: false })
+      setEditorContent(bioEditor, withBrackets)
     }
 
     setEditorMode(newMode)
