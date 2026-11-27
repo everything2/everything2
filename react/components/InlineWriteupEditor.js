@@ -12,6 +12,7 @@ import { fetchWithErrorReporting } from '../utils/reportClientError';
 import { decodeHtmlEntities } from '../utils/textUtils';
 import PublishAsPicker from './PublishAsPicker';
 import './Editor/E2Editor.css';
+import setEditorContent from './Editor/setEditorContent';
 
 /**
  * Parse a draft title to extract e2node title and writeuptype
@@ -600,7 +601,7 @@ const InlineWriteupEditor = ({
       // (stray leading space). Then convert &#91;/&#93; entities back to
       // parseable spans for TipTap.
       const withBreaks = normalizeEditorHtml(htmlContent);
-      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks), { emitUpdate: false });
+      setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks));
     }
 
     setEditorMode(newMode);
@@ -676,7 +677,7 @@ const InlineWriteupEditor = ({
         setDraftId(null);
         setHtmlContent('');
         if (editor) {
-          editor.commands.setContent('', { emitUpdate: false });
+          setEditorContent(editor, '');
         }
         setSaveStatus('saved');
         setShowDeleteConfirm(false);

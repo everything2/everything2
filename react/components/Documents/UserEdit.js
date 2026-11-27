@@ -26,6 +26,7 @@ import SettingsNavigation from '../SettingsNavigation'
 import LinkNode from '../LinkNode'
 import CurrentPasswordModal, { describeCredentialChange } from '../CurrentPasswordModal'
 import '../Editor/E2Editor.css'
+import setEditorContent from '../Editor/setEditorContent'
 
 // Homenode image uploads: keep in sync with Everything::HomenodeImage ($MAX_UPLOAD_BYTES and
 // the accepted formats). The server is the authority; these only give quick feedback.
@@ -185,11 +186,9 @@ const UserEdit = ({ data, e2 }) => {
         motto: data.user.motto || ''
       })
 
-      // Set editor content (both rich and HTML modes). useEditor can hand back an instance it
-      // has since destroyed; its replacement re-runs this effect.
-      if (editor && !editor.isDestroyed) {
-        const withBrackets = convertEntitiesToRawBrackets(doctext)
-        editor.commands.setContent(withBrackets, { emitUpdate: false })
+      // Set editor content (both rich and HTML modes). setEditorContent skips a destroyed editor
+      // (useEditor can hand one back on first render); the replacement re-runs this effect.
+      if (setEditorContent(editor, convertEntitiesToRawBrackets(doctext))) {
         // Mark editor as initialized after content is set (so onUpdate events are tracked as user edits)
         setTimeout(() => {
           editorInitialized.current = true
@@ -285,7 +284,7 @@ const UserEdit = ({ data, e2 }) => {
     } else if (editorMode === 'html' && editor && !editor.isDestroyed) {
       // Switching to rich mode - load HTML content into editor
       const withBrackets = convertEntitiesToRawBrackets(htmlContent)
-      editor.commands.setContent(withBrackets, { emitUpdate: false })
+      setEditorContent(editor, withBrackets)
     }
 
     setEditorMode(newMode)

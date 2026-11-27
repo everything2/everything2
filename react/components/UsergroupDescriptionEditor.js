@@ -7,6 +7,7 @@ import { normalizeEditorHtml } from './Editor/E2HtmlSanitizer'
 import MenuBar from './Editor/MenuBar'
 import EditorModeToggle from './Editor/EditorModeToggle'
 import './Editor/E2Editor.css'
+import setEditorContent from './Editor/setEditorContent'
 
 /**
  * UsergroupDescriptionEditor - Inline editor for usergroup descriptions
@@ -67,7 +68,7 @@ const UsergroupDescriptionEditor = ({
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
         // Switching to rich - load HTML into editor
-        editor.commands.setContent(normalizeEditorHtml(htmlContent), { emitUpdate: false })
+        setEditorContent(editor, normalizeEditorHtml(htmlContent))
       }
     }
 

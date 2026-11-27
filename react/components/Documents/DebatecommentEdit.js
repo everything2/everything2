@@ -9,6 +9,7 @@ import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
 import { FaComments, FaReply, FaSave, FaTimes, FaUsers, FaExclamationTriangle, FaSpinner } from 'react-icons/fa'
 import '../Editor/E2Editor.css'
+import setEditorContent from '../Editor/setEditorContent'
 
 /**
  * DebatecommentEdit - Edit/Reply form for usergroup discussions
@@ -74,7 +75,7 @@ const DebatecommentEdit = ({ data }) => {
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
         // Switching to rich - load HTML into editor
-        editor.commands.setContent(normalizeEditorHtml(htmlContent), { emitUpdate: false })
+        setEditorContent(editor, normalizeEditorHtml(htmlContent))
       }
     }
 

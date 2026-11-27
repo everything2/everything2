@@ -8,6 +8,7 @@ import MenuBar from '../Editor/MenuBar'
 import EditorModeToggle from '../Editor/EditorModeToggle'
 import { FaCode, FaSave, FaSpinner } from 'react-icons/fa'
 import '../Editor/E2Editor.css'
+import setEditorContent from '../Editor/setEditorContent'
 
 /**
  * E2clientEdit - Edit e2client (API client application) information
@@ -81,7 +82,7 @@ const E2clientEdit = ({ data }) => {
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
         // Switching to rich - load HTML into editor
-        editor.commands.setContent(normalizeEditorHtml(htmlContent), { emitUpdate: false })
+        setEditorContent(editor, normalizeEditorHtml(htmlContent))
       }
     }
 

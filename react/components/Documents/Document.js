@@ -10,6 +10,7 @@ import EditorModeToggle from '../Editor/EditorModeToggle'
 import PreviewContent from '../Editor/PreviewContent'
 import LinkNode from '../LinkNode'
 import '../Editor/E2Editor.css'
+import setEditorContent from '../Editor/setEditorContent'
 
 /**
  * Document Component - Display and edit documents
@@ -369,7 +370,7 @@ const DocumentEditor = ({
       // Switching to Rich mode - update Tiptap with HTML content
       // First apply breakTags to convert plain-text newlines to proper HTML paragraphs
       const withBreaks = normalizeEditorHtml(htmlContent)
-      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks), { emitUpdate: false })
+      setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks))
     }
 
     setEditorMode(newMode)

@@ -9,6 +9,7 @@ import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
 import { FaComments, FaSpinner, FaBullhorn } from 'react-icons/fa'
 import '../Editor/E2Editor.css'
+import setEditorContent from '../Editor/setEditorContent'
 
 /**
  * UsergroupDiscussions - View and manage usergroup discussions.
@@ -236,7 +237,7 @@ const NewDiscussionForm = ({ usergroups, selectedUsergroup }) => {
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
         // Switching to rich - load HTML into editor
-        editor.commands.setContent(normalizeEditorHtml(htmlContent), { emitUpdate: false })
+        setEditorContent(editor, normalizeEditorHtml(htmlContent))
       }
     }
 

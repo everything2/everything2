@@ -9,6 +9,7 @@ import PreviewContent from '../Editor/PreviewContent';
 import PublishModal from './PublishModal';
 import '../Editor/E2Editor.css';
 import { formatDateTime } from '../../utils/dateFormat';
+import setEditorContent from '../Editor/setEditorContent';
 
 // Inline styles for spinner animation (mode toggle styles now in E2Editor.css)
 const editorStyles = `
@@ -337,7 +338,7 @@ const EditorBeta = ({ data, user = {} }) => {
       // leading space). Then convert &#91;/&#93; back to spans for TipTap.
       if (editor) {
         const withBreaks = normalizeEditorHtml(rawHtmlContent);
-        editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks), { emitUpdate: false });
+        setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks));
       }
     }
 
@@ -424,7 +425,7 @@ const EditorBeta = ({ data, user = {} }) => {
       // whitespace (see mode-toggle above). Then entities → spans for TipTap.
       if (editor) {
         const withBreaks = normalizeEditorHtml(content);
-        editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks), { emitUpdate: false });
+        setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks));
       }
       setRawHtmlContent(content);
 
@@ -440,7 +441,7 @@ const EditorBeta = ({ data, user = {} }) => {
   // Clear editor and start new
   const clearEditor = useCallback(() => {
     if (editor) {
-      editor.commands.setContent(defaultContent, { emitUpdate: false });
+      setEditorContent(editor, defaultContent);
     }
     setRawHtmlContent(defaultContent);
     setSelectedDraft(null);
@@ -544,7 +545,7 @@ const EditorBeta = ({ data, user = {} }) => {
         // Update both editor and raw HTML state. Normalize so a restored
         // plain-text version doesn't collapse / leak leading spaces.
         if (editor) {
-          editor.commands.setContent(convertEntitiesToRawBrackets(normalizeEditorHtml(content)), { emitUpdate: false });
+          setEditorContent(editor, convertEntitiesToRawBrackets(normalizeEditorHtml(content)));
         }
         setRawHtmlContent(content);
 

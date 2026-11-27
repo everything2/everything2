@@ -12,6 +12,7 @@ import { FaUsers, FaUser, FaLock, FaSave, FaSpinner, FaTrash, FaEye, FaLockOpen,
 import { useAutocompleteSearch } from '../../hooks/useAutocompleteSearch'
 import { useClickOutside } from '../../hooks/useClickOutside'
 import '../Editor/E2Editor.css'
+import setEditorContent from '../Editor/setEditorContent'
 
 /**
  * CollaborationEdit - Edit page for collaboration nodes
@@ -125,7 +126,7 @@ const CollaborationEdit = ({ data }) => {
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
         // Switching to rich - load HTML into editor
-        editor.commands.setContent(normalizeEditorHtml(htmlContent), { emitUpdate: false })
+        setEditorContent(editor, normalizeEditorHtml(htmlContent))
       }
     }
 
