@@ -21,14 +21,14 @@ import FavoriteUsersManager from '../UserInteractions/FavoriteUsersManager'
 import SettingsNavigation from '../SettingsNavigation'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
-import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
+import { convertRawBracketsToEntities } from '../Editor/RawBracketExtension'
 import MenuBar from '../Editor/MenuBar'
 import PreviewContent from '../Editor/PreviewContent'
 import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
 import CurrentPasswordModal, { describeCredentialChange } from '../CurrentPasswordModal'
 import '../Editor/E2Editor.css'
-import setEditorContent from '../Editor/setEditorContent'
+import { loadEditorContent } from '../Editor/setEditorContent'
 
 // Maximum length for macros (from legacy system)
 const MAX_MACRO_LENGTH = 768
@@ -300,7 +300,7 @@ function Settings({ data, user }) {
     // setEditorContent skips a destroyed editor (useEditor can hand one back on first render);
     // the replacement re-runs this effect.
     if (data.profileData?.doctext) {
-      setEditorContent(bioEditor, convertEntitiesToRawBrackets(data.profileData.doctext))
+      loadEditorContent(bioEditor, data.profileData.doctext)
     }
   }, [bioEditor, data.profileData?.doctext])
 
@@ -424,8 +424,7 @@ function Settings({ data, user }) {
       setHtmlContent(convertToE2Syntax(withEntities))
     } else if (editorMode === 'html' && bioEditor && !bioEditor.isDestroyed) {
       // Switching to rich mode - load HTML content into editor
-      const withBrackets = convertEntitiesToRawBrackets(htmlContent)
-      setEditorContent(bioEditor, withBrackets)
+      loadEditorContent(bioEditor, htmlContent)
     }
 
     setEditorMode(newMode)
@@ -510,7 +509,6 @@ function Settings({ data, user }) {
     const configurableNodelets = ['New Writeups']
     return configurableNodelets.includes(title)
   }, [])
-
 
   // Handle nodelet-specific setting change
   const handleNodeletSettingChange = useCallback((nodeletId, settingKey, value) => {

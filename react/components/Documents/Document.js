@@ -1,16 +1,16 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import { FaEdit, FaRss } from 'react-icons/fa'
-import { renderE2Content, normalizeEditorHtml } from '../Editor/E2HtmlSanitizer'
+import { renderE2Content } from '../Editor/E2HtmlSanitizer'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
-import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
+import { convertRawBracketsToEntities } from '../Editor/RawBracketExtension'
 import MenuBar from '../Editor/MenuBar'
 import EditorModeToggle from '../Editor/EditorModeToggle'
 import PreviewContent from '../Editor/PreviewContent'
 import LinkNode from '../LinkNode'
 import '../Editor/E2Editor.css'
-import setEditorContent from '../Editor/setEditorContent'
+import { loadEditorContent, prepareEditorContent } from '../Editor/setEditorContent'
 
 /**
  * Document Component - Display and edit documents
@@ -343,7 +343,7 @@ const DocumentEditor = ({
   // Initialize Tiptap editor
   const editor = useEditor({
     extensions: getE2EditorExtensions(),
-    content: convertEntitiesToRawBrackets(initialContent),
+    content: prepareEditorContent(initialContent),
     onUpdate: ({ editor }) => {
       // Keep htmlContent in sync for HTML mode switching
       const html = convertToE2Syntax(editor.getHTML())
@@ -368,9 +368,7 @@ const DocumentEditor = ({
       setHtmlContent(convertRawBracketsToEntities(html))
     } else if (newMode === 'rich' && editor) {
       // Switching to Rich mode - update Tiptap with HTML content
-      // First apply breakTags to convert plain-text newlines to proper HTML paragraphs
-      const withBreaks = normalizeEditorHtml(htmlContent)
-      setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks))
+      loadEditorContent(editor, htmlContent)
     }
 
     setEditorMode(newMode)

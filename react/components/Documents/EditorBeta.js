@@ -2,14 +2,14 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { getE2EditorExtensions } from '../Editor/useE2Editor';
 import { convertToE2Syntax } from '../Editor/E2LinkExtension';
-import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension';
+import { convertRawBracketsToEntities } from '../Editor/RawBracketExtension';
 import { renderE2Content, normalizeEditorHtml } from '../Editor/E2HtmlSanitizer';
 import MenuBar from '../Editor/MenuBar';
 import PreviewContent from '../Editor/PreviewContent';
 import PublishModal from './PublishModal';
 import '../Editor/E2Editor.css';
 import { formatDateTime } from '../../utils/dateFormat';
-import setEditorContent from '../Editor/setEditorContent';
+import setEditorContent, { loadEditorContent } from '../Editor/setEditorContent';
 
 // Inline styles for spinner animation (mode toggle styles now in E2Editor.css)
 const editorStyles = `
@@ -337,8 +337,7 @@ const EditorBeta = ({ data, user = {} }) => {
       // "<p>x</p>\n\ny" doesn't round-trip into "<p>x</p><p> y</p>" (stray
       // leading space). Then convert &#91;/&#93; back to spans for TipTap.
       if (editor) {
-        const withBreaks = normalizeEditorHtml(rawHtmlContent);
-        setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks));
+        loadEditorContent(editor, rawHtmlContent);
       }
     }
 
@@ -424,8 +423,7 @@ const EditorBeta = ({ data, user = {} }) => {
       // normalizeEditorHtml = breakTags + strip block-adjacent newline
       // whitespace (see mode-toggle above). Then entities → spans for TipTap.
       if (editor) {
-        const withBreaks = normalizeEditorHtml(content);
-        setEditorContent(editor, convertEntitiesToRawBrackets(withBreaks));
+        loadEditorContent(editor, content);
       }
       setRawHtmlContent(content);
 
@@ -545,7 +543,7 @@ const EditorBeta = ({ data, user = {} }) => {
         // Update both editor and raw HTML state. Normalize so a restored
         // plain-text version doesn't collapse / leak leading spaces.
         if (editor) {
-          setEditorContent(editor, convertEntitiesToRawBrackets(normalizeEditorHtml(content)));
+          loadEditorContent(editor, content);
         }
         setRawHtmlContent(content);
 

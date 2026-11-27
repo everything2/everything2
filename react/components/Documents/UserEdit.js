@@ -18,7 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
-import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
+import { convertRawBracketsToEntities } from '../Editor/RawBracketExtension'
 import MenuBar from '../Editor/MenuBar'
 import PreviewContent from '../Editor/PreviewContent'
 import EditorModeToggle from '../Editor/EditorModeToggle'
@@ -26,7 +26,7 @@ import SettingsNavigation from '../SettingsNavigation'
 import LinkNode from '../LinkNode'
 import CurrentPasswordModal, { describeCredentialChange } from '../CurrentPasswordModal'
 import '../Editor/E2Editor.css'
-import setEditorContent from '../Editor/setEditorContent'
+import { loadEditorContent } from '../Editor/setEditorContent'
 
 // Homenode image uploads: keep in sync with Everything::HomenodeImage ($MAX_UPLOAD_BYTES and
 // the accepted formats). The server is the authority; these only give quick feedback.
@@ -188,7 +188,7 @@ const UserEdit = ({ data, e2 }) => {
 
       // Set editor content (both rich and HTML modes). setEditorContent skips a destroyed editor
       // (useEditor can hand one back on first render); the replacement re-runs this effect.
-      if (setEditorContent(editor, convertEntitiesToRawBrackets(doctext))) {
+      if (loadEditorContent(editor, doctext)) {
         // Mark editor as initialized after content is set (so onUpdate events are tracked as user edits)
         setTimeout(() => {
           editorInitialized.current = true
@@ -283,8 +283,7 @@ const UserEdit = ({ data, e2 }) => {
       setHtmlContent(convertToE2Syntax(withEntities))
     } else if (editorMode === 'html' && editor && !editor.isDestroyed) {
       // Switching to rich mode - load HTML content into editor
-      const withBrackets = convertEntitiesToRawBrackets(htmlContent)
-      setEditorContent(editor, withBrackets)
+      loadEditorContent(editor, htmlContent)
     }
 
     setEditorMode(newMode)

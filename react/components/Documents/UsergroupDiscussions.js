@@ -3,13 +3,13 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
 import { convertRawBracketsToEntities } from '../Editor/RawBracketExtension'
-import { normalizeEditorHtml } from '../Editor/E2HtmlSanitizer'
+
 import MenuBar from '../Editor/MenuBar'
 import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
 import { FaComments, FaSpinner, FaBullhorn } from 'react-icons/fa'
 import '../Editor/E2Editor.css'
-import setEditorContent from '../Editor/setEditorContent'
+import { loadEditorContent } from '../Editor/setEditorContent'
 
 /**
  * UsergroupDiscussions - View and manage usergroup discussions.
@@ -237,7 +237,7 @@ const NewDiscussionForm = ({ usergroups, selectedUsergroup }) => {
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
         // Switching to rich - load HTML into editor
-        setEditorContent(editor, normalizeEditorHtml(htmlContent))
+        loadEditorContent(editor, htmlContent)
       }
     }
 
