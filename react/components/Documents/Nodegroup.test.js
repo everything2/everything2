@@ -19,3 +19,27 @@ describe('Nodegroup (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+// #4617: renderE2Content returns { html, ... }, so the description must use its .html.
+describe('Nodegroup description', () => {
+  const withDescription = (doctext) => ({
+    ...fixture.contentData,
+    nodegroup: { ...fixture.contentData.nodegroup, doctext },
+  })
+
+  it('renders the description as HTML, with its E2 links', () => {
+    const { container } = render(
+      <Nodegroup data={withDescription('<p>Nodes about <em>cheese</em>, see [Everything2].</p>')} e2={fixture} user={fixture.user || {}} />
+    )
+    const description = container.querySelector('.nodegroup__description')
+    expect(description).not.toBeNull()
+    expect(description.textContent).not.toContain('[object Object]')
+    expect(description.querySelector('em').textContent).toBe('cheese')
+    expect(description.querySelector('a').textContent).toBe('Everything2')
+  })
+
+  it('renders no description block when there is no description', () => {
+    const { container } = render(<Nodegroup data={withDescription('')} e2={fixture} user={fixture.user || {}} />)
+    expect(container.querySelector('.nodegroup__description')).toBeNull()
+  })
+})
