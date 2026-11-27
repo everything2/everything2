@@ -399,6 +399,9 @@ sub gotoNode
 		# cache re-fetches on a version bump (isSameVersion), and it defeated
 		# the hydration cache for the main displayed node. (#4436, closes #4434)
 		$NODE = getNodeById($node_id);
+		# getNodeById hands back some ids as placeholders rather than nodes (-1 is the
+		# superuser); anything that isn't a node is not found. #4753
+		$NODE = undef unless ref($NODE) eq 'HASH';
 	}
 	else {
 		$NODE = getNodeById($Everything::CONF->search_results);

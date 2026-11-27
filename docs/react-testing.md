@@ -73,7 +73,7 @@ npm run test:verbose
 
 ### Development Build Integration
 
-`./docker/devbuild.sh` (without `--skip-tests`) runs `tools/parallel-test.sh`, which runs smoke + Perl tests (`t/run.pl` in the container) alongside the Jest suite (`npm test` on the host). Standalone runners:
+`./docker/devbuild.sh` (without `--skip-tests`) runs `tools/parallel-test.sh`, which runs smoke + Perl tests (`t/run.pl` in the container) alongside the Jest suite (`npm test` on the host). On a failure it lists the failed test files, each section's Test Summary Report and the failed assertions, pulled from the whole log (`t/run.pl` runs its serial section first, so a serial failure is far above the end of the output). The full output of each suite stays in `/tmp/e2-test-output/perl.log` and `react.log` after the run (overwritten by the next one; set `E2_TEST_OUTPUT_DIR` to keep it elsewhere). Standalone runners:
 
 ```bash
 # Re-run the full parallel suite (smoke + Perl + React)
