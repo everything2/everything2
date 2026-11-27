@@ -2344,7 +2344,11 @@ sub getVarHashFromStringFast
 sub getVarStringFromHash
 {
 	my $this = shift;
-	my $varHash = shift;
+
+	# Work on a copy: the caller's hash is usually still in use (a node's VARS, a request's
+	# $VARS), and the blank-to-space step below would turn every false setting in it into " ",
+	# which Perl reads as true for the rest of the request (#4751).
+	my $varHash = { %{ shift() || {} } };
 
 	# Clean out the keys that have do not have a value.
 	foreach (keys %$varHash) {

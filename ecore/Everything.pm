@@ -223,6 +223,10 @@ sub setVars
 		perhaps it doesn't join on the settings table?\n");
 	}
 
+	# Compare and merge the vars as they'll be stored (undefined and false values become " ", as
+	# getVarStringFromHash writes them), on a copy: the caller's hash keeps its own values (#4751).
+	$varsref = { map { $_ => ($varsref->{$_} || ' ') } keys %{ $varsref || {} } };
+
 	my $newVarsStr = getVarStringFromHash($varsref);
 	my $currentVars = $$NODE{vars} // '';
 	unless ($newVarsStr ne $currentVars)

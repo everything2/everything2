@@ -11,7 +11,8 @@ const { loginAs } = require('./fixtures/auth')
  * category normaluser22 maintains. normaluser23 first sees both on normaluser22's homenode; after
  * normaluser22 ticks the settings, normaluser23 sees neither, while normaluser22 still sees both on
  * their own homenode and no longer sees their daily votes and C!s. Cleanup turns the settings off and
- * removes the planted nodes.
+ * removes the planted nodes. Setup also makes normaluser22's writeup count due for its hourly refresh,
+ * so normaluser23's first view is the request that saves normaluser22's settings (#4751).
  * Watch: `./tools/e2e-demo.sh homenode-settings`.
  */
 test('a member hides their usergroups, categories and daily votes from their homenode', async ({ browser }) => {
@@ -51,6 +52,7 @@ test('a member hides their usergroups, categories and daily votes from their hom
       member,
       perl(
         'initEverything("development-docker"); ' + resetVars + ' ' +
+          '$v->{nwriteupsupdate} = 1; Everything::setVars($u, $v); ' +
           'my $root = $DB->getNode("root", "user"); my $me = $DB->getNode("normaluser22", "user"); ' +
           `my $g = $DB->insertNode("${group}", "usergroup", $root, {}, "skip maintenance"); ` +
           '$DB->insertIntoNodegroup($DB->getNodeById($g, "force"), -1, $me->{node_id}); ' +
