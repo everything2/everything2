@@ -2570,6 +2570,8 @@ sub canReadNode {
 	$this->getRef($NODE);
 
 	return 0 if((not defined $NODE) || ($NODE == 0));
+	# Not a node (e.g. the -1 superuser placeholder getRef leaves as it is): nothing to read. #4753
+	return 0 unless UNIVERSAL::isa($NODE, 'HASH');
 	return 1 unless $$NODE{type}{readers_user};
 	return $this->isApproved($USER, $$NODE{type}{readers_user});
 }

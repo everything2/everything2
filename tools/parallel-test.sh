@@ -16,15 +16,14 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 BOLD='\033[1m'
 
-# Create temp files for output
-PERL_OUTPUT=$(mktemp)
-REACT_OUTPUT=$(mktemp)
-
-# Cleanup on exit
-cleanup() {
-  rm -f "$PERL_OUTPUT" "$REACT_OUTPUT"
-}
-trap cleanup EXIT
+# Full output of each suite. Kept after the run (each run overwrites the last), so a failure
+# can always be read in full: the summary below is only an extract.
+OUTPUT_DIR="${E2_TEST_OUTPUT_DIR:-/tmp/e2-test-output}"
+mkdir -p "$OUTPUT_DIR"
+PERL_OUTPUT="$OUTPUT_DIR/perl.log"
+REACT_OUTPUT="$OUTPUT_DIR/react.log"
+: > "$PERL_OUTPUT"
+: > "$REACT_OUTPUT"
 
 # Function to run perl tests (smoke + unit)
 run_perl_tests() {
@@ -160,10 +159,25 @@ if [ $PERL_EXIT -eq 0 ]; then
 else
   echo -e "${RED}✗ FAILED${NC}"
   echo ""
-  # Show specific failures
-  if grep -q "FAILED" "$PERL_OUTPUT"; then
-    echo -e "${YELLOW}Failed tests:${NC}"
-    grep -E "(FAILED|not ok|#   Failed test)" "$PERL_OUTPUT" | head -30
+  # t/run.pl runs a serial section and then a parallel one, so a failure in the serial
+  # section scrolls far above the end of the output. Pull the failures out of the whole log.
+  # Test files that didn't pass (TAP::Harness prints "<file> ..... ok" for the ones that did):
+  FAILED_FILES=$(grep -E '\.t \.+ ' "$PERL_OUTPUT" | grep -vE '\.t \.+ (ok|skipped)' )
+  if [ -n "$FAILED_FILES" ]; then
+    echo -e "${YELLOW}Failed test files:${NC}"
+    echo "$FAILED_FILES" | head -30
+    echo ""
+  fi
+  # Each section's "Test Summary Report" (names the failed subtests per file):
+  SUMMARY=$(awk '/^Test Summary Report/{p=1} p{print} /^Files=/{p=0}' "$PERL_OUTPUT")
+  if [ -n "$SUMMARY" ]; then
+    echo -e "${YELLOW}Test summary report:${NC}"
+    echo "$SUMMARY" | head -40
+    echo ""
+  fi
+  if grep -qE '^\s*#\s+Failed test' "$PERL_OUTPUT"; then
+    echo -e "${YELLOW}Failed assertions:${NC}"
+    grep -E '^\s*#\s+(Failed test|at |got:|expected:)' "$PERL_OUTPUT" | head -40
     echo ""
   fi
   if grep -q "Smoke tests failed" "$PERL_OUTPUT"; then
@@ -171,8 +185,8 @@ else
     grep -B5 -A5 "ERROR\|FAILED" "$PERL_OUTPUT" | head -40
     echo ""
   fi
-  echo -e "${YELLOW}Last 30 lines of output:${NC}"
-  tail -30 "$PERL_OUTPUT"
+  echo -e "${YELLOW}Last 15 lines of output:${NC}"
+  tail -15 "$PERL_OUTPUT"
 fi
 
 echo ""
@@ -215,5 +229,6 @@ if [ $PERL_EXIT -ne 0 ] || [ $REACT_EXIT -ne 0 ]; then
   exit 1
 else
   echo -e "${GREEN}${BOLD}✓ All Tests Passed!${NC}"
+  echo "Full output: $PERL_OUTPUT, $REACT_OUTPUT"
   exit 0
 fi
