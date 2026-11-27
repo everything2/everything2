@@ -53,7 +53,9 @@ Creates a real, dedicated user node and returns its (hashref) node. Options:
     experience  - starting experience    (user-table column; drives level)
     votesleft   - starting votesleft     (user-table column)
     numwriteups - VARS numwriteups       (also drives level)
-    online      - if true, insert a room row so online-only delivery reaches it
+    online      - if true, insert a room row so online-only delivery reaches it, and (unless
+                  lasttime is given) mark them active now: the refresh-rooms job drops the room
+                  row of anyone not recently active, and dev runs it every 5 minutes
     password    - a plain-text password the user can sign in with
     email       - the account's email address
     lasttime    - last sign-in time (default NULL: never signed in)
@@ -94,6 +96,7 @@ sub make_user {
     $row{votesleft}  = $o{votesleft}  if defined $o{votesleft};
     $row{email}      = $o{email}      if defined $o{email};
     $row{lasttime}   = $o{lasttime}   if defined $o{lasttime};
+    $row{-lasttime}  = 'NOW()'        if $o{online} && !defined $o{lasttime};
     if (defined $o{password}) {
         @row{qw(passwd salt)} = $APP->saltNewPassword($o{password});
     }

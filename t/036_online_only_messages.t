@@ -31,7 +31,10 @@ my $mk_user = sub {
   my $uid = $DB->insertNode("e2e_${usuffix}_$label", 'user', $root, undef, 1);
   push @created_users, $uid;
   $DB->sqlDelete('user', "user_id=$uid");   # ensure a clean user row (user_id=node_id)
-  $DB->sqlInsert('user', { user_id => $uid });
+  # Active now, as a real online member is: the refresh-rooms job (every 5 minutes in dev,
+  # alongside the test suite) drops the room row of anyone who isn't, which left the
+  # online-only message with no one to reach.
+  $DB->sqlInsert('user', { user_id => $uid, -lasttime => 'NOW()' });
   # Mark "online" (a room row) so online_only delivery reaches them. Scoping
   # presence to our own throwaway users is the whole point -- no shared singleton.
   $DB->sqlInsert('room', { member_user => $uid });
