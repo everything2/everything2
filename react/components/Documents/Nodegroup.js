@@ -73,7 +73,7 @@ const Nodegroup = ({ data, user, e2 }) => {
         <div
           className="nodegroup__description"
           dangerouslySetInnerHTML={{
-            __html: renderE2Content(nodegroup.doctext)
+            __html: renderE2Content(nodegroup.doctext).html
           }}
         />
       )}
